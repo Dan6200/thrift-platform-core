@@ -179,6 +179,9 @@ execute procedure trigger_set_timestamp();
 
 alter table product_features enable row level security;
 create policy "Vendors can view their own product_features." on product_features for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can insert their own product_features." on product_features for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can update their own product_features." on product_features for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can delete their own product_features." on product_features for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
 
 -- create orders table
 create table if not exists orders (
@@ -411,53 +414,97 @@ create trigger on_auth_user_deleted
 -- Enable RLS for tables and create basic select policies
 alter table profiles enable row level security;
 create policy "User can view their own profile." on profiles for select using (auth.uid() = id);
+create policy "User can insert their own profile." on profiles for insert with check (auth.uid() = id);
+create policy "User can update their own profile." on profiles for update using (auth.uid() = id);
+create policy "User can delete their own profile." on profiles for delete using (auth.uid() = id);
 
 alter table address enable row level security;
 create policy "Address are private." on address for select using (false);
+create policy "Address cannot be inserted." on address for insert with check (false);
+create policy "Address cannot be updated." on address for update using (false);
+create policy "Address cannot be deleted." on address for delete using (false);
 
 alter table delivery_info enable row level security;
 create policy "User can view their own delivery_info." on delivery_info for select using (auth.uid() = customer_id);
-
 create policy "Authenticated users can insert delivery_info." on delivery_info for insert with check (auth.uid() = customer_id);
 create policy "Authenticated users can update their own delivery_info." on delivery_info for update using (auth.uid() = customer_id);
 create policy "Authenticated users can delete their own delivery_info." on delivery_info for delete using (auth.uid() = customer_id);
 
 alter table payment_info enable row level security;
 create policy "Payment info are private." on payment_info for select using (false);
+create policy "Payment info cannot be inserted." on payment_info for insert with check (false);
+create policy "Payment info cannot be updated." on payment_info for update using (false);
+create policy "Payment info cannot be deleted." on payment_info for delete using (false);
 
 alter table stores enable row level security;
 create policy "Vendors can view their own stores." on stores for select using (auth.uid() = vendor_id);
+create policy "Vendors can insert their own stores." on stores for insert with check (auth.uid() = vendor_id);
+create policy "Vendors can update their own stores." on stores for update using (auth.uid() = vendor_id);
+create policy "Vendors can delete their own stores." on stores for delete using (auth.uid() = vendor_id);
 
 alter table categories enable row level security;
 create policy "Categories are private." on categories for select using (false);
+create policy "Categories cannot be inserted." on categories for insert with check (false);
+create policy "Categories cannot be updated." on categories for update using (false);
+create policy "Categories cannot be deleted." on categories for delete using (false);
 
 alter table subcategories enable row level security;
 create policy "Subcategories are private." on subcategories for select using (false);
+create policy "Subcategories cannot be inserted." on subcategories for insert with check (false);
+create policy "Subcategories cannot be updated." on subcategories for update using (false);
+create policy "Subcategories cannot be deleted." on subcategories for delete using (false);
 
 alter table products enable row level security;
 create policy "Vendors can view their own products." on products for select using (auth.uid() = vendor_id);
+create policy "Vendors can insert their own products." on products for insert with check (auth.uid() = vendor_id);
+create policy "Vendors can update their own products." on products for update using (auth.uid() = vendor_id);
+create policy "Vendors can delete their own products." on products for delete using (auth.uid() = vendor_id);
 
 alter table orders enable row level security;
 create policy "Users can view their own orders." on orders for select using (auth.uid() = customer_id);
+create policy "Users can insert their own orders." on orders for insert with check (auth.uid() = customer_id);
+create policy "Users can update their own orders." on orders for update using (auth.uid() = customer_id);
+create policy "Users can delete their own orders." on orders for delete using (auth.uid() = customer_id);
 
 alter table order_items enable row level security;
 create policy "Users can view their own order_items." on order_items for select using (EXISTS ( SELECT 1 FROM orders WHERE orders.order_id = order_items.order_id AND orders.customer_id = auth.uid() ));
+create policy "Users can insert their own order_items." on order_items for insert with check (EXISTS ( SELECT 1 FROM orders WHERE orders.order_id = order_items.order_id AND orders.customer_id = auth.uid() ));
+create policy "Users can update their own order_items." on order_items for update using (EXISTS ( SELECT 1 FROM orders WHERE orders.order_id = order_items.order_id AND orders.customer_id = auth.uid() ));
+create policy "Users can delete their own order_items." on order_items for delete using (EXISTS ( SELECT 1 FROM orders WHERE orders.order_id = order_items.order_id AND orders.customer_id = auth.uid() ));
 
 alter table product_media enable row level security;
 create policy "Vendors can view their own product_media." on product_media for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can insert their own product_media." on product_media for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can update their own product_media." on product_media for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can delete their own product_media." on product_media for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
 
 alter table shopping_cart enable row level security;
 create policy "Users can view their own shopping_cart." on shopping_cart for select using (auth.uid() = customer_id);
+create policy "Users can insert their own shopping_cart." on shopping_cart for insert with check (auth.uid() = customer_id);
+create policy "Users can update their own shopping_cart." on shopping_cart for update using (auth.uid() = customer_id);
+create policy "Users can delete their own shopping_cart." on shopping_cart for delete using (auth.uid() = customer_id);
 
 alter table shopping_cart_item enable row level security;
 create policy "Users can view their own shopping_cart_item." on shopping_cart_item for select using (EXISTS ( SELECT 1 FROM shopping_cart WHERE shopping_cart.cart_id = shopping_cart_item.cart_id AND shopping_cart.customer_id = auth.uid() ));
+create policy "Users can insert their own shopping_cart_item." on shopping_cart_item for insert with check (EXISTS ( SELECT 1 FROM shopping_cart WHERE shopping_cart.cart_id = shopping_cart_item.cart_id AND shopping_cart.customer_id = auth.uid() ));
+create policy "Users can update their own shopping_cart_item." on shopping_cart_item for update using (EXISTS ( SELECT 1 FROM shopping_cart WHERE shopping_cart.cart_id = shopping_cart_item.cart_id AND shopping_cart.customer_id = auth.uid() ));
+create policy "Users can delete their own shopping_cart_item." on shopping_cart_item for delete using (EXISTS ( SELECT 1 FROM shopping_cart WHERE shopping_cart.cart_id = shopping_cart_item.cart_id AND shopping_cart.customer_id = auth.uid() ));
 
 alter table product_reviews enable row level security;
 create policy "Users can view their own product_reviews." on product_reviews for select using (auth.uid() = customer_id);
+create policy "Users can insert their own product_reviews." on product_reviews for insert with check (auth.uid() = customer_id);
+create policy "Users can update their own product_reviews." on product_reviews for update using (auth.uid() = customer_id);
+create policy "Users can delete their own product_reviews." on product_reviews for delete using (auth.uid() = customer_id);
 
 alter table vendor_reviews enable row level security;
 create policy "Users can view their own vendor_reviews." on vendor_reviews for select using (auth.uid() = customer_id);
+create policy "Users can insert their own vendor_reviews." on vendor_reviews for insert with check (auth.uid() = customer_id);
+create policy "Users can update their own vendor_reviews." on vendor_reviews for update using (auth.uid() = customer_id);
+create policy "Users can delete their own vendor_reviews." on vendor_reviews for delete using (auth.uid() = customer_id);
 
 alter table customer_reviews enable row level security;
 create policy "Vendors can view their own customer_reviews." on customer_reviews for select using (auth.uid() = vendor_id);
+create policy "Vendors can insert their own customer_reviews." on customer_reviews for insert with check (auth.uid() = vendor_id);
+create policy "Vendors can update their own customer_reviews." on customer_reviews for update using (auth.uid() = vendor_id);
+create policy "Vendors can delete their own customer_reviews." on customer_reviews for delete using (auth.uid() = vendor_id);
 
