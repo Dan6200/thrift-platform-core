@@ -39,6 +39,7 @@ interface Page extends PageStyling {
     thumbnailUrl: string
     description: string
   }>
+  // TODO: add is_featured, is_promoted to products, then that is to be dynamically added
   featuredProducts: Array<{
     id: string
     name: string

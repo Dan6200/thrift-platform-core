@@ -159,6 +159,27 @@ before update on products
 for each row
 execute procedure trigger_set_timestamp();
 
+create table if not exists product_features (
+  product_feature_id serial primary key,
+  product_id int not null references products on delete cascade,
+  feature_type varchar not null,
+  start_date timestamptz default now(),
+  end_date timestamptz,
+  sort_order int,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (product_id, feature_type)
+);
+
+-- create a trigger to update the updated_at column for product_features
+create trigger set_timestamp
+before update on product_features
+for each row
+execute procedure trigger_set_timestamp();
+
+alter table product_features enable row level security;
+create policy "Vendors can view their own product_features." on product_features for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
+
 -- create orders table
 create table if not exists orders (
     order_id 						serial						primary 				key,
@@ -389,54 +410,54 @@ create trigger on_auth_user_deleted
 
 -- Enable RLS for tables and create basic select policies
 alter table profiles enable row level security;
-create policy "Public profiles are viewable by everyone." on profiles for select using (true);
+create policy "User can view their own profile." on profiles for select using (auth.uid() = id);
 
 alter table address enable row level security;
-create policy "Public address are viewable by everyone." on address for select using (true);
+create policy "Address are private." on address for select using (false);
 
 alter table delivery_info enable row level security;
-create policy "Public delivery_info are viewable by everyone." on delivery_info for select using (true);
+create policy "User can view their own delivery_info." on delivery_info for select using (auth.uid() = customer_id);
 
 create policy "Authenticated users can insert delivery_info." on delivery_info for insert with check (auth.uid() = customer_id);
 create policy "Authenticated users can update their own delivery_info." on delivery_info for update using (auth.uid() = customer_id);
 create policy "Authenticated users can delete their own delivery_info." on delivery_info for delete using (auth.uid() = customer_id);
 
 alter table payment_info enable row level security;
-create policy "Public payment_info are viewable by everyone." on payment_info for select using (true);
+create policy "Payment info are private." on payment_info for select using (false);
 
 alter table stores enable row level security;
-create policy "Public stores are viewable by everyone." on stores for select using (true);
+create policy "Vendors can view their own stores." on stores for select using (auth.uid() = vendor_id);
 
 alter table categories enable row level security;
-create policy "Public categories are viewable by everyone." on categories for select using (true);
+create policy "Categories are private." on categories for select using (false);
 
 alter table subcategories enable row level security;
-create policy "Public subcategories are viewable by everyone." on subcategories for select using (true);
+create policy "Subcategories are private." on subcategories for select using (false);
 
 alter table products enable row level security;
-create policy "Public products are viewable by everyone." on products for select using (true);
+create policy "Vendors can view their own products." on products for select using (auth.uid() = vendor_id);
 
 alter table orders enable row level security;
-create policy "Public orders are viewable by everyone." on orders for select using (true);
+create policy "Users can view their own orders." on orders for select using (auth.uid() = customer_id);
 
 alter table order_items enable row level security;
-create policy "Public order_items are viewable by everyone." on order_items for select using (true);
+create policy "Users can view their own order_items." on order_items for select using (EXISTS ( SELECT 1 FROM orders WHERE orders.order_id = order_items.order_id AND orders.customer_id = auth.uid() ));
 
 alter table product_media enable row level security;
-create policy "Public product_media are viewable by everyone." on product_media for select using (true);
+create policy "Vendors can view their own product_media." on product_media for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
 
 alter table shopping_cart enable row level security;
-create policy "Public shopping_cart are viewable by everyone." on shopping_cart for select using (true);
+create policy "Users can view their own shopping_cart." on shopping_cart for select using (auth.uid() = customer_id);
 
 alter table shopping_cart_item enable row level security;
-create policy "Public shopping_cart_item are viewable by everyone." on shopping_cart_item for select using (true);
+create policy "Users can view their own shopping_cart_item." on shopping_cart_item for select using (EXISTS ( SELECT 1 FROM shopping_cart WHERE shopping_cart.cart_id = shopping_cart_item.cart_id AND shopping_cart.customer_id = auth.uid() ));
 
 alter table product_reviews enable row level security;
-create policy "Public product_reviews are viewable by everyone." on product_reviews for select using (true);
+create policy "Users can view their own product_reviews." on product_reviews for select using (auth.uid() = customer_id);
 
 alter table vendor_reviews enable row level security;
-create policy "Public vendor_reviews are viewable by everyone." on vendor_reviews for select using (true);
+create policy "Users can view their own vendor_reviews." on vendor_reviews for select using (auth.uid() = customer_id);
 
 alter table customer_reviews enable row level security;
-create policy "Public customer_reviews are viewable by everyone." on customer_reviews for select using (true);
+create policy "Vendors can view their own customer_reviews." on customer_reviews for select using (auth.uid() = vendor_id);
 
