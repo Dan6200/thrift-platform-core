@@ -35,7 +35,7 @@ export default async ({
     )
   }
 
-  const params: (string | Date | number)[] = [authorizedStoreId]
+  const params: (string | Date)[] = [authorizedStoreId]
   let paramIndex = 2 // $1 is storeId
   let dbQueryString = ''
 

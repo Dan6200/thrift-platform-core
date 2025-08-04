@@ -5,14 +5,14 @@ const DateSchema = joi.string().isoDate()
 const LimitOffsetSchema = joi.number().integer().min(1)
 const SortOrderSchema = joi.string().valid('asc', 'desc')
 
-// --- Request Schemas (Query Parameters) ---
+// --- Query Schemas (Query Parameters) ---
 
-export const DashboardKPIsRequestSchema = joi.object({
+export const DashboardKPIsQuerySchema = joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
 })
 
-export const RevenueTrendRequestSchema = joi.object({
+export const RevenueTrendQuerySchema = joi.object({
   startDate: DateSchema.required(),
   endDate: DateSchema.required(),
   interval: joi
@@ -22,7 +22,7 @@ export const RevenueTrendRequestSchema = joi.object({
     .optional(),
 })
 
-export const SalesAnalyticsRequestSchema = joi.object({
+export const SalesAnalyticsQuerySchema = joi.object({
   type: joi
     .string()
     .valid('by-product', 'by-category', 'recent-orders')
@@ -65,7 +65,7 @@ export const SalesAnalyticsRequestSchema = joi.object({
     }),
 })
 
-export const CustomerAcquisitionTrendRequestSchema = joi.object({
+export const CustomerAcquisitionTrendQuerySchema = joi.object({
   startDate: DateSchema.required(),
   endDate: DateSchema.required(),
   interval: joi
@@ -75,7 +75,7 @@ export const CustomerAcquisitionTrendRequestSchema = joi.object({
     .optional(),
 })
 
-export const CustomersByLocationRequestSchema = joi.object({
+export const CustomersByLocationQuerySchema = joi.object({
   locationType: joi
     .string()
     .valid('country', 'city')
@@ -83,27 +83,27 @@ export const CustomersByLocationRequestSchema = joi.object({
     .optional(),
 })
 
-export const CustomerCLVRequestSchema = joi.object({
+export const CustomerCLVQuerySchema = joi.object({
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
   sortBy: joi.string().valid('clv', 'customerName').default('clv').optional(),
   sortOrder: SortOrderSchema.default('desc').optional(),
 })
 
-export const TopSellingProductsRequestSchema = joi.object({
+export const TopSellingProductsQuerySchema = joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
   sortBy: joi.string().valid('units', 'revenue').default('units').optional(),
   limit: LimitOffsetSchema.default(10).optional(),
 })
 
-export const LowStockProductsRequestSchema = joi.object({
+export const LowStockProductsQuerySchema = joi.object({
   threshold: joi.number().integer().min(0).default(20).optional(),
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
 })
 
-export const ProductPerformanceRequestSchema = joi.object({
+export const ProductPerformanceQuerySchema = joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
   limit: LimitOffsetSchema.optional(),
