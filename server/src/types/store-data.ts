@@ -11,6 +11,61 @@ interface PageStyling {
   font_family?: string // e.g., 'Arial', 'Roboto', 'Open Sans'
   primary_color?: string // e.g., '#FF0000'
   secondary_color?: string // e.g., '#00FF00'
+  background_color?: string
+  foreground_color?: string
+
+  muted_color?: string
+  muted_foreground_color?: string
+
+  popover_color?: string
+  popover_foreground_color?: string
+
+  card_color?: string
+  card_foreground_color?: string
+
+  border_color?: string
+  input_color?: string
+
+  primary_color?: string
+  primary_foreground_color?: string
+
+  secondary_color?: string
+  secondary_foreground_color?: string
+
+  tertiary_color?: string
+  tertiary_foreground_color?: string
+
+  accent_color?: string
+  accent_foreground_color?: string
+
+  destructive_color?: string
+  destructive_foreground_color?: string
+
+  ring_color?: string
+
+  radius_color?: string
+
+  hero_primary_color?: string
+  hero_primary_foreground_color?: string /* A very light foreground for dark mode */
+
+  hero_secondary_color?: string
+  hero_secondary_foreground_color?: string
+
+  sidebar_background_color?: string
+
+  sidebar_foreground_color?: string
+
+  sidebar_primary_color?: string
+
+  sidebar_primary_foreground_color?: string
+
+  sidebar_accent_color?: string
+
+  sidebar_accent_foreground_color?: string
+
+  sidebar_border_color?: string
+
+  sidebar_ring_color?: string
 }
 
 interface Page extends PageStyling {
@@ -32,58 +87,10 @@ interface Page extends PageStyling {
       url: string
     }
   }
-  categories: Array<{
-    id: string
-    name: string
-    url: string
-    thumbnailUrl: string
-    description: string
-  }>
-  // TODO: add is_featured, is_promoted to products, then that is to be dynamically added
+  showCategories: boolean
   showFeaturedProducts: boolean
   showPromotions: boolean
-  // featuredProducts: Array<{
-  //   id: string
-  //   name: string
-  //   sku: string
-  //   imageUrl: string
-  //   altText: string
-  //   price: {
-  //     amount: number
-  //     currency: string
-  //   }
-  //   originalPrice?: {
-  //     amount: number
-  //     currency: string
-  //   }
-  //   rating: number
-  //   numReviews: number
-  //   productUrl: string
-  //   shortDescription: string
-  //   isInStock: boolean
-  // }>
-  // promotions: Array<
-  //   | {
-  //       id: string
-  //       title: string
-  //       description: string
-  //       imageUrl: string
-  //       altText: string
-  //       targetUrl: string
-  //     }
-  //   | {
-  //       id: string
-  //       title: string
-  //       description: string
-  //       icon: string
-  //     }
-  // >
-  // customerTestimonials: Array<{
-  //   name: string
-  //   location: string
-  //   quote: string
-  //   rating: number
-  // }>
+  showCustomerTestimonials: boolean
   seoInfo: {
     keywords: string[]
     schemaMarkup: {
