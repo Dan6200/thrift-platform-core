@@ -20,7 +20,7 @@ import getProductPerformanceQuery from './definitions/get-product-performance.js
 import {
   DashboardKPIsResponseSchema,
   RevenueTrendResponseSchema,
-  SalesAnalyticsRequestSchema,
+  SalesAnalyticsQuerySchema,
   SalesAnalyticsByProductResponseSchema,
   SalesAnalyticsByCategoryResponseSchema,
   SalesAnalyticsRecentOrdersResponseSchema,
@@ -30,6 +30,14 @@ import {
   TopSellingProductsResponseSchema,
   LowStockProductsResponseSchema,
   ProductPerformanceResponseSchema,
+  DashboardKPIsQuerySchema,
+  RevenueTrendQuerySchema,
+  CustomerAcquisitionTrendQuerySchema,
+  CustomersByLocationQuerySchema,
+  CustomerCLVQuerySchema,
+  TopSellingProductsQuerySchema,
+  LowStockProductsQuerySchema,
+  ProductPerformanceQuerySchema,
 } from '../../app-schema/dashboard.js' // Adjust path as needed
 
 const { OK } = StatusCodes
@@ -41,14 +49,14 @@ const processGetRoute = <ProcessRouteWithoutBody>createRouteProcessor
 const getKPIs = processGetRoute({
   Query: getKPIsQuery,
   status: OK,
-  // validateQuery: validateReqData(DashboardKPIsRequestSchema), // if you have query params to validate
+  validateQuery: validateReqData(DashboardKPIsQuerySchema),
   validateResult: validateResData(DashboardKPIsResponseSchema),
 })
 
 const getRevenueTrends = processGetRoute({
   Query: getRevenueTrendsQuery,
   status: OK,
-  // validateQuery: validateReqData(RevenueTrendRequestSchema),
+  validateQuery: validateReqData(RevenueTrendQuerySchema),
   validateResult: validateResData(RevenueTrendResponseSchema), // Response is an array
 })
 
@@ -57,11 +65,8 @@ const getRevenueTrends = processGetRoute({
 const getSalesAnalytics = processGetRoute({
   Query: getSalesAnalyticsQuery,
   status: OK,
-  validateQuery: validateReqData(SalesAnalyticsRequestSchema), // This schema will handle the 'type' parameter
-  // Result validation will be dynamic based on 'type' in the query definition.
-  // For simplicity, we'll let the query definition handle the specific schema for now,
-  // or you could create a union type schema for the response.
-  // validateResult: validateResData(SalesAnalyticsResponseUnionSchema),
+  validateQuery: validateReqData(SalesAnalyticsQuerySchema),
+  validateResult: validateResData(SalesAnalyticsByProductResponseSchema), // Assuming by-product is the default or most common
 })
 
 // --- Detailed Analytics Sections - Customer Insights ---
@@ -69,21 +74,21 @@ const getSalesAnalytics = processGetRoute({
 const getCustomerAcquisitionTrends = processGetRoute({
   Query: getCustomerAcquisitionTrendsQuery,
   status: OK,
-  // validateQuery: validateReqData(CustomerAcquisitionTrendRequestSchema),
+  validateQuery: validateReqData(CustomerAcquisitionTrendQuerySchema),
   validateResult: validateResData(CustomerAcquisitionTrendResponseSchema),
 })
 
 const getCustomersByLocation = processGetRoute({
   Query: getCustomersByLocationQuery,
   status: OK,
-  // validateQuery: validateReqData(CustomersByLocationRequestSchema),
+  validateQuery: validateReqData(CustomersByLocationQuerySchema),
   validateResult: validateResData(CustomersByLocationResponseSchema),
 })
 
 const getCustomerLifetimeValue = processGetRoute({
   Query: getCustomerLifetimeValueQuery,
   status: OK,
-  // validateQuery: validateReqData(CustomerCLVRequestSchema),
+  validateQuery: validateReqData(CustomerCLVQuerySchema),
   validateResult: validateResData(CustomerCLVResponseSchema),
 })
 
@@ -92,21 +97,21 @@ const getCustomerLifetimeValue = processGetRoute({
 const getTopSellingProducts = processGetRoute({
   Query: getTopSellingProductsQuery,
   status: OK,
-  // validateQuery: validateReqData(TopSellingProductsRequestSchema),
+  validateQuery: validateReqData(TopSellingProductsQuerySchema),
   validateResult: validateResData(TopSellingProductsResponseSchema),
 })
 
 const getLowStockProducts = processGetRoute({
   Query: getLowStockProductsQuery,
   status: OK,
-  // validateQuery: validateReqData(LowStockProductsRequestSchema),
+  validateQuery: validateReqData(LowStockProductsQuerySchema),
   validateResult: validateResData(LowStockProductsResponseSchema),
 })
 
 const getProductPerformance = processGetRoute({
   Query: getProductPerformanceQuery,
   status: OK,
-  // validateQuery: validateReqData(ProductPerformanceRequestSchema),
+  validateQuery: validateReqData(ProductPerformanceQuerySchema),
   validateResult: validateResData(ProductPerformanceResponseSchema),
 })
 

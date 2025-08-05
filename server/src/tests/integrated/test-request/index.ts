@@ -45,7 +45,7 @@ export default function ({
     response.should.have.status(statusCode)
 
     // Validate the response body
-    if (validateTestResData && !validateTestResData(response.body)) {
+    if (validateTestResData && !validateTestResData(response.body, query)) {
       if (response.status === 404) return null
       throw new Error('Invalid Database Result')
     }

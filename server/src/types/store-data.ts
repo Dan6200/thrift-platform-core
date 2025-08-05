@@ -135,18 +135,6 @@ export type DBFriendlyStoreData = Omit<
   store_address?: string
 }
 
-// export const isValidStoreData = (
-//   storeData: unknown,
-// ): storeData is StoreData => {
-//   return (
-//     typeof storeData === 'object' &&
-//     storeData != null &&
-//     'store_name' in storeData
-//     && 'store_pages' in storeData &&
-//       storeData.store_pages != null
-//   )
-// }
-
 interface StoreDataId {
   store_info_id: number
 }
