@@ -159,10 +159,18 @@ before update on products
 for each row
 execute procedure trigger_set_timestamp();
 
+create type product_feature_type_enum as enum (
+  'BEST_SELLER',
+  'NEW_ARRIVAL',
+  'FEATURED',
+  'ON_SALE',
+  'CLEARANCE'
+);
+
 create table if not exists product_features (
   product_feature_id serial primary key,
   product_id int not null references products on delete cascade,
-  feature_type varchar not null,
+  feature_type product_feature_type_enum not null,
   start_date timestamptz default now(),
   end_date timestamptz,
   sort_order int,
