@@ -40,48 +40,50 @@ interface Page extends PageStyling {
     description: string
   }>
   // TODO: add is_featured, is_promoted to products, then that is to be dynamically added
-  featuredProducts: Array<{
-    id: string
-    name: string
-    sku: string
-    imageUrl: string
-    altText: string
-    price: {
-      amount: number
-      currency: string
-    }
-    originalPrice?: {
-      amount: number
-      currency: string
-    }
-    rating: number
-    numReviews: number
-    productUrl: string
-    shortDescription: string
-    isInStock: boolean
-  }>
-  promotions: Array<
-    | {
-        id: string
-        title: string
-        description: string
-        imageUrl: string
-        altText: string
-        targetUrl: string
-      }
-    | {
-        id: string
-        title: string
-        description: string
-        icon: string
-      }
-  >
-  customerTestimonials: Array<{
-    name: string
-    location: string
-    quote: string
-    rating: number
-  }>
+  showFeaturedProducts: boolean
+  showPromotions: boolean
+  // featuredProducts: Array<{
+  //   id: string
+  //   name: string
+  //   sku: string
+  //   imageUrl: string
+  //   altText: string
+  //   price: {
+  //     amount: number
+  //     currency: string
+  //   }
+  //   originalPrice?: {
+  //     amount: number
+  //     currency: string
+  //   }
+  //   rating: number
+  //   numReviews: number
+  //   productUrl: string
+  //   shortDescription: string
+  //   isInStock: boolean
+  // }>
+  // promotions: Array<
+  //   | {
+  //       id: string
+  //       title: string
+  //       description: string
+  //       imageUrl: string
+  //       altText: string
+  //       targetUrl: string
+  //     }
+  //   | {
+  //       id: string
+  //       title: string
+  //       description: string
+  //       icon: string
+  //     }
+  // >
+  // customerTestimonials: Array<{
+  //   name: string
+  //   location: string
+  //   quote: string
+  //   rating: number
+  // }>
   seoInfo: {
     keywords: string[]
     schemaMarkup: {
@@ -106,6 +108,102 @@ interface Page extends PageStyling {
     twitterImage?: string
   }
 }
+
+// interface Page extends PageStyling {
+//   pageType: 'storePage'
+//   pageTitle: string
+//   metaDescription: string
+//   canonicalUrl: string
+//   breadcrumbs: Array<{
+//     name: string
+//     url: string
+//   }>
+//   heroSection?: {
+//     title: string
+//     subtitle: string
+//     imageUrl: string
+//     altText: string
+//     callToAction: {
+//       text: string
+//       url: string
+//     }
+//   }
+//   categories: Array<{
+//     id: string
+//     name: string
+//     url: string
+//     thumbnailUrl: string
+//     description: string
+//   }>
+//   // TODO: add is_featured, is_promoted to products, then that is to be dynamically added
+//   showFeaturedProducts: boolean
+//   showPromotions: boolean
+//   featuredProducts: Array<{
+//     id: string
+//     name: string
+//     sku: string
+//     imageUrl: string
+//     altText: string
+//     price: {
+//       amount: number
+//       currency: string
+//     }
+//     originalPrice?: {
+//       amount: number
+//       currency: string
+//     }
+//     rating: number
+//     numReviews: number
+//     productUrl: string
+//     shortDescription: string
+//     isInStock: boolean
+//   }>
+//   promotions: Array<
+//     | {
+//         id: string
+//         title: string
+//         description: string
+//         imageUrl: string
+//         altText: string
+//         targetUrl: string
+//       }
+//     | {
+//         id: string
+//         title: string
+//         description: string
+//         icon: string
+//       }
+//   >
+//   customerTestimonials: Array<{
+//     name: string
+//     location: string
+//     quote: string
+//     rating: number
+//   }>
+//   seoInfo: {
+//     keywords: string[]
+//     schemaMarkup: {
+//       '@context': string
+//       '@type': string
+//       name: string
+//       description: string
+//       url: string
+//     }
+//     // Open Graph for social media sharing
+//     ogTitle?: string
+//     ogDescription?: string
+//     ogImage?: string
+//     ogUrl?: string
+//     ogType?: string // e.g., 'website', 'article', 'product'
+//     // Twitter Cards for social media sharing
+//     twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
+//     twitterSite?: string
+//     twitterCreator?: string
+//     twitterTitle?: string
+//     twitterDescription?: string
+//     twitterImage?: string
+//   }
+// }
 
 export default interface StoreData {
   store_name: string
