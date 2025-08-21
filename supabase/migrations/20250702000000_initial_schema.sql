@@ -148,7 +148,7 @@ create table if not exists products (
 	store_id 						 int 							not 			null 		references 			stores 					on 	 delete 	cascade,
   category_id          int           		not    		null    references   		categories      on   delete   cascade,
   subcategory_id       int           		not    		null    references   		subcategories   on   delete   cascade,
-  quantity_available   int              not       null,
+  
   created_at           timestamptz      not 			null 		default      now(),
   updated_at           timestamptz      not 			null 		default      now()
 );
@@ -156,6 +156,24 @@ create table if not exists products (
 -- create a trigger to update the updated_at column for products
 create trigger set_timestamp
 before update on products
+for each row
+execute procedure trigger_set_timestamp();
+
+create table if not exists product_variants (
+  variant_id           serial           primary   key,
+  product_id           int              not       null    references   products   on   delete   cascade,
+  sku                  varchar          not       null    unique,
+  variation_attributes jsonb,
+  list_price           numeric(19,4),
+  net_price            numeric(19,4),
+  quantity_available   int              not       null,
+  created_at           timestamptz      not       null    default      now(),
+  updated_at           timestamptz      not       null    default      now()
+);
+
+-- create a trigger to update the updated_at column for product_variants
+create trigger set_timestamp
+before update on product_variants
 for each row
 execute procedure trigger_set_timestamp();
 
@@ -214,7 +232,7 @@ execute procedure trigger_set_timestamp();
 create table if not exists order_items (
     order_item_id       serial          primary     key,
     order_id            serial          not         null    references  orders          on  delete  cascade,
-    product_id          int             not         null    references  products        on  delete  cascade,
+    variant_id          int             not         null    references  product_variants on  delete  cascade,
     quantity            int             not         null    check       (quantity > 0),
     price_at_purchase   numeric(19,4)   not         null,
     created_at          timestamptz     not 				null 		default     now(),
@@ -293,7 +311,7 @@ execute procedure trigger_set_timestamp();
 create table if not exists shopping_cart_item (
   item_id      serial   primary   key,
   cart_id      int      not       null   references   shopping_cart   on   delete   cascade,
-  product_id   int      not       null   references   products        on   delete   cascade,
+  variant_id   int      not       null   references   product_variants on   delete   cascade,
   quantity     int      not       null   check        (quantity > 0),
   created_at    timestamptz   not       null   default      now(),
   updated_at    timestamptz   not       null   default      now()
@@ -307,6 +325,7 @@ execute procedure trigger_set_timestamp();
 
 create table if not exists product_reviews (
 	order_item_id 			int 						primary key 	 references order_items 				on 			delete 	 cascade,
+  variant_id          int             not       null    references   product_variants on   delete   cascade,
   rating            numeric(3,2)   not       null    check (rating >= 0.00 and rating <= 5.00),
   customer_id       uuid            not       null    references   profiles             on   delete   cascade,
   customer_remark   varchar,
@@ -467,6 +486,12 @@ create policy "Vendors can view their own products." on products for select usin
 create policy "Vendors can insert their own products." on products for insert with check (auth.uid() = vendor_id);
 create policy "Vendors can update their own products." on products for update using (auth.uid() = vendor_id);
 create policy "Vendors can delete their own products." on products for delete using (auth.uid() = vendor_id);
+
+alter table product_variants enable row level security;
+create policy "Vendors can view their own product_variants." on product_variants for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can insert their own product_variants." on product_variants for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can update their own product_variants." on product_variants for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can delete their own product_variants." on product_variants for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
 
 alter table orders enable row level security;
 create policy "Users can view their own orders." on orders for select using (auth.uid() = customer_id);
