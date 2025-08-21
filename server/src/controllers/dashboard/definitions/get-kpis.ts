@@ -11,11 +11,12 @@ import { validateDashboardQueryParams, getDateRangeClause } from './utils.js'
 export default async ({
   query,
   userId,
+  params,
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
   const { authorizedStoreId, parsedStartDate, parsedEndDate } =
-    await validateDashboardQueryParams({ query, userId })
+    await validateDashboardQueryParams({ query, userId, params })
 
-  const params: (string | Date)[] = [authorizedStoreId]
+  const queryParamsArray: (string | Date)[] = [authorizedStoreId]
   let paramIndex = 2 // $1 is storeId
 
   const { clause: orderDateClause, nextParamIndex: orderDateParamIndex } =
@@ -23,7 +24,7 @@ export default async ({
       parsedStartDate,
       parsedEndDate,
       'o.order_date',
-      params,
+      queryParamsArray,
       paramIndex,
     )
   paramIndex = orderDateParamIndex
@@ -35,7 +36,7 @@ export default async ({
     parsedStartDate,
     parsedEndDate,
     'p_customer.created_at',
-    params,
+    queryParamsArray,
     paramIndex,
   )
   paramIndex = profileCreatedAtParamIndex
@@ -53,5 +54,5 @@ export default async ({
     ${orderDateClause}
   ;`
 
-  return pg.query(dbQueryString, params)
+  return pg.query(dbQueryString, queryParamsArray)
 }

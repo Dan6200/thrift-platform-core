@@ -16,9 +16,9 @@ import { knex } from '../../../db/index.js' // Adjust path
 export async function validateDashboardQueryParams({
   query,
   userId,
+  params,
 }: QueryParams) {
   const {
-    storeId,
     startDate,
     endDate,
     limit,
@@ -31,6 +31,9 @@ export async function validateDashboardQueryParams({
     status,
     threshold,
   } = query
+
+  const { storeId } = params
+  console.log(params)
 
   if (!userId) {
     throw new UnauthorizedError(

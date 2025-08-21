@@ -15,19 +15,25 @@ import {
   testGetLowStockProducts,
   testGetProductPerformance,
 } from './definitions/index.js'
+import { createStoreForTesting } from '../helpers/create-store.js'
 
 chai.use(chaiHttp).should()
 
 export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
   describe('Dashboard Analytics', () => {
     const server = process.env.SERVER!
-    const path = '/v1/dashboard'
     let token: string
     let userId: string
+    let storeId: string
+    let path: string
 
     before(async function () {
       userId = await createUserForTesting(userInfo)
       token = await signInForTesting(userInfo)
+      const storeResponse = await createStoreForTesting(token)
+      const { store_id } = storeResponse.body
+      storeId = store_id
+      path = `/v1/dashboard/${storeId}`
     })
 
     it('should get KPIs', async () => {
@@ -44,7 +50,11 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
         server,
         path: `${path}/revenue-trends`,
         token,
-        query: { startDate: '2024-01-01', endDate: '2024-12-31', interval: 'month' },
+        query: {
+          startDate: '2024-01-01',
+          endDate: '2024-12-31',
+          interval: 'month',
+        },
       })
     })
 
@@ -53,7 +63,12 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
         server,
         path: `${path}/sales-analytics`,
         token,
-        query: { type: 'by-product', limit: 10, sortBy: 'unitsSold', sortOrder: 'desc' },
+        query: {
+          type: 'by-product',
+          limit: 10,
+          sortBy: 'unitsSold',
+          sortOrder: 'desc',
+        },
       })
     })
 
@@ -80,7 +95,11 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
         server,
         path: `${path}/customer-acquisition-trends`,
         token,
-        query: { startDate: '2024-01-01', endDate: '2024-12-31', interval: 'month' },
+        query: {
+          startDate: '2024-01-01',
+          endDate: '2024-12-31',
+          interval: 'month',
+        },
       })
     })
 
