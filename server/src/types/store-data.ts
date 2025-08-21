@@ -105,6 +105,36 @@ export default interface StoreData {
     zip_postal_code: string
     country: string
   }
+  categories: Array<{
+    id: string
+    name: string
+    url: string
+    thumbnailUrl: string
+    description: string
+  }>
+  // TODO: add is_featured, is_promoted to products, then that is to be dynamically added
+  showFeaturedProducts: boolean
+  showPromotions: boolean
+  featuredProducts: Array<{
+    id: string
+    name: string
+    sku: string
+    imageUrl: string
+    altText: string
+    price: {
+      amount: number
+      currency: string
+    }
+    originalPrice?: {
+      amount: number
+      currency: string
+    }
+    rating: number
+    numReviews: number
+    productUrl: string
+    shortDescription: string
+    isInStock: boolean
+  }>
   favicon: string
   default_page_styling?: PageStyling // Store-wide default styling for pages
   store_pages?: Page[]
