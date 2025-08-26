@@ -3,32 +3,40 @@ create schema if not exists public;
 
 -- function to update updated_at column
 create or replace function trigger_set_timestamp()
-returns trigger as $$
+returns trigger as $
 begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$ language plpgsql;
 
 create table if not exists profiles (
   id 		 uuid                    primary    key, -- Get from Firebase
   first_name   varchar(30)               not        null,
-	check				 (first_name ~* '^[a-zA-Z]+$'),
+	check			 (first_name ~* '^[a-zA-Z]+
+
+),
   last_name    varchar(30)               not        null,
-	check				 (last_name ~* '^[a-zA-Z]+([-'']*[a-zA-Z]+)+$'),
+	check			 (last_name ~* '^[a-zA-Z]+([-'']*[a-zA-Z]+)+
+
+),
   email        varchar(320)              unique,
-  check        (email ~* '^(([^<> ()[\]\\.,;:\s@"]+(\.[^< > ()[\]\\.,;'
-							 ':\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1'
-							 ',3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'),  
+  check        (email ~* '^(([^<> ()[\]\\.,;:\s@"]+(\.[^< > ()[\]\\.,;:'
+							 ':\s@"]+)*)|(".+"))@((\[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1'
+							 ',3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))
+
+),  
   phone        varchar(40)               unique,
-  check        (phone ~* '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),  
-	check				 (email is not null and phone is not null 
+  check        (phone ~* '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*
+
+),  
+	check			 (email is not null and phone is not null 
 							 or email is null and phone is not null 
 							 or email is not null and phone is null),
   dob          date                      not        null,
   country      varchar                   not        null 			default  		'Nigeria',
-	is_customer  boolean 									 not 				null 			default 		true,
-	is_vendor    boolean 									 not 				null 			default 		false,
+	is_customer  boolean 					 not 				null 			default 		true,
+	is_vendor    boolean 					 not 				null 			default 		false,
   check        (current_date - dob > 18),
   deleted_at   timestamptz,
   created_at   timestamptz               not 				null 			default      now(),
@@ -50,9 +58,9 @@ create table if not exists address (
   city                    varchar       not       null,
   state                   varchar       not       null,
   zip_postal_code         varchar       not       null,
-  country									varchar       not       null,
-  created_at        			timestamptz     		not 			null 		default     now(),
-  updated_at        			timestamptz     		not 			null 		default     now()
+  country							varchar       not       null,
+  created_at        			timestamptz     		not 			null 			default     now(),
+  updated_at        			timestamptz     		not 			null 			default     now()
 );
 
 -- create a trigger to update the updated_at column for address
@@ -67,8 +75,8 @@ create table if not exists delivery_info (
   recipient_full_name    	varchar(30)   not       null,
   address_id              int           not       null    references   address    on   delete   cascade,
   phone_number 		        varchar       not       null,
-  created_at        			timestamptz     		not 			null 		default     now(),
-  updated_at        			timestamptz     		not 			null 		default     now(),
+  created_at        			timestamptz     		not 			null 			default     now(),
+  updated_at        			timestamptz     		not 			null 			default     now(),
   delivery_instructions   varchar
 );
 
@@ -80,10 +88,10 @@ for each row
 execute procedure trigger_set_timestamp();
 
 create table if not exists payment_info (
-	payment_id 				serial 				primary 			key,
-	payment_token 		varchar 			not 					null,
-  created_at        timestamptz     not 		null 			default     now(),
-  updated_at        timestamptz     not 		null 			default     now()
+	payment_id 				serial 				primary 				key,
+	payment_token 				varchar 				not 					null,
+  created_at        timestamptz     not 			null 			default     now(),
+  updated_at        timestamptz     not 			null 			default     now()
 );
 
 -- create a trigger to update the updated_at column for payment_info
@@ -113,7 +121,7 @@ execute procedure trigger_set_timestamp();
 
 create table if not exists categories (
 	category_id					serial					primary 	key,
-	category_name 			varchar,
+	category_name 				varchar,
   created_at          timestamptz     not 			null 				default     now(),
   updated_at          timestamptz     not 			null 				default     now()
 );
@@ -126,8 +134,8 @@ execute procedure trigger_set_timestamp();
 
 create table if not exists subcategories (
 	subcategory_id			serial				primary 		key,
-	category_id 				int						not 				null		references		categories			on 		delete	cascade,
-	subcategory_name		varchar,
+	category_id 				int					not 				null			references		categories			on 		delete	cascade,
+	subcategory_name				varchar,
   created_at          timestamptz     not 			null 			default     now(),
   updated_at          timestamptz     not 			null 			default     now()
 );
@@ -175,12 +183,12 @@ create table if not exists products (
   list_price           numeric(19,4),
   net_price            numeric(19,4),
   vendor_id            uuid             not       null    references			profiles         on   delete   cascade,
-	store_id 						 int 							not 			null 		references 			stores 					on 	 delete 	cascade,
+	store_id 					 int 						not 			null 			references 			stores 					on 	 delete 	cascade,
   category_id          int           		not    		null    references   		categories      on   delete   cascade,
   subcategory_id       int           		not    		null    references   		subcategories   on   delete   cascade,
   
-  created_at           timestamptz      not 			null 		default      now(),
-  updated_at           timestamptz      not 			null 		default      now()
+  created_at           timestamptz      not 			null 			default      now(),
+  updated_at           timestamptz      not 			null 			default      now()
 );
 
 -- create a trigger to update the updated_at column for products
@@ -215,6 +223,11 @@ create type product_feature_type_enum as enum (
   'CLEARANCE'
 );
 
+-- This table stores various promotional or status features for products.
+-- While some of these (e.g., BEST_SELLER, ON_SALE, CLEARANCE) could be computed,
+-- storing them explicitly allows for better performance, business-driven overrides,
+-- and historical tracking. A background job can be used to set or update these values
+-- based on business rules or computed metrics.
 create table if not exists product_features (
   product_feature_id serial primary key,
   product_id int not null references products on delete cascade,
@@ -233,23 +246,64 @@ before update on product_features
 for each row
 execute procedure trigger_set_timestamp();
 
+create table if not exists featured_product_collections (
+  collection_id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  description TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- create a trigger to update the updated_at column for featured_product_collections
+create trigger set_timestamp
+before update on featured_product_collections
+for each row
+execute procedure trigger_set_timestamp();
+
+create table if not exists featured_product_links (
+  collection_id INT NOT NULL REFERENCES featured_product_collections ON DELETE CASCADE,
+  product_id INT NOT NULL REFERENCES products ON DELETE CASCADE,
+  sort_order INT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (collection_id, product_id)
+);
+
+-- create a trigger to update the updated_at column for featured_product_links
+create trigger set_timestamp
+before update on featured_product_links
+for each row
+execute procedure trigger_set_timestamp();
+
 alter table product_features enable row level security;
 create policy "Vendors can view their own product_features." on product_features for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can insert their own product_features." on product_features for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can update their own product_features." on product_features for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can delete their own product_features." on product_features for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
 
+alter table featured_product_collections enable row level security;
+create policy "Allow public read access to featured_product_collections." on featured_product_collections for select using (true);
+create policy "Admins can insert featured_product_collections." on featured_product_collections for insert with check (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
+create policy "Admins can update featured_product_collections." on featured_product_collections for update using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
+create policy "Admins can delete featured_product_collections." on featured_product_collections for delete using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
+
+alter table featured_product_links enable row level security;
+create policy "Allow public read access to featured_product_links." on featured_product_links for select using (true);
+create policy "Admins can insert featured_product_links." on featured_product_links for insert with check (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
+create policy "Admins can update featured_product_links." on featured_product_links for update using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
+create policy "Admins can delete featured_product_links." on featured_product_links for delete using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
+
 -- create orders table
 create table if not exists orders (
     order_id 						serial						primary 				key,
-    customer_id 				uuid						references 			profiles 						on delete cascade not null,
+    customer_id 					uuid						references 			profiles 						on delete cascade not null,
     store_id 						int 						references 			stores 						on delete cascade not null,
-    delivery_info_id 		int 						references 			delivery_info 		on delete set null,
-    order_date 					timestamptz				default 				now(),
-    total_amount 				numeric(10, 2)		not null,
-    status 							text							default 				'pending' 				not null,
-    created_at 					timestamptz				not 						null 							default 				now(),
-    updated_at 					timestamptz				not 						null 							default 				now()
+    delivery_info_id 				int 						references 			delivery_info 			on delete set null,
+    order_date 						timestamptz				default 				now(),
+    total_amount 					numeric(10, 2)		not null,
+    status 							text						default 				'pending' 				not null,
+    created_at 						timestamptz				not 						null 							default 				now(),
+    updated_at 						timestamptz				not 						null 							default 				now()
 );
 
 -- create a trigger to update the updated_at column for orders
@@ -265,8 +319,8 @@ create table if not exists order_items (
     variant_id          int             not         null    references  product_variants on  delete  cascade,
     quantity            int             not         null    check       (quantity > 0),
     price_at_purchase   numeric(19,4)   not         null,
-    created_at          timestamptz     not 				null 		default     now(),
-    updated_at          timestamptz     not 				null 		default     now()
+    created_at          timestamptz     not 				null 			default     now(),
+    updated_at          timestamptz     not 				null 			default     now()
 );
 
 -- create a trigger to update the updated_at column for order_items
@@ -279,9 +333,9 @@ create table if not exists product_media (
   product_id					int					not null   references   products   on   delete   cascade,
   filename						varchar			primary    key,
   filepath						varchar			not        null,
-  description					varchar,
-	is_display_image		boolean			default		 false,
-	is_landing_image		boolean			default		 false,
+  description						varchar,
+	is_display_image			boolean			default		 false,
+	is_landing_image			boolean			default		 false,
 	filetype            varchar     not        null    default    'image',
   created_at          timestamptz     not  	 null 				default     now(),
   updated_at          timestamptz     not  	 null 				default     now(),
@@ -298,7 +352,7 @@ execute procedure trigger_set_timestamp();
 
 -- update landing image or display image for all rows when one row is changed
 create or replace function product_media_display_landing_trigger () 
-returns trigger as $$
+returns trigger as $
 
 begin 
     if (tg_op='insert' or tg_op='update') then
@@ -319,7 +373,7 @@ begin
     end if;
     return new;
 end;
-$$ language plpgsql;
+$ language plpgsql;
 
 create trigger product_media_display_landing
 before insert or update on product_media
@@ -354,7 +408,7 @@ for each row
 execute procedure trigger_set_timestamp();
 
 create table if not exists product_reviews (
-	order_item_id 			int 						primary key 	 references order_items 				on 			delete 	 cascade,
+	order_item_id 				int 						primary key 	 references order_items 				on 			delete 	 cascade,
   variant_id          int             not       null    references   product_variants on   delete   cascade,
   rating            numeric(3,2)   not       null    check (rating >= 0.00 and rating <= 5.00),
   customer_id       uuid            not       null    references   profiles             on   delete   cascade,
@@ -405,7 +459,7 @@ execute procedure trigger_set_timestamp();
 
 -- Function to handle new user creation in auth.users
 create or replace function public.handle_new_user()
-returns trigger as $$
+returns trigger as $
 begin
   insert into public.profiles (id, first_name, last_name, email, phone, dob, country, is_customer, is_vendor)
   values (
@@ -421,7 +475,7 @@ begin
   );
   return new;
 end;
-$$ language plpgsql security definer;
+$ language plpgsql security definer;
 
 -- Trigger to call handle_new_user on auth.users insert
 create trigger on_auth_user_created
@@ -430,7 +484,7 @@ create trigger on_auth_user_created
 
 -- Function to handle user updates from auth.users
 create or replace function public.handle_update_user()
-returns trigger as $$
+returns trigger as $
 begin
   update public.profiles
   set
@@ -445,7 +499,7 @@ begin
   where id = new.id;
   return new;
 end;
-$$ language plpgsql security definer;
+$ language plpgsql security definer;
 
 -- Trigger to call handle_update_user on auth.users update
 create trigger on_auth_user_updated
@@ -454,14 +508,14 @@ create trigger on_auth_user_updated
 
 -- Function to handle user deletion from auth.users
 create or replace function public.handle_delete_user()
-returns trigger as $$
+returns trigger as $
 begin
   update public.profiles
   set deleted_at = now() -- <- Soft Delete. Set cronjob to delete after 30 days
   where id = old.id;
   return old;
 end;
-$$ language plpgsql security definer;
+$ language plpgsql security definer;
 
 -- Trigger to call handle_delete_user on auth.users delete
 create trigger on_auth_user_deleted
