@@ -138,6 +138,36 @@ before update on subcategories
 for each row
 execute procedure trigger_set_timestamp();
 
+create table if not exists store_categories (
+    store_category_id SERIAL PRIMARY KEY,
+    store_id INT NOT NULL REFERENCES stores ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (store_id, name)
+);
+
+-- create a trigger to update the updated_at column for store_categories
+create trigger set_timestamp
+before update on store_categories
+for each row
+execute procedure trigger_set_timestamp();
+
+create table if not exists product_store_category_links (
+    product_id INT NOT NULL REFERENCES products ON DELETE CASCADE,
+    store_category_id INT NOT NULL REFERENCES store_categories ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (product_id, store_category_id)
+);
+
+-- create a trigger to update the updated_at column for product_store_category_links
+create trigger set_timestamp
+before update on product_store_category_links
+for each row
+execute procedure trigger_set_timestamp();
+
 create table if not exists products (
   product_id           serial           primary   key,
   title                varchar,
@@ -480,6 +510,18 @@ create policy "Subcategories are private." on subcategories for select using (fa
 create policy "Subcategories cannot be inserted." on subcategories for insert with check (false);
 create policy "Subcategories cannot be updated." on subcategories for update using (false);
 create policy "Subcategories cannot be deleted." on subcategories for delete using (false);
+
+alter table store_categories enable row level security;
+create policy "Vendors can view their own store_categories." on store_categories for select using (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
+create policy "Vendors can insert their own store_categories." on store_categories for insert with check (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
+create policy "Vendors can update their own store_categories." on store_categories for update using (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
+create policy "Vendors can delete their own store_categories." on store_categories for delete using (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
+
+alter table product_store_category_links enable row level security;
+create policy "Vendors can view their own product_store_category_links." on product_store_category_links for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can insert their own product_store_category_links." on product_store_category_links for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can update their own product_store_category_links." on product_store_category_links for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can delete their own product_store_category_links." on product_store_category_links for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
 
 alter table products enable row level security;
 create policy "Vendors can view their own products." on products for select using (auth.uid() = vendor_id);
