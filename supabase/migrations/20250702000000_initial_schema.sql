@@ -13,35 +13,28 @@ $ language plpgsql;
 create table if not exists profiles (
   id 		 uuid                    primary    key, -- Get from Firebase
   first_name   varchar(30)               not        null,
-	check			 (first_name ~* '^[a-zA-Z]+
-
-),
+	check				 (first_name ~* '^[a-zA-Z]+$'),
   last_name    varchar(30)               not        null,
-	check			 (last_name ~* '^[a-zA-Z]+([-'']*[a-zA-Z]+)+
-
-),
+	check				 (last_name ~* '^[a-zA-Z]+([-'']*[a-zA-Z]+)+$'),
   email        varchar(320)              unique,
-  check        (email ~* '^(([^<> ()[\]\\.,;:\s@"]+(\.[^< > ()[\]\\.,;:'
-							 ':\s@"]+)*)|(".+"))@((\[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1'
-							 ',3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))
-
-),  
+  check        (email ~* '^(([^<> ()[\]\\.,;:\s@"]+(\.[^< > ()[\]\\.,;'
+							 ':\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1'
+							 ',3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'),  
   phone        varchar(40)               unique,
-  check        (phone ~* '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*
-
-),  
-	check			 (email is not null and phone is not null 
+  check        (phone ~* '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),  
+	check				 (email is not null and phone is not null 
 							 or email is null and phone is not null 
 							 or email is not null and phone is null),
   dob          date                      not        null,
   country      varchar                   not        null 			default  		'Nigeria',
-	is_customer  boolean 					 not 				null 			default 		true,
-	is_vendor    boolean 					 not 				null 			default 		false,
+	is_customer  boolean 									 not 				null 			default 		true,
+	is_vendor    boolean 									 not 				null 			default 		false,
   check        (current_date - dob > 18),
   deleted_at   timestamptz,
   created_at   timestamptz               not 				null 			default      now(),
   updated_at   timestamptz               not 				null 			default      now()
 );
+
 
 -- create a trigger to update the updated_at column for profiles
 create trigger set_timestamp
@@ -121,7 +114,7 @@ execute procedure trigger_set_timestamp();
 
 create table if not exists categories (
 	category_id					serial					primary 	key,
-	category_name 				varchar,
+	category_name 			varchar,
   created_at          timestamptz     not 			null 				default     now(),
   updated_at          timestamptz     not 			null 				default     now()
 );
@@ -135,7 +128,7 @@ execute procedure trigger_set_timestamp();
 create table if not exists subcategories (
 	subcategory_id			serial				primary 		key,
 	category_id 				int					not 				null			references		categories			on 		delete	cascade,
-	subcategory_name				varchar,
+	subcategory_name		varchar,
   created_at          timestamptz     not 			null 			default     now(),
   updated_at          timestamptz     not 			null 			default     now()
 );
@@ -186,7 +179,6 @@ create table if not exists products (
 	store_id 					 int 						not 			null 			references 			stores 					on 	 delete 	cascade,
   category_id          int           		not    		null    references   		categories      on   delete   cascade,
   subcategory_id       int           		not    		null    references   		subcategories   on   delete   cascade,
-  
   created_at           timestamptz      not 			null 			default      now(),
   updated_at           timestamptz      not 			null 			default      now()
 );
@@ -295,13 +287,13 @@ create policy "Admins can delete featured_product_links." on featured_product_li
 
 -- create orders table
 create table if not exists orders (
-    order_id 						serial						primary 				key,
+    order_id 							serial						primary 				key,
     customer_id 					uuid						references 			profiles 						on delete cascade not null,
-    store_id 						int 						references 			stores 						on delete cascade not null,
-    delivery_info_id 				int 						references 			delivery_info 			on delete set null,
+    store_id 							int 						references 			stores 						on delete cascade not null,
+    delivery_info_id 			int 						references 			delivery_info 			on delete set null,
     order_date 						timestamptz				default 				now(),
     total_amount 					numeric(10, 2)		not null,
-    status 							text						default 				'pending' 				not null,
+    status 								text						default 				'pending' 				not null,
     created_at 						timestamptz				not 						null 							default 				now(),
     updated_at 						timestamptz				not 						null 							default 				now()
 );
