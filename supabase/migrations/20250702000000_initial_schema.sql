@@ -3,25 +3,25 @@ create schema if not exists public;
 
 -- function to update updated_at column
 create or replace function trigger_set_timestamp()
-returns trigger as $
+returns trigger as $$
 begin
   new.updated_at = now();
   return new;
 end;
-$ language plpgsql;
+$$ language plpgsql;
 
 create table if not exists profiles (
   id 		 uuid                    primary    key, -- Get from Firebase
   first_name   varchar(30)               not        null,
-	check				 (first_name ~* '^[a-zA-Z]+$'),
+	check				 (first_name ~* '^[a-zA-Z]+$$'),
   last_name    varchar(30)               not        null,
-	check				 (last_name ~* '^[a-zA-Z]+([-'']*[a-zA-Z]+)+$'),
+	check				 (last_name ~* '^[a-zA-Z]+([-'']*[a-zA-Z]+)+$$'),
   email        varchar(320)              unique,
   check        (email ~* '^(([^<> ()[\]\\.,;:\s@"]+(\.[^< > ()[\]\\.,;'
 							 ':\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1'
-							 ',3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'),  
+							 ',3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$$'),  
   phone        varchar(40)               unique,
-  check        (phone ~* '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),  
+  check        (phone ~* '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$$'),  
 	check				 (email is not null and phone is not null 
 							 or email is null and phone is not null 
 							 or email is not null and phone is null),
@@ -155,20 +155,6 @@ before update on store_categories
 for each row
 execute procedure trigger_set_timestamp();
 
-create table if not exists product_store_category_links (
-    product_id INT NOT NULL REFERENCES products ON DELETE CASCADE,
-    store_category_id INT NOT NULL REFERENCES store_categories ON DELETE CASCADE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (product_id, store_category_id)
-);
-
--- create a trigger to update the updated_at column for product_store_category_links
-create trigger set_timestamp
-before update on product_store_category_links
-for each row
-execute procedure trigger_set_timestamp();
-
 create table if not exists products (
   product_id           serial           primary   key,
   title                varchar,
@@ -186,6 +172,20 @@ create table if not exists products (
 -- create a trigger to update the updated_at column for products
 create trigger set_timestamp
 before update on products
+for each row
+execute procedure trigger_set_timestamp();
+
+create table if not exists product_store_category_links (
+    product_id INT NOT NULL REFERENCES products ON DELETE CASCADE,
+    store_category_id INT NOT NULL REFERENCES store_categories ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (product_id, store_category_id)
+);
+
+-- create a trigger to update the updated_at column for product_store_category_links
+create trigger set_timestamp
+before update on product_store_category_links
 for each row
 execute procedure trigger_set_timestamp();
 
@@ -207,7 +207,7 @@ before update on product_variants
 for each row
 execute procedure trigger_set_timestamp();
 
-create type product_feature_type_enum as enum (
+create type featured_product_type_enum as enum (
   'BEST_SELLER',
   'NEW_ARRIVAL',
   'FEATURED',
@@ -220,10 +220,10 @@ create type product_feature_type_enum as enum (
 -- storing them explicitly allows for better performance, business-driven overrides,
 -- and historical tracking. A background job can be used to set or update these values
 -- based on business rules or computed metrics.
-create table if not exists product_features (
-  product_feature_id serial primary key,
+create table if not exists featured_products (
+  featured_product_id serial primary key,
   product_id int not null references products on delete cascade,
-  feature_type product_feature_type_enum not null,
+  feature_type featured_product_type_enum not null,
   start_date timestamptz default now(),
   end_date timestamptz,
   sort_order int,
@@ -232,9 +232,9 @@ create table if not exists product_features (
   unique (product_id, feature_type)
 );
 
--- create a trigger to update the updated_at column for product_features
+-- create a trigger to update the updated_at column for featured_products
 create trigger set_timestamp
-before update on product_features
+before update on featured_products
 for each row
 execute procedure trigger_set_timestamp();
 
@@ -267,11 +267,11 @@ before update on featured_product_links
 for each row
 execute procedure trigger_set_timestamp();
 
-alter table product_features enable row level security;
-create policy "Vendors can view their own product_features." on product_features for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can insert their own product_features." on product_features for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can update their own product_features." on product_features for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can delete their own product_features." on product_features for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_features.product_id AND products.vendor_id = auth.uid() ));
+alter table featured_products enable row level security;
+create policy "Vendors can view their own featured_products." on featured_products for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can insert their own featured_products." on featured_products for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can update their own featured_products." on featured_products for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors can delete their own featured_products." on featured_products for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
 
 alter table featured_product_collections enable row level security;
 create policy "Allow public read access to featured_product_collections." on featured_product_collections for select using (true);
@@ -307,7 +307,7 @@ execute procedure trigger_set_timestamp();
 -- create order_items table
 create table if not exists order_items (
     order_item_id       serial          primary     key,
-    order_id            serial          not         null    references  orders          on  delete  cascade,
+    order_id            int          not         null    references  orders          on  delete  cascade,
     variant_id          int             not         null    references  product_variants on  delete  cascade,
     quantity            int             not         null    check       (quantity > 0),
     price_at_purchase   numeric(19,4)   not         null,
@@ -344,7 +344,7 @@ execute procedure trigger_set_timestamp();
 
 -- update landing image or display image for all rows when one row is changed
 create or replace function product_media_display_landing_trigger () 
-returns trigger as $
+returns trigger as $$
 
 begin 
     if (tg_op='insert' or tg_op='update') then
@@ -365,7 +365,7 @@ begin
     end if;
     return new;
 end;
-$ language plpgsql;
+$$ language plpgsql;
 
 create trigger product_media_display_landing
 before insert or update on product_media
@@ -401,7 +401,6 @@ execute procedure trigger_set_timestamp();
 
 create table if not exists product_reviews (
 	order_item_id 				int 						primary key 	 references order_items 				on 			delete 	 cascade,
-  variant_id          int             not       null    references   product_variants on   delete   cascade,
   rating            numeric(3,2)   not       null    check (rating >= 0.00 and rating <= 5.00),
   customer_id       uuid            not       null    references   profiles             on   delete   cascade,
   customer_remark   varchar,
@@ -451,7 +450,7 @@ execute procedure trigger_set_timestamp();
 
 -- Function to handle new user creation in auth.users
 create or replace function public.handle_new_user()
-returns trigger as $
+returns trigger as $$
 begin
   insert into public.profiles (id, first_name, last_name, email, phone, dob, country, is_customer, is_vendor)
   values (
@@ -467,7 +466,7 @@ begin
   );
   return new;
 end;
-$ language plpgsql security definer;
+$$ language plpgsql security definer;
 
 -- Trigger to call handle_new_user on auth.users insert
 create trigger on_auth_user_created
@@ -476,7 +475,7 @@ create trigger on_auth_user_created
 
 -- Function to handle user updates from auth.users
 create or replace function public.handle_update_user()
-returns trigger as $
+returns trigger as $$
 begin
   update public.profiles
   set
@@ -491,7 +490,7 @@ begin
   where id = new.id;
   return new;
 end;
-$ language plpgsql security definer;
+$$ language plpgsql security definer;
 
 -- Trigger to call handle_update_user on auth.users update
 create trigger on_auth_user_updated
@@ -500,14 +499,14 @@ create trigger on_auth_user_updated
 
 -- Function to handle user deletion from auth.users
 create or replace function public.handle_delete_user()
-returns trigger as $
+returns trigger as $$
 begin
   update public.profiles
   set deleted_at = now() -- <- Soft Delete. Set cronjob to delete after 30 days
   where id = old.id;
   return old;
 end;
-$ language plpgsql security definer;
+$$ language plpgsql security definer;
 
 -- Trigger to call handle_delete_user on auth.users delete
 create trigger on_auth_user_deleted
