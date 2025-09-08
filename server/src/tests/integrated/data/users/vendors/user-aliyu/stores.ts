@@ -14,6 +14,18 @@ export const listOfStores: StoreData[] = [
       zip_postal_code: '101212',
       country: 'Nigeria',
     },
+    categories: [
+      {
+        category_id: 1,
+        name: 'Apparel',
+        description: 'Clothing and accessories',
+      },
+      {
+        category_id: 2,
+        name: 'Footwear',
+        description: 'Shoes and boots',
+      },
+    ],
     default_page_styling: {
       layout_template: 'default',
       font_family: 'Roboto',
@@ -151,6 +163,13 @@ export const listOfStores: StoreData[] = [
       zip_postal_code: '101212',
       country: 'Nigeria',
     },
+    categories: [
+      {
+        category_id: 3,
+        name: 'Electronics',
+        description: 'Electronic gadgets and devices',
+      },
+    ],
     store_pages: [
       {
         pageType: 'storePage',
@@ -226,6 +245,18 @@ export const updatedStores: StoreData[] = [
       zip_postal_code: '100001',
       country: 'Nigeria',
     },
+    categories: [
+      {
+        category_id: 1,
+        name: 'Apparel',
+        description: 'Clothing and accessories',
+      },
+      {
+        category_id: 2,
+        name: 'Footwear',
+        description: 'Shoes and boots',
+      },
+    ],
     store_pages: [
       {
         pageType: 'storePage',
@@ -302,6 +333,13 @@ export const updatedStores: StoreData[] = [
       zip_postal_code: '100001',
       country: 'Nigeria',
     },
+    categories: [
+      {
+        category_id: 3,
+        name: 'Electronics',
+        description: 'Electronic gadgets and devices',
+      },
+    ],
     store_pages: [
       {
         pageType: 'storePage',

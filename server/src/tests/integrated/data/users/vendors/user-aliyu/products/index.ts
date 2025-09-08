@@ -18,7 +18,6 @@ export const products: ProductRequestData[] = [
     ],
     list_price: 35000,
     net_price: 30000,
-    quantity_available: 17,
   },
   {
     title:
@@ -35,7 +34,7 @@ export const products: ProductRequestData[] = [
     ],
     list_price: 194242.5,
     net_price: 225000,
-    quantity_available: 18,
+    
   },
   {
     title:
@@ -55,7 +54,7 @@ export const products: ProductRequestData[] = [
     ],
     list_price: 89962.5,
     net_price: 112500,
-    quantity_available: 7,
+    
   },
 ]
 
@@ -72,7 +71,6 @@ export const productReplaced: ProductRequestData[] = [
     ],
     list_price: 35000,
     net_price: 30000,
-    quantity_available: 17,
   },
   {
     title:
@@ -89,7 +87,7 @@ export const productReplaced: ProductRequestData[] = [
     ],
     list_price: 194242.5,
     net_price: 225000,
-    quantity_available: 18,
+    
   },
   {
     title:
@@ -109,7 +107,7 @@ export const productReplaced: ProductRequestData[] = [
     ],
     list_price: 89962.5,
     net_price: 112500,
-    quantity_available: 7,
+    
   },
 ]
 
@@ -118,7 +116,6 @@ export const productPartialUpdate: ProductRequestPartial[] = [
     category_id: 2,
     list_price: 35000,
     net_price: 30000,
-    quantity_available: 17,
   },
 
   {

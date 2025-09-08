@@ -215,16 +215,15 @@ execute procedure trigger_set_timestamp();
 **************************************************************************************************************************************************************************/
 
 create table if not exists stores (
-  store_id                 serial      primary   key,   
-  store_name               varchar     not       null,
-	custom_domain            varchar     null,
-  vendor_id                uuid        not       null    references   profiles        on   delete   cascade,
-  address_id               int         references   address    on   delete   cascade,
-  favicon                  varchar,
-  default_page_styling     jsonb,
-  store_pages              jsonb,
-  created_at                timestamptz not       null    default      now(),
-  updated_at               timestamptz default      now()
+  store_id           serial        primary key,   -- Unique identifier for the store
+  store_name         varchar       not null,
+  custom_domain      varchar       unique,        -- Custom domain must be unique
+  vendor_id          uuid          not null references profiles (id) on delete cascade,
+  favicon            varchar,
+  global_styles      jsonb,                       -- Store global styles (fonts, colors) as JSONB
+  address_id         int           references address (address_id) on delete cascade,
+  created_at         timestamptz   not null default now(),
+  updated_at         timestamptz   default now()
 );
 
 -- create a trigger to update the updated_at column for stores
@@ -232,6 +231,32 @@ create trigger set_timestamp
 before update on stores
 for each row
 execute procedure trigger_set_timestamp();
+
+-- 2. `pages` table: Each page is now its own separate record.
+-- This is the key change. Now you can query, update, or delete a single page
+-- without affecting any other page.
+create table if not exists pages (
+  page_id            serial        primary key,   -- Unique identifier for the page
+  store_id           int           not null references stores (store_id) on delete cascade,
+  page_slug          varchar       not null,      -- e.g., 'about-us'
+  page_title         varchar       not null,
+  is_homepage        boolean       not null default false, -- Flag to identify the homepage
+  seo_data           jsonb,                       -- Store SEO information as JSONB
+  -- This ensures a unique slug per store, preventing URL conflicts
+  unique (store_id, page_slug)
+);
+
+-- 3. `page_sections` table: The building blocks of a page.
+-- This table stores the modular, "scriptable" content of each page.
+-- The `sort_order` allows vendors to rearrange sections on a page.
+create table if not exists page_sections (
+  section_id         serial        primary key,   -- Unique identifier for the section
+  page_id            int           not null references pages (page_id) on delete cascade,
+  section_type       varchar       not null,      -- e.g., 'hero', 'product_grid', 'text_block'
+  section_data       jsonb,                       -- JSONB for the section-specific content and styling
+  sort_order         int           not null,      -- The order in which the section should appear on the page
+  created_at         timestamptz   not null default now()
+);
 
 create table if not exists store_categories (
     store_category_id SERIAL PRIMARY KEY,

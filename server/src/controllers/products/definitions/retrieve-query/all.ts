@@ -17,13 +17,13 @@ export default async ({
   let paramIndex = 1
 
   if (userId && storeId) {
-    whereClause = `WHERE p.vendor_id=$${paramIndex} AND p.store_id=$${paramIndex + 1}`
+    whereClause = `WHERE p.vendor_id=${paramIndex} AND p.store_id=${paramIndex + 1}`
     params.push(<string>userId, <string>storeId)
   } else if (userId) {
-    whereClause = `WHERE p.vendor_id=$${paramIndex}`
+    whereClause = `WHERE p.vendor_id=${paramIndex}`
     params.push(<string>userId)
   } else if (storeId) {
-    whereClause = `WHERE p.store_id=$${paramIndex}`
+    whereClause = `WHERE p.store_id=${paramIndex}`
     params.push(<string>storeId)
   }
 
@@ -40,16 +40,18 @@ export default async ({
 				s.subcategory_name,
 				AVG(pr.rating) AS average_rating,
 				COUNT(pr.rating) AS review_count,
-				COUNT(oi.order_item_id) AS products_sold
+				SUM(oi.quantity) AS products_sold,
+				SUM(pv.quantity_available) as quantity_available
 			FROM products p
 			JOIN categories c USING (category_id)
 			JOIN subcategories s USING (subcategory_id)
-			LEFT JOIN order_items oi ON p.product_id = oi.product_id
+			LEFT JOIN product_variants pv ON p.product_id = pv.product_id
+			LEFT JOIN order_items oi ON pv.variant_id = oi.variant_id
 			LEFT JOIN product_reviews pr ON oi.order_item_id = pr.order_item_id
-			GROUP BY
-				p.product_id, p.title, p.description, p.list_price, p.net_price, p.quantity_available, p.created_at, p.updated_at, p.store_id, p.category_id, p.subcategory_id,
-				c.category_name, s.subcategory_name
 			${whereClause}
+			GROUP BY
+				p.product_id, p.title, p.description, p.list_price, p.net_price, p.created_at, p.updated_at, p.store_id, p.category_id, p.subcategory_id,
+				c.category_name, s.subcategory_name
 			${sort ? `${handleSortQuery(<string>sort)}` : ''}
 			${limit ? `LIMIT ${limit}` : ''}
 			${offset ? `OFFSET ${offset}` : ''})

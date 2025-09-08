@@ -23,21 +23,11 @@ import { Knex } from 'knex'
 import { knex } from '#src/db/index.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 
-/**
- * @param {QueryParams} qp
- * @returns {Promise<number>}
- * @description Create a new store data for a vendor
- * Checks:
- * 1. If the vendor exists
- * 2. If the vendor already has 5 store addresses
- */
-
 const createQuery = async ({
   body,
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<string>> => {
   if (!userId) throw new UnauthorizedError('Sign-in to create store')
-  // check if vendor account is enabled
   const result = await knex('profiles')
     .where('id', userId)
     .select('is_vendor')
@@ -46,7 +36,6 @@ const createQuery = async ({
     throw new ForbiddenError(
       'Vendor account disabled. Need to enable it to create a store',
     )
-  // Limit the amount of store addresses a user can have:
   const LIMIT = 5
   let { count } = (
     await knex('stores').where('vendor_id', userId).count('store_id')
@@ -54,7 +43,7 @@ const createQuery = async ({
   if (typeof count === 'string') count = parseInt(count)
   if (count > LIMIT)
     throw new ForbiddenError(`Cannot have more than ${LIMIT} stores`)
-  //
+
   if (!isValidStoreDataRequest(body))
     throw new BadRequestError('Invalid store data')
   const storeData: StoreData = body
@@ -69,11 +58,9 @@ const createQuery = async ({
 
     const dBFriendlyStoreData: DBFriendlyStoreData = {
       ...restOfStoreData,
-      store_pages: storeData.store_pages
-        ? JSON.stringify(storeData.store_pages)
-        : undefined,
-      default_page_styling: storeData.default_page_styling
-        ? JSON.stringify(storeData.default_page_styling)
+      pages: storeData.pages ? JSON.stringify(storeData.pages) : undefined,
+      global_styles: storeData.global_styles
+        ? JSON.stringify(storeData.global_styles)
         : undefined,
     }
 
@@ -95,14 +82,6 @@ const createQuery = async ({
   }
 }
 
-/*
- * @param {QueryParams} qp
- * @returns {Promise<QueryResult<QueryResultRow>>}
- * @description Retrieves all the store data for a vendor
- * Checks:
- * 1. If the vendor account exists
- */
-
 const getAllQuery = async ({
   query: { vendor_id },
 }: QueryParams): Promise<Knex.QueryBuilder<StoreData[]>> => {
@@ -114,8 +93,8 @@ const getAllQuery = async ({
       'stores.custom_domain',
       'stores.vendor_id',
       'stores.favicon',
-      'stores.default_page_styling',
-      'stores.store_pages',
+      'stores.global_styles',
+      'stores.pages',
       'stores.created_at',
       'stores.updated_at',
       'address.address_line_1',
@@ -142,7 +121,6 @@ const getAllQuery = async ({
       country,
       ...coreStoreData
     } = store
-    console.log(store.store_pages)
     return {
       ...coreStoreData,
       store_address: {
@@ -153,20 +131,11 @@ const getAllQuery = async ({
         zip_postal_code,
         country,
       },
-      store_pages: store.store_pages ? store.store_pages : undefined,
-      default_page_styling: store.default_page_styling
-        ? store.default_page_styling
-        : undefined,
+      pages: store.pages ? store.pages : undefined,
+      global_styles: store.global_styles ? store.global_styles : undefined,
     }
   })
 }
-
-/* @param {QueryParams} qp
- * @returns {Promise<QueryResult<QueryResultRow>>}
- * @description Retrieves a single store data for a vendor
- * Checks:
- * 1. If the vendor account exists
- */
 
 const getQuery = async ({
   query: { vendor_id: vendorId },
@@ -185,8 +154,8 @@ const getQuery = async ({
       'stores.custom_domain',
       'stores.vendor_id',
       'stores.favicon',
-      'stores.default_page_styling',
-      'stores.store_pages',
+      'stores.global_styles',
+      'stores.pages',
       'stores.created_at',
       'stores.updated_at',
       'address.address_line_1',
@@ -225,24 +194,13 @@ const getQuery = async ({
         zip_postal_code,
         country,
       },
-      store_pages: coreStoreData.store_pages
-        ? coreStoreData.store_pages
-        : undefined,
-      default_page_styling: coreStoreData.default_page_styling
-        ? coreStoreData.default_page_styling
+      pages: coreStoreData.pages ? coreStoreData.pages : undefined,
+      global_styles: coreStoreData.global_styles
+        ? coreStoreData.global_styles
         : undefined,
     },
   ]
 }
-
-/* @param {QueryParams} qp
- * @returns {Promise<number>}
- * @description Updates store data for the vendor
- * Checks:
- * 1. If the vendor owns the store data
- * 2. If the store data ID is provided
- * 3. If the vendor exists
- */
 
 const updateQuery = async ({
   params,
@@ -257,7 +215,6 @@ const updateQuery = async ({
   if (!isValidStoreDataRequest(body))
     throw new BadRequestError('Invalid request data')
   const storeData = body
-  // check if vendor account is enabled
   const result = await knex('profiles')
     .where('id', userId)
     .select('is_vendor')
@@ -289,17 +246,15 @@ const updateQuery = async ({
 
     const dBFriendlyStoreData: DBFriendlyStoreData = {
       ...restOfStoreData,
-      store_pages: storeData.store_pages
-        ? JSON.stringify(storeData.store_pages)
-        : undefined,
-      default_page_styling: storeData.default_page_styling
-        ? JSON.stringify(storeData.default_page_styling)
+      pages: storeData.pages ? JSON.stringify(storeData.pages) : undefined,
+      global_styles: storeData.global_styles
+        ? JSON.stringify(storeData.global_styles)
         : undefined,
     }
 
     const updatedStore = await trx<DBFriendlyStoreData>('stores')
       .where('store_id', storeId)
-      .where('vendor_id', userId) // <-- HUGE Flaw if not added
+      .where('vendor_id', userId)
       .update(dBFriendlyStoreData)
       .returning('store_id')
 
@@ -311,15 +266,6 @@ const updateQuery = async ({
   }
 }
 
-/* @param {QueryParams} qp
- * @returns {Promise<QueryResult<QueryResultRow>>}
- * @description Deletes a store data for the vendor
- * Checks:
- * 1. If Id is provided
- * 2. If vendor account exists
- * 3. If vendor owns the store data
- */
-
 const deleteQuery = async ({
   params,
   userId,
@@ -329,7 +275,6 @@ const deleteQuery = async ({
     throw new BadRequestError('No valid route parameters provided')
   const { storeId } = params
   if (!storeId) throw new BadRequestError('Need store ID param to delete store')
-  // check if vendor account is enabled
   const result = await knex('profiles')
     .where('id', userId)
     .select('is_vendor')
@@ -340,7 +285,7 @@ const deleteQuery = async ({
     )
   return knex<StoreData>('stores')
     .where('store_id', storeId)
-    .where('vendor_id', userId) // <-- HUGE Flaw if not added
+    .where('vendor_id', userId)
     .del()
     .returning('store_id')
 }

@@ -46,16 +46,25 @@ export default async ({
 
   const productData = body
 
-  const dBFriendlyProductData = {
-    ...productData,
-    description: knex.raw('ARRAY[?]::text[]', [productData.description]), // TODO: test this
-  }
+  const createdProduct = await knex.transaction(async (trx) => {
+    const [product] = await trx('products')
+      .insert({
+        ...productData,
+        description: knex.raw('ARRAY[?]::text[]', [productData.description]),
+        vendor_id: userId,
+        store_id: storeId as string,
+      })
+      .returning('*')
 
-  return knex('products')
-    .insert({
-      ...dBFriendlyProductData,
-      vendor_id: userId,
-      store_id: storeId as string,
+    await trx('product_variants').insert({
+      product_id: product.product_id,
+      sku: `SKU-${product.product_id}`,
+      net_price: product.net_price,
+      list_price: product.list_price,
+      quantity_available: 0,
     })
-    .returning('*')
+    return product
+  })
+
+  return [createdProduct]
 }

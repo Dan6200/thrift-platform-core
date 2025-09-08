@@ -40,15 +40,17 @@ export default async ({
 					AS media, c.category_name, s.subcategory_name,
 				AVG(pr.rating) AS average_rating,
 				COUNT(pr.rating) AS review_count,
-				COUNT(oi.order_item_id) AS products_sold
+				SUM(oi.quantity) AS products_sold,
+				SUM(pv.quantity_available) as quantity_available
 			FROM products p
 			JOIN categories c USING (category_id)
 			JOIN subcategories s USING (subcategory_id)
-			LEFT JOIN order_items oi ON p.product_id = oi.product_id
+			LEFT JOIN product_variants pv ON p.product_id = pv.product_id
+			LEFT JOIN order_items oi ON pv.variant_id = oi.variant_id
 			LEFT JOIN product_reviews pr ON oi.order_item_id = pr.order_item_id
 		 ${whereClause}
 			GROUP BY 
-				p.product_id, p.title, p.description, p.list_price, p.net_price, p.quantity_available, p.created_at, p.updated_at, p.store_id, p.category_id, p.subcategory_id,
+				p.product_id, p.title, p.description, p.list_price, p.net_price, p.created_at, p.updated_at, p.store_id, p.category_id, p.subcategory_id,
 				c.category_name, s.subcategory_name`,
     sqlParams,
   )

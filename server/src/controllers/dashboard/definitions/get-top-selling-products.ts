@@ -56,7 +56,8 @@ export default async ({
       COALESCE(SUM(oi.quantity), 0) AS "unitsSold",
       COALESCE(SUM(oi.quantity * oi.price_at_purchase), 0.00) AS "totalRevenue"
     FROM products p
-    JOIN order_items oi ON p.product_id = oi.product_id
+    JOIN product_variants pv ON p.product_id = pv.product_id
+    JOIN order_items oi ON pv.variant_id = oi.variant_id
     JOIN orders o ON oi.order_id = o.order_id
     WHERE p.store_id = $1 ${orderDateClause}
     GROUP BY p.product_id, p.title

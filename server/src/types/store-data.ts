@@ -5,12 +5,35 @@ import {
   StoreIDSchema,
 } from '../app-schema/stores.js'
 
-// Interface for common page styling properties
-interface PageStyling {
-  layout_template?: 'default' | 'minimal' | 'grid'
-  font_family?: string // e.g., 'Arial', 'Roboto', 'Open Sans'
-  primary_color?: string // e.g., '#FF0000'
-  secondary_color?: string // e.g., '#00FF00'
+interface SeoData {
+  meta_description: string
+  canonical_url: string
+  keywords: string[]
+  ogTitle?: string
+  ogDescription?: string
+  ogImage?: string
+  ogUrl?: string
+  ogType?: string
+  twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
+  twitterSite?: string
+  twitterCreator?: string
+  twitterTitle?: string
+  twitterDescription?: string
+  twitterImage?: string
+  schemaMarkup?: {
+    '@context': string
+    '@type': string
+    name: string
+    description: string
+    url: string
+  }
+}
+
+interface StoreStyling {
+  layout_template: 'default' | 'minimal' | 'grid'
+  font_family: string
+  primary_color?: string
+  secondary_color?: string
   background_color?: string
   foreground_color?: string
   muted_color?: string
@@ -32,7 +55,7 @@ interface PageStyling {
   ring_color?: string
   radius_color?: string
   hero_primary_color?: string
-  hero_primary_foreground_color?: string /* A very light foreground for dark mode */
+  hero_primary_foreground_color?: string
   hero_secondary_color?: string
   hero_secondary_foreground_color?: string
   sidebar_background_color?: string
@@ -45,150 +68,25 @@ interface PageStyling {
   sidebar_ring_color?: string
 }
 
-// interface Page extends PageStyling {
-//   pageType: 'storePage'
-//   pageTitle: string
-//   metaDescription: string
-//   canonicalUrl: string
-//   breadcrumbs: Array<{
-//     name: string
-//     url: string
-//   }>
-//   heroSection?: {
-//     title: string
-//     subtitle: string
-//     imageUrl: string
-//     altText: string
-//     callToAction: {
-//       text: string
-//       url: string
-//     }
-//   }
-//   categories: Array<{
-//     id: string
-//     name: string
-//     url: string
-//     thumbnailUrl: string
-//     description: string
-//   }>
-//   // TODO: add is_featured, is_promoted to products, then that is to be dynamically added
-//   showFeaturedProducts: boolean
-//   showPromotions: boolean
-//   featuredProducts: Array<{
-//     id: string
-//     name: string
-//     sku: string
-//     imageUrl: string
-//     altText: string
-//     price: {
-//       amount: number
-//       currency: string
-//     }
-//     originalPrice?: {
-//       amount: number
-//       currency: string
-//     }
-//     rating: number
-//     numReviews: number
-//     productUrl: string
-//     shortDescription: string
-//     isInStock: boolean
-//   }>
-//   promotions: Array<
-//     | {
-//         id: string
-//         title: string
-//         description: string
-//         imageUrl: string
-//         altText: string
-//         targetUrl: string
-//       }
-//     | {
-//         id: string
-//         title: string
-//         description: string
-//         icon: string
-//       }
-//   >
-//   customerTestimonials: Array<{
-//     name: string
-//     location: string
-//     quote: string
-//     rating: number
-//   }>
-//   seoInfo: {
-//     keywords: string[]
-//     schemaMarkup: {
-//       '@context': string
-//       '@type': string
-//       name: string
-//       description: string
-//       url: string
-//     }
-//     // Open Graph for social media sharing
-//     ogTitle?: string
-//     ogDescription?: string
-//     ogImage?: string
-//     ogUrl?: string
-//     ogType?: string // e.g., 'website', 'article', 'product'
-//     // Twitter Cards for social media sharing
-//     twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
-//     twitterSite?: string
-//     twitterCreator?: string
-//     twitterTitle?: string
-//     twitterDescription?: string
-//     twitterImage?: string
-//   }
-// }
-
-interface Page extends PageStyling {
-  pageType: 'storePage'
-  pageTitle: string
-  metaDescription: string
-  canonicalUrl: string
-  breadcrumbs: Array<{
-    name: string
-    url: string
+interface Page {
+  store_id: string
+  page_slug: string
+  page_title: string
+  page_type: 'homepage' | 'standard' | 'product_list' | 'custom'
+  seo: SeoData
+  sections: Array<{
+    type: string
+    data: any
+    styles?: Partial<StoreStyling>
   }>
-  heroSection?: {
-    title: string
-    subtitle: string
-    imageUrl: string
-    altText: string
-    callToAction: {
-      text: string
-      url: string
-    }
-  }
-  seoInfo: {
-    keywords: string[]
-    schemaMarkup: {
-      '@context': string
-      '@type': string
-      name: string
-      description: string
-      url: string
-    }
-    // Open Graph for social media sharing
-    ogTitle?: string
-    ogDescription?: string
-    ogImage?: string
-    ogUrl?: string
-    ogType?: string // e.g., 'website', 'article', 'product'
-    // Twitter Cards for social media sharing
-    twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
-    twitterSite?: string
-    twitterCreator?: string
-    twitterTitle?: string
-    twitterDescription?: string
-    twitterImage?: string
-  }
 }
 
 export default interface StoreData {
   store_name: string
-  vendor_id?: string
+  vendor_id: string
   custom_domain: string | null
+  favicon: string | null
+  global_styles: StoreStyling
   store_address: {
     address_line_1: string
     address_line_2: string
@@ -197,19 +95,15 @@ export default interface StoreData {
     zip_postal_code: string
     country: string
   }
-  categories: Array<{
-    category_id: number
-    name: string
-    description: string
-  }>
+  pages?: Page[]
 }
 
 export type DBFriendlyStoreData = Omit<
   StoreData,
-  'store_pages' | 'default_page_styling' | 'store_address'
+  'pages' | 'global_styles' | 'store_address'
 > & {
-  store_pages?: string
-  default_page_styling?: string
+  pages?: string
+  global_styles?: string
   store_address?: string
 }
 

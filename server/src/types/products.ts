@@ -15,7 +15,6 @@ export type ProductResponseData = {
   description: string[]
   list_price: number
   net_price: number
-  quantity_available: number
   updated_at?: Date
 }
 
@@ -26,7 +25,6 @@ export type ProductRequestData = {
   description: string[]
   list_price: number
   net_price: number
-  quantity_available: number
 }
 
 export type DBFriendlyProductData = {
@@ -36,7 +34,6 @@ export type DBFriendlyProductData = {
   description: string[]
   list_price: number
   net_price: number
-  quantity_available: number
 }
 
 export type ProductRequestPartial = Partial<ProductRequestData>
