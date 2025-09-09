@@ -108,7 +108,6 @@ create table if not exists profiles (
   country      varchar                   not        null 			default  		'Nigeria',
 	is_customer  boolean 									 not 				null 			default 		true,
 	is_vendor    boolean 									 not 				null 			default 		false,
-  is_admin     boolean                   not        null      default    false,
   check        (current_date - dob > 18),
   deleted_at   timestamptz,
   created_at   timestamptz               not 				null 			default      now(),
@@ -240,11 +239,19 @@ create table if not exists pages (
   store_id           int           not null references stores (store_id) on delete cascade,
   page_slug          varchar       not null,      -- e.g., 'about-us'
   page_title         varchar       not null,
-  is_homepage        boolean       not null default false, -- Flag to identify the homepage
-  seo_data           jsonb,                       -- Store SEO information as JSONB
+  page_type          varchar       not null,      -- e.g., 'homepage', 'standard', 'product_list', 'custom'
+  seo_data           jsonb 				 not null,                       -- Store SEO information as JSONB
+  created_at         timestamptz   not null default now(),
+  updated_at         timestamptz   not null default now(),
   -- This ensures a unique slug per store, preventing URL conflicts
   unique (store_id, page_slug)
 );
+
+-- create a trigger to update the updated_at column for pages
+create trigger set_timestamp
+before update on pages
+for each row
+execute procedure trigger_set_timestamp();
 
 -- 3. `page_sections` table: The building blocks of a page.
 -- This table stores the modular, "scriptable" content of each page.
@@ -255,8 +262,16 @@ create table if not exists page_sections (
   section_type       varchar       not null,      -- e.g., 'hero', 'product_grid', 'text_block'
   section_data       jsonb,                       -- JSONB for the section-specific content and styling
   sort_order         int           not null,      -- The order in which the section should appear on the page
-  created_at         timestamptz   not null default now()
+  styles      			 jsonb,                       -- Section styles (fonts, colors) as JSONB
+  created_at         timestamptz   not null default now(),
+  updated_at         timestamptz   not null default now()
 );
+
+-- create a trigger to update the updated_at column for page_sections
+create trigger set_timestamp
+before update on page_sections
+for each row
+execute procedure trigger_set_timestamp();
 
 create table if not exists store_categories (
     store_category_id SERIAL PRIMARY KEY,
@@ -280,8 +295,8 @@ create table if not exists products (
   description          text[],
   list_price           numeric(19,4),
   net_price            numeric(19,4),
-  vendor_id            uuid             not       null    references			profiles         on   delete   cascade,
-	store_id 					 int 						not 			null 			references 			stores 					on 	 delete 	cascade,
+  vendor_id            uuid             not       null    references			profiles        on   delete   cascade,
+	store_id 					 	 int 							not 			null 		references 			stores 					on 	 delete 	cascade,
   category_id          int           		not    		null    references   		categories      on   delete   cascade,
   subcategory_id       int           		not    		null    references   		subcategories   on   delete   cascade,
   created_at           timestamptz      not 			null 			default      now(),
@@ -580,18 +595,6 @@ create policy "Vendors can view their own featured_products." on featured_produc
 create policy "Vendors can insert their own featured_products." on featured_products for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can update their own featured_products." on featured_products for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can delete their own featured_products." on featured_products for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
-
-alter table featured_product_collections enable row level security;
-create policy "Allow public read access to featured_product_collections." on featured_product_collections for select using (true);
-create policy "Admins can insert featured_product_collections." on featured_product_collections for insert with check (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
-create policy "Admins can update featured_product_collections." on featured_product_collections for update using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
-create policy "Admins can delete featured_product_collections." on featured_product_collections for delete using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
-
-alter table featured_product_links enable row level security;
-create policy "Allow public read access to featured_product_links." on featured_product_links for select using (true);
-create policy "Admins can insert featured_product_links." on featured_product_links for insert with check (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
-create policy "Admins can update featured_product_links." on featured_product_links for update using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
-create policy "Admins can delete featured_product_links." on featured_product_links for delete using (auth.uid() IN (SELECT id FROM profiles WHERE is_admin = true));
 
 alter table orders enable row level security;
 create policy "Users can view their own orders." on orders for select using (auth.uid() = customer_id);

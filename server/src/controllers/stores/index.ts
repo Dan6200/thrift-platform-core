@@ -12,10 +12,7 @@ import {
   ProcessRouteWithoutBody,
   QueryParams,
 } from '../../types/process-routes.js'
-import StoreData, {
-  DBFriendlyStoreData,
-  isValidStoreDataRequest,
-} from '../../types/store-data.js'
+import StoreData, { isValidStoreDataRequest } from '../../types/store-data.js'
 import processRoute from '../process-routes.js'
 import { validateReqData } from '../utils/request-validation.js'
 import { validateResData } from '../utils/response-validation.js'
@@ -48,7 +45,7 @@ const createQuery = async ({
     throw new BadRequestError('Invalid store data')
   const storeData: StoreData = body
 
-  const { store_address, ...restOfStoreData } = storeData
+  const { store_address, pages, ...restOfStoreData } = storeData
 
   const trx = await knex.transaction()
   try {
@@ -56,25 +53,37 @@ const createQuery = async ({
       .insert(store_address)
       .returning('address_id')
 
-    const dBFriendlyStoreData: DBFriendlyStoreData = {
-      ...restOfStoreData,
-      pages: storeData.pages ? JSON.stringify(storeData.pages) : undefined,
-      global_styles: storeData.global_styles
-        ? JSON.stringify(storeData.global_styles)
-        : undefined,
-    }
-
-    const store = await trx<DBFriendlyStoreData & { address_id: string }>(
-      'stores',
-    )
+    const [store] = await trx('stores')
       .insert({
         vendor_id: userId,
-        ...dBFriendlyStoreData,
+        ...restOfStoreData,
         address_id: address.address_id,
       })
       .returning('store_id')
 
+    if (pages) {
+      for (const page of pages) {
+        const { sections, ...restOfPage } = page
+        const [pageResult] = await trx('pages')
+          .insert({
+            ...restOfPage,
+            store_id: store.store_id,
+          })
+          .returning('page_id')
+
+        if (sections) {
+          for (const section of sections) {
+            await trx('page_sections').insert({
+              ...section,
+              page_id: pageResult.page_id,
+            })
+          }
+        }
+      }
+    }
+
     await trx.commit()
+    console.log(store)
     return store
   } catch (error) {
     await trx.rollback()
@@ -84,7 +93,7 @@ const createQuery = async ({
 
 const getAllQuery = async ({
   query: { vendor_id },
-}: QueryParams): Promise<Knex.QueryBuilder<StoreData[]>> => {
+}: QueryParams): Promise<StoreData[]> => {
   const query = knex<StoreData>('stores')
     .join('address', 'stores.address_id', 'address.address_id')
     .select(
@@ -94,7 +103,6 @@ const getAllQuery = async ({
       'stores.vendor_id',
       'stores.favicon',
       'stores.global_styles',
-      'stores.pages',
       'stores.created_at',
       'stores.updated_at',
       'address.address_line_1',
@@ -110,6 +118,26 @@ const getAllQuery = async ({
   }
 
   const stores = await query
+
+  for (const store of stores) {
+    const pages = await knex('pages').where('store_id', store.store_id).select()
+
+    for (const page of pages) {
+      const sections = await knex('page_sections')
+        .where('page_id', page.page_id)
+        .select(
+          'section_id',
+          'section_type',
+          'section_data',
+          'sort_order',
+          'styles',
+          'created_at',
+          'updated_at',
+        )
+      page.sections = sections
+    }
+    store.pages = pages
+  }
 
   return stores.map((store: any) => {
     const {
@@ -131,8 +159,6 @@ const getAllQuery = async ({
         zip_postal_code,
         country,
       },
-      pages: store.pages ? store.pages : undefined,
-      global_styles: store.global_styles ? store.global_styles : undefined,
     }
   })
 }
@@ -140,7 +166,7 @@ const getAllQuery = async ({
 const getQuery = async ({
   query: { vendor_id: vendorId },
   params,
-}: QueryParams): Promise<Knex.QueryBuilder<StoreData[]>> => {
+}: QueryParams): Promise<StoreData[]> => {
   if (params == null) throw new BadRequestError('No route parameters provided')
   const { storeId } = params
   if (!storeId) throw new BadRequestError('Need Store ID to retrieve store')
@@ -155,7 +181,6 @@ const getQuery = async ({
       'stores.vendor_id',
       'stores.favicon',
       'stores.global_styles',
-      'stores.pages',
       'stores.created_at',
       'stores.updated_at',
       'address.address_line_1',
@@ -172,6 +197,24 @@ const getQuery = async ({
   const store = await query
 
   if (!store) return []
+
+  const pages = await knex('pages').where('store_id', store.store_id).select()
+
+  for (const page of pages) {
+    const sections = await knex('page_sections')
+      .where('page_id', page.page_id)
+      .select(
+        'section_id',
+        'section_type',
+        'section_data',
+        'sort_order',
+        'styles',
+        'created_at',
+        'updated_at',
+      )
+    page.sections = sections
+  }
+  store.pages = pages
 
   const {
     address_line_1,
@@ -194,10 +237,6 @@ const getQuery = async ({
         zip_postal_code,
         country,
       },
-      pages: coreStoreData.pages ? coreStoreData.pages : undefined,
-      global_styles: coreStoreData.global_styles
-        ? coreStoreData.global_styles
-        : undefined,
     },
   ]
 }
@@ -224,7 +263,7 @@ const updateQuery = async ({
       'Vendor account disabled. Need to enable it to create a store',
     )
 
-  const { store_address, ...restOfStoreData } = storeData
+  const { store_address, pages, ...restOfStoreData } = storeData
 
   const trx = await knex.transaction()
   try {
@@ -244,22 +283,43 @@ const updateQuery = async ({
         .update(store_address)
     }
 
-    const dBFriendlyStoreData: DBFriendlyStoreData = {
-      ...restOfStoreData,
-      pages: storeData.pages ? JSON.stringify(storeData.pages) : undefined,
-      global_styles: storeData.global_styles
-        ? JSON.stringify(storeData.global_styles)
-        : undefined,
-    }
-
-    const updatedStore = await trx<DBFriendlyStoreData>('stores')
+    await trx('stores')
       .where('store_id', storeId)
       .where('vendor_id', userId)
-      .update(dBFriendlyStoreData)
-      .returning('store_id')
+      .update(restOfStoreData)
+
+    // Delete existing pages and sections
+    const pageIds = await trx('pages')
+      .where('store_id', storeId)
+      .select('page_id')
+    const pageIdList = pageIds.map((p) => p.page_id)
+    await trx('page_sections').whereIn('page_id', pageIdList).del()
+    await trx('pages').where('store_id', storeId).del()
+
+    // Insert new pages and sections
+    if (pages) {
+      for (const page of pages) {
+        const { sections, ...restOfPage } = page
+        const [pageResult] = await trx('pages')
+          .insert({
+            ...restOfPage,
+            store_id: storeId,
+          })
+          .returning('page_id')
+
+        if (sections) {
+          for (const section of sections) {
+            await trx('page_sections').insert({
+              ...section,
+              page_id: pageResult.page_id,
+            })
+          }
+        }
+      }
+    }
 
     await trx.commit()
-    return updatedStore
+    return [storeId]
   } catch (error) {
     await trx.rollback()
     throw error

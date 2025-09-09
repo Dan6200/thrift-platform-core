@@ -57,6 +57,6 @@ export default async ({
 			${offset ? `OFFSET ${offset}` : ''})
 
 SELECT JSON_AGG(product_data) AS products,
-	(SELECT COUNT(*) FROM product_data) AS total_products FROM product_data;`
+	(SELECT COUNT(*) FROM products) AS total_count FROM product_data;`
   return pg.query(dbQueryString, params)
 }

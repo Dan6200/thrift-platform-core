@@ -94,11 +94,13 @@ export default ({
         if (isTypeQueryResultRow(dbResponse)) {
           if (dbResponse.rowCount === 1) responseData = dbResponse.rows[0]
           else responseData = dbResponse.rows
-        }
-        if (Array.isArray(dbResponse)) {
-          if (dbResponse.length === 1) responseData = dbResponse[0]
-          else responseData = dbResponse
-        }
+        } else if (Array.isArray(dbResponse) && dbResponse.length === 1)
+          responseData = dbResponse[0]
+        else responseData = dbResponse
+        // if (Array.isArray(dbResponse)) {
+        //   if (dbResponse.length === 1) responseData = dbResponse[0]
+        //   else responseData = dbResponse
+        // }
         return response.status(status).json(responseData)
       }
       response.status(status).end()

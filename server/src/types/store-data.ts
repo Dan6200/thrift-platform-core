@@ -73,12 +73,15 @@ interface Page {
   page_slug: string
   page_title: string
   page_type: 'homepage' | 'standard' | 'product_list' | 'custom'
-  seo: SeoData
-  sections: Array<{
-    type: string
-    data: any
-    styles?: Partial<StoreStyling>
-  }>
+  seo_data: SeoData
+  sections: SectionData[]
+}
+
+interface SectionData {
+  section_type: string
+  section_data: any
+  sort_order: number
+  styles?: Partial<StoreStyling>
 }
 
 export default interface StoreData {
@@ -136,3 +139,4 @@ export const isValidStoreDataResponse = (data: unknown): data is StoreData => {
   error && console.error(error)
   return !error
 }
+

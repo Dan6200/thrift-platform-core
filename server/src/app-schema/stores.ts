@@ -29,61 +29,73 @@ const SeoDataSchema = joi.object({
     .optional(),
 })
 
-const StoreStylingSchema = joi.object({
-  layout_template: joi.string().valid('default', 'minimal', 'grid').required(),
-  font_family: joi.string().required(),
-  primary_color: joi.string().optional(),
-  secondary_color: joi.string().optional(),
-  background_color: joi.string().optional(),
-  foreground_color: joi.string().optional(),
-  muted_color: joi.string().optional(),
-  muted_foreground_color: joi.string().optional(),
-  popover_color: joi.string().optional(),
-  popover_foreground_color: joi.string().optional(),
-  card_color: joi.string().optional(),
-  card_foreground_color: joi.string().optional(),
-  border_color: joi.string().optional(),
-  input_color: joi.string().optional(),
-  primary_foreground_color: joi.string().optional(),
-  secondary_foreground_color: joi.string().optional(),
-  tertiary_color: joi.string().optional(),
-  tertiary_foreground_color: joi.string().optional(),
-  accent_color: joi.string().optional(),
-  accent_foreground_color: joi.string().optional(),
-  destructive_color: joi.string().optional(),
-  destructive_foreground_color: joi.string().optional(),
-  ring_color: joi.string().optional(),
-  radius_color: joi.string().optional(),
-  hero_primary_color: joi.string().optional(),
-  hero_primary_foreground_color: joi.string().optional(),
-  hero_secondary_color: joi.string().optional(),
-  hero_secondary_foreground_color: joi.string().optional(),
-  sidebar_background_color: joi.string().optional(),
-  sidebar_foreground_color: joi.string().optional(),
-  sidebar_primary_color: joi.string().optional(),
-  sidebar_primary_foreground_color: joi.string().optional(),
-  sidebar_accent_color: joi.string().optional(),
-  sidebar_accent_foreground_color: joi.string().optional(),
-  sidebar_border_color: joi.string().optional(),
-  sidebar_ring_color: joi.string().optional(),
-})
+const StoreStylingSchema = joi
+  .object({
+    layout_template: joi
+      .string()
+      .valid('default', 'minimal', 'grid')
+      .required(),
+    font_family: joi.string().required(),
+    primary_color: joi.string().optional(),
+    secondary_color: joi.string().optional(),
+    background_color: joi.string().optional(),
+    foreground_color: joi.string().optional(),
+    muted_color: joi.string().optional(),
+    muted_foreground_color: joi.string().optional(),
+    popover_color: joi.string().optional(),
+    popover_foreground_color: joi.string().optional(),
+    card_color: joi.string().optional(),
+    card_foreground_color: joi.string().optional(),
+    border_color: joi.string().optional(),
+    input_color: joi.string().optional(),
+    primary_foreground_color: joi.string().optional(),
+    secondary_foreground_color: joi.string().optional(),
+    tertiary_color: joi.string().optional(),
+    tertiary_foreground_color: joi.string().optional(),
+    accent_color: joi.string().optional(),
+    accent_foreground_color: joi.string().optional(),
+    destructive_color: joi.string().optional(),
+    destructive_foreground_color: joi.string().optional(),
+    ring_color: joi.string().optional(),
+    radius_color: joi.string().optional(),
+    hero_primary_color: joi.string().optional(),
+    hero_primary_foreground_color: joi.string().optional(),
+    hero_secondary_color: joi.string().optional(),
+    hero_secondary_foreground_color: joi.string().optional(),
+    sidebar_background_color: joi.string().optional(),
+    sidebar_foreground_color: joi.string().optional(),
+    sidebar_primary_color: joi.string().optional(),
+    sidebar_primary_foreground_color: joi.string().optional(),
+    sidebar_accent_color: joi.string().optional(),
+    sidebar_accent_foreground_color: joi.string().optional(),
+    sidebar_border_color: joi.string().optional(),
+    sidebar_ring_color: joi.string().optional(),
+  })
+  .allow(null)
 
 const PageSchema = joi.object({
-  store_id: joi.string().required(),
+  store_id: joi.number().required(),
+  page_id: joi.number().required(),
   page_slug: joi.string().required(),
   page_title: joi.string().required(),
   page_type: joi
     .string()
     .valid('homepage', 'standard', 'product_list', 'custom')
     .required(),
-  seo: SeoDataSchema.required(),
+  seo_data: SeoDataSchema.required(),
+  created_at: joi.date().required(),
+  updated_at: joi.date().required(),
   sections: joi
     .array()
     .items(
       joi.object({
-        type: joi.string().required(),
-        data: joi.any().required(),
+        section_id: joi.number().required(),
+        section_type: joi.string().required(),
+        section_data: joi.any().required(),
         styles: StoreStylingSchema.optional(),
+        sort_order: joi.number().required(),
+        created_at: joi.date().required(),
+        updated_at: joi.date().required(),
       }),
     )
     .required(),
@@ -184,3 +196,4 @@ export const StoreDataResponseSchema = joi
     updated_at: joi.date().required(),
   })
   .required()
+
