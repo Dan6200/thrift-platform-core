@@ -19,6 +19,7 @@ import { validateResData } from '../utils/response-validation.js'
 import { Knex } from 'knex'
 import { knex } from '#src/db/index.js'
 import ForbiddenError from '#src/errors/forbidden.js'
+import NotFoundError from '#src/errors/not-found.js'
 
 const createQuery = async ({
   body,
@@ -83,7 +84,6 @@ const createQuery = async ({
     }
 
     await trx.commit()
-    console.log(store)
     return store
   } catch (error) {
     await trx.rollback()
@@ -274,7 +274,7 @@ const updateQuery = async ({
       .first()
 
     if (!store) {
-      throw new BadRequestError('Store not found')
+      throw new NotFoundError('Store not found')
     }
 
     if (store_address) {
@@ -283,10 +283,11 @@ const updateQuery = async ({
         .update(store_address)
     }
 
-    await trx('stores')
+    const returningStoreId = await trx('stores')
       .where('store_id', storeId)
       .where('vendor_id', userId)
       .update(restOfStoreData)
+      .returning('store_id')
 
     // Delete existing pages and sections
     const pageIds = await trx('pages')
@@ -319,7 +320,7 @@ const updateQuery = async ({
     }
 
     await trx.commit()
-    return [storeId]
+    return returningStoreId
   } catch (error) {
     await trx.rollback()
     throw error

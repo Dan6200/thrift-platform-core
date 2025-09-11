@@ -50,8 +50,6 @@ const StoreStylingSchema = joi
     input_color: joi.string().optional(),
     primary_foreground_color: joi.string().optional(),
     secondary_foreground_color: joi.string().optional(),
-    tertiary_color: joi.string().optional(),
-    tertiary_foreground_color: joi.string().optional(),
     accent_color: joi.string().optional(),
     accent_foreground_color: joi.string().optional(),
     destructive_color: joi.string().optional(),
@@ -73,7 +71,29 @@ const StoreStylingSchema = joi
   })
   .allow(null)
 
-const PageSchema = joi.object({
+const PageSchemaRequest = joi.object({
+  store_id: joi.number().required(),
+  page_slug: joi.string().required(),
+  page_title: joi.string().required(),
+  page_type: joi
+    .string()
+    .valid('homepage', 'standard', 'product_list', 'custom')
+    .required(),
+  seo_data: SeoDataSchema.required(),
+  sections: joi
+    .array()
+    .items(
+      joi.object({
+        section_type: joi.string().required(),
+        section_data: joi.any().required(),
+        styles: StoreStylingSchema.optional(),
+        sort_order: joi.number().required(),
+      }),
+    )
+    .required(),
+})
+
+const PageSchemaResponse = joi.object({
   store_id: joi.number().required(),
   page_id: joi.number().required(),
   page_slug: joi.string().required(),
@@ -104,7 +124,6 @@ const PageSchema = joi.object({
 export const StoreDataRequestSchema = joi
   .object({
     store_name: joi.string().min(3).max(50).required(),
-    vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
     custom_domain: joi.string().hostname().allow(null).required(),
     favicon: joi.string().uri().allow(null).required(),
     global_styles: StoreStylingSchema.required(),
@@ -118,7 +137,7 @@ export const StoreDataRequestSchema = joi
         country: joi.string().required(),
       })
       .required(),
-    pages: joi.array().items(PageSchema).optional(),
+    pages: joi.array().items(PageSchemaRequest).optional(),
   })
   .required()
 
@@ -137,7 +156,7 @@ export const StoreDataRequestPartialSchema = joi.object({
       country: joi.string().optional(),
     })
     .optional(),
-  pages: joi.array().items(PageSchema).optional(),
+  pages: joi.array().items(PageSchemaRequest).optional(),
 })
 
 export const StoreIDSchema = joi.object({
@@ -165,7 +184,7 @@ export const StoreDataResponseListSchema = joi
             country: joi.string().required(),
           })
           .required(),
-        pages: joi.array().items(PageSchema).optional(),
+        pages: joi.array().items(PageSchemaResponse).optional(),
         created_at: joi.date().required(),
         updated_at: joi.date().required(),
       })
@@ -191,7 +210,7 @@ export const StoreDataResponseSchema = joi
         country: joi.string().required(),
       })
       .required(),
-    pages: joi.array().items(PageSchema).optional(),
+    pages: joi.array().items(PageSchemaResponse).optional(),
     created_at: joi.date().required(),
     updated_at: joi.date().required(),
   })

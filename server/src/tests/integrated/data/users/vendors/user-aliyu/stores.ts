@@ -6,7 +6,6 @@ export const listOfStores: StoreData[] = [
     store_name: 'Inspire Denims',
     favicon: 'https://inspiredenims.com/favicon.ico',
     custom_domain: null,
-    vendor_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     store_address: {
       address_line_1: '123, Herbert Macaulay Way',
       address_line_2: 'Yaba',
@@ -115,7 +114,6 @@ export const updatedStores: StoreData[] = [
     store_name: 'Inspire Denims',
     favicon: 'https://inspiredenims.com/favicon.ico',
     custom_domain: 'inspiredenims.com',
-    vendor_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     store_address: {
       address_line_1: '456, New Street',
       address_line_2: 'Ikeja',
@@ -170,4 +168,3 @@ export const updatedStores: StoreData[] = [
     ],
   },
 ]
-

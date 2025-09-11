@@ -1,3 +1,4 @@
+import util from 'util'
 import {
   StoreDataRequestSchema,
   StoreDataResponseListSchema,
@@ -85,12 +86,13 @@ interface SectionData {
 }
 
 export default interface StoreData {
+  store_id?: number
   store_name: string
-  vendor_id: string
   custom_domain: string | null
   favicon: string | null
   global_styles: StoreStyling
   store_address: {
+    address_id?: number
     address_line_1: string
     address_line_2: string
     city: string
@@ -116,13 +118,15 @@ interface StoreDataId {
 
 export const isValidStoreDataId = (data: unknown): data is StoreDataId => {
   const { error } = StoreIDSchema.validate(data)
+  error && console.error('Store Data Response Validation Error')
   error && console.error(error)
   return !error
 }
 
 export const isValidStoreDataRequest = (data: unknown): data is StoreData => {
   const { error } = StoreDataRequestSchema.validate(data)
-  error && console.error(error)
+  error && console.error('Store Data Request Validation Error')
+  error && console.error(util.inspect(error, true, null, true))
   return !error
 }
 
@@ -130,13 +134,15 @@ export const isValidStoreDataResponseList = (
   data: unknown,
 ): data is StoreData => {
   const { error } = StoreDataResponseListSchema.validate(data)
-  error && console.error(error)
+  error && console.error('Store Data List Response Validation Error')
+  error && console.error(util.inspect(error, true, null, true))
   return !error
 }
 
 export const isValidStoreDataResponse = (data: unknown): data is StoreData => {
   const { error } = StoreDataResponseSchema.validate(data)
-  error && console.error(error)
+  error && console.error('Store Data Response Validation Error')
+  error && console.error(util.inspect(error, true, null, true))
   return !error
 }
 
