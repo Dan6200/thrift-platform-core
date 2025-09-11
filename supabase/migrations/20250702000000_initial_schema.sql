@@ -114,6 +114,7 @@ create table if not exists profiles (
   updated_at   timestamptz               not 				null 			default      now()
 );
 
+
 -- create a trigger to update the updated_at column for profiles
 create trigger set_timestamp
 before update on profiles
@@ -309,11 +310,40 @@ before update on products
 for each row
 execute procedure trigger_set_timestamp();
 
+create table if not exists product_options (
+  option_id            serial        primary key,
+  product_id           int           not null references products (product_id) on delete cascade,
+  option_name          varchar       not null,
+  created_at           timestamptz   not null default now(),
+  updated_at           timestamptz   not null default now(),
+  unique (product_id, option_name)
+);
+
+-- create a trigger to update the updated_at column for product_options
+create trigger set_timestamp
+before update on product_options
+for each row
+execute procedure trigger_set_timestamp();
+
+create table if not exists product_option_values (
+  value_id             serial        primary key,
+  option_id            int           not null references product_options (option_id) on delete cascade,
+  value                varchar       not null,
+  created_at           timestamptz   not null default now(),
+  updated_at           timestamptz   not null default now(),
+  unique (option_id, value)
+);
+
+-- create a trigger to update the updated_at column for product_option_values
+create trigger set_timestamp
+before update on product_option_values
+for each row
+execute procedure trigger_set_timestamp();
+
 create table if not exists product_variants (
   variant_id           serial           primary   key,
   product_id           int              not       null    references   products   on   delete   cascade,
   sku                  varchar          not       null    unique,
-  variation_attributes jsonb,
   list_price           numeric(19,4),
   net_price            numeric(19,4),
   quantity_available   int              not       null,
@@ -324,6 +354,20 @@ create table if not exists product_variants (
 -- create a trigger to update the updated_at column for product_variants
 create trigger set_timestamp
 before update on product_variants
+for each row
+execute procedure trigger_set_timestamp();
+
+create table if not exists variant_to_option_values (
+  variant_id           int           not null references product_variants (variant_id) on delete cascade,
+  value_id             int           not null references product_option_values (value_id) on delete cascade,
+  created_at           timestamptz   not null default now(),
+  updated_at           timestamptz   not null default now(),
+  primary key (variant_id, value_id)
+);
+
+-- create a trigger to update the updated_at column for variant_to_option_values
+create trigger set_timestamp
+before update on variant_to_option_values
 for each row
 execute procedure trigger_set_timestamp();
 
@@ -589,6 +633,24 @@ create policy "Vendors can view their own product_variants." on product_variants
 create policy "Vendors can insert their own product_variants." on product_variants for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can update their own product_variants." on product_variants for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can delete their own product_variants." on product_variants for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
+
+alter table product_options enable row level security;
+create policy "Vendors can view their own product_options." on product_options for select using (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
+create policy "Vendors can insert their own product_options." on product_options for insert with check (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
+create policy "Vendors can update their own product_options." on product_options for update using (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
+create policy "Vendors can delete their own product_options." on product_options for delete using (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
+
+alter table product_option_values enable row level security;
+create policy "Vendors can view their own product_option_values." on product_option_values for select using (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
+create policy "Vendors can insert their own product_option_values." on product_option_values for insert with check (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
+create policy "Vendors can update their own product_option_values." on product_option_values for update using (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
+create policy "Vendors can delete their own product_option_values." on product_option_values for delete using (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
+
+alter table variant_to_option_values enable row level security;
+create policy "Vendors can view their own variant_to_option_values." on variant_to_option_values for select using (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
+create policy "Vendors can insert their own variant_to_option_values." on variant_to_option_values for insert with check (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
+create policy "Vendors can update their own variant_to_option_values." on variant_to_option_values for update using (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
+create policy "Vendors can delete their own variant_to_option_values." on variant_to_option_values for delete using (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
 
 alter table featured_products enable row level security;
 create policy "Vendors can view their own featured_products." on featured_products for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
