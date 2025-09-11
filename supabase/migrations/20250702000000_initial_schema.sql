@@ -292,9 +292,9 @@ execute procedure trigger_set_timestamp();
 
 create table if not exists products (
   product_id           serial           primary   key,
-  title                varchar,
-  description          text[],
-  list_price           numeric(19,4),
+  title                varchar					not 			null,
+  description          text[] 					not 			null,
+  list_price           numeric(19,4) 		not 			null,
   net_price            numeric(19,4),
   vendor_id            uuid             not       null    references			profiles        on   delete   cascade,
 	store_id 					 	 int 							not 			null 		references 			stores 					on 	 delete 	cascade,
