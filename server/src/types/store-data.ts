@@ -103,15 +103,6 @@ export default interface StoreData {
   pages?: Page[]
 }
 
-export type DBFriendlyStoreData = Omit<
-  StoreData,
-  'pages' | 'global_styles' | 'store_address'
-> & {
-  pages?: string
-  global_styles?: string
-  store_address?: string
-}
-
 interface StoreDataId {
   store_info_id: number
 }
@@ -145,4 +136,3 @@ export const isValidStoreDataResponse = (data: unknown): data is StoreData => {
   error && console.error(util.inspect(error, true, null, true))
   return !error
 }
-
