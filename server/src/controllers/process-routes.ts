@@ -3,6 +3,7 @@ import { RequestWithPayload } from '../types/request.js'
 import { isTypeQueryResultRow, Status } from '../types/response.js'
 import { QueryDB } from '../types/process-routes.js'
 import { QueryResult, QueryResultRow } from 'pg'
+import { ParsedQs } from 'qs'
 import NotFoundError from '../errors/not-found.js'
 import InternalServerError from '#src/errors/internal-server.js'
 
@@ -12,6 +13,7 @@ export default ({
   status,
   validateBody,
   validateResult,
+  validateQuery,
 }: {
   Query: QueryDB
   QueryForwarder?: (s: string) => QueryDB
@@ -20,6 +22,7 @@ export default ({
   validateResult?: (
     result: any[] | QueryResult<QueryResultRow | QueryResultRow[]>,
   ) => boolean
+  validateQuery?: (query: ParsedQs) => boolean
 }) => {
   // return the route processor middleware
   return async (
@@ -41,6 +44,15 @@ export default ({
       ) {
         // validateBody throws error if body is invalid
         validateBody(body)
+      }
+
+      if (
+        typeof query != 'undefined' &&
+        Object.values(query).length !== 0 &&
+        validateQuery
+      ) {
+        // validateQuery throws error if query is invalid
+        validateQuery(JSON.parse(JSON.stringify(query)))
       }
 
       let dbResponse: any
@@ -82,11 +94,13 @@ export default ({
         if (isTypeQueryResultRow(dbResponse)) {
           if (dbResponse.rowCount === 1) responseData = dbResponse.rows[0]
           else responseData = dbResponse.rows
-        }
-        if (Array.isArray(dbResponse)) {
-          if (dbResponse.length === 1) responseData = dbResponse[0]
-          else responseData = dbResponse
-        }
+        } else if (Array.isArray(dbResponse) && dbResponse.length === 1)
+          responseData = dbResponse[0]
+        else responseData = dbResponse
+        // if (Array.isArray(dbResponse)) {
+        //   if (dbResponse.length === 1) responseData = dbResponse[0]
+        //   else responseData = dbResponse
+        // }
         return response.status(status).json(responseData)
       }
       response.status(status).end()

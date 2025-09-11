@@ -25,10 +25,12 @@ export type ProcessRouteWithoutBody = <T>({
   Query,
   status,
   validateResult,
+  validateQuery,
 }: {
   Query(queryParams: QueryParams): Promise<T | T[]>
   status: Status
   validateResult: (result: QueryResult<T | T[]>) => boolean
+  validateQuery?: (data: unknown) => boolean
 }) => (
   request: RequestWithPayload,
   response: Response,

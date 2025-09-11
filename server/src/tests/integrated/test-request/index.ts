@@ -41,11 +41,15 @@ export default function ({
     const response = await request
 
     process.env.DEBUG &&
-      console.log('\nDEBUG: response ->' + JSON.stringify(response) + '\n')
+      console.log(
+        '\nDEBUG: response.body ->',
+        JSON.stringify(response.body),
+        ' \n',
+      )
     response.should.have.status(statusCode)
 
     // Validate the response body
-    if (validateTestResData && !validateTestResData(response.body)) {
+    if (validateTestResData && !validateTestResData(response.body, query)) {
       if (response.status === 404) return null
       throw new Error('Invalid Database Result')
     }

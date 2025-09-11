@@ -10,6 +10,7 @@ import * as Ebuka from './data/users/customers/user-ebuka/index.js'
 import * as Aisha from './data/users/customers/user-aisha/index.js'
 import * as Mustapha from './data/users/customers/user-mustapha/index.js'
 import * as Aliyu from './data/users/vendors/user-aliyu/index.js'
+import testDashboard from './dashboard/index.js'
 
 const users = [Ebuka, Aliyu, Aisha, Mustapha]
 const customers = [Ebuka, Aisha, Mustapha] // is_customer is true
@@ -73,6 +74,15 @@ export default function (): void {
     describe(`Testing Media for Different Products`, async () =>
       testMedia(vendor))
   }
+  /** Dashboard related tests **/
+
+  for (let vendor of vendors) {
+    const { userInfo } = vendor
+    const { first_name: name } = userInfo
+    describe(`Testing Dashboard Analytics for ${name}`, () =>
+      testDashboard(vendor))
+  }
+
   //
   // end
 }

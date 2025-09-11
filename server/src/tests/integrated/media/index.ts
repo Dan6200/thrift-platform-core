@@ -32,9 +32,8 @@ export default function ({
     const {
       body: { store_id },
     } = await createStoreForTesting(token)
-    ;({
-      body: { product_id },
-    } = await createProductsForTesting(token, store_id))
+    const productCreationResponse = await createProductsForTesting(token, store_id)
+    product_id = productCreationResponse.body.product_id
     // Bulk delete media from cloudinary
     await bulkDeleteImages()
   })

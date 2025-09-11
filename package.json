@@ -18,13 +18,17 @@
     "test-server": "NODE_ENV=testing node built/server/src/server.js",
     "test-server:watch": "NODE_ENV=testing tsx watch server/src/server.ts",
     "test-server:watch:debug": "DEBUG=1 NODE_ENV=testing tsx watch server/src/server.ts",
-    "test-server:assistant": "NODE_ENV=testing nohup node built/server/src/server.js > test-server.log 2>&1 &",
-    "test-server:watch:assistant": "NODE_ENV=testing nohup tsx watch server/src/server.ts > test-server-watch.log 2>&1 &",
-    "test-server:watch:debug:assistant": "DEBUG=1 NODE_ENV=testing nohup tsx watch server/src/server.ts > test-server-watch-debug.log 2>&1 &",
+    "test-server:assistant": "PORT=1037 NODE_ENV=testing nohup node built/server/src/server.js 2>&1 | cat -v > test-server.log &",
+    "test-server:debug": "PORT=1037 DEBUG=1 NODE_ENV=testing nohup node built/server/src/server.js 2>&1 | cat -v > test-server-debug.log &",
+    "test-server:watch:assistant": "PORT=1037 NODE_ENV=testing nohup tsx watch server/src/server.ts 2>&1 | cat -v > test-server-watch.log &",
+    "test-server:watch:debug:assistant": "PORT=1037 DEBUG=1 NODE_ENV=testing nohup tsx watch server/src/server.ts 2>&1 | cat -v > test-server-watch-debug.log &",
     "tests": "NODE_ENV=testing mocha server/src/tests --config server/src/tests/.mocharc.json",
-    "tests:staging": "NODE_ENV=staging mocha server/src/tests --config server/src/tests/.mocharc.json",
     "tests:debug": "NODE_ENV=testing DEBUG=1 mocha server/src/tests --config server/src/tests/.mocharc.json",
+    "tests:staging": "NODE_ENV=staging mocha server/src/tests --config server/src/tests/.mocharc.json",
+    "tests:assistant": "SERVER=localhost:1037 NODE_ENV=testing mocha server/src/tests --config server/src/tests/.mocharc.json",
+    "tests:assistant:debug": "SERVER=localhost:1037 NODE_ENV=testing DEBUG=1 mocha server/src/tests --config server/src/tests/.mocharc.json",
     "dev": "NODE_ENV=development tsx watch server/src/server.ts",
+    "reset-db": "supabase db reset",
     "build": "tsc -p tsconfig.json"
   },
   "license": "ISC",
@@ -49,7 +53,7 @@
     "random-useragent": "^0.5.0",
     "swagger-cli": "^4.0.4",
     "ts-mocha": "^10.1.0",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.5"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.2",

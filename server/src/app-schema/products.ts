@@ -8,7 +8,6 @@ export const ProductRequestSchema = joi
     description: joi.array().items(joi.string()),
     list_price: joi.number().required(),
     net_price: joi.number().required(),
-    quantity_available: joi.number().required(),
   })
   .required()
 
@@ -29,7 +28,6 @@ export const ProductGETResponseSchema = joi
     description: joi.array().items(joi.string()),
     list_price: joi.number().required(),
     net_price: joi.number().required(),
-    quantity_available: joi.number().required(),
     products_sold: joi.number().required(),
     average_rating: joi.number().allow(null).required(),
     review_count: joi.number().allow(null).required(),
@@ -50,7 +48,6 @@ export const ProductResponseSchema = joi
     description: joi.array().items(joi.string()),
     list_price: joi.number().required(),
     net_price: joi.number().required(),
-    quantity_available: joi.number().required(),
     vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
     store_id: joi.number().required(),
     created_at: joi.date().required(),
@@ -73,8 +70,7 @@ export const ProductGETAllResponseSchema = joi
           description: joi.array().items(joi.string()).allow(null),
           list_price: joi.number().required(),
           net_price: joi.number().required(),
-          quantity_available: joi.number().required(),
-          products_sold: joi.number().required(),
+                products_sold: joi.number().required(),
           average_rating: joi.number().allow(null).required(),
           review_count: joi.number().allow(null).required(),
           vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),

@@ -1,133 +1,132 @@
 import joi from 'joi'
 
-const PageStylingSchema = joi.object({
-  layout_template: joi.string().valid('default', 'minimal', 'grid').optional(),
-  font_family: joi.string().optional(),
-  primary_color: joi.string().optional(),
-  secondary_color: joi.string().optional(),
+const SeoDataSchema = joi.object({
+  meta_description: joi.string().required(),
+  canonical_url: joi.string().uri().required(),
+  keywords: joi.array().items(joi.string()).required(),
+  ogTitle: joi.string().optional(),
+  ogDescription: joi.string().optional(),
+  ogImage: joi.string().uri().optional(),
+  ogUrl: joi.string().uri().optional(),
+  ogType: joi.string().optional(),
+  twitterCard: joi
+    .string()
+    .valid('summary', 'summary_large_image', 'app', 'player')
+    .optional(),
+  twitterSite: joi.string().optional(),
+  twitterCreator: joi.string().optional(),
+  twitterTitle: joi.string().optional(),
+  twitterDescription: joi.string().optional(),
+  twitterImage: joi.string().uri().optional(),
+  schemaMarkup: joi
+    .object({
+      '@context': joi.string().required(),
+      '@type': joi.string().required(),
+      name: joi.string().required(),
+      description: joi.string().required(),
+      url: joi.string().uri().required(),
+    })
+    .optional(),
 })
 
-const PageSchema = joi
+const StoreStylingSchema = joi
   .object({
-    pageType: joi.string().valid('storePage').required(),
-    pageTitle: joi.string().required(),
-    metaDescription: joi.string().required(),
-    canonicalUrl: joi.string().uri().required(),
-    breadcrumbs: joi.array().items(
-      joi.object({
-        name: joi.string().required(),
-        url: joi.string().uri().required(),
-      }),
-    ),
-    heroSection: joi
-      .object({
-        title: joi.string().required(),
-        subtitle: joi.string().required(),
-        imageUrl: joi.string().uri().required(),
-        altText: joi.string().required(),
-        callToAction: joi.object({
-          text: joi.string().required(),
-          url: joi.string().uri().required(),
-        }),
-      })
-      .optional(),
-    categories: joi.array().items(
-      joi.object({
-        id: joi.string().required(),
-        name: joi.string().required(),
-        url: joi.string().uri().required(),
-        thumbnailUrl: joi.string().uri().required(),
-        description: joi.string().required(),
-      }),
-    ),
-    featuredProducts: joi.array().items(
-      joi.object({
-        id: joi.string().required(),
-        name: joi.string().required(),
-        sku: joi.string().required(),
-        imageUrl: joi.string().uri().required(),
-        altText: joi.string().required(),
-        price: joi
-          .object({
-            amount: joi.number().required(),
-            currency: joi.string().required(),
-          })
-          .required(),
-        originalPrice: joi
-          .object({
-            amount: joi.number().required(),
-            currency: joi.string().required(),
-          })
-          .optional(),
-        rating: joi.number().min(0).max(5).required(),
-        numReviews: joi.number().min(0).required(),
-        productUrl: joi.string().uri().required(),
-        shortDescription: joi.string().required(),
-        isInStock: joi.boolean().required(),
-      }),
-    ),
-    promotions: joi.array().items(
-      joi.alternatives().try(
-        joi.object({
-          id: joi.string().required(),
-          title: joi.string().required(),
-          description: joi.string().required(),
-          imageUrl: joi.string().uri().required(),
-          altText: joi.string().required(),
-          targetUrl: joi.string().uri().required(),
-        }),
-        joi.object({
-          id: joi.string().required(),
-          title: joi.string().required(),
-          description: joi.string().required(),
-          icon: joi.string().required(),
-        }),
-      ),
-    ),
-    customerTestimonials: joi.array().items(
-      joi.object({
-        name: joi.string().required(),
-        location: joi.string().required(),
-        quote: joi.string().required(),
-        rating: joi.number().min(0).max(5).required(),
-      }),
-    ),
-    seoInfo: joi
-      .object({
-        keywords: joi.array().items(joi.string()).required(),
-        schemaMarkup: joi
-          .object({
-            '@context': joi.string().required(),
-            '@type': joi.string().required(),
-            name: joi.string().required(),
-            description: joi.string().required(),
-            url: joi.string().uri().required(),
-          })
-          .required(),
-        ogTitle: joi.string().optional(),
-        ogDescription: joi.string().optional(),
-        ogImage: joi.string().uri().optional(),
-        ogUrl: joi.string().uri().optional(),
-        ogType: joi.string().optional(),
-        twitterCard: joi
-          .string()
-          .valid('summary', 'summary_large_image', 'app', 'player')
-          .optional(),
-        twitterSite: joi.string().optional(),
-        twitterCreator: joi.string().optional(),
-        twitterTitle: joi.string().optional(),
-        twitterDescription: joi.string().optional(),
-        twitterImage: joi.string().uri().optional(),
-      })
+    layout_template: joi
+      .string()
+      .valid('default', 'minimal', 'grid')
       .required(),
+    font_family: joi.string().required(),
+    primary_color: joi.string().optional(),
+    secondary_color: joi.string().optional(),
+    background_color: joi.string().optional(),
+    foreground_color: joi.string().optional(),
+    muted_color: joi.string().optional(),
+    muted_foreground_color: joi.string().optional(),
+    popover_color: joi.string().optional(),
+    popover_foreground_color: joi.string().optional(),
+    card_color: joi.string().optional(),
+    card_foreground_color: joi.string().optional(),
+    border_color: joi.string().optional(),
+    input_color: joi.string().optional(),
+    primary_foreground_color: joi.string().optional(),
+    secondary_foreground_color: joi.string().optional(),
+    accent_color: joi.string().optional(),
+    accent_foreground_color: joi.string().optional(),
+    destructive_color: joi.string().optional(),
+    destructive_foreground_color: joi.string().optional(),
+    ring_color: joi.string().optional(),
+    radius_color: joi.string().optional(),
+    hero_primary_color: joi.string().optional(),
+    hero_primary_foreground_color: joi.string().optional(),
+    hero_secondary_color: joi.string().optional(),
+    hero_secondary_foreground_color: joi.string().optional(),
+    sidebar_background_color: joi.string().optional(),
+    sidebar_foreground_color: joi.string().optional(),
+    sidebar_primary_color: joi.string().optional(),
+    sidebar_primary_foreground_color: joi.string().optional(),
+    sidebar_accent_color: joi.string().optional(),
+    sidebar_accent_foreground_color: joi.string().optional(),
+    sidebar_border_color: joi.string().optional(),
+    sidebar_ring_color: joi.string().optional(),
   })
-  .concat(PageStylingSchema) // Concatenate PageStylingSchema
+  .allow(null)
+
+const PageSchemaRequest = joi.object({
+  store_id: joi.number().required(),
+  page_slug: joi.string().required(),
+  page_title: joi.string().required(),
+  page_type: joi
+    .string()
+    .valid('homepage', 'standard', 'product_list', 'custom')
+    .required(),
+  seo_data: SeoDataSchema.required(),
+  sections: joi
+    .array()
+    .items(
+      joi.object({
+        section_type: joi.string().required(),
+        section_data: joi.any().required(),
+        styles: StoreStylingSchema.optional(),
+        sort_order: joi.number().required(),
+      }),
+    )
+    .required(),
+})
+
+const PageSchemaResponse = joi.object({
+  store_id: joi.number().required(),
+  page_id: joi.number().required(),
+  page_slug: joi.string().required(),
+  page_title: joi.string().required(),
+  page_type: joi
+    .string()
+    .valid('homepage', 'standard', 'product_list', 'custom')
+    .required(),
+  seo_data: SeoDataSchema.required(),
+  created_at: joi.date().required(),
+  updated_at: joi.date().required(),
+  sections: joi
+    .array()
+    .items(
+      joi.object({
+        section_id: joi.number().required(),
+        section_type: joi.string().required(),
+        section_data: joi.any().required(),
+        styles: StoreStylingSchema.optional(),
+        sort_order: joi.number().required(),
+        created_at: joi.date().required(),
+        updated_at: joi.date().required(),
+      }),
+    )
+    .required(),
+})
 
 export const StoreDataRequestSchema = joi
   .object({
     store_name: joi.string().min(3).max(50).required(),
-    favicon: joi.string().uri().optional(),
     custom_domain: joi.string().hostname().allow(null).required(),
+    favicon: joi.string().uri().allow(null).required(),
+    global_styles: StoreStylingSchema.required(),
     store_address: joi
       .object({
         address_line_1: joi.string().required(),
@@ -138,8 +137,7 @@ export const StoreDataRequestSchema = joi
         country: joi.string().required(),
       })
       .required(),
-    default_page_styling: PageStylingSchema.optional(),
-    store_pages: joi.array().items(PageSchema).optional(),
+    pages: joi.array().items(PageSchemaRequest).optional(),
   })
   .required()
 
@@ -147,6 +145,7 @@ export const StoreDataRequestPartialSchema = joi.object({
   store_name: joi.string().min(3).max(50).optional(),
   favicon: joi.string().uri().optional(),
   custom_domain: joi.string().hostname().optional(),
+  global_styles: StoreStylingSchema.optional(),
   store_address: joi
     .object({
       address_line_1: joi.string().optional(),
@@ -157,8 +156,7 @@ export const StoreDataRequestPartialSchema = joi.object({
       country: joi.string().optional(),
     })
     .optional(),
-  default_page_styling: PageStylingSchema.optional(),
-  store_pages: joi.array().items(PageSchema).optional(),
+  pages: joi.array().items(PageSchemaRequest).optional(),
 })
 
 export const StoreIDSchema = joi.object({
@@ -175,6 +173,7 @@ export const StoreDataResponseListSchema = joi
         custom_domain: joi.string().hostname().allow(null).required(),
         vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
         favicon: joi.string().uri().allow(null).required(),
+        global_styles: StoreStylingSchema.required(),
         store_address: joi
           .object({
             address_line_1: joi.string().required(),
@@ -185,8 +184,7 @@ export const StoreDataResponseListSchema = joi
             country: joi.string().required(),
           })
           .required(),
-        default_page_styling: PageStylingSchema.optional(),
-        store_pages: joi.array().items(PageSchema).optional(),
+        pages: joi.array().items(PageSchemaResponse).optional(),
         created_at: joi.date().required(),
         updated_at: joi.date().required(),
       })
@@ -201,6 +199,7 @@ export const StoreDataResponseSchema = joi
     custom_domain: joi.string().hostname().allow(null).required(),
     vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
     favicon: joi.string().uri().allow(null).required(),
+    global_styles: StoreStylingSchema.required(),
     store_address: joi
       .object({
         address_line_1: joi.string().required(),
@@ -211,9 +210,9 @@ export const StoreDataResponseSchema = joi
         country: joi.string().required(),
       })
       .required(),
-    default_page_styling: PageStylingSchema.optional(),
-    store_pages: joi.array().items(PageSchema).optional(),
+    pages: joi.array().items(PageSchemaResponse).optional(),
     created_at: joi.date().required(),
     updated_at: joi.date().required(),
   })
   .required()
+
