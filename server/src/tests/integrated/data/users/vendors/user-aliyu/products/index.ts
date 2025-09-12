@@ -34,7 +34,18 @@ export const products: ProductRequestData[] = [
     ],
     list_price: 194242.5,
     net_price: 225000,
-    
+    variants: [
+      {
+        sku: 'BOSE-QC45-WHT',
+        quantity_available: 10,
+        options: [{ option_name: 'COLOR', value: 'WHITE SMOKE' }]
+      },
+      {
+        sku: 'BOSE-QC45-BLK',
+        quantity_available: 15,
+        options: [{ option_name: 'COLOR', value: 'TRIPLE BLACK' }]
+      }
+    ]
   },
   {
     title:
@@ -87,7 +98,18 @@ export const productReplaced: ProductRequestData[] = [
     ],
     list_price: 194242.5,
     net_price: 225000,
-    
+    variants: [
+      {
+        sku: 'BOSE-QC45-WHT',
+        quantity_available: 10,
+        options: [{ option_name: 'COLOR', value: 'WHITE SMOKE' }]
+      },
+      {
+        sku: 'BOSE-QC45-BLK',
+        quantity_available: 15,
+        options: [{ option_name: 'COLOR', value: 'TRIPLE BLACK' }]
+      }
+    ]
   },
   {
     title:

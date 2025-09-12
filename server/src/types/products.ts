@@ -6,6 +6,22 @@ import {
   ProductGETResponseSchema,
 } from '../app-schema/products.js'
 
+export type VariantOption = {
+  option_id: number;
+  option_name: string;
+  value_id: number;
+  value: string;
+};
+
+export type ProductVariant = {
+  variant_id: number;
+  sku: string;
+  list_price: number;
+  net_price: number;
+  quantity_available: number;
+  options: VariantOption[];
+};
+
 export type ProductResponseData = {
   product_id: number
   vendor_id: string
@@ -15,8 +31,22 @@ export type ProductResponseData = {
   description: string[]
   list_price: number
   net_price: number
+  variants?: ProductVariant[]
   updated_at?: Date
 }
+
+export type RequestVariantOption = {
+  option_name: string;
+  value: string;
+};
+
+export type RequestVariant = {
+  sku: string;
+  list_price?: number;
+  net_price?: number;
+  quantity_available: number;
+  options: RequestVariantOption[];
+};
 
 export type ProductRequestData = {
   title: string
@@ -25,6 +55,7 @@ export type ProductRequestData = {
   description: string[]
   list_price: number
   net_price: number
+  variants?: RequestVariant[]
 }
 
 export type DBFriendlyProductData = {
