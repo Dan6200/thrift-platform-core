@@ -5,7 +5,7 @@ import { QueryParams } from '../../../types/process-routes.js'
 import {
   isValidProductRequestData,
   ProductResponseData,
-} from '../../../types/products.js'
+} from '../../../types/products/index.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 
@@ -44,17 +44,17 @@ export default async ({
   if (!isValidProductRequestData(body))
     throw new BadRequestError('Invalid product data')
 
-  const productData = body
+  const { variants, ...productData } = body
 
-  const dBFriendlyProductData = {
-    ...body,
-    description: knex.raw('ARRAY[?]::text[]', [productData.description]),
-  }
-
+  // const dBFriendlyProductData = {
+  //   ...productData,
+  //   description: knex.raw('ARRAY[?]::text[]', [productData.description]),
+  // }
+  //
   return knex('products')
     .where('product_id', productId)
     .where('store_id', storeId)
     .where('vendor_id', userId)
-    .update(dBFriendlyProductData)
+    .update(productData)
     .returning('*')
 }

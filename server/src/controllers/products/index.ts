@@ -1,11 +1,12 @@
 import { StatusCodes } from 'http-status-codes'
 import createRouteProcessor from '../process-routes.js'
 import {
-  ProductResponseSchema,
   ProductRequestSchema,
   ProductGETResponseSchema,
   ProductGETAllResponseSchema,
-} from '../../app-schema/products.js'
+  ProductIdSchema,
+  ProductResponseSchema,
+} from '../../app-schema/products/index.js'
 import {
   ProcessRoute,
   ProcessRouteWithoutBody,
@@ -24,7 +25,7 @@ const { CREATED, OK, NO_CONTENT } = StatusCodes
 const processPostRoute = <ProcessRoute>createRouteProcessor
 const processGetAllRoute = <ProcessRouteWithoutBody>createRouteProcessor
 const processGetRoute = <ProcessRouteWithoutBody>createRouteProcessor
-const processPutRoute = <ProcessRoute>createRouteProcessor
+const processPatchRoute = <ProcessRoute>createRouteProcessor
 const processDeleteRoute = <ProcessRouteWithoutBodyAndDBResult>(
   createRouteProcessor
 )
@@ -33,7 +34,7 @@ const createProduct = processPostRoute({
   Query: createQuery,
   status: CREATED,
   validateBody: validateReqData(ProductRequestSchema),
-  validateResult: validateResData(ProductResponseSchema),
+  validateResult: validateResData(ProductIdSchema),
 })
 
 const getAllProducts = processGetAllRoute({
@@ -48,7 +49,7 @@ const getProduct = processGetRoute({
   validateResult: validateResData(ProductGETResponseSchema),
 })
 
-const updateProduct = processPutRoute({
+const updateProduct = processPatchRoute({
   Query: updateQuery,
   status: OK,
   validateBody: validateReqData(ProductRequestSchema),

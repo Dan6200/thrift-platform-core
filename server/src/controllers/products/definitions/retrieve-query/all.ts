@@ -47,7 +47,7 @@ export default async ({ query, }: QueryParams): Promise<QueryResult<QueryResultR
                     pv.net_price,
                     pv.quantity_available,
                     (
-                        SELECT json_agg(option_data)
+                        SELECT COALESCE(json_agg(option_data), '[]'::json)
                         FROM (
                             SELECT
                                 po.option_id,
@@ -64,9 +64,9 @@ export default async ({ query, }: QueryParams): Promise<QueryResult<QueryResultR
                 WHERE pv.product_id = p.product_id
             ) AS variant_data
         ) AS variants,
-        AVG(pr.rating) AS average_rating,
-        COUNT(pr.rating) AS review_count,
-        SUM(oi.quantity) AS products_sold
+        COALESCE(AVG(pr.rating), 0)::numeric(3,2) AS average_rating,
+        COALESCE(COUNT(pr.rating), 0)::int AS review_count,
+        COALESCE(SUM(oi.quantity), 0)::int AS products_sold
 			FROM products p
 			JOIN categories c USING (category_id)
 			JOIN subcategories s USING (subcategory_id)

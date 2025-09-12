@@ -3,7 +3,8 @@ import {
   ProductRequestData,
   ProductMedia,
   ProductRequestPartial,
-} from '#src/types/products.js'
+} from '#src/types/products/index.js'
+import { VariantRequestData, VariantUpdateRequestData } from '#src/types/products/variants.js'
 
 export const products: ProductRequestData[] = [
   {
@@ -12,8 +13,8 @@ export const products: ProductRequestData[] = [
     category_id: 1,
     subcategory_id: 1,
     description: [
-      `* 1.69" HD Full Touch Screen: High texture watch frame with 1.69" LCD full touch colorful screen bring comfortable touch and excellent visual experience.`,
-      `There are various watch face styles to choose from in the app. Also you can choose a picture you like to customize the watch face in "QWatch Pro" App. And the smartwatch screen will light up every time you raise your hand.`,
+      `* 1.69" HD Full Touch Screen: High texture watch frame with 1.69" LCD full touch colorful screen bring comfortable touch and excellent visual experience.`, 
+      `There are various watch face styles to choose from in the app. Also you can choose a picture you like to customize the watch face in "QWatch Pro" App. And the smartwatch screen will light up every time you raise your hand.`, 
       `Note: Products with electrical plugs are designed for use in the US. Outlets and voltage differ internationally and this product may require an adapter or converter for use in your destination. Please check compatibility before purchasing.\n`,
     ],
     list_price: 35000,
@@ -65,7 +66,18 @@ export const products: ProductRequestData[] = [
     ],
     list_price: 89962.5,
     net_price: 112500,
-    
+    variants: [
+      {
+        sku: 'FIT-CHG5-BLK',
+        quantity_available: 20,
+        options: [{ option_name: 'COLOR', value: 'BLACK' }, { option_name: 'BAND', value: 'S/L'}]
+      },
+      {
+        sku: 'FIT-CHG5-LNR',
+        quantity_available: 15,
+        options: [{ option_name: 'COLOR', value: 'LUNAR WHITE' }, { option_name: 'BAND', value: 'S/L'}]
+      }
+    ]
   },
 ]
 
@@ -76,8 +88,8 @@ export const productReplaced: ProductRequestData[] = [
     category_id: 1,
     subcategory_id: 1,
     description: [
-      `* 1.69" HD Full Touch Screen: High texture watch frame with 1.69" LCD full touch colorful screen bring comfortable touch and excellent visual experience.`,
-      `There are various watch face styles to choose from in the app. Also you can choose a picture you like to customize the watch face in "QWatch Pro" App. And the smartwatch screen will light up every time you raise your hand.`,
+      `* 1.69" HD Full Touch Screen: High texture watch frame with 1.69" LCD full touch colorful screen bring comfortable touch and excellent visual experience.`, 
+      `There are various watch face styles to choose from in the app. Also you can choose a picture you like to customize the watch face in "QWatch Pro" App. And the smartwatch screen will light up every time you raise your hand.`, 
       `Note: Products with electrical plugs are designed for use in the US. Outlets and voltage differ internationally and this product may require an adapter or converter for use in your destination. Please check compatibility before purchasing.\n`,
     ],
     list_price: 35000,
@@ -129,7 +141,18 @@ export const productReplaced: ProductRequestData[] = [
     ],
     list_price: 89962.5,
     net_price: 112500,
-    
+    variants: [
+      {
+        sku: 'FIT-CHG5-BLK',
+        quantity_available: 20,
+        options: [{ option_name: 'COLOR', value: 'BLACK' }, { option_name: 'BAND', value: 'S/L'}]
+      },
+      {
+        sku: 'FIT-CHG5-LNR',
+        quantity_available: 15,
+        options: [{ option_name: 'COLOR', value: 'LUNAR WHITE' }, { option_name: 'BAND', value: 'S/L'}]
+      }
+    ]
   },
 ]
 
@@ -142,8 +165,8 @@ export const productPartialUpdate: ProductRequestPartial[] = [
 
   {
     description: [
-      `TRUE WIRELESS EARBUDS WITH RICH, BALANCED SOUND — Hear it loud and clear with 12mm drivers delivering crisp audio, balanced bass, and full sound. Be heard with 2 microphones and a voice detection accelerometer for crystal clear communication.`,
-      `ALEXA ON-THE-GO — Cue music, play podcasts, listen to Audible, make calls, set reminders, and more, all with the sound of your voice. Compatible with iOS and Android, and supports access to Siri and Google Assistant.`,
+      `TRUE WIRELESS EARBUDS WITH RICH, BALANCED SOUND — Hear it loud and clear with 12mm drivers delivering crisp audio, balanced bass, and full sound. Be heard with 2 microphones and a voice detection accelerometer for crystal clear communication.`, 
+      `ALEXA ON-THE-GO — Cue music, play podcasts, listen to Audible, make calls, set reminders, and more, all with the sound of your voice. Compatible with iOS and Android, and supports access to Siri and Google Assistant.`, 
     ],
 
     net_price: 35000,
@@ -156,6 +179,24 @@ export const productPartialUpdate: ProductRequestPartial[] = [
     net_price: 100000,
   },
 ]
+
+export const variantsToCreate: VariantRequestData[] = [
+  {
+    sku: 'AIRPODS-PRO-2-WHT',
+    quantity_available: 50,
+    options: [{ option_name: 'COLOR', value: 'WHITE' }]
+  }
+];
+
+export const variantUpdates: VariantUpdateRequestData[] = [
+  {
+    list_price: 190000,
+    quantity_available: 5
+  },
+  {
+    net_price: 220000
+  }
+];
 
 export const productMedia: ProductMedia[][] = [
   [

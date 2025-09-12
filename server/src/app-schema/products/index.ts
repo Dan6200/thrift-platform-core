@@ -113,6 +113,6 @@ export const ProductGETAllResponseSchema = joi
         }),
       )
       .allow(null),
-    total_products: joi.number().required(),
+    total_count: joi.number().required(),
   })
   .required()

@@ -4,7 +4,7 @@ import {
   ProductRequestSchema,
   ProductResponseSchema,
   ProductGETResponseSchema,
-} from '../app-schema/products.js'
+} from '../../app-schema/products/index.js'
 
 export type VariantOption = {
   option_id: number;

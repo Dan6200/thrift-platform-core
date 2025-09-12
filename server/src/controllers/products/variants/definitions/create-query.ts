@@ -1,0 +1,74 @@
+import { knex } from '../../../../db/index.js'
+import { QueryParams } from '../../../../types/process-routes.js'
+import { isValidVariantRequestData, VariantIdResponse } from '../../../../types/products/variants.js'
+import BadRequestError from '../../../../errors/bad-request.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
+import ForbiddenError from '#src/errors/forbidden.js'
+
+export default async ({ params, body, userId }: QueryParams): Promise<VariantIdResponse[]> => {
+    if (!userId) {
+        throw new UnauthorizedError('Sign-in to create a variant.')
+    }
+    if (!params?.productId) {
+        throw new BadRequestError('Must provide a product id.')
+    }
+    if (!isValidVariantRequestData(body)) {
+        throw new BadRequestError('Invalid variant data.')
+    }
+
+    const { productId } = params;
+    const variantData = body;
+
+    // Check if the user owns the product
+    const product = await knex('products').where({ product_id: productId, vendor_id: userId }).first();
+    if (!product) {
+        throw new ForbiddenError('You do not own this product.');
+    }
+
+    const newVariant = await knex.transaction(async (trx) => {
+        const valueIds = new Map<string, number>();
+
+        for (const option of variantData.options) {
+            let { option_id } = await trx('product_options')
+                .where({ product_id: productId, option_name: option.option_name })
+                .first('option_id') || {};
+
+            if (!option_id) {
+                [{ option_id }] = await trx('product_options')
+                    .insert({ product_id: productId, option_name: option.option_name })
+                    .returning('option_id');
+            }
+
+            let { value_id } = await trx('product_option_values')
+                .where({ option_id: option_id, value: option.value })
+                .first('value_id') || {};
+
+            if (!value_id) {
+                [{ value_id }] = await trx('product_option_values')
+                    .insert({ option_id: option_id, value: option.value })
+                    .returning('value_id');
+            }
+            valueIds.set(option.value, value_id);
+        }
+
+        const [createdVariant] = await trx('product_variants')
+            .insert({
+                product_id: productId,
+                sku: variantData.sku,
+                list_price: variantData.list_price || product.list_price,
+                net_price: variantData.net_price || product.net_price,
+                quantity_available: variantData.quantity_available,
+            })
+            .returning('variant_id');
+
+        const links = variantData.options.map(opt => ({
+            variant_id: createdVariant.variant_id,
+            value_id: valueIds.get(opt.value)
+        }));
+        await trx('variant_to_option_values').insert(links);
+
+        return createdVariant;
+    });
+
+    return [newVariant];
+}

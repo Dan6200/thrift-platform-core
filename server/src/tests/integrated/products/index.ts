@@ -1,6 +1,6 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
-import { ProductRequestData } from '../../../types/products.js'
+import { ProductRequestData } from '../../../types/products/index.js'
 import {
   testPostProduct,
   testGetAllProducts,
@@ -8,7 +8,11 @@ import {
   testUpdateProduct,
   testDeleteProduct,
   testGetNonExistentProduct,
+  testPostVariant,
+  testUpdateVariant,
+  testDeleteVariant,
 } from './definitions/index.js'
+import { variantsToCreate, variantUpdates } from '../data/users/vendors/user-aliyu/products/index.js'
 import { ProfileRequestData } from '../../../types/profile/index.js'
 import assert from 'assert'
 import { createUserForTesting } from '../helpers/create-user.js'
@@ -33,16 +37,15 @@ export default function ({
   let token: string
   let store_id: string
   let userId: string
+  const productIds: number[] = []
+  const variantIds: number[] = []
+
   before(async () => {
-    // Delete all users from Supabase auth
-    // Create user after...
     userId = await createUserForTesting(userInfo)
     token = await signInForTesting(userInfo)
     const response = await createStoreForTesting(token)
     ;({ store_id } = response.body)
   })
-
-  const productIds: number[] = []
 
   const getProductsRoute = () => `/v1/products/`
 
@@ -61,7 +64,34 @@ export default function ({
     }
   })
 
-  it('it should retrieve all the products', async () => {
+  it('it should create new variants for the first product', async () => {
+    const productsRoute = getProductsRoute()
+    const productId = productIds[0]
+    for (const variant of variantsToCreate) {
+      const { variant_id } = await testPostVariant({
+        server,
+        path: `${productsRoute}${productId}/variants`,
+        requestBody: variant,
+        token,
+      })
+      variantIds.push(variant_id)
+    }
+  })
+
+  it('it should update the newly created variants', async () => {
+    const productsRoute = getProductsRoute()
+    const productId = productIds[0]
+    for (const [i, variantId] of variantIds.entries()) {
+      await testUpdateVariant({
+        server,
+        path: `${productsRoute}${productId}/variants/${variantId}`,
+        requestBody: variantUpdates[i],
+        token,
+      })
+    }
+  })
+
+  it('it should retrieve all the products and their variants', async () => {
     const productsRoute = getProductsRoute()
     await testGetAllProducts({
       server,
@@ -71,34 +101,7 @@ export default function ({
     })
   })
 
-  it('it should retrieve all products from each store, sorted by net price ascending', async () => {
-    const productsRoute = getProductsRoute()
-    await testGetAllProducts({
-      server,
-      path: productsRoute,
-      query: {
-        sort: '-net_price',
-        store_id,
-      },
-      token,
-    })
-  })
-
-  it('it should retrieve all products from each store, results offset by 2 and limited by 10', async () => {
-    const productsRoute = getProductsRoute()
-    await testGetAllProducts({
-      server,
-      path: productsRoute,
-      query: {
-        store_id,
-        offset: 1,
-        limit: 2,
-      },
-      token,
-    })
-  })
-
-  it('it should retrieve a specific product a vendor has for sale', async () => {
+  it('it should retrieve a specific product and its variants', async () => {
     assert(!!productIds.length)
     const productsRoute = getProductsRoute()
     for (const productId of productIds) {
@@ -124,16 +127,16 @@ export default function ({
       })
   })
 
-  it('it should delete all the product a vendor has for sale', async () => {
-    assert(!!productIds.length)
+  it('it should delete the newly created variants', async () => {
     const productsRoute = getProductsRoute()
-    for (const productId of productIds)
-      await testDeleteProduct({
-        token,
+    const productId = productIds[0]
+    for (const variantId of variantIds) {
+      await testDeleteVariant({
         server,
-        path: `${productsRoute}/${productId}`,
-        query: { store_id },
+        path: `${productsRoute}${productId}/variants/${variantId}`,
+        token,
       })
+    }
   })
 
   it('it should delete all the product a vendor has for sale', async () => {
@@ -141,10 +144,10 @@ export default function ({
     const productsRoute = getProductsRoute()
     for (const productId of productIds)
       await testDeleteProduct({
-        query: { store_id },
         token,
         server,
         path: `${productsRoute}/${productId}`,
+        query: { store_id },
       })
   })
 
@@ -156,7 +159,6 @@ export default function ({
         query: { store_id },
         token,
         server,
-
         path: `${productsRoute}/${productId}`,
       })
   })

@@ -5,8 +5,8 @@ import BadRequestError from '../../../errors/bad-request.js'
 import { QueryParams } from '../../../types/process-routes.js'
 import {
   isValidProductRequestData,
-  ProductResponseData,
-} from '../../../types/products.js'
+  ProductID,
+} from '../../../types/products/index.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 
 /**
@@ -41,8 +41,10 @@ export default async ({
   if (!response?.vendor_id)
     throw new ForbiddenError('Must create a store to be able to list products')
 
-  if (!isValidProductRequestData(body))
+  if (!isValidProductRequestData(body)) {
+    console.error('Invalid product data:', body);
     throw new BadRequestError('Invalid product data')
+  }
 
   const productData = body
 
@@ -133,6 +135,6 @@ export default async ({
     return product
   })
 
-  return [createdProduct]
+  return [{ product_id: createdProduct.product_id }]
 }
 

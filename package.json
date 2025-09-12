@@ -21,7 +21,7 @@
     "test-server:assistant": "PORT=1037 NODE_ENV=testing nohup node built/server/src/server.js 2>&1 | cat -v > test-server.log &",
     "test-server:debug": "PORT=1037 DEBUG=1 NODE_ENV=testing nohup node built/server/src/server.js 2>&1 | cat -v > test-server-debug.log &",
     "test-server:watch:assistant": "PORT=1037 NODE_ENV=testing nohup tsx watch server/src/server.ts 2>&1 | cat -v > test-server-watch.log &",
-    "test-server:watch:debug:assistant": "PORT=1037 DEBUG=1 NODE_ENV=testing nohup tsx watch server/src/server.ts 2>&1 | cat -v > test-server-watch-debug.log &",
+    "test-server:watch:debug:assistant": "PORT=1037 DEBUG=1 NODE_ENV=testing nohup tsx watch server/src/server.ts > test-server-watch-debug.log 2>&1 &",
     "tests": "NODE_ENV=testing mocha server/src/tests --config server/src/tests/.mocharc.json",
     "tests:debug": "NODE_ENV=testing DEBUG=1 mocha server/src/tests --config server/src/tests/.mocharc.json",
     "tests:staging": "NODE_ENV=staging mocha server/src/tests --config server/src/tests/.mocharc.json",
