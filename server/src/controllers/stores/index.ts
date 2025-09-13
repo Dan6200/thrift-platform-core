@@ -74,9 +74,14 @@ const createQuery = async ({
 
         if (sections) {
           for (const section of sections) {
+            const { section_data, styles, ...restOfSection } = section
             await trx('page_sections').insert({
-              ...section,
+              ...restOfSection,
               page_id: pageResult.page_id,
+              section_data: section_data
+                ? JSON.stringify(section_data)
+                : null,
+              styles: styles ? JSON.stringify(styles) : null,
             })
           }
         }
@@ -310,9 +315,14 @@ const updateQuery = async ({
 
         if (sections) {
           for (const section of sections) {
+            const { section_data, styles, ...restOfSection } = section
             await trx('page_sections').insert({
-              ...section,
+              ...restOfSection,
               page_id: pageResult.page_id,
+              section_data: section_data
+                ? JSON.stringify(section_data)
+                : null,
+              styles: styles ? JSON.stringify(styles) : null,
             })
           }
         }

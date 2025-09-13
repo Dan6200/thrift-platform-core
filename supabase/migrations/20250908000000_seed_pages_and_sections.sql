@@ -13,43 +13,43 @@ insert into public.pages (store_id, page_slug, page_title, page_type, seo_data) 
 
 -- Seed data for page_sections table
 -- Sections for John's Gadgets
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Welcome to John''s Gadgets'), 'hero', '{"title": "Welcome to John''s Gadgets", "subtitle": "Your one-stop shop for all electronic gadgets."}', 1),
-((select page_id from pages where page_title = 'Welcome to John''s Gadgets'), 'product_grid', '{"title": "Featured Products", "product_ids": [1, 2, 3]}', 2);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Welcome to John''s Gadgets'), 'hero', 'Welcome to John''s Gadgets', '{"subtitle": "Your one-stop shop for all electronic gadgets."}', 1),
+((select page_id from pages where page_title = 'Welcome to John''s Gadgets'), 'product_grid', 'Featured Products', '{"product_ids": [1, 2, 3]}', 2);
 
 -- Sections for Peter's Picks
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Peter''s Picks for the best products'), 'hero', '{"title": "Peter''s Picks", "subtitle": "Curated collection of the best products."}', 1),
-((select page_id from pages where page_title = 'Peter''s Picks for the best products'), 'testimonial_list', '{"title": "What our customers say", "testimonials": [{"name": "John Doe", "quote": "Great products!"}, {"name": "Jane Smith", "quote": "Amazing service!"}]}', 2);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Peter''s Picks for the best products'), 'hero', 'Peter''s Picks', '{"subtitle": "Curated collection of the best products."}', 1),
+((select page_id from pages where page_title = 'Peter''s Picks for the best products'), 'testimonial_list', 'What our customers say', '{"testimonials": [{"name": "John Doe", "quote": "Great products!"}, {"name": "Jane Smith", "quote": "Amazing service!"}]}', 2);
 
 -- Sections for Bob's Bargains
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Bob''s Bargains - Unbeatable prices'), 'text_block', '{"title": "About Us", "content": "We find the best bargains so you don''t have to."}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Bob''s Bargains - Unbeatable prices'), 'text_block', 'About Us', '{"content": "We find the best bargains so you don''t have to."}', 1);
 
 -- Sections for Kenji's Tech
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Kenji''s Tech - The future of technology'), 'hero', '{"title": "Kenji''s Tech", "subtitle": "The future of technology is here."}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Kenji''s Tech - The future of technology'), 'hero', 'Kenji''s Tech', '{"subtitle": "The future of technology is here."}', 1);
 
 -- Sections for Sophie's Boutique
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Sophie''s Boutique - Unique fashion items'), 'product_grid', '{"title": "New Arrivals", "product_ids": [4, 5, 6]}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Sophie''s Boutique - Unique fashion items'), 'product_grid', 'New Arrivals', '{"product_ids": [4, 5, 6]}', 1);
 
 -- Sections for Emily's Emporium
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Emily''s Emporium of Wonders'), 'hero', '{"title": "Emily''s Emporium", "subtitle": "A collection of wonderful items."}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Emily''s Emporium of Wonders'), 'hero', 'Emily''s Emporium', '{"subtitle": "A collection of wonderful items."}', 1);
 
 -- Sections for Global Goods
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Global Goods - Products from around the world'), 'text_block', '{"title": "Our Mission", "content": "To bring the world to your doorstep."}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Global Goods - Products from around the world'), 'text_block', 'Our Mission', '{"content": "To bring the world to your doorstep."}', 1);
 
 -- Sections for Artisan Alley
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Artisan Alley - Handcrafted goods'), 'product_grid', '{"title": "Our Artisans'' Work", "product_ids": [7, 8, 9]}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Artisan Alley - Handcrafted goods'), 'product_grid', 'Our Artisans'' Work', '{"product_ids": [7, 8, 9]}', 1);
 
 -- Sections for Tech Haven
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Tech Haven - Your sanctuary for tech'), 'hero', '{"title": "Tech Haven", "subtitle": "Your sanctuary for all things tech."}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Tech Haven - Your sanctuary for tech'), 'hero', 'Tech Haven', '{"subtitle": "Your sanctuary for all things tech."}', 1);
 
 -- Sections for Fashion Forward
-insert into public.page_sections (page_id, section_type, section_data, sort_order) values
-((select page_id from pages where page_title = 'Fashion Forward - The latest trends'), 'testimonial_list', '{"title": "Style Icons", "testimonials": [{"name": "Fashionista", "quote": "I love this store!"}]}', 1);
+insert into public.page_sections (page_id, section_type, section_title, section_data, sort_order) values
+((select page_id from pages where page_title = 'Fashion Forward - The latest trends'), 'testimonial_list', 'Style Icons', '{"testimonials": [{"name": "Fashionista", "quote": "I love this store!"}]}', 1);

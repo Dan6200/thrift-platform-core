@@ -7,20 +7,20 @@ import {
 } from '../../app-schema/products/index.js'
 
 export type VariantOption = {
-  option_id: number;
-  option_name: string;
-  value_id: number;
-  value: string;
-};
+  option_id: number
+  option_name: string
+  value_id: number
+  value: string
+}
 
 export type ProductVariant = {
-  variant_id: number;
-  sku: string;
-  list_price: number;
-  net_price: number;
-  quantity_available: number;
-  options: VariantOption[];
-};
+  variant_id: number
+  sku: string
+  list_price: number
+  net_price: number
+  quantity_available: number
+  options: VariantOption[]
+}
 
 export type ProductResponseData = {
   product_id: number
@@ -32,21 +32,22 @@ export type ProductResponseData = {
   list_price: number
   net_price: number
   variants?: ProductVariant[]
+  media?: ProductMedia[]
   updated_at?: Date
 }
 
 export type RequestVariantOption = {
-  option_name: string;
-  value: string;
-};
+  option_name: string
+  value: string
+}
 
 export type RequestVariant = {
-  sku: string;
-  list_price?: number;
-  net_price?: number;
-  quantity_available: number;
-  options: RequestVariantOption[];
-};
+  sku: string
+  list_price?: number
+  net_price?: number
+  quantity_available: number
+  options: RequestVariantOption[]
+}
 
 export type ProductRequestData = {
   title: string
@@ -56,15 +57,6 @@ export type ProductRequestData = {
   list_price: number
   net_price: number
   variants?: RequestVariant[]
-}
-
-export type DBFriendlyProductData = {
-  title: string
-  category_id: number
-  subcategory_id: number
-  description: string[]
-  list_price: number
-  net_price: number
 }
 
 export type ProductRequestPartial = Partial<ProductRequestData>

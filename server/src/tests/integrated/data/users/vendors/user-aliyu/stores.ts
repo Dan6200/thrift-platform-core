@@ -17,8 +17,10 @@ export const listOfStores: StoreData[] = [
     global_styles: {
       layout_template: 'default',
       font_family: 'Roboto',
-      primary_color: '#336699',
-      secondary_color: '#FF9900',
+      light: {
+        primary_color: '#336699',
+        secondary_color: '#FF9900',
+      },
     },
     pages: [
       {
@@ -56,52 +58,144 @@ export const listOfStores: StoreData[] = [
           {
             section_type: 'hero',
             sort_order: 0,
+            section_title: 'Discover Your Perfect Pair',
             section_data: {
-              title: 'Discover Your Perfect Pair',
               subtitle: 'Premium denim for every style.',
-              imageUrl: 'https://inspiredenims.com/hero.jpg',
-              altText: 'Models wearing denim jeans',
-              callToAction: {
-                text: 'Shop Now',
-                url: 'https://inspiredenims.com/shop',
-              },
+              image_url: 'https://inspiredenims.com/hero.jpg',
+              cta_text: 'Shop Now',
+              cta_link: 'https://inspiredenims.com/shop',
             },
           },
           {
             section_type: 'product_grid',
             sort_order: 1,
-            section_data: {
-              title: 'Featured Products',
-              products: [
-                {
-                  id: 'prod1',
-                  name: 'Slim Fit Jeans',
-                  sku: 'SFJ001',
-                  imageUrl: 'https://inspiredenims.com/slimfit.jpg',
-                  altText: 'Slim fit jeans',
-                  price: { amount: 59.99, currency: 'USD' },
-                  rating: 4.7,
-                  numReviews: 120,
-                  productUrl: 'https://inspiredenims.com/prod1',
-                  shortDescription: 'Comfortable and stylish slim fit jeans.',
-                  isInStock: true,
-                },
-                {
-                  id: 'prod2',
-                  name: 'Denim Jacket Classic',
-                  sku: 'DJC001',
-                  imageUrl: 'https://inspiredenims.com/denimjacket.jpg',
-                  altText: 'Classic denim jacket',
-                  price: { amount: 79.99, currency: 'USD' },
-                  originalPrice: { amount: 99.99, currency: 'USD' },
-                  rating: 4.9,
-                  numReviews: 85,
-                  productUrl: 'https://inspiredenims.com/prod2',
-                  shortDescription: 'A timeless classic denim jacket.',
-                  isInStock: true,
-                },
-              ],
-            },
+            section_title: 'Featured Products',
+            section_data: [
+              {
+                product_id: 1,
+                vendor_id: 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44',
+                title: 'Slim Fit Jeans',
+                category_id: 1,
+                subcategory_id: 101,
+                description: ['Comfortable and stylish slim fit jeans.'],
+                list_price: 59.99,
+                net_price: 59.99,
+                variants: [
+                  {
+                    variant_id: 101,
+                    sku: 'SFJ-BL-32',
+                    list_price: 59.99,
+                    net_price: 59.99,
+                    quantity_available: 50,
+                    options: [
+                      {
+                        option_id: 1,
+                        option_name: 'Color',
+                        value_id: 11,
+                        value: 'Blue',
+                      },
+                      {
+                        option_id: 2,
+                        option_name: 'Size',
+                        value_id: 21,
+                        value: '32',
+                      },
+                    ],
+                  },
+                  {
+                    variant_id: 102,
+                    sku: 'SFJ-BL-34',
+                    list_price: 59.99,
+                    net_price: 59.99,
+                    quantity_available: 40,
+                    options: [
+                      {
+                        option_id: 1,
+                        option_name: 'Color',
+                        value_id: 11,
+                        value: 'Blue',
+                      },
+                      {
+                        option_id: 2,
+                        option_name: 'Size',
+                        value_id: 22,
+                        value: '34',
+                      },
+                    ],
+                  },
+                ],
+                media: [
+                  {
+                    name: 'slim-fit-jeans-front',
+                    path: '/images/slim-fit-jeans-front.jpg',
+                    description: 'Front view of the slim fit jeans',
+                    is_display_image: true,
+                    is_landing_image: false,
+                    filetype: 'image',
+                  },
+                  {
+                    name: 'slim-fit-jeans-back',
+                    path: '/images/slim-fit-jeans-back.jpg',
+                    description: 'Back view of the slim fit jeans',
+                    is_display_image: false,
+                    is_landing_image: false,
+                    filetype: 'image',
+                  },
+                ],
+              },
+              {
+                product_id: 2,
+                vendor_id: 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44',
+                title: 'Denim Jacket Classic',
+                category_id: 1,
+                subcategory_id: 102,
+                description: ['A timeless classic denim jacket.'],
+                list_price: 99.99,
+                net_price: 79.99,
+                variants: [
+                  {
+                    variant_id: 201,
+                    sku: 'DJC-M',
+                    list_price: 99.99,
+                    net_price: 79.99,
+                    quantity_available: 30,
+                    options: [
+                      {
+                        option_id: 2,
+                        option_name: 'Size',
+                        value_id: 23,
+                        value: 'M',
+                      },
+                    ],
+                  },
+                  {
+                    variant_id: 202,
+                    sku: 'DJC-L',
+                    list_price: 99.99,
+                    net_price: 79.99,
+                    quantity_available: 25,
+                    options: [
+                      {
+                        option_id: 2,
+                        option_name: 'Size',
+                        value_id: 24,
+                        value: 'L',
+                      },
+                    ],
+                  },
+                ],
+                media: [
+                  {
+                    name: 'denim-jacket-front',
+                    path: '/images/denim-jacket-front.jpg',
+                    description: 'Front view of the denim jacket',
+                    is_display_image: true,
+                    is_landing_image: true,
+                    filetype: 'image',
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -125,8 +219,10 @@ export const updatedStores: StoreData[] = [
     global_styles: {
       layout_template: 'default',
       font_family: 'Roboto',
-      primary_color: '#336699',
-      secondary_color: '#FF9900',
+      light: {
+        primary_color: '#336699',
+        secondary_color: '#FF9900',
+      },
     },
     pages: [
       {
@@ -152,15 +248,12 @@ export const updatedStores: StoreData[] = [
           {
             section_type: 'hero',
             sort_order: 0,
+            section_title: 'Discover Your Perfect Pair',
             section_data: {
-              title: 'Discover Your Perfect Pair',
               subtitle: 'Premium denim for every style.',
-              imageUrl: 'https://inspiredenims.com/hero.jpg',
-              altText: 'Models wearing denim jeans',
-              callToAction: {
-                text: 'Shop Now',
-                url: 'https://inspiredenims.com/shop',
-              },
+              image_url: 'https://inspiredenims.com/hero.jpg',
+              cta_text: 'Shop Now',
+              cta_link: 'https://inspiredenims.com/shop',
             },
           },
         ],

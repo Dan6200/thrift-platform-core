@@ -46,11 +46,6 @@ export default async ({
 
   const { variants, ...productData } = body
 
-  // const dBFriendlyProductData = {
-  //   ...productData,
-  //   description: knex.raw('ARRAY[?]::text[]', [productData.description]),
-  // }
-  //
   return knex('products')
     .where('product_id', productId)
     .where('store_id', storeId)

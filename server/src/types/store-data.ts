@@ -5,6 +5,7 @@ import {
   StoreDataResponseSchema,
   StoreIDSchema,
 } from '../app-schema/stores.js'
+import { ProductResponseData } from './products/index.js'
 
 interface SeoData {
   meta_description: string
@@ -30,9 +31,7 @@ interface SeoData {
   }
 }
 
-interface StoreStyling {
-  layout_template: 'default' | 'minimal' | 'grid'
-  font_family: string
+interface Theme {
   primary_color?: string
   secondary_color?: string
   background_color?: string
@@ -47,14 +46,17 @@ interface StoreStyling {
   input_color?: string
   primary_foreground_color?: string
   secondary_foreground_color?: string
-  tertiary_color?: string
-  tertiary_foreground_color?: string
   accent_color?: string
   accent_foreground_color?: string
   destructive_color?: string
   destructive_foreground_color?: string
   ring_color?: string
-  radius_color?: string
+  radius?: string
+  chart_color_1?: string
+  chart_color_2?: string
+  chart_color_3?: string
+  chart_color_4?: string
+  chart_color_5?: string
   hero_primary_color?: string
   hero_primary_foreground_color?: string
   hero_secondary_color?: string
@@ -69,20 +71,53 @@ interface StoreStyling {
   sidebar_ring_color?: string
 }
 
+interface StoreStyling {
+  layout_template: 'default' | 'minimal' | 'grid'
+  font_family: string
+  light?: Theme
+  dark?: Theme
+}
+
 interface Page {
   store_id: string
   page_slug: string
   page_title: string
   page_type: 'homepage' | 'standard' | 'product_list' | 'custom'
   seo_data: SeoData
-  sections: SectionData[]
+  sections: (ProductGrid | HeroSection | TextBlockSection)[]
 }
 
 interface SectionData {
+  section_title: string
   section_type: string
   section_data: any
   sort_order: number
   styles?: Partial<StoreStyling>
+}
+
+interface ProductGrid extends SectionData {
+  section_title: string
+  section_type: 'product_grid'
+  section_data: ProductResponseData[]
+}
+
+interface HeroSection extends SectionData {
+  section_title: string
+  section_type: 'hero'
+  section_data: {
+    subtitle?: string
+    cta_text?: string
+    cta_link?: string
+    image_url?: string
+  }
+}
+
+interface TextBlockSection extends SectionData {
+  section_title: string
+  section_type: 'text_block'
+  section_data: {
+    content: string
+  }
 }
 
 export default interface StoreData {

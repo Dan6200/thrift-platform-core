@@ -260,6 +260,7 @@ execute procedure trigger_set_timestamp();
 create table if not exists page_sections (
   section_id         serial        primary key,   -- Unique identifier for the section
   page_id            int           not null references pages (page_id) on delete cascade,
+  section_title      varchar,      -- The title of the section
   section_type       varchar       not null,      -- e.g., 'hero', 'product_grid', 'text_block'
   section_data       jsonb,                       -- JSONB for the section-specific content and styling
   sort_order         int           not null,      -- The order in which the section should appear on the page
