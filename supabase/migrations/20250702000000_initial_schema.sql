@@ -594,10 +594,10 @@ create policy "Payment info cannot be updated." on payment_info for update using
 create policy "Payment info cannot be deleted." on payment_info for delete using (false);
 
 alter table stores enable row level security;
-create policy "Vendors can view their own stores." on stores for select using (auth.uid() = vendor_id);
+create policy "Vendors and staff can view their stores." on stores for select using (auth.uid() = vendor_id OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = stores.store_id AND store_staff.staff_id = auth.uid()));
 create policy "Vendors can insert their own stores." on stores for insert with check (auth.uid() = vendor_id);
-create policy "Vendors can update their own stores." on stores for update using (auth.uid() = vendor_id);
-create policy "Vendors can delete their own stores." on stores for delete using (auth.uid() = vendor_id);
+create policy "Vendors and staff can update their stores." on stores for update using (auth.uid() = vendor_id OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = stores.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role IN ('admin', 'editor')));
+create policy "Vendors and admins can delete their stores." on stores for delete using (auth.uid() = vendor_id OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = stores.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role = 'admin'));
 
 alter table categories enable row level security;
 create policy "Categories are private." on categories for select using (false);
@@ -615,17 +615,17 @@ alter table store_categories enable row level security;
 create policy "Vendors can view their own store_categories." on store_categories for select using (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
 create policy "Vendors can insert their own store_categories." on store_categories for insert with check (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
 create policy "Vendors can update their own store_categories." on store_categories for update using (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
-create policy "Vendors can delete their own store_categories." on store_categories for delete using (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id));
+create policy "Vendors and admins can delete their store_categories." on store_categories for delete using (auth.uid() = (SELECT vendor_id FROM stores WHERE store_id = store_categories.store_id) OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = store_categories.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role = 'admin'));
 
 alter table product_store_category_links enable row level security;
 create policy "Vendors can view their own product_store_category_links." on product_store_category_links for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can insert their own product_store_category_links." on product_store_category_links for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors and staff can insert their product_store_category_links." on product_store_category_links for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND (products.vendor_id = auth.uid() OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = products.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role IN ('admin', 'editor'))) ));
 create policy "Vendors can update their own product_store_category_links." on product_store_category_links for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can delete their own product_store_category_links." on product_store_category_links for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_store_category_links.product_id AND products.vendor_id = auth.uid() ));
 
 alter table products enable row level security;
 create policy "Vendors can view their own products." on products for select using (auth.uid() = vendor_id);
-create policy "Vendors can insert their own products." on products for insert with check (auth.uid() = vendor_id);
+create policy "Vendors and staff can insert their products." on products for insert with check (auth.uid() = vendor_id OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = products.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role IN ('admin', 'editor')));
 create policy "Vendors can update their own products." on products for update using (auth.uid() = vendor_id);
 create policy "Vendors can delete their own products." on products for delete using (auth.uid() = vendor_id);
 
@@ -633,31 +633,31 @@ alter table product_variants enable row level security;
 create policy "Vendors can view their own product_variants." on product_variants for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can insert their own product_variants." on product_variants for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can update their own product_variants." on product_variants for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can delete their own product_variants." on product_variants for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors and admins can delete their product_variants." on product_variants for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_variants.product_id AND (products.vendor_id = auth.uid() OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = products.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role = 'admin')) ));
 
 alter table product_options enable row level security;
 create policy "Vendors can view their own product_options." on product_options for select using (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
 create policy "Vendors can insert their own product_options." on product_options for insert with check (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
 create policy "Vendors can update their own product_options." on product_options for update using (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
-create policy "Vendors can delete their own product_options." on product_options for delete using (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND products.vendor_id = auth.uid()));
+create policy "Vendors and admins can delete their product_options." on product_options for delete using (EXISTS (SELECT 1 FROM products WHERE products.product_id = product_options.product_id AND (products.vendor_id = auth.uid() OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = products.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role = 'admin'))));
 
 alter table product_option_values enable row level security;
 create policy "Vendors can view their own product_option_values." on product_option_values for select using (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
 create policy "Vendors can insert their own product_option_values." on product_option_values for insert with check (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
-create policy "Vendors can update their own product_option_values." on product_option_values for update using (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
+create policy "Vendors and staff can update their product_option_values." on product_option_values for update using (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND (p.vendor_id = auth.uid() OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = p.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role IN ('admin', 'editor')))));
 create policy "Vendors can delete their own product_option_values." on product_option_values for delete using (EXISTS (SELECT 1 FROM product_options po JOIN products p ON po.product_id = p.product_id WHERE po.option_id = product_option_values.option_id AND p.vendor_id = auth.uid()));
 
 alter table variant_to_option_values enable row level security;
 create policy "Vendors can view their own variant_to_option_values." on variant_to_option_values for select using (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
 create policy "Vendors can insert their own variant_to_option_values." on variant_to_option_values for insert with check (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
 create policy "Vendors can update their own variant_to_option_values." on variant_to_option_values for update using (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
-create policy "Vendors can delete their own variant_to_option_values." on variant_to_option_values for delete using (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND p.vendor_id = auth.uid()));
+create policy "Vendors and admins can delete their variant_to_option_values." on variant_to_option_values for delete using (EXISTS (SELECT 1 FROM product_variants pv JOIN products p ON pv.product_id = p.product_id WHERE pv.variant_id = variant_to_option_values.variant_id AND (p.vendor_id = auth.uid() OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = p.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role = 'admin'))));
 
 alter table featured_products enable row level security;
 create policy "Vendors can view their own featured_products." on featured_products for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can insert their own featured_products." on featured_products for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can update their own featured_products." on featured_products for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can delete their own featured_products." on featured_products for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors and admins can delete their featured_products." on featured_products for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = featured_products.product_id AND (products.vendor_id = auth.uid() OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = products.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role = 'admin')) ));
 
 alter table orders enable row level security;
 create policy "Users can view their own orders." on orders for select using (auth.uid() = customer_id);
@@ -675,7 +675,7 @@ alter table product_media enable row level security;
 create policy "Vendors can view their own product_media." on product_media for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can insert their own product_media." on product_media for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
 create policy "Vendors can update their own product_media." on product_media for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can delete their own product_media." on product_media for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
+create policy "Vendors and admins can delete their product_media." on product_media for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND (products.vendor_id = auth.uid() OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = products.store_id AND store_staff.staff_id = auth.uid() AND store_staff.role = 'admin')) ));
 
 alter table shopping_cart enable row level security;
 create policy "Users can view their own shopping_cart." on shopping_cart for select using (auth.uid() = customer_id);
@@ -702,7 +702,7 @@ create policy "Users can update their own vendor_reviews." on vendor_reviews for
 create policy "Users can delete their own vendor_reviews." on vendor_reviews for delete using (auth.uid() = customer_id);
 
 alter table customer_reviews enable row level security;
-create policy "Vendors can view their own customer_reviews." on customer_reviews for select using (auth.uid() = vendor_id);
+create policy "Vendors and staff can view their customer_reviews." on customer_reviews for select using (auth.uid() = vendor_id OR EXISTS (SELECT 1 FROM store_staff WHERE store_staff.store_id = (SELECT store_id FROM orders WHERE orders.order_id = customer_reviews.order_id) AND store_staff.staff_id = auth.uid()));
 create policy "Vendors can insert their own customer_reviews." on customer_reviews for insert with check (auth.uid() = vendor_id);
 create policy "Vendors can update their own customer_reviews." on customer_reviews for update using (auth.uid() = vendor_id);
 create policy "Vendors can delete their own customer_reviews." on customer_reviews for delete using (auth.uid() = vendor_id);
