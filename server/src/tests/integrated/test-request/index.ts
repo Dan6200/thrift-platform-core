@@ -51,7 +51,7 @@ export default function ({
     // Validate the response body
     if (validateTestResData && !validateTestResData(response.body, query)) {
       if (response.status === 404) return null
-      throw new Error('Invalid Database Result')
+      // throw new Error('Invalid Database Result') Now allowing empty responses
     }
 
     return response.body

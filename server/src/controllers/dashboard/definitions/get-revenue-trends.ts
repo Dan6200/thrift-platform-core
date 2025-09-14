@@ -21,7 +21,6 @@ export default async ({
   params,
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
   const { storeId } = params
-  console.log(params)
 
   if (!userId) {
     throw new UnauthorizedError(
@@ -34,12 +33,12 @@ export default async ({
   }
 
   // Authorization: Verify the user owns or has access to this storeId
-  const storeCheck = await knex('stores')
-    .where('store_id', storeId as string)
-    .andWhere('vendor_id', userId)
-    .first('store_id')
-
-  if (!storeCheck) {
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor', 'viewer'],
+  ])
+  if (!hasAccess.rows[0].has_store_access) {
     throw new ForbiddenError(
       "You are not authorized to access this store's dashboard.",
     )
@@ -60,13 +59,14 @@ export default async ({
     )
   }
 
+  const sqlParams: (string | Date)[] = [storeId]
   let paramIndex = 2 // $1 is storeId
 
   const { clause: orderDateClause, nextParamIndex } = getDateRangeClause(
     parsedStartDate,
     parsedEndDate,
     'order_date',
-    params,
+    sqlParams,
     paramIndex,
   )
   paramIndex = nextParamIndex
@@ -81,8 +81,7 @@ export default async ({
     WHERE store_id = $1
     ${orderDateClause}
     GROUP BY date
-    ORDER BY date ASC;
-  ;`
+    ORDER BY date ASC;`
 
-  return pg.query(dbQueryString, params)
+  return pg.query(dbQueryString, sqlParams)
 }

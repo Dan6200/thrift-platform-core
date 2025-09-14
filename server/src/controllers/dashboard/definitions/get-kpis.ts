@@ -1,7 +1,10 @@
 import { QueryResult, QueryResultRow } from 'pg'
-import { pg } from '../../../db/index.js' // Adjust path
+import { knex, pg } from '../../../db/index.js' // Adjust path
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import { validateDashboardQueryParams, getDateRangeClause } from './utils.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
+import BadRequestError from '#src/errors/bad-request.js'
+import ForbiddenError from '#src/errors/forbidden.js'
 
 /**
  * @param {QueryParams} { query, userId }
@@ -13,10 +16,34 @@ export default async ({
   userId,
   params,
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { authorizedStoreId, parsedStartDate, parsedEndDate } =
-    await validateDashboardQueryParams({ query, userId, params })
+  const { storeId } = params
 
-  const queryParamsArray: (string | Date)[] = [authorizedStoreId]
+  if (!userId) {
+    throw new UnauthorizedError(
+      'Authentication required to access dashboard data.',
+    )
+  }
+
+  if (!storeId) {
+    throw new BadRequestError('Store ID is required as a path parameter.')
+  }
+
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor', 'viewer'],
+  ])
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError(
+      "You are not authorized to access this store's dashboard.",
+    )
+  }
+
+  const { parsedStartDate, parsedEndDate } = await validateDashboardQueryParams(
+    { query, userId, params },
+  )
+
+  const sqlParams: (string | Date)[] = [storeId]
   let paramIndex = 2 // $1 is storeId
 
   const { clause: orderDateClause, nextParamIndex: orderDateParamIndex } =
@@ -24,7 +51,7 @@ export default async ({
       parsedStartDate,
       parsedEndDate,
       'o.order_date',
-      queryParamsArray,
+      sqlParams,
       paramIndex,
     )
   paramIndex = orderDateParamIndex
@@ -36,7 +63,7 @@ export default async ({
     parsedStartDate,
     parsedEndDate,
     'p_customer.created_at',
-    queryParamsArray,
+    sqlParams,
     paramIndex,
   )
   paramIndex = profileCreatedAtParamIndex
@@ -54,5 +81,5 @@ export default async ({
     ${orderDateClause}
   ;`
 
-  return pg.query(dbQueryString, queryParamsArray)
+  return pg.query(dbQueryString, sqlParams)
 }

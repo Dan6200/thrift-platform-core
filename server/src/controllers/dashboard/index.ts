@@ -58,7 +58,9 @@ const getRevenueTrends = processGetRoute({
   Query: getRevenueTrendsQuery,
   status: OK,
   validateQuery: validateQuerySchema(RevenueTrendQuerySchema),
-  validateResult: validateResData(RevenueTrendResponseSchema), // Response is an array
+  validateResult: validateResData(RevenueTrendResponseSchema, {
+    allowEmpty: true,
+  }), // Allow an empty response
 })
 
 // --- Detailed Analytics Sections - Sales Performance ---
