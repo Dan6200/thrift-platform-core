@@ -9,71 +9,77 @@ import { ProfileRequestData } from '../../../types/profile/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'
-import { knex } from '#src/db/index.js'
+import { createStoreForTesting } from '../helpers/create-store.js'
 
 export default function ({
-  userInfo,
+  vendorInfo,
+  nonVendorInfo,
   stores,
   updatedStores,
 }: {
-  userInfo: ProfileRequestData
+  vendorInfo: ProfileRequestData
+  nonVendorInfo: ProfileRequestData
   stores: StoreData[]
   updatedStores: StoreData[]
 }) {
   const server = process.env.SERVER!
-  let token: string
-  let userId: string
+  let nonVendorToken: string
+  let nonVendorUserId: string
+  let vendorToken: string
+  let vendorUserId: string
+  let storeId: string
+
   before(async () => {
-    userId = await createUserForTesting(userInfo)
-    token = await signInForTesting(userInfo)
+    vendorUserId = await createUserForTesting(vendorInfo)
+    vendorToken = await signInForTesting(vendorInfo)
+    const response = await createStoreForTesting(vendorToken)
+    storeId = response.body.store_id
   })
-  const path = '/v1/stores'
 
   beforeEach(async () => {
-    // important to move to before each because the supabase create user is interfering and causing race conditions
-    await knex('profiles')
-      .update('is_vendor', false)
-      .where({ email: userInfo.email })
-      .returning('*')
+    nonVendorUserId = await createUserForTesting(nonVendorInfo)
+    nonVendorToken = await signInForTesting(nonVendorInfo)
   })
 
-  let storeIds: string[] = []
+  after(async () => {
+    await deleteUserForTesting(vendorUserId)
+  })
+
+  afterEach(async () => {
+    await deleteUserForTesting(nonVendorUserId)
+  })
+
+  const path = '/v1/stores'
+
   it('should fail to create a store when no vendor account exists', async () => {
     assert(!!stores.length)
     for (const store of stores) {
-      const { store_id } = await testCreateStoreWithoutVendorAccount({
+      await testCreateStoreWithoutVendorAccount({
         server,
-        token,
+        token: nonVendorToken,
         path,
         requestBody: store,
       })
-      storeIds.push(store_id)
     }
   })
 
   it('should fail to update stores when no vendor account exists', async () => {
-    assert(!!storeIds.length && storeIds.length === updatedStores.length)
-    for (const [idx, storeId] of storeIds.entries()) {
+    for (const store of updatedStores) {
       await testUpdateStoreWithoutVendorAccount({
         server,
-        token,
+        token: nonVendorToken,
         path: path + '/' + storeId,
-        requestBody: updatedStores[idx],
+        requestBody: store,
       })
     }
   })
 
   it('should fail to delete stores when no vendor account exists', async () => {
-    assert(!!storeIds.length)
-    for (const storeId of storeIds) {
-      await testDeleteStoreWithoutVendorAccount({
-        server,
-        token,
-        path: path + '/' + storeId,
-      })
-    }
-  })
-  after(async () => {
-    await deleteUserForTesting(userId)
+    await testDeleteStoreWithoutVendorAccount({
+      server,
+      token: nonVendorToken,
+      path: path + '/' + storeId,
+    })
   })
 }
+
