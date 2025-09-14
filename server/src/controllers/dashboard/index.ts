@@ -51,7 +51,9 @@ const getKPIs = processGetRoute({
   Query: getKPIsQuery,
   status: OK,
   validateQuery: validateQuerySchema(DashboardKPIsQuerySchema),
-  validateResult: validateResData(DashboardKPIsResponseSchema),
+  validateResult: validateResData(DashboardKPIsResponseSchema, {
+    allowEmpty: true,
+  }),
 })
 
 const getRevenueTrends = processGetRoute({
@@ -69,7 +71,9 @@ const getSalesAnalytics = processGetRoute({
   Query: getSalesAnalyticsQuery,
   status: OK,
   validateQuery: validateQuerySchema(SalesAnalyticsQuerySchema),
-  validateResult: validateResData(SalesAnalyticsByProductResponseSchema), // Assuming by-product is the default or most common
+  validateResult: validateResData(SalesAnalyticsByProductResponseSchema, {
+    allowEmpty: true,
+  }), // Assuming by-product is the default or most common
 })
 
 // --- Detailed Analytics Sections - Customer Insights ---

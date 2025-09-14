@@ -7,18 +7,45 @@ import {
   getPaginationAndSortClauses,
 } from './utils.js'
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
+import UnauthorizedError from '#src/errors/unauthorized.js'
+import ForbiddenError from '#src/errors/forbidden.js'
+import { knex } from '../../../db/index.js'
 
 /**
  * @param {QueryParams} { query, userId }
  * @returns {Promise<QueryResult<QueryResultRow>>}
  * @description Retrieves various sales performance reports based on type.
  */
+
 export default async ({
   query,
   userId,
+  params, // Add params here
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
+  const { storeId } = params // Extract storeId
+
+  if (!userId) {
+    throw new UnauthorizedError(
+      'Authentication required to access dashboard data.',
+    )
+  }
+
+  if (!storeId) {
+    throw new BadRequestError('Store ID is required as a path parameter.')
+  }
+
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor', 'viewer'],
+  ])
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError(
+      "You are not authorized to access this store's dashboard.",
+    )
+  }
+
   const {
-    authorizedStoreId,
     parsedStartDate,
     parsedEndDate,
     type,
@@ -27,7 +54,7 @@ export default async ({
     sortBy,
     sortOrder,
     status,
-  } = await validateDashboardQueryParams({ query, userId })
+  } = await validateDashboardQueryParams({ query }) // Remove userId from here
 
   if (!type) {
     throw new BadRequestError(
@@ -35,7 +62,7 @@ export default async ({
     )
   }
 
-  const params: (string | Date)[] = [authorizedStoreId]
+  const sqlParams: (string | Date)[] = [storeId] // Change params to sqlParams
   let paramIndex = 2 // $1 is storeId
   let dbQueryString = ''
 
@@ -43,7 +70,7 @@ export default async ({
     parsedStartDate,
     parsedEndDate,
     'o.order_date',
-    params,
+    sqlParams, // Changed from params
     paramIndex,
   )
   paramIndex = nextParamIndex
@@ -56,7 +83,7 @@ export default async ({
         )
       }
       const sortColumnProduct =
-        sortBy === 'totalRevenue' ? 'total_revenue' : 'units_sold'
+        sortBy === 'totalRevenue' ? '"totalRevenue"' : '"unitsSold"'
       const paginationSortClauseProduct = getPaginationAndSortClauses(
         sortColumnProduct,
         sortOrder || 'desc',
@@ -101,7 +128,7 @@ export default async ({
       let statusClause = ''
       if (status) {
         statusClause = `AND o.status = $${paramIndex}`
-        params.push(status as string)
+        sqlParams.push(status as string) // Changed from params.push
         paramIndex++
       }
       const paginationSortClauseOrder = getPaginationAndSortClauses(
@@ -129,5 +156,6 @@ export default async ({
       throw new BadRequestError('Invalid sales report type.')
   }
 
-  return pg.query(dbQueryString, params)
+  console.log(dbQueryString)
+  return pg.query(dbQueryString, sqlParams) // Changed from params
 }

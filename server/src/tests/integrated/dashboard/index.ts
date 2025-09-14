@@ -65,6 +65,7 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
         token,
         query: {
           type: 'by-product',
+          offset: 2,
           limit: 10,
           sortBy: 'unitsSold',
           sortOrder: 'desc',
@@ -86,7 +87,12 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
         server,
         path: `${path}/sales-analytics`,
         token,
-        query: { type: 'recent-orders', limit: 10, status: 'completed' },
+        query: {
+          type: 'recent-orders',
+          offset: 1,
+          limit: 10,
+          status: 'completed',
+        },
       })
     })
 
