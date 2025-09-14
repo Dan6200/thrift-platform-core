@@ -6,6 +6,7 @@ import { QueryParams } from '../../../types/process-routes.js'
 import {
   isValidProductRequestData,
   ProductID,
+  ProductResponseData,
 } from '../../../types/products/index.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 
@@ -18,28 +19,19 @@ export default async ({
   body,
   userId,
   query: { store_id: storeId },
-}: QueryParams): Promise<ProductResponseData[]> => {
+}: QueryParams): Promise<ProductID[]> => {
   if (!userId) {
-    throw new UnauthorizedError('Sign-in to list product.')
+    throw new UnauthorizedError('Sign-in to create product.')
   }
-
-  // check if vendor account is enabled
-  const result = await knex('profiles').where('id', userId).first('is_vendor')
-  if (!result?.is_vendor)
-    throw new ForbiddenError(
-      'Vendor account disabled. Need to enable it to create a store',
-    )
   if (!storeId)
     throw new BadRequestError(
-      'Need to provide Store ID as query param in order to list a product',
+      'Need to provide Store ID as query param in order to create a product',
     )
-  const response = await knex('stores')
-    .where('vendor_id', userId)
-    .where('store_id', storeId)
-    .first('vendor_id')
 
-  if (!response?.vendor_id)
-    throw new ForbiddenError('Must create a store to be able to list products')
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [userId, storeId, ['admin', 'editor']]);
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError('You do not have permission to create products for this store.');
+  }
 
   if (!isValidProductRequestData(body)) {
     console.error('Invalid product data:', body);
@@ -137,4 +129,3 @@ export default async ({
 
   return [{ product_id: createdProduct.product_id }]
 }
-

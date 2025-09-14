@@ -25,21 +25,13 @@ export default async ({
   if (params == null) throw new BadRequestError('Must provide product id')
   const { productId } = params
   const { store_id: storeId } = query
-  // check if vendor account is enabled
-  const response = await knex('profiles').where('id', userId).first('is_vendor')
-  if (!response?.is_vendor)
-    throw new ForbiddenError(
-      'Profile is not a vendor. Need to enable your vendor account for this operation.',
-    )
   if (!storeId)
     throw new BadRequestError('Need to provide Store ID as query param')
-  const storeQRes = await knex('stores')
-    .where('vendor_id', userId)
-    .where('store_id', storeId)
-    .first('vendor_id')
 
-  if (!storeQRes?.vendor_id)
-    throw new ForbiddenError('Must have a store to be able to update products')
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [userId, storeId, ['admin', 'editor']]);
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError('You do not have permission to update products for this store.');
+  }
 
   if (!isValidProductRequestData(body))
     throw new BadRequestError('Invalid product data')

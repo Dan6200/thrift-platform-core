@@ -4,6 +4,7 @@ import { isValidVariantRequestData, VariantIdResponse } from '../../../../types/
 import BadRequestError from '../../../../errors/bad-request.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 import ForbiddenError from '#src/errors/forbidden.js'
+import NotFoundError from '#src/errors/not-found.js'
 
 export default async ({ params, body, userId }: QueryParams): Promise<VariantIdResponse[]> => {
     if (!userId) {
@@ -19,10 +20,19 @@ export default async ({ params, body, userId }: QueryParams): Promise<VariantIdR
     const { productId } = params;
     const variantData = body;
 
-    // Check if the user owns the product
-    const product = await knex('products').where({ product_id: productId, vendor_id: userId }).first();
+    if (!userId) {
+        throw new UnauthorizedError('Sign-in to create a variant.')
+    }
+    if (!params?.productId) {
+        throw new BadRequestError('Must provide a product id.')
+    }
+    const product = await knex('products').where({ product_id: productId }).first('store_id');
     if (!product) {
-        throw new ForbiddenError('You do not own this product.');
+        throw new NotFoundError('Product not found.');
+    }
+    const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [userId, product.store_id, ['admin', 'editor']]);
+    if (!hasAccess.rows[0].has_store_access) {
+      throw new ForbiddenError('You do not have permission to create variants for this product.');
     }
 
     const newVariant = await knex.transaction(async (trx) => {

@@ -12,7 +12,10 @@ import {
   testUpdateVariant,
   testDeleteVariant,
 } from './definitions/index.js'
-import { variantsToCreate, variantUpdates } from '../data/users/vendors/user-aliyu/products/index.js'
+import {
+  variantsToCreate,
+  variantUpdates,
+} from '../data/users/vendors/user-aliyu/products/index.js'
 import { ProfileRequestData } from '../../../types/profile/index.js'
 import assert from 'assert'
 import { createUserForTesting } from '../helpers/create-user.js'
@@ -71,6 +74,7 @@ export default function ({
       const { variant_id } = await testPostVariant({
         server,
         path: `${productsRoute}${productId}/variants`,
+        query: { store_id },
         requestBody: variant,
         token,
       })
@@ -85,6 +89,7 @@ export default function ({
       await testUpdateVariant({
         server,
         path: `${productsRoute}${productId}/variants/${variantId}`,
+        query: { store_id },
         requestBody: variantUpdates[i],
         token,
       })
@@ -133,6 +138,7 @@ export default function ({
     for (const variantId of variantIds) {
       await testDeleteVariant({
         server,
+        query: { store_id },
         path: `${productsRoute}${productId}/variants/${variantId}`,
         token,
       })
@@ -165,3 +171,4 @@ export default function ({
 
   after(async () => deleteUserForTesting(userId))
 }
+

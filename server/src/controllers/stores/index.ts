@@ -346,14 +346,11 @@ const deleteQuery = async ({
     throw new BadRequestError('No valid route parameters provided')
   const { storeId } = params
   if (!storeId) throw new BadRequestError('Need store ID param to delete store')
-  const result = await knex('profiles')
-    .where('id', userId)
-    .select('is_vendor')
-    .limit(1)
-  if (!result[0]?.is_vendor)
-    throw new ForbiddenError(
-      'Vendor account disabled. Need to enable it to create a store',
-    )
+
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [userId, storeId, ['admin']]);
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError('You do not have permission to delete this store.');
+  }
   return knex<StoreData>('stores')
     .where('store_id', storeId)
     .where('vendor_id', userId)
