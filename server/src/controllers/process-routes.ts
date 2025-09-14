@@ -92,8 +92,7 @@ export default ({
         }
         let responseData: any = null
         if (isTypeQueryResultRow(dbResponse)) {
-          if (dbResponse.rowCount === 1) responseData = dbResponse.rows[0]
-          else responseData = dbResponse.rows
+          responseData = dbResponse.rows
         }
         // These lines lead to bugs...
         // } else if (Array.isArray(dbResponse) && dbResponse.length === 1)

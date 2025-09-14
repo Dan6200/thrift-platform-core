@@ -47,7 +47,7 @@ export default function ({
     userId = await createUserForTesting(userInfo)
     token = await signInForTesting(userInfo)
     const response = await createStoreForTesting(token)
-    ;({ store_id } = response.body)
+    ;[{ store_id }] = response.body
   })
 
   const getProductsRoute = () => `/v1/products/`
@@ -56,7 +56,7 @@ export default function ({
     const productsRoute = getProductsRoute()
 
     for (const product of products) {
-      const { product_id } = await testPostProduct({
+      const [{ product_id }] = await testPostProduct({
         server,
         path: `${productsRoute}`,
         requestBody: product,
@@ -71,7 +71,7 @@ export default function ({
     const productsRoute = getProductsRoute()
     const productId = productIds[0]
     for (const variant of variantsToCreate) {
-      const { variant_id } = await testPostVariant({
+      const [{ variant_id }] = await testPostVariant({
         server,
         path: `${productsRoute}${productId}/variants`,
         query: { store_id },

@@ -87,7 +87,7 @@ const createQuery = async ({
     }
 
     await trx.commit()
-    return store
+    return [store]
   } catch (error) {
     await trx.rollback()
     throw error

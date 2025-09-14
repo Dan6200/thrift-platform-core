@@ -47,7 +47,7 @@ export default function ({
     // Create stores using store information
     assert(!!stores.length)
     for (const store of stores) {
-      const { store_id } = await testCreateStore({
+      const [{ store_id }] = await testCreateStore({
         server,
         token,
         path,

@@ -46,7 +46,7 @@ export default function ({
   it(`it should add multiple delivery addresses for the customer`, async () => {
     assert(!!listOfDeliveryInfo.length)
     for (const deliveryInfo of listOfDeliveryInfo) {
-      const { delivery_info_id } = await testCreateDelivery({
+      const [{ delivery_info_id }] = await testCreateDelivery({
         server,
         path: deliveryPath,
         requestBody: { ...deliveryInfo },

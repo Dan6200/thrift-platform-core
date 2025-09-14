@@ -133,7 +133,7 @@ const getAllQuery = async ({
     throw new ForbiddenError(
       'Profile is not a customer. Only customers can view delivery addresses.',
     )
-  return knex<DeliveryInfo>('delivery_info')
+  const finalResult = knex<DeliveryInfo>('delivery_info')
     .join('address', 'delivery_info.address_id', 'address.address_id')
     .where('delivery_info.customer_id', userId)
     .select(
@@ -150,6 +150,8 @@ const getAllQuery = async ({
       'delivery_info.created_at',
       'delivery_info.updated_at',
     )
+  console.log(await finalResult)
+  return finalResult
 }
 
 /* @param {QueryParams} qp

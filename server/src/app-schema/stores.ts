@@ -170,59 +170,66 @@ export const StoreDataRequestPartialSchema = joi.object({
   pages: joi.array().items(PageSchemaRequest).optional(),
 })
 
-export const StoreIDSchema = joi.object({
-  store_id: joi.number().required(),
-})
+export const StoreIDSchema = joi
+  .array()
+  .items(
+    joi.object({
+      store_id: joi.number().required(),
+    }),
+  )
+  .length(1)
 
 export const StoreDataResponseListSchema = joi
   .array()
   .items(
-    joi
-      .object({
-        store_id: joi.number().required(),
-        store_name: joi.string().min(3).max(50).required(),
-        custom_domain: joi.string().hostname().allow(null).required(),
-        vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
-        favicon: joi.string().uri().allow(null).required(),
-        global_styles: StoreStylingSchema.required(),
-        store_address: joi
-          .object({
-            address_line_1: joi.string().required(),
-            address_line_2: joi.string().allow(null).optional(),
-            city: joi.string().required(),
-            state: joi.string().required(),
-            zip_postal_code: joi.string().required(),
-            country: joi.string().required(),
-          })
-          .required(),
-        pages: joi.array().items(PageSchemaResponse).optional(),
-        created_at: joi.date().required(),
-        updated_at: joi.date().required(),
-      })
-      .required(),
+    joi.object({
+      store_id: joi.number().required(),
+      store_name: joi.string().min(3).max(50).required(),
+      custom_domain: joi.string().hostname().allow(null).required(),
+      vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
+      favicon: joi.string().uri().allow(null).required(),
+      global_styles: StoreStylingSchema.required(),
+      store_address: joi
+        .object({
+          address_line_1: joi.string().required(),
+          address_line_2: joi.string().allow(null).optional(),
+          city: joi.string().required(),
+          state: joi.string().required(),
+          zip_postal_code: joi.string().required(),
+          country: joi.string().required(),
+        })
+        .required(),
+      pages: joi.array().items(PageSchemaResponse).optional(),
+      created_at: joi.date().required(),
+      updated_at: joi.date().required(),
+    }),
   )
   .required()
 
 export const StoreDataResponseSchema = joi
-  .object({
-    store_id: joi.number().required(),
-    store_name: joi.string().min(3).max(50).required(),
-    custom_domain: joi.string().hostname().allow(null).required(),
-    vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
-    favicon: joi.string().uri().allow(null).required(),
-    global_styles: StoreStylingSchema.required(),
-    store_address: joi
-      .object({
-        address_line_1: joi.string().required(),
-        address_line_2: joi.string().allow(null).optional(),
-        city: joi.string().required(),
-        state: joi.string().required(),
-        zip_postal_code: joi.string().required(),
-        country: joi.string().required(),
-      })
-      .required(),
-    pages: joi.array().items(PageSchemaResponse).optional(),
-    created_at: joi.date().required(),
-    updated_at: joi.date().required(),
-  })
+  .array()
+  .items(
+    joi.object({
+      store_id: joi.number().required(),
+      store_name: joi.string().min(3).max(50).required(),
+      custom_domain: joi.string().hostname().allow(null).required(),
+      vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
+      favicon: joi.string().uri().allow(null).required(),
+      global_styles: StoreStylingSchema.required(),
+      store_address: joi
+        .object({
+          address_line_1: joi.string().required(),
+          address_line_2: joi.string().allow(null).optional(),
+          city: joi.string().required(),
+          state: joi.string().required(),
+          zip_postal_code: joi.string().required(),
+          country: joi.string().required(),
+        })
+        .required(),
+      pages: joi.array().items(PageSchemaResponse).optional(),
+      created_at: joi.date().required(),
+      updated_at: joi.date().required(),
+    }),
+  )
+  .length(1)
   .required()

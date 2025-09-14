@@ -103,50 +103,50 @@ export const LowStockProductsQuerySchema = joi.array().items(joi.object({
   offset: LimitOffsetSchema.optional(),
 })).length(1)
 
-export const ProductPerformanceQuerySchema = joi.object({
+export const ProductPerformanceQuerySchema = joi.array().items(joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
-})
+})).length(1)
 
 // --- Response Schemas ---
 
-export const DashboardKPIsResponseSchema = joi.object({
+export const DashboardKPIsResponseSchema = joi.array().items(joi.object({
   totalRevenue: joi.number().precision(2).required(),
   totalOrders: joi.number().integer().min(0).required(),
   averageOrderValue: joi.number().precision(2).required(),
   newCustomers: joi.number().integer().min(0).required(),
   returningCustomers: joi.number().integer().min(0).required(),
   conversionRate: joi.number().precision(2).allow(null).optional(), // Can be null as per spec
-})
+})).length(1)
 
-export const RevenueTrendResponseSchema = joi.object({
+export const RevenueTrendResponseSchema = joi.array().items(joi.object({
   date: joi.string().isoDate().required(),
   revenue: joi.number().precision(2).required(),
-})
+})).length(1)
 
 // Sales Analytics Response Schemas (can be unioned or handled dynamically in controller)
-export const SalesAnalyticsByProductResponseSchema = joi.object({
+export const SalesAnalyticsByProductResponseSchema = joi.array().items(joi.object({
   productId: joi.number().integer().required(),
   productTitle: joi.string().required(),
   unitsSold: joi.number().integer().min(0).required(),
   totalRevenue: joi.number().precision(2).required(),
-})
+})).length(1)
 
-export const SalesAnalyticsByCategoryResponseSchema = joi.object({
+export const SalesAnalyticsByCategoryResponseSchema = joi.array().items(joi.object({
   categoryId: joi.number().integer().required(),
   categoryName: joi.string().required(),
   totalRevenue: joi.number().precision(2).required(),
-})
+})).length(1)
 
-export const SalesAnalyticsRecentOrdersResponseSchema = joi.object({
+export const SalesAnalyticsRecentOrdersResponseSchema = joi.array().items(joi.object({
   orderId: joi.number().integer().required(),
   customerName: joi.string().required(),
   totalAmount: joi.number().precision(2).required(),
   status: joi.string().required(),
   orderDate: joi.string().isoDate().required(),
-})
+})).length(1)
 
 // Example of a union schema if you prefer to validate all types in one go at the controller level
 // export const SalesAnalyticsResponseUnionSchema = joi.alternatives().try(
@@ -155,38 +155,38 @@ export const SalesAnalyticsRecentOrdersResponseSchema = joi.object({
 //   joi.array().items(SalesAnalyticsRecentOrdersResponseSchema)
 // );
 
-export const CustomerAcquisitionTrendResponseSchema = joi.object({
+export const CustomerAcquisitionTrendResponseSchema = joi.array().items(joi.object({
   date: joi.string().isoDate().required(),
   newCustomers: joi.number().integer().min(0).required(),
-})
+})).length(1)
 
-export const CustomersByLocationResponseSchema = joi.object({
+export const CustomersByLocationResponseSchema = joi.array().items(joi.object({
   location: joi.string().required(),
   customerCount: joi.number().integer().min(0).required(),
-})
+})).length(1)
 
-export const CustomerCLVResponseSchema = joi.object({
+export const CustomerCLVResponseSchema = joi.array().items(joi.object({
   customerId: joi.string().guid({ version: 'uuidv4' }).required(),
   customerName: joi.string().required(),
   clv: joi.number().precision(2).required(),
-})
+})).length(1)
 
-export const TopSellingProductsResponseSchema = joi.object({
+export const TopSellingProductsResponseSchema = joi.array().items(joi.object({
   productId: joi.number().integer().required(),
   productTitle: joi.string().required(),
   unitsSold: joi.number().integer().min(0).required(),
   totalRevenue: joi.number().precision(2).required(),
-})
+})).length(1)
 
-export const LowStockProductsResponseSchema = joi.object({
+export const LowStockProductsResponseSchema = joi.array().items(joi.object({
   productId: joi.number().integer().required(),
   productTitle: joi.string().required(),
   quantityAvailable: joi.number().integer().min(0).required(),
-})
+})).length(1)
 
-export const ProductPerformanceResponseSchema = joi.object({
+export const ProductPerformanceResponseSchema = joi.array().items(joi.object({
   productId: joi.number().integer().required(),
   productTitle: joi.string().required(),
   purchases: joi.number().integer().min(0).required(),
   views: joi.number().integer().min(0).allow(null).required(), // Explicitly allow null for views
-})
+})).length(1)

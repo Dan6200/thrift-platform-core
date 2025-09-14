@@ -33,7 +33,7 @@ export default function ({
     vendorUserId = await createUserForTesting(vendorInfo)
     vendorToken = await signInForTesting(vendorInfo)
     const response = await createStoreForTesting(vendorToken)
-    storeId = response.body.store_id
+    ;[{ store_id: storeId }] = response.body
   })
 
   beforeEach(async () => {
