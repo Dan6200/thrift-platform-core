@@ -1,5 +1,5 @@
 import { QueryResult, QueryResultRow } from 'pg'
-import { pg } from '../../../db/index.js' // Adjust path
+import { knex, pg } from '../../../db/index.js' // Adjust path
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import {
   validateDashboardQueryParams,
@@ -7,6 +7,8 @@ import {
   getIntervalTruncation,
 } from './utils.js'
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
+import UnauthorizedError from '#src/errors/unauthorized.js'
+import ForbiddenError from '#src/errors/forbidden.js'
 
 /**
  * @param {QueryParams} { query, userId }
@@ -16,9 +18,34 @@ import BadRequestError from '../../../errors/bad-request.js' // Adjust path
 export default async ({
   query,
   userId,
+  params,
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { authorizedStoreId, parsedStartDate, parsedEndDate, interval } =
-    await validateDashboardQueryParams({ query, userId })
+  const { storeId } = params
+  console.log(params)
+
+  if (!userId) {
+    throw new UnauthorizedError(
+      'Authentication required to access dashboard data.',
+    )
+  }
+
+  if (!storeId) {
+    throw new BadRequestError('Store ID is required as a path parameter.')
+  }
+
+  // Authorization: Verify the user owns or has access to this storeId
+  const storeCheck = await knex('stores')
+    .where('store_id', storeId as string)
+    .andWhere('vendor_id', userId)
+    .first('store_id')
+
+  if (!storeCheck) {
+    throw new ForbiddenError(
+      "You are not authorized to access this store's dashboard.",
+    )
+  }
+  const { parsedStartDate, parsedEndDate, interval } =
+    await validateDashboardQueryParams({ query })
 
   if (!parsedStartDate || !parsedEndDate) {
     throw new BadRequestError(
@@ -33,7 +60,6 @@ export default async ({
     )
   }
 
-  const params: (string | Date)[] = [authorizedStoreId]
   let paramIndex = 2 // $1 is storeId
 
   const { clause: orderDateClause, nextParamIndex } = getDateRangeClause(

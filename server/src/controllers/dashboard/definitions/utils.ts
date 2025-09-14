@@ -13,11 +13,7 @@ import { knex } from '../../../db/index.js' // Adjust path
  * @throws {BadRequestError} If storeId or date formats are invalid.
  * @throws {ForbiddenError} If the user is not authorized for the specified store.
  */
-export async function validateDashboardQueryParams({
-  query,
-  userId,
-  params,
-}: QueryParams) {
+export async function validateDashboardQueryParams({ query }: QueryParams) {
   const {
     startDate,
     endDate,
@@ -31,31 +27,6 @@ export async function validateDashboardQueryParams({
     status,
     threshold,
   } = query
-
-  const { storeId } = params
-  console.log(params)
-
-  if (!userId) {
-    throw new UnauthorizedError(
-      'Authentication required to access dashboard data.',
-    )
-  }
-
-  if (!storeId) {
-    throw new BadRequestError('Store ID is required as a path parameter.')
-  }
-
-  // Authorization: Verify the user owns or has access to this storeId
-  const storeCheck = await knex('stores')
-    .where('store_id', storeId as string)
-    .andWhere('vendor_id', userId)
-    .first('store_id')
-
-  if (!storeCheck) {
-    throw new ForbiddenError(
-      "You are not authorized to access this store's dashboard.",
-    )
-  }
 
   // Date validation (ISO 8601)
   const parsedStartDate = startDate ? new Date(startDate as string) : null
@@ -83,7 +54,6 @@ export async function validateDashboardQueryParams({
   }
 
   return {
-    authorizedStoreId: storeId as string,
     parsedStartDate,
     parsedEndDate,
     parsedLimit,

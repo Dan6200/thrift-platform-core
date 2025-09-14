@@ -257,14 +257,15 @@ const updateQuery = async ({
   if (!isValidStoreDataRequest(body))
     throw new BadRequestError('Invalid request data')
   const storeData = body
-  const result = await knex('profiles')
-    .where('id', userId)
-    .select('is_vendor')
-    .limit(1)
-  if (!result[0]?.is_vendor)
-    throw new ForbiddenError(
-      'Vendor account disabled. Need to enable it to create a store',
-    )
+
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor'], // Allow admins and editors to update
+  ])
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError('You do not have permission to update this store.')
+  }
 
   const { store_address, pages, ...restOfStoreData } = storeData
 
@@ -272,7 +273,6 @@ const updateQuery = async ({
   try {
     const store = await trx('stores')
       .where('store_id', storeId)
-      .where('vendor_id', userId)
       .select('address_id')
       .first()
 
@@ -288,7 +288,6 @@ const updateQuery = async ({
 
     const returningStoreId = await trx('stores')
       .where('store_id', storeId)
-      .where('vendor_id', userId)
       .update(restOfStoreData)
       .returning('store_id')
 
@@ -353,7 +352,6 @@ const deleteQuery = async ({
   }
   return knex<StoreData>('stores')
     .where('store_id', storeId)
-    .where('vendor_id', userId)
     .del()
     .returning('store_id')
 }

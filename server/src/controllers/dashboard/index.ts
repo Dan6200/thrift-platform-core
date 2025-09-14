@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import createRouteProcessor from '../process-routes.js' // Adjust path as needed
 import { ProcessRouteWithoutBody } from '../../types/process-routes.js' // Adjust path as needed
-import { validateReqData } from '../utils/request-validation.js' // Adjust path as needed
+import { validateQuerySchema } from '../utils/request-validation.js' // Adjust path as needed
 import { validateResData } from '../utils/response-validation.js' // Adjust path as needed
 
 // Import query definitions
@@ -39,6 +39,7 @@ import {
   LowStockProductsQuerySchema,
   ProductPerformanceQuerySchema,
 } from '../../app-schema/dashboard.js' // Adjust path as needed
+import { validateQuerySchema } from '../utils/query-validation.js'
 
 const { OK } = StatusCodes
 
@@ -49,14 +50,14 @@ const processGetRoute = <ProcessRouteWithoutBody>createRouteProcessor
 const getKPIs = processGetRoute({
   Query: getKPIsQuery,
   status: OK,
-  validateQuery: validateReqData(DashboardKPIsQuerySchema),
+  validateQuery: validateQuerySchema(DashboardKPIsQuerySchema),
   validateResult: validateResData(DashboardKPIsResponseSchema),
 })
 
 const getRevenueTrends = processGetRoute({
   Query: getRevenueTrendsQuery,
   status: OK,
-  validateQuery: validateReqData(RevenueTrendQuerySchema),
+  validateQuery: validateQuerySchema(RevenueTrendQuerySchema),
   validateResult: validateResData(RevenueTrendResponseSchema), // Response is an array
 })
 
@@ -65,7 +66,7 @@ const getRevenueTrends = processGetRoute({
 const getSalesAnalytics = processGetRoute({
   Query: getSalesAnalyticsQuery,
   status: OK,
-  validateQuery: validateReqData(SalesAnalyticsQuerySchema),
+  validateQuery: validateQuerySchema(SalesAnalyticsQuerySchema),
   validateResult: validateResData(SalesAnalyticsByProductResponseSchema), // Assuming by-product is the default or most common
 })
 
@@ -74,21 +75,21 @@ const getSalesAnalytics = processGetRoute({
 const getCustomerAcquisitionTrends = processGetRoute({
   Query: getCustomerAcquisitionTrendsQuery,
   status: OK,
-  validateQuery: validateReqData(CustomerAcquisitionTrendQuerySchema),
+  validateQuery: validateQuerySchema(CustomerAcquisitionTrendQuerySchema),
   validateResult: validateResData(CustomerAcquisitionTrendResponseSchema),
 })
 
 const getCustomersByLocation = processGetRoute({
   Query: getCustomersByLocationQuery,
   status: OK,
-  validateQuery: validateReqData(CustomersByLocationQuerySchema),
+  validateQuery: validateQuerySchema(CustomersByLocationQuerySchema),
   validateResult: validateResData(CustomersByLocationResponseSchema),
 })
 
 const getCustomerLifetimeValue = processGetRoute({
   Query: getCustomerLifetimeValueQuery,
   status: OK,
-  validateQuery: validateReqData(CustomerCLVQuerySchema),
+  validateQuery: validateQuerySchema(CustomerCLVQuerySchema),
   validateResult: validateResData(CustomerCLVResponseSchema),
 })
 
@@ -97,21 +98,21 @@ const getCustomerLifetimeValue = processGetRoute({
 const getTopSellingProducts = processGetRoute({
   Query: getTopSellingProductsQuery,
   status: OK,
-  validateQuery: validateReqData(TopSellingProductsQuerySchema),
+  validateQuery: validateQuerySchema(TopSellingProductsQuerySchema),
   validateResult: validateResData(TopSellingProductsResponseSchema),
 })
 
 const getLowStockProducts = processGetRoute({
   Query: getLowStockProductsQuery,
   status: OK,
-  validateQuery: validateReqData(LowStockProductsQuerySchema),
+  validateQuery: validateQuerySchema(LowStockProductsQuerySchema),
   validateResult: validateResData(LowStockProductsResponseSchema),
 })
 
 const getProductPerformance = processGetRoute({
   Query: getProductPerformanceQuery,
   status: OK,
-  validateQuery: validateReqData(ProductPerformanceQuerySchema),
+  validateQuery: validateQuerySchema(ProductPerformanceQuerySchema),
   validateResult: validateResData(ProductPerformanceResponseSchema),
 })
 

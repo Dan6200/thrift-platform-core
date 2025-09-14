@@ -7,12 +7,12 @@ const SortOrderSchema = joi.string().valid('asc', 'desc')
 
 // --- Query Schemas (Query Parameters) ---
 
-export const DashboardKPIsQuerySchema = joi.array().items(joi.object({
+export const DashboardKPIsQuerySchema = joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
-})).length(1)
+})
 
-export const RevenueTrendQuerySchema = joi.array().items(joi.object({
+export const RevenueTrendQuerySchema = joi.object({
   startDate: DateSchema.required(),
   endDate: DateSchema.required(),
   interval: joi
@@ -20,9 +20,9 @@ export const RevenueTrendQuerySchema = joi.array().items(joi.object({
     .valid('day', 'week', 'month', 'year')
     .default('day')
     .optional(),
-})).length(1)
+})
 
-export const SalesAnalyticsQuerySchema = joi.array().items(joi.object({
+export const SalesAnalyticsQuerySchema = joi.object({
   type: joi
     .string()
     .valid('by-product', 'by-category', 'recent-orders')
@@ -63,9 +63,9 @@ export const SalesAnalyticsQuerySchema = joi.array().items(joi.object({
       then: joi.string().valid('pending', 'completed', 'cancelled'),
       otherwise: joi.forbidden(),
     }),
-})).length(1)
+})
 
-export const CustomerAcquisitionTrendQuerySchema = joi.array().items(joi.object({
+export const CustomerAcquisitionTrendQuerySchema = joi.object({
   startDate: DateSchema.required(),
   endDate: DateSchema.required(),
   interval: joi
@@ -73,80 +73,105 @@ export const CustomerAcquisitionTrendQuerySchema = joi.array().items(joi.object(
     .valid('day', 'week', 'month', 'year')
     .default('month')
     .optional(),
-})).length(1)
+})
 
-export const CustomersByLocationQuerySchema = joi.array().items(joi.object({
+export const CustomersByLocationQuerySchema = joi.object({
   locationType: joi
     .string()
     .valid('country', 'city')
     .default('country')
     .optional(),
-})).length(1)
+})
 
-export const CustomerCLVQuerySchema = joi.array().items(joi.object({
+export const CustomerCLVQuerySchema = joi.object({
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
   sortBy: joi.string().valid('clv', 'customerName').default('clv').optional(),
   sortOrder: SortOrderSchema.default('desc').optional(),
-})).length(1)
+})
 
-export const TopSellingProductsQuerySchema = joi.array().items(joi.object({
+export const TopSellingProductsQuerySchema = joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
   sortBy: joi.string().valid('units', 'revenue').default('units').optional(),
   limit: LimitOffsetSchema.default(10).optional(),
-})).length(1)
+})
 
-export const LowStockProductsQuerySchema = joi.array().items(joi.object({
+export const LowStockProductsQuerySchema = joi.object({
   threshold: joi.number().integer().min(0).default(20).optional(),
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
-})).length(1)
+})
 
-export const ProductPerformanceQuerySchema = joi.array().items(joi.object({
+export const ProductPerformanceQuerySchema = joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
-})).length(1)
+})
 
 // --- Response Schemas ---
 
-export const DashboardKPIsResponseSchema = joi.array().items(joi.object({
-  totalRevenue: joi.number().precision(2).required(),
-  totalOrders: joi.number().integer().min(0).required(),
-  averageOrderValue: joi.number().precision(2).required(),
-  newCustomers: joi.number().integer().min(0).required(),
-  returningCustomers: joi.number().integer().min(0).required(),
-  conversionRate: joi.number().precision(2).allow(null).optional(), // Can be null as per spec
-})).length(1)
+export const DashboardKPIsResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      totalRevenue: joi.number().precision(2).required(),
+      totalOrders: joi.number().integer().min(0).required(),
+      averageOrderValue: joi.number().precision(2).required(),
+      newCustomers: joi.number().integer().min(0).required(),
+      returningCustomers: joi.number().integer().min(0).required(),
+      conversionRate: joi.number().precision(2).allow(null).optional(), // Can be null as per spec
+    }),
+  )
+  .length(1)
 
-export const RevenueTrendResponseSchema = joi.array().items(joi.object({
-  date: joi.string().isoDate().required(),
-  revenue: joi.number().precision(2).required(),
-})).length(1)
+export const RevenueTrendResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      date: joi.string().isoDate().required(),
+      revenue: joi.number().precision(2).required(),
+    }),
+  )
+  .length(1)
 
 // Sales Analytics Response Schemas (can be unioned or handled dynamically in controller)
-export const SalesAnalyticsByProductResponseSchema = joi.array().items(joi.object({
-  productId: joi.number().integer().required(),
-  productTitle: joi.string().required(),
-  unitsSold: joi.number().integer().min(0).required(),
-  totalRevenue: joi.number().precision(2).required(),
-})).length(1)
+export const SalesAnalyticsByProductResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      productId: joi.number().integer().required(),
+      productTitle: joi.string().required(),
+      unitsSold: joi.number().integer().min(0).required(),
+      totalRevenue: joi.number().precision(2).required(),
+    }),
+  )
+  .length(1)
 
-export const SalesAnalyticsByCategoryResponseSchema = joi.array().items(joi.object({
-  categoryId: joi.number().integer().required(),
-  categoryName: joi.string().required(),
-  totalRevenue: joi.number().precision(2).required(),
-})).length(1)
+export const SalesAnalyticsByCategoryResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      categoryId: joi.number().integer().required(),
+      categoryName: joi.string().required(),
+      totalRevenue: joi.number().precision(2).required(),
+    }),
+  )
+  .length(1)
 
-export const SalesAnalyticsRecentOrdersResponseSchema = joi.array().items(joi.object({
-  orderId: joi.number().integer().required(),
-  customerName: joi.string().required(),
-  totalAmount: joi.number().precision(2).required(),
-  status: joi.string().required(),
-  orderDate: joi.string().isoDate().required(),
-})).length(1)
+export const SalesAnalyticsRecentOrdersResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      orderId: joi.number().integer().required(),
+      customerName: joi.string().required(),
+      totalAmount: joi.number().precision(2).required(),
+      status: joi.string().required(),
+      orderDate: joi.string().isoDate().required(),
+    }),
+  )
+  .length(1)
 
 // Example of a union schema if you prefer to validate all types in one go at the controller level
 // export const SalesAnalyticsResponseUnionSchema = joi.alternatives().try(
@@ -155,38 +180,68 @@ export const SalesAnalyticsRecentOrdersResponseSchema = joi.array().items(joi.ob
 //   joi.array().items(SalesAnalyticsRecentOrdersResponseSchema)
 // );
 
-export const CustomerAcquisitionTrendResponseSchema = joi.array().items(joi.object({
-  date: joi.string().isoDate().required(),
-  newCustomers: joi.number().integer().min(0).required(),
-})).length(1)
+export const CustomerAcquisitionTrendResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      date: joi.string().isoDate().required(),
+      newCustomers: joi.number().integer().min(0).required(),
+    }),
+  )
+  .length(1)
 
-export const CustomersByLocationResponseSchema = joi.array().items(joi.object({
-  location: joi.string().required(),
-  customerCount: joi.number().integer().min(0).required(),
-})).length(1)
+export const CustomersByLocationResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      location: joi.string().required(),
+      customerCount: joi.number().integer().min(0).required(),
+    }),
+  )
+  .length(1)
 
-export const CustomerCLVResponseSchema = joi.array().items(joi.object({
-  customerId: joi.string().guid({ version: 'uuidv4' }).required(),
-  customerName: joi.string().required(),
-  clv: joi.number().precision(2).required(),
-})).length(1)
+export const CustomerCLVResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      customerId: joi.string().guid({ version: 'uuidv4' }).required(),
+      customerName: joi.string().required(),
+      clv: joi.number().precision(2).required(),
+    }),
+  )
+  .length(1)
 
-export const TopSellingProductsResponseSchema = joi.array().items(joi.object({
-  productId: joi.number().integer().required(),
-  productTitle: joi.string().required(),
-  unitsSold: joi.number().integer().min(0).required(),
-  totalRevenue: joi.number().precision(2).required(),
-})).length(1)
+export const TopSellingProductsResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      productId: joi.number().integer().required(),
+      productTitle: joi.string().required(),
+      unitsSold: joi.number().integer().min(0).required(),
+      totalRevenue: joi.number().precision(2).required(),
+    }),
+  )
+  .length(1)
 
-export const LowStockProductsResponseSchema = joi.array().items(joi.object({
-  productId: joi.number().integer().required(),
-  productTitle: joi.string().required(),
-  quantityAvailable: joi.number().integer().min(0).required(),
-})).length(1)
+export const LowStockProductsResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      productId: joi.number().integer().required(),
+      productTitle: joi.string().required(),
+      quantityAvailable: joi.number().integer().min(0).required(),
+    }),
+  )
+  .length(1)
 
-export const ProductPerformanceResponseSchema = joi.array().items(joi.object({
-  productId: joi.number().integer().required(),
-  productTitle: joi.string().required(),
-  purchases: joi.number().integer().min(0).required(),
-  views: joi.number().integer().min(0).allow(null).required(), // Explicitly allow null for views
-})).length(1)
+export const ProductPerformanceResponseSchema = joi
+  .array()
+  .items(
+    joi.object({
+      productId: joi.number().integer().required(),
+      productTitle: joi.string().required(),
+      purchases: joi.number().integer().min(0).required(),
+      views: joi.number().integer().min(0).allow(null).required(), // Explicitly allow null for views
+    }),
+  )
+  .length(1)

@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
-import { TestRequest, TestRequestWithQParams } from '../../test-request/types.js'
+import { TestRequestWithQParams } from '../../test-request/types.js'
 import {
   DashboardKPIsResponseSchema,
   RevenueTrendResponseSchema,
@@ -58,7 +58,9 @@ export const testGetSalesAnalytics = (testRequest as TestRequestWithQParams)({
   },
 })
 
-export const testGetCustomerAcquisitionTrends = (testRequest as TestRequestWithQParams)({
+export const testGetCustomerAcquisitionTrends = (
+  testRequest as TestRequestWithQParams
+)({
   statusCode: OK,
   verb: 'get',
   validateTestResData: (data: unknown) => {
@@ -67,7 +69,9 @@ export const testGetCustomerAcquisitionTrends = (testRequest as TestRequestWithQ
   },
 })
 
-export const testGetCustomersByLocation = (testRequest as TestRequestWithQParams)({
+export const testGetCustomersByLocation = (
+  testRequest as TestRequestWithQParams
+)({
   statusCode: OK,
   verb: 'get',
   validateTestResData: (data: unknown) => {
@@ -76,7 +80,9 @@ export const testGetCustomersByLocation = (testRequest as TestRequestWithQParams
   },
 })
 
-export const testGetCustomerLifetimeValue = (testRequest as TestRequestWithQParams)({
+export const testGetCustomerLifetimeValue = (
+  testRequest as TestRequestWithQParams
+)({
   statusCode: OK,
   verb: 'get',
   validateTestResData: (data: unknown) => {
@@ -85,7 +91,9 @@ export const testGetCustomerLifetimeValue = (testRequest as TestRequestWithQPara
   },
 })
 
-export const testGetTopSellingProducts = (testRequest as TestRequestWithQParams)({
+export const testGetTopSellingProducts = (
+  testRequest as TestRequestWithQParams
+)({
   statusCode: OK,
   verb: 'get',
   validateTestResData: (data: unknown) => {
@@ -103,7 +111,9 @@ export const testGetLowStockProducts = (testRequest as TestRequestWithQParams)({
   },
 })
 
-export const testGetProductPerformance = (testRequest as TestRequestWithQParams)({
+export const testGetProductPerformance = (
+  testRequest as TestRequestWithQParams
+)({
   statusCode: OK,
   verb: 'get',
   validateTestResData: (data: unknown) => {

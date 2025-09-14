@@ -13,14 +13,14 @@ alter table store_staff enable row level security;
 
 -- Policies for store_staff table (only store owner can manage staff)
 create policy "Store owners can manage their own staff." on store_staff
-  for all using (
+  for insert, update, delete using (
     auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id)
   );
--- create policy "Allow owners and staff to view store staff" on store_staff
---   for select using (
---     auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id) OR
---     EXISTS (SELECT 1 FROM store_staff ss WHERE ss.store_id = store_staff.store_id AND ss.staff_id = auth.uid())
---   );
+create policy "Allow owners and staff to view store staff" on store_staff
+  for select using (
+    auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id) OR
+    EXISTS (SELECT 1 FROM store_staff ss WHERE ss.store_id = store_staff.store_id AND ss.staff_id = auth.uid())
+  );
 
 -- create a trigger to update the updated_at column for store_staff
 create trigger set_timestamp
