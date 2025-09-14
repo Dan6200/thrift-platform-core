@@ -42,7 +42,7 @@ const addStaffQuery = async ({ params, body, userId }: QueryParams) => {
   }
 
   // Add the staff member
-  const [newStaff] = await knex('store_staff')
+  const newStaff = await knex('store_staff')
     .insert({
       store_id: storeId,
       staff_id,
@@ -106,12 +106,12 @@ const updateStaffQuery = async ({ params, body, userId }: QueryParams) => {
   }
 
   // Update the staff member's role
-  const [updatedStaff] = await knex('store_staff')
+  const updatedStaff = await knex('store_staff')
     .where({ store_id: storeId, staff_id: staffId })
     .update({ role })
     .returning('*')
 
-  if (!updatedStaff) {
+  if (!updatedStaff[0]) {
     throw new NotFoundError('Staff member not found for this store.')
   }
 

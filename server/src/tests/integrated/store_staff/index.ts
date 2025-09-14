@@ -21,10 +21,10 @@ chai.use(chaiHttp).should()
 // Set server url
 const server = process.env.SERVER!
 
-export default function ({ 
+export default function ({
   vendorInfo,
   customerInfo,
-}: { 
+}: {
   vendorInfo: ProfileRequestData
   customerInfo: ProfileRequestData
 }) {
@@ -40,7 +40,7 @@ export default function ({
     ownerToken = await signInForTesting(vendorInfo)
     staffToken = await signInForTesting(customerInfo)
     const response = await createStoreForTesting(ownerToken)
-    storeId = response.body.store_id
+    ;[{ store_id: storeId }] = response.body
   })
 
   after(async () => {
@@ -49,7 +49,8 @@ export default function ({
   })
 
   const getStaffRoute = (sId: string) => `/v1/stores/${sId}/staff`
-  const getStaffIdRoute = (sId: string, stId: string) => `/v1/stores/${sId}/staff/${stId}`
+  const getStaffIdRoute = (sId: string, stId: string) =>
+    `/v1/stores/${sId}/staff/${stId}`
 
   describe('Testing /store_staff endpoints', () => {
     it('it should allow the store owner to add a staff member', async () => {
@@ -92,7 +93,7 @@ export default function ({
       })
     })
 
-    it('it should allow the store owner to update a staff member\'s role', async () => {
+    it("it should allow the store owner to update a staff member's role", async () => {
       await testUpdateStaff({
         server,
         path: getStaffIdRoute(storeId, staffId),
@@ -103,7 +104,7 @@ export default function ({
       })
     })
 
-    it('it should not allow a non-owner to update a staff member\'s role', async () => {
+    it("it should not allow a non-owner to update a staff member's role", async () => {
       await testUpdateStaffForbidden({
         server,
         path: getStaffIdRoute(storeId, staffId),

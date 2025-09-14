@@ -16,7 +16,7 @@ const uploadProductMedia = async (req: any, res: any) => {
   let files = <any>await Promise.all(
     req.files.map(async (file: any) => {
       const { filename, originalname, path: filepath } = file
-      // Returns filename as Id instead of product_id
+      // Add validators...
       return knex('product_media')
         .insert({
           product_id,
