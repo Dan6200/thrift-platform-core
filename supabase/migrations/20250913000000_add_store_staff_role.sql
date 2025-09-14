@@ -16,6 +16,11 @@ create policy "Store owners can manage their own staff." on store_staff
   for all using (
     auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id)
   );
+-- create policy "Allow owners and staff to view store staff" on store_staff
+--   for select using (
+--     auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id) OR
+--     EXISTS (SELECT 1 FROM store_staff ss WHERE ss.store_id = store_staff.store_id AND ss.staff_id = auth.uid())
+--   );
 
 -- create a trigger to update the updated_at column for store_staff
 create trigger set_timestamp
@@ -247,7 +252,7 @@ create policy "Allow vendors, admins and editors to insert featured_products" on
 create policy "Allow vendors, admins and editors to update featured_products" on featured_products
   for update using (exists(select 1 from products where products.product_id = featured_products.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin', 'editor'])));
 create policy "Allow vendors and admins to delete featured_products" on featured_products
-  for delete using (has_store_access(auth.uid(), products.store_id, ARRAY['admin']));
+  for delete using (exists(select 1 from products where products.product_id = featured_products.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin'])));
 
 -- featured_product_links
 alter table featured_product_links enable row level security;

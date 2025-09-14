@@ -78,9 +78,7 @@ const createQuery = async ({
             await trx('page_sections').insert({
               ...restOfSection,
               page_id: pageResult.page_id,
-              section_data: section_data
-                ? JSON.stringify(section_data)
-                : null,
+              section_data: section_data ? JSON.stringify(section_data) : null,
               styles: styles ? JSON.stringify(styles) : null,
             })
           }
@@ -319,9 +317,7 @@ const updateQuery = async ({
             await trx('page_sections').insert({
               ...restOfSection,
               page_id: pageResult.page_id,
-              section_data: section_data
-                ? JSON.stringify(section_data)
-                : null,
+              section_data: section_data ? JSON.stringify(section_data) : null,
               styles: styles ? JSON.stringify(styles) : null,
             })
           }
@@ -347,9 +343,13 @@ const deleteQuery = async ({
   const { storeId } = params
   if (!storeId) throw new BadRequestError('Need store ID param to delete store')
 
-  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [userId, storeId, ['admin']]);
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin'],
+  ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError('You do not have permission to delete this store.');
+    throw new ForbiddenError('You do not have permission to delete this store.')
   }
   return knex<StoreData>('stores')
     .where('store_id', storeId)

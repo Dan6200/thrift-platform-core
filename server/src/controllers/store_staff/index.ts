@@ -10,7 +10,13 @@ import {
 import processRoute from '#src/controllers/process-routes.js'
 import { validateReqData } from '#src/controllers/utils/request-validation.js'
 import { validateResData } from '#src/controllers/utils/response-validation.js'
-import { AddStoreStaffSchema, UpdateStoreStaffSchema, StoreStaffResponseSchema, StoreStaffListResponseSchema, RemoveStoreStaffResponseSchema } from '#src/app-schema/store_staff.js'
+import {
+  AddStoreStaffSchema,
+  UpdateStoreStaffSchema,
+  StoreStaffResponseSchema,
+  StoreStaffListResponseSchema,
+  RemoveStoreStaffResponseSchema,
+} from '#src/app-schema/store_staff.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 import BadRequestError from '#src/errors/bad-request.js'
@@ -28,17 +34,21 @@ const addStaffQuery = async ({ params, body, userId }: QueryParams) => {
   const { staff_id, role } = body
 
   // Check if the current user is the owner of the store
-  const store = await knex('stores').where({ store_id: storeId, vendor_id: userId }).first()
+  const store = await knex('stores')
+    .where({ store_id: storeId, vendor_id: userId })
+    .first()
   if (!store) {
     throw new ForbiddenError('You are not the owner of this store.')
   }
 
   // Add the staff member
-  const [newStaff] = await knex('store_staff').insert({
-    store_id: storeId,
-    staff_id,
-    role,
-  }).returning('*')
+  const [newStaff] = await knex('store_staff')
+    .insert({
+      store_id: storeId,
+      staff_id,
+      role,
+    })
+    .returning('*')
 
   return newStaff
 }
@@ -62,12 +72,16 @@ const listStaffQuery = async ({ params, userId }: QueryParams) => {
       .where({ store_id: storeId, staff_id: userId })
       .first()
     if (!isStaff) {
-      throw new ForbiddenError('You do not have permission to list staff for this store.')
+      throw new ForbiddenError(
+        'You do not have permission to list staff for this store.',
+      )
     }
   }
 
   // Retrieve all staff members for the store
-  const staffList = await knex('store_staff').where({ store_id: storeId }).select('*')
+  const staffList = await knex('store_staff')
+    .where({ store_id: storeId })
+    .select('*')
 
   return staffList
 }
@@ -84,7 +98,9 @@ const updateStaffQuery = async ({ params, body, userId }: QueryParams) => {
   const { role } = body
 
   // Check if the current user is the owner of the store
-  const store = await knex('stores').where({ store_id: storeId, vendor_id: userId }).first()
+  const store = await knex('stores')
+    .where({ store_id: storeId, vendor_id: userId })
+    .first()
   if (!store) {
     throw new ForbiddenError('You are not the owner of this store.')
   }
@@ -113,7 +129,9 @@ const removeStaffQuery = async ({ params, userId }: QueryParams) => {
   const { storeId, staffId } = params
 
   // Check if the current user is the owner of the store
-  const store = await knex('stores').where({ store_id: storeId, vendor_id: userId }).first()
+  const store = await knex('stores')
+    .where({ store_id: storeId, vendor_id: userId })
+    .first()
   if (!store) {
     throw new ForbiddenError('You are not the owner of this store.')
   }
@@ -161,3 +179,4 @@ export const removeStaff = processDeleteRoute({
   status: StatusCodes.NO_CONTENT,
   validateResult: validateResData(RemoveStoreStaffResponseSchema),
 })
+

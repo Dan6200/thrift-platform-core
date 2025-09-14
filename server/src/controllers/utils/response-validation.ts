@@ -47,26 +47,26 @@ export function validateResData<T>(schema: ArraySchema<T> | ObjectSchema<T>) {
       return true
     } else {
       // This block handles `any[]` results, not `QueryResult`
-      if (result?.length === 0) {
-        // Assuming empty array means resource not found for generic array results
-        throw new NotFoundError(`Requested resource was not found`)
-      }
-      if (result?.length > 1) {
-        if (schema.type === 'object') {
-          throw new InternalServerError(
-            `Operation operated erroneously: expected single item, got multiple`,
-          )
-        } else if (schema.type === 'array') {
+      if (result) {
+        if (result?.length === 0) {
+          // Assuming empty array means resource not found for generic array results
+          throw new NotFoundError(`Requested resource was not found`)
+        }
+        if (result?.length > 1) {
+          if (schema.type === 'object') {
+            throw new InternalServerError(
+              `Operation operated erroneously: expected single item, got multiple`,
+            )
+          } else if (schema.type === 'array') {
+            const { error } = schema.validate(result)
+            if (error) throw new InternalServerError(error.message)
+          }
+        } else if (result?.length === 1) {
           const { error } = schema.validate(result)
           if (error) throw new InternalServerError(error.message)
         }
-      } else if (result?.length === 1) {
-        const { error } = schema.validate(result[0])
-        if (error) throw new InternalServerError(error.message)
-      } else {
-        return false
-      }
-      return true
+      } else return false
     }
+    return true
   }
 }

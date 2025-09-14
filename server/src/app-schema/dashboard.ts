@@ -7,12 +7,12 @@ const SortOrderSchema = joi.string().valid('asc', 'desc')
 
 // --- Query Schemas (Query Parameters) ---
 
-export const DashboardKPIsQuerySchema = joi.object({
+export const DashboardKPIsQuerySchema = joi.array().items(joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
-})
+})).length(1)
 
-export const RevenueTrendQuerySchema = joi.object({
+export const RevenueTrendQuerySchema = joi.array().items(joi.object({
   startDate: DateSchema.required(),
   endDate: DateSchema.required(),
   interval: joi
@@ -20,9 +20,9 @@ export const RevenueTrendQuerySchema = joi.object({
     .valid('day', 'week', 'month', 'year')
     .default('day')
     .optional(),
-})
+})).length(1)
 
-export const SalesAnalyticsQuerySchema = joi.object({
+export const SalesAnalyticsQuerySchema = joi.array().items(joi.object({
   type: joi
     .string()
     .valid('by-product', 'by-category', 'recent-orders')
@@ -63,9 +63,9 @@ export const SalesAnalyticsQuerySchema = joi.object({
       then: joi.string().valid('pending', 'completed', 'cancelled'),
       otherwise: joi.forbidden(),
     }),
-})
+})).length(1)
 
-export const CustomerAcquisitionTrendQuerySchema = joi.object({
+export const CustomerAcquisitionTrendQuerySchema = joi.array().items(joi.object({
   startDate: DateSchema.required(),
   endDate: DateSchema.required(),
   interval: joi
@@ -73,35 +73,35 @@ export const CustomerAcquisitionTrendQuerySchema = joi.object({
     .valid('day', 'week', 'month', 'year')
     .default('month')
     .optional(),
-})
+})).length(1)
 
-export const CustomersByLocationQuerySchema = joi.object({
+export const CustomersByLocationQuerySchema = joi.array().items(joi.object({
   locationType: joi
     .string()
     .valid('country', 'city')
     .default('country')
     .optional(),
-})
+})).length(1)
 
-export const CustomerCLVQuerySchema = joi.object({
+export const CustomerCLVQuerySchema = joi.array().items(joi.object({
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
   sortBy: joi.string().valid('clv', 'customerName').default('clv').optional(),
   sortOrder: SortOrderSchema.default('desc').optional(),
-})
+})).length(1)
 
-export const TopSellingProductsQuerySchema = joi.object({
+export const TopSellingProductsQuerySchema = joi.array().items(joi.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
   sortBy: joi.string().valid('units', 'revenue').default('units').optional(),
   limit: LimitOffsetSchema.default(10).optional(),
-})
+})).length(1)
 
-export const LowStockProductsQuerySchema = joi.object({
+export const LowStockProductsQuerySchema = joi.array().items(joi.object({
   threshold: joi.number().integer().min(0).default(20).optional(),
   limit: LimitOffsetSchema.optional(),
   offset: LimitOffsetSchema.optional(),
-})
+})).length(1)
 
 export const ProductPerformanceQuerySchema = joi.object({
   startDate: DateSchema.optional(),

@@ -94,9 +94,12 @@ export default ({
         if (isTypeQueryResultRow(dbResponse)) {
           if (dbResponse.rowCount === 1) responseData = dbResponse.rows[0]
           else responseData = dbResponse.rows
-        } else if (Array.isArray(dbResponse) && dbResponse.length === 1)
-          responseData = dbResponse[0]
+        }
+        // These lines lead to bugs...
+        // } else if (Array.isArray(dbResponse) && dbResponse.length === 1)
+        //   responseData = dbResponse[0]
         else responseData = dbResponse
+        // These lines lead to bugs...
         // if (Array.isArray(dbResponse)) {
         //   if (dbResponse.length === 1) responseData = dbResponse[0]
         //   else responseData = dbResponse
