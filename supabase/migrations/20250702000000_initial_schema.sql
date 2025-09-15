@@ -347,7 +347,7 @@ create table if not exists product_variants (
   sku                  varchar          not       null    unique,
   list_price           numeric(19,4),
   net_price            numeric(19,4),
-  quantity_available   int              not       null,
+  quantity_available   int,
   created_at           timestamptz      not       null    default      now(),
   updated_at           timestamptz      not       null    default      now()
 );

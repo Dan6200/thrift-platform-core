@@ -67,9 +67,16 @@ export default async ({ params, body, userId }: QueryParams): Promise<VariantIdR
                 sku: variantData.sku,
                 list_price: variantData.list_price || product.list_price,
                 net_price: variantData.net_price || product.net_price,
-                quantity_available: variantData.quantity_available,
             })
             .returning('variant_id');
+
+        if (variantData.quantity_available) {
+            await trx('inventory').insert({
+                variant_id: createdVariant.variant_id,
+                quantity_change: variantData.quantity_available,
+                reason: 'initial_stock'
+            });
+        }
 
         const links = variantData.options.map(opt => ({
             variant_id: createdVariant.variant_id,

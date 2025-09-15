@@ -47,10 +47,31 @@ export default async ({
     )
   }
 
+  const { quantity_available, ...restOfVariantData } = variantData
+
   const [updatedVariant] = await knex('product_variants')
     .where({ variant_id: variantId })
-    .update(variantData)
+    .update(restOfVariantData)
     .returning('*')
+
+  if (quantity_available) {
+    const currentInventory = await knex('product_variant_inventory')
+      .where({ variant_id: variantId })
+      .first('quantity_available')
+
+    const currentQuantity = currentInventory
+      ? currentInventory.quantity_available
+      : 0
+    const quantityChange = quantity_available - currentQuantity
+
+    if (quantityChange !== 0) {
+      await knex('inventory').insert({
+        variant_id: variantId,
+        quantity_change: quantityChange,
+        reason: 'manual_update',
+      })
+    }
+  }
 
   // Fetch the full variant details for the response
   const options = await knex('variant_to_option_values as vtov')
@@ -59,5 +80,15 @@ export default async ({
     .where('vtov.variant_id', updatedVariant.variant_id)
     .select('po.option_id', 'po.option_name', 'pov.value_id', 'pov.value')
 
-  return [{ ...updatedVariant, options }]
+  const inventory = await knex('product_variant_inventory')
+    .where({ variant_id: variantId })
+    .first('quantity_available')
+
+  return [
+    {
+      ...updatedVariant,
+      options,
+      quantity_available: inventory ? inventory.quantity_available : 0,
+    },
+  ]
 }

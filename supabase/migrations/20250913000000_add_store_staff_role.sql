@@ -11,11 +11,26 @@ create table if not exists store_staff (
 -- Add RLS to the new table
 alter table store_staff enable row level security;
 
--- Policies for store_staff table (only store owner can manage staff)
-create policy "Store owners can manage their own staff." on store_staff
-  for insert, update, delete using (
+-- Policies for store_staff table
+-- Owners can insert staff
+create policy "Store owners can insert staff." on store_staff
+  for insert with check (
     auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id)
   );
+
+-- Owners can update staff
+create policy "Store owners can update staff." on store_staff
+  for update using (
+    auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id)
+  );
+
+-- Owners can delete staff
+create policy "Store owners can delete staff." on store_staff
+  for delete using (
+    auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id)
+  );
+
+-- Owners and staff can view staff
 create policy "Allow owners and staff to view store staff" on store_staff
   for select using (
     auth.uid() = (select vendor_id from stores where store_id = store_staff.store_id) OR

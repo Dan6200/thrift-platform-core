@@ -55,13 +55,18 @@ export default async ({
 
     if (!variants || variants.length === 0) {
       // If no variants are provided, create a default one
-      await trx('product_variants').insert({
+      const [defaultVariant] = await trx('product_variants').insert({
         product_id: product.product_id,
         sku: `SKU-${product.product_id}`,
         net_price: product.net_price,
         list_price: product.list_price,
-        quantity_available: 0,
-      })
+      }).returning('variant_id');
+
+      await trx('inventory').insert({
+        variant_id: defaultVariant.variant_id,
+        quantity_change: 0,
+        reason: 'initial_stock'
+      });
     } else {
       // 2. Process variants
       for (const variant of variants) {
@@ -111,9 +116,16 @@ export default async ({
             sku: variant.sku,
             list_price: variant.list_price || product.list_price,
             net_price: variant.net_price || product.net_price,
-            quantity_available: variant.quantity_available,
           })
-          .returning('variant_id')
+          .returning('variant_id');
+
+        if (variant.quantity_available) {
+            await trx('inventory').insert({
+                variant_id: newVariant.variant_id,
+                quantity_change: variant.quantity_available,
+                reason: 'initial_stock'
+            });
+        }
 
         // 5. Link variant to option values
         const links = variant.options.map((opt) => ({

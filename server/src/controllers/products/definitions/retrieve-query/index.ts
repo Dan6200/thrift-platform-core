@@ -49,7 +49,7 @@ export default async ({
                 pv.sku,
                 pv.list_price,
                 pv.net_price,
-                pv.quantity_available,
+                pvi.quantity_available,
                 (
                     SELECT COALESCE(json_agg(option_data), '[]'::json)
                     FROM (
@@ -65,6 +65,7 @@ export default async ({
                     ) AS option_data
                 ) AS options
             FROM product_variants pv
+            LEFT JOIN product_variant_inventory pvi ON pv.variant_id = pvi.variant_id
             WHERE pv.product_id = p.product_id
         ) AS variant_data
     ) AS variants,
