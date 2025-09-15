@@ -25,7 +25,7 @@ export const RevenueTrendQuerySchema = joi.object({
 export const SalesAnalyticsQuerySchema = joi.object({
   type: joi
     .string()
-    .valid('by-product', 'by-category', 'recent-orders')
+    .valid('by-product', 'by-category', 'recent-orders', 'by-store', 'by-variant')
     .required(),
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
