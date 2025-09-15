@@ -18,7 +18,6 @@ todo*
 server-log.txt
 mochawesome-*
 ./regexp.txt
-notes*.md
 
 # Logs
 logs
