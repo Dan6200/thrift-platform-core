@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import createRouteProcessor from '../process-routes.js' // Adjust path as needed
 import { ProcessRouteWithoutBody } from '../../types/process-routes.js' // Adjust path as needed
-import { validateQuerySchema } from '../utils/request-validation.js' // Adjust path as needed
+import { validateQuerySchema } from '../utils/query-validation.js'
 import { validateResData } from '../utils/response-validation.js' // Adjust path as needed
 
 // Import query definitions
@@ -39,7 +39,6 @@ import {
   LowStockProductsQuerySchema,
   ProductPerformanceQuerySchema,
 } from '../../app-schema/dashboard.js' // Adjust path as needed
-import { validateQuerySchema } from '../utils/query-validation.js'
 
 const { OK } = StatusCodes
 
@@ -82,21 +81,27 @@ const getCustomerAcquisitionTrends = processGetRoute({
   Query: getCustomerAcquisitionTrendsQuery,
   status: OK,
   validateQuery: validateQuerySchema(CustomerAcquisitionTrendQuerySchema),
-  validateResult: validateResData(CustomerAcquisitionTrendResponseSchema),
+  validateResult: validateResData(CustomerAcquisitionTrendResponseSchema, {
+    allowEmpty: true,
+  }),
 })
 
 const getCustomersByLocation = processGetRoute({
   Query: getCustomersByLocationQuery,
   status: OK,
   validateQuery: validateQuerySchema(CustomersByLocationQuerySchema),
-  validateResult: validateResData(CustomersByLocationResponseSchema),
+  validateResult: validateResData(CustomersByLocationResponseSchema, {
+    allowEmpty: true,
+  }),
 })
 
 const getCustomerLifetimeValue = processGetRoute({
   Query: getCustomerLifetimeValueQuery,
   status: OK,
   validateQuery: validateQuerySchema(CustomerCLVQuerySchema),
-  validateResult: validateResData(CustomerCLVResponseSchema),
+  validateResult: validateResData(CustomerCLVResponseSchema, {
+    allowEmpty: true,
+  }),
 })
 
 // --- Detailed Analytics Sections - Product Performance ---
@@ -105,21 +110,27 @@ const getTopSellingProducts = processGetRoute({
   Query: getTopSellingProductsQuery,
   status: OK,
   validateQuery: validateQuerySchema(TopSellingProductsQuerySchema),
-  validateResult: validateResData(TopSellingProductsResponseSchema),
+  validateResult: validateResData(TopSellingProductsResponseSchema, {
+    allowEmpty: true,
+  }),
 })
 
 const getLowStockProducts = processGetRoute({
   Query: getLowStockProductsQuery,
   status: OK,
   validateQuery: validateQuerySchema(LowStockProductsQuerySchema),
-  validateResult: validateResData(LowStockProductsResponseSchema),
+  validateResult: validateResData(LowStockProductsResponseSchema, {
+    allowEmpty: true,
+  }),
 })
 
 const getProductPerformance = processGetRoute({
   Query: getProductPerformanceQuery,
   status: OK,
   validateQuery: validateQuerySchema(ProductPerformanceQuerySchema),
-  validateResult: validateResData(ProductPerformanceResponseSchema),
+  validateResult: validateResData(ProductPerformanceResponseSchema, {
+    allowEmpty: true,
+  }),
 })
 
 export {

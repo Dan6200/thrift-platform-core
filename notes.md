@@ -180,6 +180,85 @@ This playbook helps you maintain the optimal level of inventory to meet demand w
 This playbook helps you evaluate the performance of your suppliers and make better sourcing decisions.
 
 - Lead Time Analysis:
+
   - What it is: Analyzing the time it takes for your suppliers to deliver your orders.
   - How to do it: Track the time from when you place an order with a supplier to when you receive the goods.
   - Why it's useful: It helps you identify reliable suppliers, negotiate better terms, and improve the accuracy of your reorder point calculations.
+
+**1. Adding an Inventory Analytics Playbook to the Dashboard**
+
+A great and straightforward playbook to start with is analyzing your Stock-to-Sales Ratio. This helps you quickly see if you are overstocked or understocked on certain products.
+
+Here's how we can add this to your dashboard:
+
+1.  Create a New Endpoint: We'll create a new endpoint, GET /v1/dashboard/stock-to-sales, that will be responsible for fetching this data.
+2.  Define the Schema: We'll create a new schema in server/src/app-schema/dashboard.ts to validate the request and response for this new endpoint.
+3.  Write the Query: We'll create a new query definition file, server/src/controllers/dashboard/definitions/get-stock-to-sales.ts, that will contain the SQL query to calculate the stock-to-sales ratio for each product. The query will look something like this:
+
+```sql
+    1     SELECT
+    2       p.product_id,
+    3       p.title,
+    4       pvi.quantity_available,
+    5       COUNT(oi.order_item_id) AS sales_count,
+    6       pvi.quantity_available / NULLIF(COUNT(oi.order_item_id), 0) AS stock_to_sales_ratio
+    7     FROM
+    8       products p
+    9     JOIN
+   10       product_variant_inventory pvi ON p.product_id = (SELECT product_id FROM product_variants WHERE variant_id = pvi.variant_id)
+   11     LEFT JOIN
+   12       order_items oi ON pvi.variant_id = oi.variant_id
+   13     WHERE
+   14       p.store_id = $1
+   15     GROUP BY
+   16       p.product_id, pvi.quantity_available;
+   4. Add to Dashboard Controller: Finally, we'll add the new endpoint to server/src/controllers/dashboard/index.ts.
+```
+
+---
+
+Multi-Store Analytics for a Vendor
+
+1.  New Endpoints: We can introduce a new set of endpoints under a path like /v1/dashboard/multi-store/. For example:
+
+    - GET /v1/dashboard/multi-store/kpis
+    - GET /v1/dashboard/multi-store/revenue-trends
+    - GET /v1/dashboard/multi-store/sales-analytics
+
+2.  Aggregated Queries: These new endpoints would use queries that aggregate data across all stores owned by the logged-in vendor. Instead of filtering by a
+    single store_id, the queries would filter by the vendor_id (which is the userId).
+
+For example, to get the total KPIs across all of a vendor's stores, the query would look something like this:
+
+```sql
+    1 SELECT
+    2   SUM(o.total_amount) as total_revenue,
+    3   COUNT(DISTINCT o.order_id) as total_orders,
+    4   AVG(o.total_amount) as average_order_value
+    5   -- ... other KPIs
+    6 FROM
+    7   orders o
+    8 JOIN
+    9   stores s ON o.store_id = s.store_id
+   10 WHERE
+   11   s.vendor_id = $1; -- $1 would be the userId of the vendor
+```
+
+This approach would provide a powerful, consolidated view of a vendor's entire business, allowing them to see the combined performance of all their stores.
+
+- Here's a hybrid approach that combines the best of both worlds:
+
+  Hybrid Approach
+
+  1.  Single-Store Analytics (Existing):
+
+      - GET /v1/dashboard/kpis/{storeId} remains for single-store analytics.
+
+  2.  Multi-Store Analytics (New):
+      - GET /v1/dashboard/multi-store/kpis?storeId=A&storeId=B for aggregated KPIs of specified stores.
+      - GET /v1/dashboard/multi-store/kpis for aggregated KPIs of all the vendor's stores.
+
+  How it Works
+
+  - Authorization: We'll verify the vendor has access to all requested storeIds.
+  - Dynamic Query: The SQL query will use a WHERE store_id = ANY($1) clause to handle multiple store IDs.

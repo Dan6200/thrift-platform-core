@@ -1,8 +1,10 @@
 import { QueryResult, QueryResultRow } from 'pg'
-import { pg } from '../../../db/index.js' // Adjust path
+import { knex, pg } from '../../../db/index.js' // Adjust path
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import { validateDashboardQueryParams } from './utils.js'
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
+import UnauthorizedError from '#src/errors/unauthorized.js'
+import ForbiddenError from '#src/errors/forbidden.js'
 
 /**
  * @param {QueryParams} { query, userId }
@@ -12,9 +14,33 @@ import BadRequestError from '../../../errors/bad-request.js' // Adjust path
 export default async ({
   query,
   userId,
+  params,
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { authorizedStoreId, locationType } =
-    await validateDashboardQueryParams({ query, userId })
+  const { storeId } = params
+
+  if (!userId) {
+    throw new UnauthorizedError(
+      'Authentication required to access dashboard data.',
+    )
+  }
+
+  if (!storeId) {
+    throw new BadRequestError('Store ID is required as a path parameter.')
+  }
+
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor', 'viewer'],
+  ])
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError(
+      "You are not authorized to access this store's dashboard.",
+    )
+  }
+
+  const { locationType } =
+    await validateDashboardQueryParams({ query })
 
   const allowedLocationTypes = ['country', 'city']
   if (locationType && !allowedLocationTypes.includes(locationType)) {
@@ -24,7 +50,7 @@ export default async ({
   const groupByColumn = locationType === 'city' ? 'a.city' : 'a.country'
   const locationAlias = locationType === 'city' ? 'city' : 'country' // For the response field name
 
-  const params: string[] = [authorizedStoreId]
+  const sqlParams: string[] = [storeId]
 
   const dbQueryString = `
     SELECT
@@ -39,5 +65,5 @@ export default async ({
     ORDER BY "customerCount" DESC;
   `
 
-  return pg.query(dbQueryString, params)
+  return pg.query(dbQueryString, sqlParams)
 }

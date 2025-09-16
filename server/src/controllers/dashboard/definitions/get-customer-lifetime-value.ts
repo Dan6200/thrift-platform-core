@@ -1,11 +1,13 @@
 import { QueryResult, QueryResultRow } from 'pg'
-import { pg } from '../../../db/index.js' // Adjust path
+import { knex, pg } from '../../../db/index.js' // Adjust path
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import {
   validateDashboardQueryParams,
   getPaginationAndSortClauses,
 } from './utils.js'
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
+import UnauthorizedError from '#src/errors/unauthorized.js'
+import ForbiddenError from '#src/errors/forbidden.js'
 
 /**
  * @param {QueryParams} { query, userId }
@@ -15,9 +17,33 @@ import BadRequestError from '../../../errors/bad-request.js' // Adjust path
 export default async ({
   query,
   userId,
+  params,
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { authorizedStoreId, parsedLimit, parsedOffset, sortBy, sortOrder } =
-    await validateDashboardQueryParams({ query, userId })
+  const { storeId } = params
+
+  if (!userId) {
+    throw new UnauthorizedError(
+      'Authentication required to access dashboard data.',
+    )
+  }
+
+  if (!storeId) {
+    throw new BadRequestError('Store ID is required as a path parameter.')
+  }
+
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor', 'viewer'],
+  ])
+  if (!hasAccess.rows[0].has_store_access) {
+    throw new ForbiddenError(
+      "You are not authorized to access this store's dashboard.",
+    )
+  }
+
+  const { parsedLimit, parsedOffset, sortBy, sortOrder } =
+    await validateDashboardQueryParams({ query })
 
   if (sortBy && !['clv', 'customerName'].includes(sortBy)) {
     throw new BadRequestError(
@@ -32,7 +58,7 @@ export default async ({
     parsedOffset,
   )
 
-  const params: string[] = [authorizedStoreId]
+  const sqlParams: string[] = [storeId]
 
   const dbQueryString = `
     SELECT
@@ -46,5 +72,5 @@ export default async ({
     ${paginationSortClause};
   `
 
-  return pg.query(dbQueryString, params)
+  return pg.query(dbQueryString, sqlParams)
 }

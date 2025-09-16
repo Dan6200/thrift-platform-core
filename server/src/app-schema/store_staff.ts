@@ -40,12 +40,7 @@ export const StoreStaffListResponseSchema = joi
   .min(1)
   .required()
 
-export const RemoveStoreStaffResponseSchema = joi
-  .array()
-  .items(
-    joi.object({
-      message: joi.string().required(),
-    }),
-  )
-  .length(1)
+export const RemoveStoreStaffResponseSchema = joi.object({
+  message: joi.string().required(),
+})
 
