@@ -195,7 +195,7 @@ Here's how we can add this to your dashboard:
 2.  Define the Schema: We'll create a new schema in server/src/app-schema/dashboard.ts to validate the request and response for this new endpoint.
 3.  Write the Query: We'll create a new query definition file, server/src/controllers/dashboard/definitions/get-stock-to-sales.ts, that will contain the SQL query to calculate the stock-to-sales ratio for each product. The query will look something like this:
 
-```sql
+'''sql
     1     SELECT
     2       p.product_id,
     3       p.title,
@@ -213,7 +213,7 @@ Here's how we can add this to your dashboard:
    15     GROUP BY
    16       p.product_id, pvi.quantity_available;
    4. Add to Dashboard Controller: Finally, we'll add the new endpoint to server/src/controllers/dashboard/index.ts.
-```
+'''
 
 ---
 
@@ -230,7 +230,7 @@ Multi-Store Analytics for a Vendor
 
 For example, to get the total KPIs across all of a vendor's stores, the query would look something like this:
 
-```sql
+'''sql
     1 SELECT
     2   SUM(o.total_amount) as total_revenue,
     3   COUNT(DISTINCT o.order_id) as total_orders,
@@ -242,7 +242,7 @@ For example, to get the total KPIs across all of a vendor's stores, the query wo
     9   stores s ON o.store_id = s.store_id
    10 WHERE
    11   s.vendor_id = $1; -- $1 would be the userId of the vendor
-```
+'''
 
 This approach would provide a powerful, consolidated view of a vendor's entire business, allowing them to see the combined performance of all their stores.
 
@@ -262,3 +262,32 @@ This approach would provide a powerful, consolidated view of a vendor's entire b
 
   - Authorization: We'll verify the vendor has access to all requested storeIds.
   - Dynamic Query: The SQL query will use a WHERE store_id = ANY($1) clause to handle multiple store IDs.
+
+---
+## Seasonality Feature Idea
+
+To implement seasonality, we can add a couple of new tables to the database. This would allow vendors to manage seasonal collections of products efficiently.
+
+**1. `seasons` Table**
+
+This table will define named seasonal periods for a store.
+
+-   `season_id`: Unique identifier for the season.
+-   `store_id`: Links the season to a specific store.
+-   `season_name`: The name of the season (e.g., "Christmas 2025", "Summer Sale").
+-   `start_date`: When the season begins.
+-   `end_date`: When the season ends.
+-   `description`: A text field for more details.
+
+**2. `product_seasons` Table**
+
+This is a linking table to associate products with seasons.
+
+-   `product_id`: The ID of the product.
+-   `season_id`: The ID of the season.
+
+**How it would work:**
+
+A vendor could create a "Holiday Sale" season in the `seasons` table with a start and end date. Then, they could link multiple products to this season using the `product_seasons` table. If they need to extend the sale, they only have to update the `end_date` in the `seasons` table, and it will apply to all linked products.
+
+This is a more scalable solution than using the existing `product_availability` table for managing large seasonal collections.
