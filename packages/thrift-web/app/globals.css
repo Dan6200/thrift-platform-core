@@ -1,0 +1,216 @@
+/* cspell:ignore scrollbars */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(0 0% 3.9%);
+  --muted: hsl(0 0% 96.1%);
+  --muted-foreground: hsl(0 0% 45.1%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(0 0% 3.9%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(0 0% 3.9%);
+  --border: hsl(0 0% 89.8%);
+  --input: hsl(0 0% 89.8%);
+  --primary: hsl(268 66% 46%);
+  --primary-foreground: hsl(268 66% 96%);
+  --secondary: hsl(358 88% 38%);
+  --secondary-foreground: hsl(358 88% 98%);
+  --tertiary: hsl(0 0% 9%);
+  --tertiary-foreground: hsl(0 0% 98%);
+  --accent: hsl(0 0% 95%);
+  --accent-foreground: hsl(0 0% 4.8%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --ring: hsl(0 0% 63.9%);
+  --hero-primary: hsl(268 66% 66%);
+  --hero-primary-foreground: hsl(0 0% 98%);
+  --hero-secondary: hsl(358 88% 58%);
+  --hero-secondary-foreground: hsl(0 0% 93%);
+  --sidebar-background: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dark {
+  --background: hsl(0 0% 3.9%);
+  --foreground: hsl(0 0% 98%);
+  --muted: hsl(0 0% 14.9%);
+  --muted-foreground: hsl(0 0% 63.9%);
+  --popover: hsl(0 0% 3.9%);
+  --popover-foreground: hsl(0 0% 98%);
+  --card: hsl(0 0% 3.9%);
+  --card-foreground: hsl(0 0% 98%);
+  --border: hsl(0 0% 20.9%);
+  --input: hsl(0 0% 20.9%);
+  --primary: hsl(268 66% 66%);
+  --primary-foreground: hsl(0 0% 93%);
+  --secondary: hsl(358 88% 58%);
+  --secondary-foreground: hsl(0 0% 93%);
+  --tertiary: hsl(0 0% 98%);
+  --tertiary-foreground: hsl(0 0% 9%);
+  --accent: hsl(0 0% 14.9%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 62.8% 50.6%);
+  --destructive-foreground: hsl(0 64% 98%);
+  --ring: hsl(0 0% 14.9%);
+  --hero-primary: hsl(268 66% 46%);
+  --hero-primary-foreground: hsl(0 0% 98%);
+  --hero-secondary: hsl(358 88% 48%);
+  --hero-secondary-foreground: hsl(0 0% 98%);
+  --sidebar-background: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-hero-primary: var(--hero-primary);
+  --color-hero-primary-foreground: var(--hero-primary-foreground);
+  --color-hero-secondary: var(--hero-secondary);
+  --color-hero-secondary-foreground: var(--hero-secondary-foreground);
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --border-radius-lg: var(--radius);
+  --border-radius-md: calc(var(--radius) - 2px);
+  --border-radius-sm: calc(var(--radius) - 4px);
+}
+
+.disable-scrollbars {
+  /* Chrome/Safari/Webkit */
+  ::-webkit-scrollbar {
+    background: transparent;
+    width: 0px;
+  }
+  /* Firefox */
+  scrollbar-width: none;
+  /* IE 10+ */
+  -ms-overflow-style: none;
+}
+
+.single-line-truncate-responsive {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  /*
+   * The magic is in how the parent or element's width is defined.
+   * If the parent uses flexible units (e.g., percentages, flex-grow)
+   * or if you use vw/rem for the element's width, it will automatically adapt.
+   */
+  width: 95%; /* Example: 90% of its parent's width */
+  margin: 0 auto; /* Center it */
+}
+
+@media (min-width: 640px) {
+  .single-line-truncate-responsive {
+    width: 85%; /* Example: 90% of its parent's width */
+  }
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop_shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.disable-scrollbars {
+  /* Chrome/Safari/Webkit */
+  ::-webkit-scrollbar {
+    background: transparent;
+    width: 0px;
+  }
+  /* Firefox */
+  scrollbar-width: none;
+  /* IE 10+ */
+  -ms-overflow-style: none;
+}
+
+.single-line-truncate-responsive {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  width: 95%;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .single-line-truncate-responsive {
+    width: 85%;
+  }
+}
