@@ -1,0 +1,4 @@
+products.json
+.env.*
+.env*
+*.vim
