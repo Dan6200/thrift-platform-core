@@ -1,0 +1,1212 @@
+#cspell:disable
+
+openapi: 3.1.0
+info:
+  title: Thrift eCommerce API
+  description: |
+    This is the API for Thrift eCommerce Store.
+
+    An online eCommerce platform that offers a wide 
+    range of products including electronics, 
+    fashion, furniture, kitchen items, media and more.
+  version: 1.0.0
+  contact:
+    name: The Developer
+    email: danielnyong66@gmail.com
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: 'models.yaml#/components/securitySchemes/BearerAuth'
+
+servers:
+  - url: https://thrift-production.up.railway.app/{basePath}
+    description: Production server
+    variables:
+      basePath:
+        default: v1
+
+  - url: https://thrift-dev.up.railway.app/{basePath}
+    description: Development server
+    variables:
+      basePath:
+        default: v1
+
+paths:
+  /auth/register:
+    post:
+      summary: Register an account
+      description: Creates an account for the user and authenticates the new user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/UserDataRequest'
+            example:
+              first_name: Ebuka
+              last_name: Eze
+              email: ebukaeze@fake.email.com
+              phone: '+2341234567890'
+              password: my password
+              dob: 2000-4-10
+              country: Nigeria
+
+      responses:
+        '201':
+          description: User Account Created
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/Token'
+
+        '400':
+          description: Invalid User Schema
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '409':
+          description: User Already Exists
+          $ref: 'models.yaml#/components/schemas/responses/ConflictError'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /auth/login:
+    post:
+      summary: Logs In User.
+      description: |
+        Logs in the user with a token if it exists. 
+        Else login the user with email or phone identification and creates token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/LoginInfo'
+            examples:
+              Example 1:
+                summary: You can login with your phone number
+                value:
+                  phone: '+2341234567890'
+                  password: my password
+              Example 2:
+                summary: Or you can login with your email address
+                value:
+                  email: joeschmoe@fake.email.com
+                  password: password
+
+      responses:
+        '200':
+          description: User Logged In
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/Token'
+
+        '400':
+          description: Invalid Login Format
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Invalid Login Credentials
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /auth/logout:
+    get:
+      summary: Logs Out User
+      security:
+        - BearerAuth: []
+
+      responses:
+        '204':
+          description: User Logged Out
+          content:
+            application/json:
+              schema:
+                object:
+
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /account:
+    get:
+      summary: Gets the account information.
+      description: Retrieves account information
+      security:
+        - BearerAuth: []
+
+      responses:
+        '200':
+          description: User Account Retrieved
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/UserDataRetrieved'
+
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: User not found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+    patch:
+      summary: Update user
+      description: Fully or partially updates the user's information.
+      security:
+        - BearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              - anyOf:
+                  - $ref: 'models.yaml#/components/schemas/UserDataRequest'
+            examples:
+              Example 1:
+                summary: |
+                  You can update all fields - Except password field
+                value:
+                  first_name: Ebuka
+                  last_name: Eze
+                  email: ebukaeze@fake.email.com
+                  phone: '+2341234567890'
+                  dob: 2000-4-10
+                  country: Nigeria
+              Example 2:
+                summary: Or update at least one field
+                value:
+                  first_name: Ebuka
+
+      responses:
+        '204':
+          description: Updated Successfully
+
+        '400':
+          description: Update Unsuccessful
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: User not found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+    delete:
+      summary: Delete user
+      description: Deletes the user's information.
+      security:
+        - BearerAuth: []
+
+      responses:
+        '204':
+          description: Deleted Successfully
+
+        '400':
+          description: Delete Unsuccessful
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: User not found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /account/password:
+    put:
+      summary: Change password
+      description: Verifies and updates the users password.
+      security: [BearerAuth: []]
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/PasswordUpdate'
+
+      responses:
+        '204':
+          description: User Password Updated
+
+        '400':
+          description: Password update unsuccessful
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /account/customer:
+    post:
+      summary: Creates a customer account.
+      description: |
+        Creates a customer account for the user.
+      security:
+        - BearerAuth: []
+
+      responses:
+        '201':
+          description: Customer Account Created
+
+        '400':
+          description: Customer Account Not Created
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: Customer Account Not Found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '409':
+          description: Customer Account Already Exists
+          $ref: 'models.yaml#/components/schemas/responses/ConflictError'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+    delete:
+      summary: Deletes Customer Account
+      description: Deletes the Customer Account
+      security: [BearerAuth: []]
+
+      responses:
+        '204':
+          description: Customer Account Deleted
+
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: Customer Account not found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /shipping-info:
+    post:
+      summary: Creates shipping information
+      description: |
+        Creates shipping address and information for
+        the customer account. Customers can have a 
+        maximum of only 5 shipping addresses and information.
+      security: [BearerAuth: []]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/ShippingInfoRequest'
+
+      responses:
+        '201':
+          description: |
+            Shipping information added to Customer Account.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ShippingInfoId'
+        '400':
+          description: |
+            Shipping information not added to Customer Account.
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: |
+            Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: |
+            Customer Account not found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: |
+            Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+    get:
+      summary: Retrieves all the shipping information
+      description: |
+        Retrieves all the shipping information for the 
+        customer account.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Retrieved all the shipping information added to a 
+            Customer's Account.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/AllShippingInfoRetrieved'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No shipping information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: |
+            Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /shipping-info/{shippingInfoId}:
+    get:
+      summary: Retrieves shipping information.
+      description: |
+        Retrieves the shipping information with Id - shippingInfoId
+        for the customer.
+      security: [BearerAuth: []]
+      parameters:
+        - in: path
+          name: shippingInfoId
+          schema:
+            type: integer
+          required: true
+          description: Shipping information Id
+      responses:
+        '200':
+          description: |
+            Retrieves the shipping information with Id
+            shippingInfoId
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ShippingInfoRetrieved'
+        '400':
+          description: Cannot retrieve shipping information
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: |
+            No shipping information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+    put:
+      summary: Replace shipping information.
+      description: |
+        Replaces the shipping information with Id - shippingInfoId
+        for the customer.
+      security: [BearerAuth: []]
+      parameters:
+        - in: path
+          name: shippingInfoId
+          schema:
+            type: integer
+          required: true
+          description: Shipping information Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/ShippingInfoRequest'
+      responses:
+        '200':
+          description: |
+            Replaced the shipping information with a new one
+            and returns its Id.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ShippingInfoId'
+        '400':
+          description: Cannot replace shipping information
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No shipping information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+    delete:
+      summary: Deletes shipping information.
+      description: |
+        Deletes the shipping information with Id - shippingInfoId
+        for the customer.
+      security: [BearerAuth: []]
+      parameters:
+        - in: path
+          name: shippingInfoId
+          schema:
+            type: integer
+          required: true
+          description: Shipping information Id
+      responses:
+        '200':
+          description: |
+            Deleted the shipping information with Id
+            shippingInfoId and returned it's Id
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ShippingInfoId'
+        '400':
+          description: Failed to delete shipping information
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No shipping information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+  /payment-info:
+    post:
+      summary: Creates payment information
+      description: |
+        Creates payment address and information for
+        the customer account. Customers can have a 
+        maximum of only 5 payment addresses and information.
+      security: [BearerAuth: []]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+            #   $ref: 'models.yaml#/components/schemas/PaymentInfoRequest'
+
+      responses:
+        '201':
+          description: |
+            Payment information added to Customer Account.
+          content:
+            application/json:
+              schema:
+                # $ref:                #   'models.yaml#/components/schemas/PaymentInfoId'
+        '400':
+          description: Failed to add payment information to Customer Account.
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: Customer Account not found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+        '500':
+          description: Internal Server Error
+          $ref: 'models.yaml#/components/schemas/responses/default'
+
+    get:
+      summary: Retrieves all the payment information
+      description: |
+        Retrieves all the payment information for the 
+        customer account.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Retrieved all the payment information added to a 
+            Customer's Account.
+          content:
+            application/json:
+              schema:
+                # $ref:                #   'models.yaml#/components/schemas/AllPaymentInfoRetrieved'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No payment information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /payment-info/{paymentInfoId}:
+    get:
+      summary: Retrieves payment information.
+      description: |
+        Retrieves the payment information with Id - paymentInfoId
+        for the customer.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Retrieves the payment information with Id
+            paymentInfoId
+          content:
+            application/json:
+              schema:
+                # $ref:                #   'models.yaml#/components/schemas/PaymentInfo'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No payment information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+    put:
+      summary: Replace payment information.
+      description: |
+        Replaces the payment information with Id - paymentInfoId
+        for the customer.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Replaced the payment information with a new one
+            and returns its Id.
+          content:
+            application/json:
+              schema:
+                # $ref:                #   'models.yaml#/components/schemas/PaymentInfoId'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No payment information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+    delete:
+      summary: Deletes payment information.
+      description: |
+        Deletes the payment information with Id - paymentInfoId
+        for the customer.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Deleted the payment information with Id
+            paymentInfoId and returned it's Id
+          content:
+            application/json:
+              schema:
+                # $ref:                #   'models.yaml#/components/schemas/PaymentInfoId'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No payment information found for the customer
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /account/vendor:
+    post:
+      summary: Creates a vendor account.
+      description: |
+        Creates a vendor account for the user.
+      security:
+        - BearerAuth: []
+
+      responses:
+        '201':
+          description: Vendor Account Created
+
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+    delete:
+      summary: Deletes Vendor Account
+      description: Deletes the Vendor Account
+      security: [BearerAuth: []]
+
+      responses:
+        '204':
+          description: Vendor Account Deleted
+
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+
+        '401':
+          description: Unauthorized Access
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+        '404':
+          description: Vendor Account not found
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /stores:
+    post:
+      summary: Creates store's data
+      description: |
+        Creates the vendor's stores for the vendor account,
+        where they can sell products. Vendors can have a 
+        maximum of only 5 stores.
+      security: [BearerAuth: []]
+      requestBody:
+        description: |
+          The store's data to be added to the vendor account.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/StoreRequest'
+
+      responses:
+        '201':
+          description: |
+            Stores added to Vendor Account.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/StoreId'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+    get:
+      summary: Retrieves all the store's data
+      description: |
+        Retrieves all the store's data for the 
+        vendor account.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Retrieved all the store's data added to a 
+            Vendor's Account.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/AllStoresRetrieved'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No store's data found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /stores/{storeId}:
+    get:
+      summary: Retrieves store's data.
+      description: |
+        Retrieves the store's data with Id - storeId
+        for the vendor.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Retrieves the store's data with Id
+            storeId
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/StoreRetrieved'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No store's data found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+    patch:
+      summary: Updates the store's data.
+      description: |
+        Fully or Partially updates the store's data 
+        with Id - storeId
+        for the vendor.
+      security: [BearerAuth: []]
+      requestBody:
+        description: |
+          The store's data to be updated to the vendor account.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/StoreUpdated'
+
+      responses:
+        '200':
+          description: |
+            Replaced the store's data with a new one
+            and returns its Id.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/StoreId'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No store's data found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+    delete:
+      summary: Deletes store's data.
+      description: |
+        Deletes the store's data with Id - storeId
+        for the vendor.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Deleted the store's data with Id
+            storeId and returned it's Id
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/StoreId'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No store's data found for the vendor
+          $ref:
+            'models.yaml#/components/schemas/responses/NotFound'
+
+            # /payment-info:
+            #   post:
+            #     summary: Creates payment information
+            #     description: |
+            #       Creates payment address and information for
+            #       the vendor account. Vendors can have a
+            #       maximum of only 5 payment addresses and information.
+            #     security: [BearerAuth: []]
+            #     responses:
+            #       '201':
+            #         description: |
+            #           Payment information added to Vendor Account.
+            #         content:
+            #           application/json:
+            #             schema:
+            #               # $ref:            #               #   'models.yaml#/components/schemas/PaymentInfoId'
+            #       '400':
+            #         $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+            #       '401':
+            #         $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+            #   get:
+            #     summary: Retrieves all the payment information
+            #     description: |
+            #       Retrieves all the payment information for the
+            #       vendor account.
+            #     security: [BearerAuth: []]
+            #     responses:
+            #       '200':
+            #         description: |
+            #           Retrieved all the payment information added to a
+            #           Vendor's Account.
+            #         content:
+            #           application/json:
+            #             schema:
+            #               # $ref:            #               #   'models.yaml#/components/schemas/PaymentInfoList'
+            #       '400':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/BadRequestError'
+            #       '401':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/UnauthenticatedError'
+            #       '404':
+            #         description: |
+            #           No payment information found for the vendor
+            #         $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+            # /users/vendor-account/payment-info/{paymentInfoId}:
+            #   get:
+            #     summary: Retrieves payment information.
+            #     description: |
+            #       Retrieves the payment information with Id - paymentInfoId
+            #       for the vendor.
+            #     security: [BearerAuth: []]
+            #     responses:
+            #       '200':
+            #         description: |
+            #           Retrieves the payment information with Id
+            #           paymentInfoId
+            #         content:
+            #           application/json:
+            #             schema:
+            #               # $ref:            #               #   'models.yaml#/components/schemas/PaymentInfo'
+            #       '400':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/BadRequestError'
+            #       '401':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/UnauthenticatedError'
+            #       '404':
+            #         description: |
+            #           No payment information found for the vendor
+            #         $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+            #   put:
+            #     summary: Replace payment information.
+            #     description: |
+            #       Replaces the payment information with Id - paymentInfoId
+            #       for the vendor.
+            #     security: [BearerAuth: []]
+            #     responses:
+            #       '200':
+            #         description: |
+            #           Replaced the payment information with a new one
+            #           and returns its Id.
+            #         content:
+            #           application/json:
+            #             schema:
+            #               # $ref:            #               #   'models.yaml#/components/schemas/PaymentInfoId'
+            #       '400':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/BadRequestError'
+            #       '401':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/UnauthenticatedError'
+            #       '404':
+            #         description: |
+            #           No payment information found for the vendor
+            #         $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+            #   delete:
+            #     summary: Deletes payment information.
+            #     description: |
+            #       Deletes the payment information with Id - paymentInfoId
+            #       for the vendor.
+            #     security: [BearerAuth: []]
+            #     responses:
+            #       '200':
+            #         description: |
+            #           Deleted the payment information with Id
+            #           paymentInfoId and returned it's Id
+            #         content:
+            #           application/json:
+            #             schema:
+            #               # $ref:            #               #   'models.yaml#/components/schemas/PaymentInfoId'
+            #       '400':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/BadRequestError'
+            #       '401':
+            #         $ref:            #           'models.yaml#/components/schemas/responses/UnauthenticatedError'
+            #       '404':
+            #         description: |
+            #           No payment information found for the vendor
+            #         $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /products:
+    post:
+      summary: Adds a new product to the store
+      description: |
+        Adds a new product to the store with Id - productId
+        for the vendor.
+      security: [BearerAuth: []]
+      queries:
+        storeId:
+          description: |
+            The storeId of the store to which the product
+            is to be added.
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        required: true
+        description: |
+          The product to be added to the store.
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/ProductRequest'
+
+      responses:
+        '201':
+          description: |
+            Added a new product to the store with Id
+            productId and returned it's Id
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ProductId'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+
+    get:
+      summary: Retrieves all the products
+      description: |
+        Retrieves all the products for the 
+        store.
+      security: [BearerAuth: []]
+      queries:
+        storeId:
+          description: |
+            The storeId of the store whose products
+            are to be retrieved.
+          required: true
+          schema:
+            type: integer
+            format: int32
+
+      responses:
+        '200':
+          description: |
+            Retrieved all the products added to a 
+            store.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/AllProductsRetrieved'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No products found for the store
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /products/{productId}:
+    get:
+      summary: Retrieves product information.
+      description: |
+        Retrieves the product information with Id - productId
+        for the vendor.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Retrieves the product information with Id
+            productId
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ProductRetrieved'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No product found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+    patch:
+      summary: Updates product information.
+      description: |
+        Updates the product information with Id - productId
+        for the vendor.
+      security: [BearerAuth: []]
+      requestBody:
+        description: |
+          The product information to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: 'models.yaml#/components/schemas/ProductUpdated'
+
+      responses:
+        '200':
+          description: |
+            Updated the product information with a new one
+            and returns its Id.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ProductRetrieved'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: No product found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+    delete:
+      summary: Deletes product information.
+      description: |
+        Deletes the product information with Id - productId
+        for the vendor.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Deleted the product information with Id
+            productId and returned it's Id
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/ProductId'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No product found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /media:
+    post:
+      summary: Uploads a media
+      description: |
+        Uploads a new media to a page or for a product.
+      security: [BearerAuth: []]
+      requestBody:
+        required: true
+        description: |
+          The media to be uploaded.
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+
+      responses:
+        '201':
+          description: |
+            Uploaded new media file
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/Media'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+    get:
+      summary: Retrieves all the media files
+      description: |
+        Retrieves all the media files for the 
+        product.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Retrieved all the media files added to a 
+            product.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/AllMedia'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No media files found for the product
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+  /media/{filename}:
+    put:
+      summary: Updates media file.
+      description: |
+        Updates the media file with the filename given in its route parameters
+        for the vendor.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Updated the media file with a new one
+            and returns its the filename given in its route parameters.
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/Media'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No media file found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'
+
+    delete:
+      summary: Deletes media file.
+      description: |
+        Deletes the media file with the filename given in its route parameters
+        for the vendor.
+      security: [BearerAuth: []]
+      responses:
+        '200':
+          description: |
+            Deleted the media file with the filename given in its route parameters
+            mediaId and returned it's the filename given in its route parameters
+          content:
+            application/json:
+              schema:
+                $ref: 'models.yaml#/components/schemas/Media'
+        '400':
+          $ref: 'models.yaml#/components/schemas/responses/BadRequestError'
+        '401':
+          $ref: 'models.yaml#/components/schemas/responses/UnauthenticatedError'
+        '404':
+          description: |
+            No media file found for the vendor
+          $ref: 'models.yaml#/components/schemas/responses/NotFound'

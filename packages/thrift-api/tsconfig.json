@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "#src/*": ["server/src/*"],
+      "#supabase-config": ["supabase/supabase.ts"]
+    },
+    "rootDir": ".",
+    "resolveJsonModule": true,
+    "strict": true,
+    "outDir": "built",
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "noEmitOnError": true,
+    "sourceMap": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "built"]
+}

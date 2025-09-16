@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "thrift-api",
+  "version": 2,
+  "buildCommand": "pnpm build",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api" },
+    {
+      "source": "/.well-known/acme-challenge/(.*)",
+      "destination": "/public/.well-known/acme-challenge/$1"
+    }
+  ]
+}
