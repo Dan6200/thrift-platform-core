@@ -150,7 +150,6 @@ const getAllQuery = async ({
       'delivery_info.created_at',
       'delivery_info.updated_at',
     )
-  console.log(await finalResult)
   return finalResult
 }
 

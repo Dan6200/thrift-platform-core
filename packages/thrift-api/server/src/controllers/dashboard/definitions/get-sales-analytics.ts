@@ -156,6 +156,5 @@ export default async ({
       throw new BadRequestError('Invalid sales report type.')
   }
 
-  console.log(dbQueryString)
   return pg.query(dbQueryString, sqlParams) // Changed from params
 }
