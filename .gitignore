@@ -1,3 +1,108 @@
+# Thrift-web
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+reader-for-code-snip.mjs
+shadcn-download.sh
+todo.md
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env.*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+Session.vim
+notes.md
+
+# vscode
+.vscode/*
+
+# vim
+.*.sw*
+Session.vim.*
+/_tailwind.config.js
+
+# Thrift-api
+*~
+*.log
+.env
+/.sql-query.sql
+.env.*
+*.sw*
+*node_modules
+*/.env
+todo*
+.prettierrc.json
+**/.vscode/*
+*built/
+*build/
+*bundle.js
+*.sh
+*.vim
+**/tmp/**
+server-log.txt
+mochawesome-*
+./regexp.txt
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 node_modules
-issues_export
-labels.txt
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+db_backup.sql
+
+# Avoid pushing secret key
+firebase-config.json
+thrift-app-*.json
+
+# Ignore
+/supabase/.temp
+/supabase/volumes
+.vercel/
+!.vercel/project.json
+/server/src/tests/integrated/data/addresses/

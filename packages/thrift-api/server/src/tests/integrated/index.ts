@@ -12,6 +12,7 @@ import * as Mustapha from './data/users/customers/user-mustapha/index.js'
 import * as Aliyu from './data/users/vendors/user-aliyu/index.js'
 import testDashboard from './dashboard/index.js'
 import testStoreStaff from './store_staff/index.js'
+import testCart from './cart/index.js'
 
 const users = [Ebuka, Aliyu, Aisha, Mustapha]
 const customers = [Ebuka, Aisha, Mustapha] // is_customer is true
@@ -96,6 +97,14 @@ export default function (): void {
       describe(`Testing Store Staff for ${vendorName} with staff ${customerName}`, () =>
         testStoreStaff({ vendorInfo, customerInfo }))
     }
+  }
+
+  /** Cart related tests **/
+  for (let customer of customers) {
+    const { userInfo } = customer
+    const { first_name: name } = userInfo
+    describe(`Testing Cart for ${name}`, () =>
+      testCart(customer))
   }
 
   //

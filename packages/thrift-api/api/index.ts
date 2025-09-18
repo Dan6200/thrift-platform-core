@@ -14,6 +14,7 @@ import storeStaffRouter from '#src/routes/store_staff.js'
 import mediaRouter from '#src/routes/media/index.js'
 import productsRouter from '#src/routes/products/index.js'
 import dashboardRouter from '#src/routes/dashboard/index.js'
+import cartRouter from '#src/routes/cart/index.js'
 
 // middlewares
 import errorHandlerMiddleware from '#src/middleware/error-handler.js'
@@ -79,6 +80,7 @@ v1Router.use('/stores', authenticateUser, storeStaffRouter)
 v1Router.use('/products', authenticateUser, productsRouter)
 v1Router.use('/media', authenticateUser, mediaRouter)
 v1Router.use('/dashboard', authenticateUser, dashboardRouter)
+v1Router.use('/cart', authenticateUser, cartRouter)
 
 app.use('/v1', v1Router)
 // helper middlewares
