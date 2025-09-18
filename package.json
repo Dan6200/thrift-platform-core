@@ -1,0 +1,11 @@
+{
+  "name": "Thrift",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "pnpm install",
+    "build:all": "pnpm -r build",
+    "test:all": "pnpm -r test"
+  },
+  "devDependencies": {}
+}
