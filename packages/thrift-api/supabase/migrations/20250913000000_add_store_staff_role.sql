@@ -128,12 +128,12 @@ drop policy if exists "Vendors can update their own featured_products." on featu
 drop policy if exists "Vendors can delete their own featured_products." on featured_products;
 drop policy if exists "Vendors and admins can delete their featured_products." on featured_products;
 
--- Policies for product_media
-drop policy if exists "Vendors can view their own product_media." on product_media;
-drop policy if exists "Vendors can insert their own product_media." on product_media;
-drop policy if exists "Vendors can update their own product_media." on product_media;
-drop policy if exists "Vendors can delete their own product_media." on product_media;
-drop policy if exists "Vendors and admins can delete their product_media." on product_media;
+-- -- Policies for product_media
+-- drop policy if exists "Vendors can view their own product_media." on product_media;
+-- drop policy if exists "Vendors can insert their own product_media." on product_media;
+-- drop policy if exists "Vendors can update their own product_media." on product_media;
+-- drop policy if exists "Vendors can delete their own product_media." on product_media;
+-- drop policy if exists "Vendors and admins can delete their product_media." on product_media;
 
 -- Policies for orders
 drop policy if exists "Users can view their own orders." on orders;
@@ -280,15 +280,15 @@ create policy "Allow vendors, admins and editors to update featured_product_link
 create policy "Allow vendors and admins to delete featured_product_links" on featured_product_links
   for delete using (exists(select 1 from products where products.product_id = featured_product_links.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin'])));
 
--- product_media
-create policy "Allow vendors and staff to view product_media" on product_media
-  for select using (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin', 'editor', 'viewer'])));
-create policy "Allow vendors, admins and editors to insert product_media" on product_media
-  for insert with check (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin', 'editor'])));
-create policy "Allow vendors, admins and editors to update product_media" on product_media
-  for update using (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin', 'editor'])));
-create policy "Allow vendors and admins to delete product_media" on product_media
-  for delete using (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin'])));
+-- -- product_media
+-- create policy "Allow vendors and staff to view product_media" on product_media
+--   for select using (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin', 'editor', 'viewer'])));
+-- create policy "Allow vendors, admins and editors to insert product_media" on product_media
+--   for insert with check (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin', 'editor'])));
+-- create policy "Allow vendors, admins and editors to update product_media" on product_media
+--   for update using (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin', 'editor'])));
+-- create policy "Allow vendors and admins to delete product_media" on product_media
+--   for delete using (exists(select 1 from products where products.product_id = product_media.product_id and has_store_access(auth.uid(), products.store_id, ARRAY['admin'])));
 
 -- orders
 create policy "Customers can manage their own orders" on orders
