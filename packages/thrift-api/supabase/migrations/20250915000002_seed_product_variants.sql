@@ -38,8 +38,58 @@ where
     'Running Shoes Men''s',
     'Ankle Boots Women''s',
     'Women''s Denim Jeans',
-    'Men''s Polo Shirt'
+    'Men''s Polo Shirt',
+    'Laptop Pro X'
   );
+
+-- Seed variants for Laptop Pro X
+DO $
+DECLARE
+    v_product_id int;
+    v_option_id_color int;
+    v_option_id_storage int;
+    color_value text;
+    storage_value text;
+    v_variant_id int;
+    v_value_id int;
+BEGIN
+    -- Get product_id
+    SELECT product_id INTO v_product_id FROM public.products WHERE title = 'Laptop Pro X';
+
+    -- Insert options and get their IDs
+    INSERT INTO public.product_options (product_id, option_name) VALUES (v_product_id, 'COLOR') RETURNING option_id INTO v_option_id_color;
+    INSERT INTO public.product_options (product_id, option_name) VALUES (v_product_id, 'STORAGE') RETURNING option_id INTO v_option_id_storage;
+
+    -- Insert option values
+    INSERT INTO public.product_option_values (option_id, value)
+    SELECT v_option_id_color, color FROM unnest(array['Silver', 'Space Gray', 'Black']) as color;
+    INSERT INTO public.product_option_values (option_id, value)
+    SELECT v_option_id_storage, storage FROM unnest(array['256GB', '512GB', '1TB']) as storage;
+
+    -- Create variants and link them
+    FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
+    LOOP
+        FOR storage_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_storage
+        LOOP
+            -- Insert variant
+            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || storage_value, list_price, net_price
+            FROM public.products WHERE product_id = v_product_id
+            RETURNING variant_id INTO v_variant_id;
+
+            -- Seed inventory
+            INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
+
+            -- Link to color value
+            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+
+            -- Link to storage value
+            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
+            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        END LOOP;
+    END LOOP;
+END $;
 
 -- Seed variants for Classic Leather Jacket
 DO $$
@@ -63,7 +113,7 @@ BEGIN
     INSERT INTO public.product_option_values (option_id, value)
     SELECT v_option_id_size, size FROM unnest(array['S', 'M', 'L', 'XL']) as size;
     INSERT INTO public.product_option_values (option_id, value)
-    SELECT v_option_id_color, color FROM unnest(array['BLACK', 'BROWN']) as color;
+    SELECT v_option_id_color, color FROM unnest(array['BLACK', 'BROWN', 'GREY']) as color;
 
     -- Create variants and link them
     FOR size_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_size

@@ -466,26 +466,9 @@ before update on order_items
 for each row
 execute procedure trigger_set_timestamp();
 
-create table if not exists product_media (
-  product_id					int					not null   references   products   on   delete   cascade,
-  filename						varchar			primary    key,
-  filepath						varchar			not        null,
-  description						varchar,
-	is_display_image			boolean			default		 false,
-	is_landing_image			boolean			default		 false,
-	filetype            varchar     not        null    default    'image',
-  created_at          timestamptz     not  	 null 				default     now(),
-  updated_at          timestamptz     not  	 null 				default     now(),
-  check (filetype in ('image', 'video')),
-  check (not (is_display_image = true and filetype != 'image')),
-  check (not (is_landing_image = true and filetype != 'image'))
-);
 
--- create a trigger to update the updated_at column for product_media
-create trigger set_timestamp
-before update on product_media
-for each row
-execute procedure trigger_set_timestamp();
+
+
 
 create table if not exists shopping_cart (
   cart_id       serial        primary   key,
@@ -672,11 +655,7 @@ create policy "Users can insert their own order_items." on order_items for inser
 create policy "Users can update their own order_items." on order_items for update using (EXISTS ( SELECT 1 FROM orders WHERE orders.order_id = order_items.order_id AND orders.customer_id = auth.uid() ));
 create policy "Users can delete their own order_items." on order_items for delete using (EXISTS ( SELECT 1 FROM orders WHERE orders.order_id = order_items.order_id AND orders.customer_id = auth.uid() ));
 
-alter table product_media enable row level security;
-create policy "Vendors can view their own product_media." on product_media for select using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can insert their own product_media." on product_media for insert with check (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can update their own product_media." on product_media for update using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
-create policy "Vendors can delete their own product_media." on product_media for delete using (EXISTS ( SELECT 1 FROM products WHERE products.product_id = product_media.product_id AND products.vendor_id = auth.uid() ));
+
 
 alter table shopping_cart enable row level security;
 create policy "Users can view their own shopping_cart." on shopping_cart for select using (auth.uid() = customer_id);
