@@ -1,32 +1,33 @@
-import chai from "chai";
-import chaiHttp from "chai-http";
-import { StatusCodes } from "http-status-codes";
-import { readFile } from "node:fs/promises";
+import chai from 'chai'
+import chaiHttp from 'chai-http'
+import { StatusCodes } from 'http-status-codes'
+import { readFile } from 'node:fs/promises'
 import {
   ProductMedia,
-  isValidProductRequestData,
+  isValidProductCreateRequestData,
+  isValidProductUpdateRequestData,
   isValidProductResponseData,
   isValidProductGETAllResponseData,
   isValidProductGETResponseData,
   isValidProductId,
-} from "../../../../types/products/index.js";
+} from '../../../../types/products/index.js'
 import {
   isValidVariantRequestData,
   isValidVariantIdResponseData,
   isValidVariantUpdateRequestData,
   isValidVariantResponseData,
-} from "../../../../types/products/variants.js";
+} from '../../../../types/products/variants.js'
 import {
   TestRequestWithQParams,
   TestRequestWithQParamsAndBody,
-} from "../../test-request/types.js";
-import testRoutes from "../../test-request/index.js";
-import { ProfileRequestData } from "#src/types/profile/index.js";
-import { signInForTesting } from "../../helpers/signin-user.js";
+} from '../../test-request/types.js'
+import testRoutes from '../../test-request/index.js'
+import { ProfileRequestData } from '#src/types/profile/index.js'
+import { signInForTesting } from '../../helpers/signin-user.js'
 
-chai.use(chaiHttp).should();
+chai.use(chaiHttp).should()
 
-const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes;
+const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes
 
 // export const testCreateProduct = async function* ({
 //   server,
@@ -61,61 +62,61 @@ const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes;
 
 export const testPostProduct = (<TestRequestWithQParamsAndBody>testRoutes)({
   statusCode: CREATED,
-  verb: "post",
-  validateTestReqData: isValidProductRequestData,
+  verb: 'post',
+  validateTestReqData: isValidProductCreateRequestData,
   validateTestResData: isValidProductId,
-});
+})
 
 export const testGetAllProducts = (<TestRequestWithQParams>testRoutes)({
   statusCode: OK,
-  verb: "get",
+  verb: 'get',
   validateTestResData: isValidProductGETAllResponseData,
-});
+})
 
 export const testGetProduct = (<TestRequestWithQParams>testRoutes)({
   statusCode: OK,
-  verb: "get",
+  verb: 'get',
   validateTestResData: isValidProductGETResponseData,
-});
+})
 
 export const testUpdateProduct = (<TestRequestWithQParamsAndBody>testRoutes)({
   statusCode: OK,
-  verb: "patch",
-  validateTestReqData: isValidProductRequestData,
+  verb: 'patch',
+  validateTestReqData: isValidProductUpdateRequestData,
   validateTestResData: isValidProductResponseData,
-});
+})
 
 export const testDeleteProduct = (<TestRequestWithQParams>testRoutes)({
   statusCode: NO_CONTENT,
-  verb: "delete",
+  verb: 'delete',
   validateTestResData: null,
-});
+})
 
 export const testGetNonExistentProduct = (<TestRequestWithQParams>testRoutes)({
-  verb: "get",
+  verb: 'get',
   statusCode: NOT_FOUND,
   validateTestResData: null,
-});
+})
 
 export const testPostVariant = (<TestRequestWithQParamsAndBody>testRoutes)({
   statusCode: CREATED,
-  verb: "post",
+  verb: 'post',
   validateTestReqData: isValidVariantRequestData,
   validateTestResData: isValidVariantIdResponseData,
-});
+})
 
 export const testUpdateVariant = (<TestRequestWithQParamsAndBody>testRoutes)({
   statusCode: OK,
-  verb: "patch",
+  verb: 'patch',
   validateTestReqData: isValidVariantUpdateRequestData,
   validateTestResData: isValidVariantResponseData,
-});
+})
 
 export const testDeleteVariant = (<TestRequestWithQParams>testRoutes)({
   statusCode: NO_CONTENT,
-  verb: "delete",
+  verb: 'delete',
   validateTestResData: null,
-});
+})
 
 export const testUploadProductMedia = async function (
   server: string,
@@ -124,59 +125,60 @@ export const testUploadProductMedia = async function (
   userInfo: ProfileRequestData,
   queryParams: { [k: string]: any },
 ): Promise<any> {
-  const token = await signInForTesting(userInfo);
-  const fieldName = "product-media";
+  const token = await signInForTesting(userInfo)
+  const fieldName = 'product-media'
   const request = chai
     .request(server)
     .post(urlPath)
-    .auth(token, { type: "bearer" })
-    .query(queryParams);
+    .auth(token, { type: 'bearer' })
+    .query(queryParams)
   await Promise.all(
     media.map(async (file) => {
-      const data = await readFile(file.path);
-      request.attach(fieldName, data, file.name);
-      console.log(`	${file.name} uploaded...`);
+      const data = await readFile(file.path)
+      request.attach(fieldName, data, file.name)
+      console.log(`	${file.name} uploaded...`)
     }),
-  );
+  )
 
   const descriptions = media.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.description;
-    return acc;
-  }, {});
+    acc[file.name] = file.description
+    return acc
+  }, {})
 
   const isDisplayImage = media.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.is_display_image;
-    return acc;
-  }, {});
+    acc[file.name] = file.is_display_image
+    return acc
+  }, {})
 
   const isLandingImage = media.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.is_landing_image;
-    return acc;
-  }, {});
+    acc[file.name] = file.is_landing_image
+    return acc
+  }, {})
 
   const filetype = media.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.filetype;
-    return acc;
-  }, {});
+    acc[file.name] = file.filetype
+    return acc
+  }, {})
 
-  request.field("descriptions", JSON.stringify(descriptions));
-  request.field("is_display_image", JSON.stringify(isDisplayImage));
-  request.field("is_landing_image", JSON.stringify(isLandingImage));
-  request.field("filetype", JSON.stringify(filetype));
+  request.field('descriptions', JSON.stringify(descriptions))
+  request.field('is_display_image', JSON.stringify(isDisplayImage))
+  request.field('is_landing_image', JSON.stringify(isLandingImage))
+  request.field('filetype', JSON.stringify(filetype))
 
-  const response = await request;
-  response.should.have.status(CREATED);
+  const response = await request
+  response.should.have.status(CREATED)
   // Check the data in the body if accurate
-  checkMedia(response.body);
-  return response.body;
-};
+  checkMedia(response.body)
+  return response.body
+}
 
 async function checkMedia(body: any) {
-  body.should.be.an("array");
-  body[0].should.be.an("object");
-  body[0].should.have.property("filename");
-  body[0].should.have.property("filepath");
-  body[0].should.have.property("is_display_image");
-  body[0].should.have.property("is_landing_image");
-  body[0].should.have.property("filetype");
+  body.should.be.an('array')
+  body[0].should.be.an('object')
+  body[0].should.have.property('filename')
+  body[0].should.have.property('filepath')
+  body[0].should.have.property('is_display_image')
+  body[0].should.have.property('is_landing_image')
+  body[0].should.have.property('filetype')
 }
+

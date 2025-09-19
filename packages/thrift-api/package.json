@@ -1,5 +1,5 @@
 {
-  "name": "thrift",
+  "name": "thrift-api",
   "version": "1.0.0",
   "description": "",
   "main": "./built/server/src/server.js",

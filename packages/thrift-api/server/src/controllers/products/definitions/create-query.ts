@@ -3,11 +3,7 @@ import ForbiddenError from '#src/errors/forbidden.js'
 import { knex } from '../../../db/index.js'
 import BadRequestError from '../../../errors/bad-request.js'
 import { QueryParams } from '../../../types/process-routes.js'
-import {
-  isValidProductRequestData,
-  ProductID,
-  ProductResponseData,
-} from '../../../types/products/index.js'
+import { ProductID } from '../../../types/products/index.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 
 /**
@@ -28,14 +24,15 @@ export default async ({
       'Need to provide Store ID as query param in order to create a product',
     )
 
-  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [userId, storeId, ['admin', 'editor']]);
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor'],
+  ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError('You do not have permission to create products for this store.');
-  }
-
-  if (!isValidProductRequestData(body)) {
-    console.error('Invalid product data:', body);
-    throw new BadRequestError('Invalid product data')
+    throw new ForbiddenError(
+      'You do not have permission to create products for this store.',
+    )
   }
 
   const productData = body
@@ -54,19 +51,7 @@ export default async ({
       .returning('*')
 
     if (!variants || variants.length === 0) {
-      // If no variants are provided, create a default one
-      const [defaultVariant] = await trx('product_variants').insert({
-        product_id: product.product_id,
-        sku: `SKU-${product.product_id}`,
-        net_price: product.net_price,
-        list_price: product.list_price,
-      }).returning('variant_id');
-
-      await trx('inventory').insert({
-        variant_id: defaultVariant.variant_id,
-        quantity_change: 0,
-        reason: 'initial_stock'
-      });
+      throw new BadRequestError('A product must have at least one variant.')
     } else {
       // 2. Process variants
       for (const variant of variants) {
@@ -117,18 +102,18 @@ export default async ({
             list_price: variant.list_price || product.list_price,
             net_price: variant.net_price || product.net_price,
           })
-          .returning('variant_id');
+          .returning('variant_id')
 
         if (variant.quantity_available) {
-            await trx('inventory').insert({
-                variant_id: newVariant.variant_id,
-                quantity_change: variant.quantity_available,
-                reason: 'initial_stock'
-            });
+          await trx('inventory').insert({
+            variant_id: newVariant.variant_id,
+            quantity_change: variant.quantity_available,
+            reason: 'initial_stock',
+          })
         }
 
         // 5. Link variant to option values
-        const links = variant.options.map((opt) => ({
+        const links = variant.options.map((opt: any) => ({
           variant_id: newVariant.variant_id,
           value_id: valueIds.get(opt.value),
         }))

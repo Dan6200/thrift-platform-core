@@ -1,7 +1,8 @@
 import {
   ProductIdSchema,
   ProductGETAllResponseSchema,
-  ProductRequestSchema,
+  ProductCreateRequestSchema,
+  ProductUpdateRequestSchema,
   ProductResponseSchema,
   ProductGETResponseSchema,
 } from '../../app-schema/products/index.js'
@@ -70,10 +71,18 @@ export type ProductMedia = {
   filetype: 'image' | 'video'
 }
 
-export function isValidProductRequestData(
+export function isValidProductUpdateRequestData(
   productData: unknown,
 ): productData is ProductRequestData {
-  const { error } = ProductRequestSchema.validate(productData)
+  const { error } = ProductUpdateRequestSchema.validate(productData)
+  error && console.error(error)
+  return !error
+}
+
+export function isValidProductCreateRequestData(
+  productData: unknown,
+): productData is ProductRequestData {
+  const { error } = ProductCreateRequestSchema.validate(productData)
   error && console.error(error)
   return !error
 }

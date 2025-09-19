@@ -506,7 +506,8 @@ create table if not exists shopping_cart_item (
   variant_id   int      not       null   references   product_variants on   delete   cascade,
   quantity     int      not       null   check        (quantity > 0),
   created_at    timestamptz   not       null   default      now(),
-  updated_at    timestamptz   not       null   default      now()
+  updated_at    timestamptz   not       null   default      now(),
+  unique(cart_id, variant_id)
 );
 
 -- create a trigger to update the updated_at column for shopping_cart_item

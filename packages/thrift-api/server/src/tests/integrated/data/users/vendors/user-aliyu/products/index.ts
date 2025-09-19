@@ -13,14 +13,20 @@ export const products: ProductRequestData[] = [
     category_id: 1,
     subcategory_id: 1,
     description: [
-      `* 1.69" HD Full Touch Screen: High texture watch frame with 1.69" LCD full touch colorful screen bring comfortable touch and excellent visual experience.`, 
-      `There are various watch face styles to choose from in the app. Also you can choose a picture you like to customize the watch face in "QWatch Pro" App. And the smartwatch screen will light up every time you raise your hand.`, 
+      `* 1.69" HD Full Touch Screen: High texture watch frame with 1.69" LCD full touch colorful screen bring comfortable touch and excellent visual experience.`,
+      `There are various watch face styles to choose from in the app. Also you can choose a picture you like to customize the watch face in "QWatch Pro" App. And the smartwatch screen will light up every time you raise your hand.`,
       `Note: Products with electrical plugs are designed for use in the US. Outlets and voltage differ internationally and this product may require an adapter or converter for use in your destination. Please check compatibility before purchasing.\n`,
     ],
     list_price: 35000,
     net_price: 30000,
-  },
-  {
+    variants: [
+      {
+        sku: 'APPLE-AIRPODS-PRO-2',
+        quantity_available: 100,
+        options: [{ option_name: 'COLOR', value: 'WHITE' }]
+      }
+    ]
+  },  {
     title:
       'Bose QuietComfort 45 Bluetooth Wireless Noise Cancelling Headphones - White Smoke',
     category_id: 1,

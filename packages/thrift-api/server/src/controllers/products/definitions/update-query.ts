@@ -2,10 +2,7 @@
 import { knex } from '../../../db/index.js'
 import BadRequestError from '../../../errors/bad-request.js'
 import { QueryParams } from '../../../types/process-routes.js'
-import {
-  isValidProductRequestData,
-  ProductResponseData,
-} from '../../../types/products/index.js'
+import { ProductResponseData } from '../../../types/products/index.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 
@@ -28,13 +25,16 @@ export default async ({
   if (!storeId)
     throw new BadRequestError('Need to provide Store ID as query param')
 
-  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [userId, storeId, ['admin', 'editor']]);
+  const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
+    userId,
+    storeId,
+    ['admin', 'editor'],
+  ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError('You do not have permission to update products for this store.');
+    throw new ForbiddenError(
+      'You do not have permission to update products for this store.',
+    )
   }
-
-  if (!isValidProductRequestData(body))
-    throw new BadRequestError('Invalid product data')
 
   const { variants, ...productData } = body
 
