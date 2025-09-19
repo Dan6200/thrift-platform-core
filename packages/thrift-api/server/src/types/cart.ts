@@ -1,7 +1,8 @@
 import {
   addItemToCartSchema,
   cartResponseSchema,
-  cartItemSchema,
+  cartItemsSchema,
+  updateCartItemSchema,
 } from '../app-schema/cart.js'
 
 export interface CartItemRequestData {
@@ -26,7 +27,14 @@ export interface CartResponseData {
   total_price: number
 }
 
-export const isValidCartItemRequest = (
+export const isValidCartUpdateRequest = (
+  data: unknown,
+): data is CartItemRequestData => {
+  const { error } = updateCartItemSchema.validate(data)
+  return !error
+}
+
+export const isValidCartAddItemRequest = (
   data: unknown,
 ): data is CartItemRequestData => {
   const { error } = addItemToCartSchema.validate(data)
@@ -35,8 +43,12 @@ export const isValidCartItemRequest = (
 
 export const isValidCartResponse = (
   data: unknown,
-): data is CartResponseData => {
+): data is CartResponseData[] => {
   const { error } = cartResponseSchema.validate(data)
   return !error
 }
 
+export const isValidCartItems = (data: unknown): data is CartItem[] => {
+  const { error } = cartItemsSchema.validate(data)
+  return !error
+}

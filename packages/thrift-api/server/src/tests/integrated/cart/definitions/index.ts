@@ -1,7 +1,9 @@
 import { StatusCodes } from 'http-status-codes'
 import {
-  isValidCartItemRequest,
   isValidCartResponse,
+  isValidCartItems,
+  isValidCartUpdateRequest,
+  isValidCartAddItemRequest,
 } from '../../../../types/cart.js'
 import testRequest from '../../test-request/index.js'
 import { TestRequestWithBody, TestRequest } from '../../test-request/types.js'
@@ -17,15 +19,15 @@ export const testGetCart = (testRequest as TestRequest)({
 export const testAddItemToCart = (testRequest as TestRequestWithBody)({
   verb: 'post',
   statusCode: CREATED,
-  validateTestReqData: isValidCartItemRequest,
-  validateTestResData: isValidCartResponse, // Assuming the response is the whole cart
+  validateTestReqData: isValidCartAddItemRequest,
+  validateTestResData: isValidCartItems,
 })
 
 export const testUpdateCartItem = (testRequest as TestRequestWithBody)({
   statusCode: OK,
   verb: 'put',
-  validateTestReqData: isValidCartItemRequest,
-  validateTestResData: isValidCartResponse, // Assuming the response is the whole cart
+  validateTestReqData: isValidCartUpdateRequest,
+  validateTestResData: isValidCartItems,
 })
 
 export const testRemoveCartItem = (testRequest as TestRequest)({

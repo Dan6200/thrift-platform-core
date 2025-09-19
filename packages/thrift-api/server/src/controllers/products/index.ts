@@ -1,7 +1,8 @@
 import { StatusCodes } from 'http-status-codes'
 import createRouteProcessor from '../process-routes.js'
 import {
-  ProductRequestSchema,
+  ProductCreateRequestSchema,
+  ProductUpdateRequestSchema,
   ProductGETResponseSchema,
   ProductGETAllResponseSchema,
   ProductIdSchema,
@@ -33,7 +34,7 @@ const processDeleteRoute = <ProcessRouteWithoutBodyAndDBResult>(
 const createProduct = processPostRoute({
   Query: createQuery,
   status: CREATED,
-  validateBody: validateReqData(ProductRequestSchema),
+  validateBody: validateReqData(ProductCreateRequestSchema),
   validateResult: validateResData(ProductIdSchema),
 })
 
@@ -52,7 +53,7 @@ const getProduct = processGetRoute({
 const updateProduct = processPatchRoute({
   Query: updateQuery,
   status: OK,
-  validateBody: validateReqData(ProductRequestSchema),
+  validateBody: validateReqData(ProductUpdateRequestSchema),
   validateResult: validateResData(ProductResponseSchema),
 })
 

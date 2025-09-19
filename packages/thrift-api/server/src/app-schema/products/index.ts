@@ -29,7 +29,7 @@ const RequestVariantSchema = joi.object({
   options: joi.array().items(RequestVariantOptionSchema).min(1).required(),
 })
 
-export const ProductRequestSchema = joi
+export const ProductUpdateRequestSchema = joi
   .object({
     title: joi.string().required(),
     category_id: joi.number().required(),
@@ -38,6 +38,18 @@ export const ProductRequestSchema = joi
     list_price: joi.number().required(),
     net_price: joi.number().required(),
     variants: joi.array().items(RequestVariantSchema).optional(),
+  })
+  .required()
+
+export const ProductCreateRequestSchema = joi
+  .object({
+    title: joi.string().required(),
+    category_id: joi.number().required(),
+    subcategory_id: joi.number().required(),
+    description: joi.array().items(joi.string()),
+    list_price: joi.number().required(),
+    net_price: joi.number().required(),
+    variants: joi.array().items(RequestVariantSchema).min(1).required(),
   })
   .required()
 
@@ -132,4 +144,3 @@ export const ProductGETAllResponseSchema = joi
   )
   .length(1)
   .required()
-

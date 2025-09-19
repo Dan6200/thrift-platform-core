@@ -3,7 +3,7 @@ import {
   addItemToCartSchema,
   updateCartItemSchema,
   cartResponseSchema,
-  cartItemSchema,
+  cartItemsSchema,
 } from '../../app-schema/cart.js'
 import {
   ProcessRoute,
@@ -27,7 +27,7 @@ export const addItemToCart = processPostRoute({
   Query: addItemToCartQuery,
   status: CREATED,
   validateBody: validateReqData(addItemToCartSchema),
-  validateResult: validateResData(cartItemSchema),
+  validateResult: validateResData(cartItemsSchema),
 })
 
 const processGetRoute = <ProcessRouteWithoutBody>processRoute
@@ -42,7 +42,7 @@ export const updateCartItem = processPutRoute({
   Query: updateCartItemQuery,
   status: OK,
   validateBody: validateReqData(updateCartItemSchema),
-  validateResult: validateResData(cartItemSchema),
+  validateResult: validateResData(cartItemsSchema),
 })
 
 const processDeleteRoute = <ProcessRouteWithoutBodyAndDBResult>processRoute
@@ -50,4 +50,3 @@ export const removeCartItem = processDeleteRoute({
   Query: removeCartItemQuery,
   status: NO_CONTENT,
 })
-
