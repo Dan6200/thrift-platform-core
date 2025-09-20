@@ -1,7 +1,7 @@
 import { Response } from 'express'
 import { RequestWithPayload } from '../types/request.js'
 import { isTypeQueryResultRow, Status } from '../types/response.js'
-import { QueryDB } from '../types/process-routes.js'
+import { QueryDB, QueryDBWithNoResult } from '../types/process-routes.js'
 import { QueryResult, QueryResultRow } from 'pg'
 import { ParsedQs } from 'qs'
 import NotFoundError from '../errors/not-found.js'
@@ -9,14 +9,12 @@ import InternalServerError from '#src/errors/internal-server.js'
 
 export default ({
   Query,
-  QueryForwarder,
   status,
   validateBody,
   validateResult,
   validateQuery,
 }: {
-  Query: QueryDB
-  QueryForwarder?: (s: string) => QueryDB
+  Query: QueryDB | QueryDBWithNoResult
   status: Status
   validateBody?: <T>(body: T) => boolean
   validateResult?: (
@@ -56,25 +54,13 @@ export default ({
       }
 
       let dbResponse: any
-      if (QueryForwarder) {
-        // Call the correct query handler based on route is public or not
-        const publicQuery = <string>query!.public
-        dbResponse = await QueryForwarder(publicQuery)({
-          userId,
-          body,
-          params,
-          query,
-        })
-      } else {
-        // remove password
-        const { password, ...bodyWithoutPassword } = body
-        dbResponse = await Query({
-          userId,
-          body: bodyWithoutPassword,
-          params,
-          query,
-        })
-      }
+      dbResponse = await Query({
+        userId,
+        body,
+        params,
+        query,
+        files: request.files,
+      })
 
       if (validateResult) {
         process.env.DEBUG &&
@@ -82,27 +68,17 @@ export default ({
         // validateBody throws error if data is invalid
         // check for errors returns true if response is valid
         if (!validateResult(dbResponse)) {
-          if (Query?.name.match(/get/) || QueryForwarder?.name.match(/get/)) {
+          if (Query?.name.match(/get/)) {
             if (Array.isArray(dbResponse) && dbResponse.length === 0)
               throw new NotFoundError(
                 'The Requested Resource Could not be found',
               )
           }
-          // throw new BadRequestError('Invalid Database Response')
         }
         let responseData: any = null
         if (isTypeQueryResultRow(dbResponse)) {
           responseData = dbResponse.rows
-        }
-        // These lines lead to bugs...
-        // } else if (Array.isArray(dbResponse) && dbResponse.length === 1)
-        //   responseData = dbResponse[0]
-        else responseData = dbResponse
-        // These lines lead to bugs...
-        // if (Array.isArray(dbResponse)) {
-        //   if (dbResponse.length === 1) responseData = dbResponse[0]
-        //   else responseData = dbResponse
-        // }
+        } else responseData = dbResponse
         return response.status(status).json(responseData)
       }
       response.status(status).end()

@@ -1,9 +1,8 @@
 import { Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { QueryResult, QueryResultRow } from 'pg'
+import { QueryResult } from 'pg'
 import { ParsedQs } from 'qs'
 import { RequestWithPayload } from './request.js'
-import { Knex } from 'knex'
 const { CREATED, OK, NO_CONTENT, NOT_FOUND } = StatusCodes
 
 export type Status =
@@ -12,14 +11,24 @@ export type Status =
   | typeof NO_CONTENT
   | typeof NOT_FOUND
 
-export type QueryParams = {
+export type QueryParams<T> = {
   userId?: string
-  body?: { [key: string]: any }
-  params?: { [key: string]: string }
+  body?: Record<string, T>
+  params?: Record<string, string>
   query?: ParsedQs
 }
 
-export type QueryDB = <T>(queryParams: QueryParams) => Promise<T | T[]>
+export type QueryParamsMedia<T> = QueryParams<T> & {
+  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] }
+}
+
+export type QueryDB = <T>(
+  queryParams: QueryParams<T> | QueryParamsMedia<T>,
+) => Promise<Record<string, T>>
+
+export type QueryDBWithNoResult = <T>(
+  queryParams: QueryParams<T> | QueryParamsMedia<T>,
+) => Promise<void>
 
 export type ProcessRouteWithoutBody = <T>({
   Query,
@@ -27,7 +36,8 @@ export type ProcessRouteWithoutBody = <T>({
   validateResult,
   validateQuery,
 }: {
-  Query(queryParams: QueryParams): Promise<T | T[]>
+  // Query(queryParams: QueryParams | QueryParamsMedia): Promise<T | T[]>
+  Query: QueryDB
   status: Status
   validateResult: (result: QueryResult<T | T[]>) => boolean
   validateQuery?: (data: unknown) => boolean
@@ -40,15 +50,18 @@ export type ProcessRouteWithNoDBResult = <T>({
   Query,
   status,
   validateBody,
+  validateQuery,
 }: {
-  Query: (queryData: {
-    userId?: string
-    body?: Record<string, T>
-    params?: Record<string, string>
-    query?: ParsedQs
-  }) => Promise<Record<string, T>>
+  Query: QueryDBWithNoResult
+  // Query: (queryData: {
+  //   userId?: string
+  //   body?: Record<string, T>
+  //   params?: Record<string, string>
+  //   query?: ParsedQs
+  // }) => Promise<Record<string, T>>
   status: Status
   validateBody?: (data: unknown) => boolean
+  validateQuery?: (data: unknown) => boolean
 }) => (
   request: RequestWithPayload,
   response: Response,
@@ -57,9 +70,10 @@ export type ProcessRouteWithNoDBResult = <T>({
 export type ProcessRouteWithoutBodyAndDBResult = ({
   Query,
   status,
+  validateQuery,
 }: {
-  Query: (queryParams: QueryParams) => Promise<void>
-
+  Query: QueryDBWithNoResult
+  validateQuery?: (data: unknown) => boolean
   status: Status
 }) => (request: RequestWithPayload, response: Response) => Promise<void>
 
@@ -68,11 +82,13 @@ export type ProcessRoute = <T>({
   status,
   validateBody,
   validateResult,
+  validateQuery,
 }: {
-  Query(queryParams: QueryParams): Promise<T | T[]>
+  Query: QueryDB
   status: Status
   validateBody: (data: unknown) => boolean
   validateResult: (result: QueryResult<T | T[]>) => boolean
+  validateQuery?: (data: unknown) => boolean
 }) => (
   request: RequestWithPayload,
   response: Response,

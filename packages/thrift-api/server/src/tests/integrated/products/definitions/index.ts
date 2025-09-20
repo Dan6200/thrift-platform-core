@@ -24,6 +24,7 @@ import {
 import testRoutes from '../../test-request/index.js'
 import { ProfileRequestData } from '#src/types/profile/index.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
+import { ProductMediaResponseSchema } from '#src/app-schema/media.js'
 
 chai.use(chaiHttp).should()
 
@@ -150,8 +151,8 @@ export const testUploadProductMedia = async function (
     return acc
   }, {})
 
-  const isLandingImage = media.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.is_landing_image
+  const isThumbnailImage = media.reduce((acc: { [k: string]: any }, file) => {
+    acc[file.name] = file.is_thumbnail_image
     return acc
   }, {})
 
@@ -162,23 +163,18 @@ export const testUploadProductMedia = async function (
 
   request.field('descriptions', JSON.stringify(descriptions))
   request.field('is_display_image', JSON.stringify(isDisplayImage))
-  request.field('is_landing_image', JSON.stringify(isLandingImage))
+  request.field('is_thumbnail_image', JSON.stringify(isThumbnailImage))
   request.field('filetype', JSON.stringify(filetype))
 
   const response = await request
   response.should.have.status(CREATED)
   // Check the data in the body if accurate
-  checkMedia(response.body)
-  return response.body
+  if (checkMedia(response.body)) return response.body
+  throw new Error('Invalid Database Result')
 }
 
 async function checkMedia(body: any) {
-  body.should.be.an('array')
-  body[0].should.be.an('object')
-  body[0].should.have.property('filename')
-  body[0].should.have.property('filepath')
-  body[0].should.have.property('is_display_image')
-  body[0].should.have.property('is_landing_image')
-  body[0].should.have.property('filetype')
+  const { error } = ProductMediaResponseSchema.validate(body[0])
+  error && console.error(error)
+  return !error
 }
-

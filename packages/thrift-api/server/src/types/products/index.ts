@@ -67,7 +67,7 @@ export type ProductMedia = {
   path: string
   description: string
   is_display_image: boolean
-  is_landing_image: boolean
+  is_thumbnail_image: boolean
   filetype: 'image' | 'video'
 }
 
