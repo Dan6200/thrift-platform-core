@@ -73,10 +73,11 @@ export default function (): void {
 
   /** Media related tests **/
 
-  for (let vendor of vendors) {
-    describe(`Testing Media for Different Products`, async () =>
-      testMedia(vendor))
+  for (let user of users) {
+    describe(`Testing Media File Insert for Products and Avatars`, async () =>
+      testMedia(user))
   }
+
   /** Dashboard related tests **/
 
   for (let vendor of vendors) {
@@ -103,8 +104,7 @@ export default function (): void {
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing Cart for ${name}`, () =>
-      testCart(customer))
+    describe(`Testing Cart for ${name}`, () => testCart(customer))
   }
 
   //

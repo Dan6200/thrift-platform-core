@@ -11,7 +11,8 @@ import profileRouter from '#src/routes/user/index.js'
 import deliveryRouter from '#src/routes/delivery-info/index.js'
 import storesRouter from '#src/routes/stores/index.js'
 import storeStaffRouter from '#src/routes/store_staff.js'
-import mediaRouter from '#src/routes/media/index.js'
+import productsMediaRouter from '#src/routes/media/products.js'
+import avatarMediaRouter from '#src/routes/media/avatar.js'
 import productsRouter from '#src/routes/products/index.js'
 import dashboardRouter from '#src/routes/dashboard/index.js'
 import cartRouter from '#src/routes/cart/index.js'
@@ -78,7 +79,8 @@ v1Router.use('/delivery-info', authenticateUser, deliveryRouter)
 v1Router.use('/stores', authenticateUser, storesRouter)
 v1Router.use('/stores', authenticateUser, storeStaffRouter)
 v1Router.use('/products', authenticateUser, productsRouter)
-v1Router.use('/media', authenticateUser, mediaRouter)
+v1Router.use('/media/products', authenticateUser, productsMediaRouter)
+v1Router.use('/media/avatar', authenticateUser, avatarMediaRouter)
 v1Router.use('/dashboard', authenticateUser, dashboardRouter)
 v1Router.use('/cart', authenticateUser, cartRouter)
 

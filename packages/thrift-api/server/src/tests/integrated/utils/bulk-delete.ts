@@ -1,11 +1,11 @@
 import { cloudinary } from '#src/controllers/utils/media-storage.js'
 
-export async function bulkDeleteImages() {
+export async function bulkDeleteImages(slug: 'products' | 'avatars') {
   while (true) {
     try {
       const { resources } = await cloudinary.api.resources({
         type: 'upload',
-        prefix: 'thrift-app-media-testing',
+        prefix: 'thrift-app-media-testing/' + slug,
         max_results: 100,
       })
       const publicIds = resources.map((resource: any) => resource.public_id)

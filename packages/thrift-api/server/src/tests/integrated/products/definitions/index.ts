@@ -88,7 +88,7 @@ export const testDeleteVariant = (<TestRequestWithQParams>testRoutes)({
   validateTestResData: null,
 })
 
-export const testUploadProductMedia = async function (
+export const testCreateProductMedia = async function (
   server: string,
   urlPath: string,
   media: ProductMediaUpload[],

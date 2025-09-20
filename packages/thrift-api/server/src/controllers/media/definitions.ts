@@ -2,7 +2,7 @@ import { knex } from '#src/db/index.js'
 import { QueryParamsMedia } from '#src/types/process-routes.js'
 import BadRequestError from '#src/errors/bad-request.js'
 
-export const uploadProductMediaQuery = async ({
+export const createProductMediaQuery = async ({
   userId,
   query,
   body,
@@ -62,3 +62,41 @@ export const uploadProductMediaQuery = async ({
   )
   return mediaDBResponse
 }
+
+export const createAvatarQuery = async ({
+  userId,
+  files,
+}: QueryParamsMedia) => {
+  const uploader_id = userId;
+
+  if (!uploader_id) {
+    throw new BadRequestError('User not found');
+  }
+
+  if (!files || files.length === 0) {
+    throw new BadRequestError('No file uploaded');
+  }
+
+  const file = Array.isArray(files) ? files[0] : files[Object.keys(files)[0]][0];
+  const { filename, path: filepath, mimetype: filetype } = file;
+
+  const [media] = await knex('media')
+    .insert({
+      uploader_id,
+      filename,
+      filepath,
+      filetype,
+      description: 'User profile picture',
+    })
+    .returning('*');
+
+  await knex('profile_media')
+    .insert({
+      profile_id: uploader_id,
+      media_id: media.media_id,
+    })
+    .onConflict('profile_id')
+    .merge();
+
+  return media;
+};

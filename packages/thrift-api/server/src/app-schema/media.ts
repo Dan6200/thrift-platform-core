@@ -23,3 +23,5 @@ const MediaResponseSchema = Joi.object({
 })
 
 export const ProductMediaResponseSchema = Joi.array().items(MediaResponseSchema)
+
+export const AvatarResponseSchema = MediaResponseSchema

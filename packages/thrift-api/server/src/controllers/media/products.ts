@@ -7,17 +7,16 @@ import {
 import { ProcessRoute } from '../../types/process-routes.js'
 import processRoute from '../process-routes.js'
 import { validateReqData } from '../utils/request-validation.js'
-import { uploadProductMediaQuery } from './definitions.js'
+import { createProductMediaQuery } from './definitions.js'
 import { validateResData } from '../utils/response-validation.js'
 
 const { CREATED } = StatusCodes
 
 const processPostRoute = <ProcessRoute>processRoute
-export const uploadProductMedia = processPostRoute({
-  Query: uploadProductMediaQuery,
+export const createProductMedia = processPostRoute({
+  Query: createProductMediaQuery,
   status: CREATED,
   validateBody: validateReqData(ProductMediaRequestSchema),
   validateQuery: validateReqData(ProductMediaQuerySchema),
   validateResult: validateResData(ProductMediaResponseSchema),
 })
-
