@@ -38,7 +38,14 @@ export default async ({
     (
         SELECT json_agg(media_data)
         FROM (
-            SELECT * FROM product_media pm WHERE pm.product_id = p.product_id
+            SELECT
+                m.*,
+                pml.is_display_image,
+                pml.is_thumbnail_image
+            FROM product_variants pv
+            JOIN product_media_links pml ON pv.variant_id = pml.variant_id
+            JOIN media m ON pml.media_id = m.media_id
+            WHERE pv.product_id = p.product_id
         ) AS media_data
     ) AS media,
     (
