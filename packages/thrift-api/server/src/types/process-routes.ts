@@ -11,23 +11,23 @@ export type Status =
   | typeof NO_CONTENT
   | typeof NOT_FOUND
 
-export type QueryParams<T> = {
+export type QueryParams = {
   userId?: string
-  body?: Record<string, T>
+  body?: Record<string, any>
   params?: Record<string, string>
   query?: ParsedQs
 }
 
-export type QueryParamsMedia<T> = QueryParams<T> & {
+export type QueryParamsMedia = QueryParams & {
   files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] }
 }
 
-export type QueryDB = <T>(
-  queryParams: QueryParams<T> | QueryParamsMedia<T>,
-) => Promise<Record<string, T>>
+export type QueryDB = (
+  queryParams: QueryParams | QueryParamsMedia,
+) => Promise<Record<string, any>>
 
-export type QueryDBWithNoResult = <T>(
-  queryParams: QueryParams<T> | QueryParamsMedia<T>,
+export type QueryDBWithNoResult = (
+  queryParams: QueryParams | QueryParamsMedia,
 ) => Promise<void>
 
 export type ProcessRouteWithoutBody = <T>({

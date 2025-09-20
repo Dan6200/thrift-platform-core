@@ -163,7 +163,7 @@ const getAllQuery = async ({
 const getQuery = async ({
   params,
   userId,
-}: QueryParams): Promise<Knex.QueryBuilder<DeliveryInfo[]>> => {
+}: QueryParams<any>): Promise<Knex.QueryBuilder<DeliveryInfo[]>> => {
   if (!userId)
     throw new UnauthorizedError('Signin to access delivery information.')
   if (params == null) throw new BadRequestError('No route parameters provided')

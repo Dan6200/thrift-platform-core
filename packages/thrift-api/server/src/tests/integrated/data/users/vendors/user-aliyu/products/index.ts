@@ -1,7 +1,7 @@
 // cspell:disable
 import {
   ProductRequestData,
-  ProductMedia,
+  ProductMediaUpload as ProductMedia,
   ProductRequestPartial,
 } from '#src/types/products/index.js'
 import {
@@ -227,8 +227,8 @@ export const productMedia: ProductMedia[][] = [
       path: './server/src/tests/integrated/data/users/vendors/user-aliyu/products/media/airpods/crikey.jpg',
       description: 'Echo Wireless Earbuds',
       is_display_image: true,
-      is_thumbnail_image: false,
-      filetype: 'image',
+      is_thumbnail_image: true,
+      filetype: 'image/jpeg',
     },
 
     {
@@ -237,7 +237,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -246,7 +246,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -255,7 +255,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -264,7 +264,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -273,7 +273,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -282,7 +282,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -291,7 +291,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -300,7 +300,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
   ],
   [
@@ -310,7 +310,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: true,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -319,7 +319,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -328,7 +328,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -337,7 +337,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -346,7 +346,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -355,7 +355,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
   ],
 
@@ -365,8 +365,8 @@ export const productMedia: ProductMedia[][] = [
       path: './server/src/tests/integrated/data/users/vendors/user-aliyu/products/media/airpods/display.jpg',
       description: 'Echo Wireless Earbuds',
       is_display_image: true,
-      is_thumbnail_image: false,
-      filetype: 'image',
+      is_thumbnail_image: true,
+      filetype: 'image/jpeg',
     },
 
     {
@@ -375,7 +375,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -384,7 +384,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -393,7 +393,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -402,7 +402,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -411,7 +411,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -420,7 +420,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -429,7 +429,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
   ],
   [
@@ -439,7 +439,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: true,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -448,7 +448,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -457,7 +457,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -466,7 +466,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -475,7 +475,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -484,7 +484,7 @@ export const productMedia: ProductMedia[][] = [
       description: 'Lenovo Tablet M10 Plus Gen 3',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
   ],
 ]
@@ -498,7 +498,7 @@ export const updatedProductMedia: ProductMedia[][] = [
       description: 'A fitness smartwatch',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -507,7 +507,7 @@ export const updatedProductMedia: ProductMedia[][] = [
       description: 'A fitness smartwatch',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -516,7 +516,7 @@ export const updatedProductMedia: ProductMedia[][] = [
       description: 'A fitness smartwatch',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -525,7 +525,7 @@ export const updatedProductMedia: ProductMedia[][] = [
       description: 'A fitness smartwatch',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -534,7 +534,7 @@ export const updatedProductMedia: ProductMedia[][] = [
       description: 'A fitness smartwatch',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
 
     {
@@ -543,7 +543,7 @@ export const updatedProductMedia: ProductMedia[][] = [
       description: 'A fitness smartwatch',
       is_display_image: false,
       is_thumbnail_image: false,
-      filetype: 'image',
+      filetype: 'image/jpeg',
     },
   ],
 ]

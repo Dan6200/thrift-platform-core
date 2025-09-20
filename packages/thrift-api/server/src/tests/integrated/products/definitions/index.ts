@@ -3,13 +3,13 @@ import chaiHttp from 'chai-http'
 import { StatusCodes } from 'http-status-codes'
 import { readFile } from 'node:fs/promises'
 import {
-  ProductMedia,
   isValidProductCreateRequestData,
   isValidProductUpdateRequestData,
   isValidProductResponseData,
   isValidProductGETAllResponseData,
   isValidProductGETResponseData,
   isValidProductId,
+  ProductMediaUpload,
 } from '../../../../types/products/index.js'
 import {
   isValidVariantRequestData,
@@ -29,37 +29,6 @@ import { ProductMediaResponseSchema } from '#src/app-schema/media.js'
 chai.use(chaiHttp).should()
 
 const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes
-
-// export const testCreateProduct = async function* ({
-//   server,
-//   token,
-//   path,
-//   query,
-//   dataList,
-// }: {
-//   server: string
-//   token: string
-//   path: string
-//   query: object
-//   dataList: object[]
-// }) {
-//   const range = dataList.length
-//   for (let idx = 0; idx < range; idx++) {
-//     const response = await chai
-//       .request(server)
-//       .post(path)
-//       .send(dataList[idx])
-//       .auth(token, { type: 'bearer' })
-//       .query(query)
-//     response.should.have.status(CREATED)
-//     // Check that the response contains the product id
-//     if (!isValidProductId(response.body))
-//       throw new BadRequestError(
-//         'Product Id is the expected response after a product is created',
-//       )
-//     yield response.body
-//   }
-// }
 
 export const testPostProduct = (<TestRequestWithQParamsAndBody>testRoutes)({
   statusCode: CREATED,
@@ -122,7 +91,7 @@ export const testDeleteVariant = (<TestRequestWithQParams>testRoutes)({
 export const testUploadProductMedia = async function (
   server: string,
   urlPath: string,
-  media: ProductMedia[],
+  media: ProductMediaUpload[],
   userInfo: ProfileRequestData,
   queryParams: { [k: string]: any },
 ): Promise<any> {
@@ -174,7 +143,7 @@ export const testUploadProductMedia = async function (
 }
 
 async function checkMedia(body: any) {
-  const { error } = ProductMediaResponseSchema.validate(body[0])
+  const { error } = ProductMediaResponseSchema.validate(body)
   error && console.error(error)
   return !error
 }

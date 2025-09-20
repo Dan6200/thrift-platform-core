@@ -53,14 +53,16 @@ BEGIN
         UPDATE public.product_media_links
         SET is_display_image = false
         WHERE variant_id = NEW.variant_id
-          AND media_id != NEW.media_id;
+          AND media_id != NEW.media_id
+          AND is_display_image = true;
     END IF;
 
     IF NEW.is_thumbnail_image = true THEN
         UPDATE public.product_media_links
         SET is_thumbnail_image = false
         WHERE variant_id = NEW.variant_id
-          AND media_id != NEW.media_id;
+          AND media_id != NEW.media_id
+          AND is_thumbnail_image = true;
     END IF;
 
     RETURN NEW;
