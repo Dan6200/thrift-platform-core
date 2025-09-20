@@ -24,7 +24,40 @@ where
     'Smart Home Hub',
     'Plush Toy Bear',
     'Yoga Mat Eco-Friendly',
-    'Smartwatch Series 7'
+    'Smartwatch Series 7',
+    '4K Smart TV 55"' ,
+    'Gaming Mouse RGB',
+    'Portable Bluetooth Speaker',
+    'Digital Camera DSLR',
+    'Robot Vacuum Cleaner',
+    'Air Fryer XL',
+    'External SSD 1TB',
+    'Noise Cancelling Earbuds',
+    'Smart Light Bulbs 4-Pack',
+    'Children''s Story Book',
+    'Sci-Fi Paperback Novel',
+    'Board Game Strategy',
+    'Building Blocks Set',
+    'Classic Literature Collection',
+    'Kids'' Backpack Animal Design',
+    'Puzzle 1000 Pieces',
+    'Vitamin D3 Supplements',
+    'All-Purpose Cleaner',
+    'PS5 Game - Adventure',
+    'Xbox Series X Game - RPG',
+    'Sunscreen SPF 50',
+    'Hair Dryer Professional',
+    'Camping Tent 2-Person',
+    'Dumbbell Set Adjustable',
+    'Facial Cleansing Brush',
+    'PC Gaming Headset',
+    'Curved Gaming Monitor',
+    'Wireless Keyboard and Mouse Combo',
+    'Antivirus Software 1-Year',
+    'Operating System Home Edition',
+    'Webcam Full HD',
+    'Network Router Wi-Fi 6',
+    'Laser Printer Wireless'
   );
 
 -- Seed inventory for the default variants
@@ -35,6 +68,8 @@ select
   'initial_stock'
 from
   public.product_variants pv
+  join public.products p on pv.product_id = p.product_id
+where
   p.title not in (
     'Classic Leather Jacket',
     'Wireless Headphones',
@@ -88,7 +123,7 @@ from
   );
 
 -- Seed variants for Laser Printer Wireless
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -122,10 +157,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Network Router Wi-Fi 6
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_speed int;
@@ -159,10 +194,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_speed AND value = speed_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Webcam Full HD
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_resolution int;
@@ -196,10 +231,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_resolution AND value = resolution_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Wireless Keyboard and Mouse Combo
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -233,10 +268,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Curved Gaming Monitor
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_size int;
@@ -282,10 +317,10 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for PC Gaming Headset
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -319,10 +354,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Facial Cleansing Brush
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -356,10 +391,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Dumbbell Set Adjustable
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_weight_range int;
@@ -393,10 +428,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_weight_range AND value = weight_range_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Camping Tent 2-Person
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -442,10 +477,10 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Hair Dryer Professional
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -479,10 +514,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Sunscreen SPF 50
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_volume int;
@@ -516,10 +551,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for All-Purpose Cleaner
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_scent int;
@@ -553,10 +588,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_scent AND value = scent_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Vitamin D3 Supplements
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_count int;
@@ -590,10 +625,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_count AND value = count_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Kids' Backpack Animal Design
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -627,10 +662,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Smart Light Bulbs 4-Pack
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -664,10 +699,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Noise Cancelling Earbuds
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -701,10 +736,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for External SSD 1TB
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_capacity int;
@@ -738,10 +773,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Air Fryer XL
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_capacity int;
@@ -775,10 +810,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Robot Vacuum Cleaner
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -812,10 +847,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Digital Camera DSLR
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -858,13 +893,13 @@ BEGIN
 
             -- Link to megapixels value
             SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_megapixels AND value = megapixels_value;
-            INSERT INTO public.variant_to_option_values (variant_id, v_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Portable Bluetooth Speaker
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -898,10 +933,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Gaming Mouse RGB
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -935,10 +970,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for 4K Smart TV 55"
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_size int;
@@ -984,10 +1019,10 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Smartwatch Series 7
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -1033,10 +1068,10 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Yoga Mat Eco-Friendly
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -1082,10 +1117,10 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Smart Home Hub
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -1119,10 +1154,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Gaming PC
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_ram int;
@@ -1168,10 +1203,10 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Organic Skincare Kit
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_volume int;
@@ -1205,10 +1240,10 @@ BEGIN
         SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
         INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Smartphone Ultra
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -1254,10 +1289,10 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Laptop Pro X
-DO $
+DO $$
 DECLARE
     v_product_id int;
     v_option_id_color int;
@@ -1303,7 +1338,7 @@ BEGIN
             INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
-END $;
+END $$;
 
 -- Seed variants for Classic Leather Jacket
 DO $$

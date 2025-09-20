@@ -23,12 +23,54 @@ create table if not exists profile_media (
 create table if not exists product_media_links (
   variant_id        int           not null references product_variants(variant_id) on delete cascade,
   media_id          int           not null references media(media_id) on delete cascade,
-  is_display_image  boolean       default false,
-  is_landing_image  boolean       default false,
-  primary key (variant_id, media_id),
-  check (not (is_display_image = true and (select filetype from media where media_id = product_media_links.media_id) not in ('image/jpeg', 'image/png'))),
-  check (not (is_landing_image = true and (select filetype from media where media_id = product_media_links.media_id) not in ('image/jpeg', 'image/png')))
+  is_display_image  boolean       default true,
+  is_thumbnail_image  boolean       default true,
+  primary key (variant_id, media_id)
 );
+
+CREATE OR REPLACE FUNCTION check_product_media_links_filetype()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_filetype TEXT;
+BEGIN
+    SELECT filetype INTO v_filetype FROM public.media WHERE media_id = NEW.media_id;
+    IF (NEW.is_display_image = true OR NEW.is_thumbnail_image = true) AND v_filetype NOT IN ('image/jpeg', 'image/png', 'image/jpg', 'image/webp') THEN
+        RAISE EXCEPTION 'Display and thumbnail images must be of type image/jpeg, image/png, image/jpg, or image/webp. Attempted to use filetype: %', v_filetype;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_check_product_media_links_filetype
+BEFORE INSERT OR UPDATE ON public.product_media_links
+FOR EACH ROW
+EXECUTE FUNCTION check_product_media_links_filetype();
+
+CREATE OR REPLACE FUNCTION enforce_single_special_image()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.is_display_image = true THEN
+        UPDATE public.product_media_links
+        SET is_display_image = false
+        WHERE variant_id = NEW.variant_id
+          AND media_id != NEW.media_id;
+    END IF;
+
+    IF NEW.is_thumbnail_image = true THEN
+        UPDATE public.product_media_links
+        SET is_thumbnail_image = false
+        WHERE variant_id = NEW.variant_id
+          AND media_id != NEW.media_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_enforce_single_special_image
+AFTER INSERT OR UPDATE ON public.product_media_links
+FOR EACH ROW
+EXECUTE FUNCTION enforce_single_special_image();
 
 alter table product_media_links enable row level security;
 create policy "Vendors can view their own product media links." on product_media_links for select using (EXISTS ( SELECT 1 FROM products p JOIN product_variants pv ON p.product_id = pv.product_id WHERE pv.variant_id = product_media_links.variant_id AND p.vendor_id = auth.uid() ));
@@ -48,13 +90,14 @@ create policy "Users can update their own profile media." on profile_media for u
 create policy "Users can delete their own profile media." on profile_media for delete using (auth.uid() = profile_id);
 
 -- Insert into media and product_media_links for each variant
-DO $
+DO $$
 DECLARE
     v_variant_record RECORD;
     v_media_id INT;
     v_filename TEXT;
     v_filepath TEXT;
     v_options_string TEXT;
+		v_desc_string TEXT;
 BEGIN
     FOR v_variant_record IN
         SELECT
@@ -81,19 +124,21 @@ BEGIN
             v_options_string := '_' || regexp_replace(v_variant_record.options, '[^a-zA-Z0-9_]+', '_', 'g');
         END IF;
 
+				v_desc_string := v_variant_record.title || ' ' || regexp_replace(v_variant_record.options, '_', ' ');
+
         v_filename := v_filename || v_options_string || '.jpg';
         v_filepath := 'sellit-media/' || v_filename;
 
         -- Insert into media table
         INSERT INTO public.media (filename, filepath, filetype, description, uploader_id)
-        VALUES (v_filename, v_filepath, 'image/jpeg', v_variant_record.title, v_variant_record.vendor_id)
+        VALUES (v_filename, v_filepath, 'image/jpeg', v_desc_string, v_variant_record.vendor_id)
         ON CONFLICT (filename) DO UPDATE SET updated_at = NOW()
         RETURNING media_id INTO v_media_id;
 
         -- Link media to the product variant
-        INSERT INTO public.product_media_links (variant_id, media_id, is_display_image, is_landing_image)
+        INSERT INTO public.product_media_links (variant_id, media_id, is_display_image, is_thumbnail_image)
         VALUES (v_variant_record.variant_id, v_media_id, true, false)
         ON CONFLICT (variant_id, media_id) DO NOTHING;
 
     END LOOP;
-END $;
+END $$;
