@@ -28,6 +28,12 @@ export const createProductMediaQuery = async ({
   if (is_thumbnail_image) is_thumbnail_image = JSON.parse(is_thumbnail_image)
   if (filetype) filetype = JSON.parse(filetype)
 
+  const filesArray = Array.isArray(files) ? files : [files]
+
+  if (!filesArray || filesArray.length === 0) {
+    throw new BadRequestError('No files uploaded')
+  }
+
   const variant = await knex('product_variants')
     .select('variant_id')
     .where({ product_id })
@@ -36,12 +42,6 @@ export const createProductMediaQuery = async ({
     throw new BadRequestError(`No variants found for product_id ${product_id}`)
   }
   const { variant_id } = variant
-
-  const filesArray = Array.isArray(files) ? files : [files]
-
-  if (!filesArray || filesArray.length === 0) {
-    throw new BadRequestError('No files uploaded')
-  }
 
   let mediaDBResponse = <any>await Promise.all(
     filesArray.map(async (file: any) => {
@@ -68,6 +68,31 @@ export const createProductMediaQuery = async ({
     }),
   )
   return mediaDBResponse
+}
+
+export const getProductMediaQuery = async ({ params }: QueryParamsMedia) => {
+  const { media_id } = params
+  const media = await knex('media').where({ media_id }).first()
+  return media
+}
+
+export const updateProductMediaQuery = async ({ params, body, file }: QueryParamsMedia) => {
+  const { media_id } = params
+  const { description } = body
+  const { filename, path: filepath, mimetype: filetype } = file || {}
+
+  const [updatedMedia] = await knex('media')
+    .where({ media_id })
+    .update({ description, filename, filepath, filetype })
+    .returning('*')
+
+  return updatedMedia
+}
+
+export const deleteProductMediaQuery = async ({ params }: QueryParamsMedia) => {
+  const { media_id } = params
+  await knex('product_media_links').where({ media_id }).del()
+  await knex('media').where({ media_id }).del()
 }
 
 export const createAvatarQuery = async ({
