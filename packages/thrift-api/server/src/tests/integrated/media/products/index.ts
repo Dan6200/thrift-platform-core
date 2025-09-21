@@ -39,7 +39,21 @@ export default function ({
     await bulkDeleteImages('products')
   })
 
-  it("it should add the product's media to an existing product", async () => {
+  it("it should upload a single product's media", async () => {
+    for (const media of productMedia) {
+      await testCreateProductMedia(
+        server,
+        productMediaRoute,
+        media[0],
+        userInfo,
+        {
+          product_id,
+        },
+      )
+    }
+  })
+
+  it("it should bulk upload the product's media", async () => {
     for (const media of productMedia) {
       await testCreateProductMedia(server, productMediaRoute, media, userInfo, {
         product_id,

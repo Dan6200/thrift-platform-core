@@ -22,10 +22,11 @@ export const createProductMediaQuery = async ({
   let { descriptions, is_display_image, is_thumbnail_image, filetype } = body
 
   if (descriptions) descriptions = JSON.parse(descriptions)
+  else throw new BadRequestError('No descriptions provided')
+
   if (is_display_image) is_display_image = JSON.parse(is_display_image)
   if (is_thumbnail_image) is_thumbnail_image = JSON.parse(is_thumbnail_image)
   if (filetype) filetype = JSON.parse(filetype)
-  else throw new BadRequestError('No descriptions provided')
 
   const variant = await knex('product_variants')
     .select('variant_id')
@@ -36,8 +37,14 @@ export const createProductMediaQuery = async ({
   }
   const { variant_id } = variant
 
+  const filesArray = Array.isArray(files) ? files : [files]
+
+  if (!filesArray || filesArray.length === 0) {
+    throw new BadRequestError('No files uploaded')
+  }
+
   let mediaDBResponse = <any>await Promise.all(
-    (files as any[]).map(async (file: any) => {
+    filesArray.map(async (file: any) => {
       const { filename, originalname, path: filepath } = file
 
       const [media] = await knex('media')

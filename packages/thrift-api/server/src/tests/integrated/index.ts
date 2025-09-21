@@ -74,7 +74,7 @@ export default function (): void {
   /** Media related tests **/
 
   for (let user of users) {
-    describe(`Testing Media File Insert for Products and Avatars`, async () =>
+    describe(`Testing Media File Upload for ${user.userInfo.first_name}`, async () =>
       testMedia(user))
   }
 

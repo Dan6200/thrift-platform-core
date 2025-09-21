@@ -11,7 +11,7 @@ const { CREATED } = StatusCodes
 export const testCreateProductMedia = async function (
   server: string,
   urlPath: string,
-  media: ProductMediaUpload[],
+  media: ProductMediaUpload | ProductMediaUpload[],
   userInfo: ProfileRequestData,
   queryParams: { [k: string]: any },
 ): Promise<any> {
@@ -22,30 +22,36 @@ export const testCreateProductMedia = async function (
     .post(urlPath)
     .auth(token, { type: 'bearer' })
     .query(queryParams)
+  const mediaArray = Array.isArray(media) ? media : [media]
   await Promise.all(
-    media.map(async (file) => {
+    mediaArray.map(async (file) => {
       const data = await readFile(file.path)
       request.attach(fieldName, data, file.name)
-      console.log(`	${file.name} uploaded...`)
     }),
   )
 
-  const descriptions = media.reduce((acc: { [k: string]: any }, file) => {
+  const descriptions = mediaArray.reduce((acc: { [k: string]: any }, file) => {
     acc[file.name] = file.description
     return acc
   }, {})
 
-  const isDisplayImage = media.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.is_display_image
-    return acc
-  }, {})
+  const isDisplayImage = mediaArray.reduce(
+    (acc: { [k: string]: any }, file) => {
+      acc[file.name] = file.is_display_image
+      return acc
+    },
+    {},
+  )
 
-  const isThumbnailImage = media.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.is_thumbnail_image
-    return acc
-  }, {})
+  const isThumbnailImage = mediaArray.reduce(
+    (acc: { [k: string]: any }, file) => {
+      acc[file.name] = file.is_thumbnail_image
+      return acc
+    },
+    {},
+  )
 
-  const filetype = media.reduce((acc: { [k: string]: any }, file) => {
+  const filetype = mediaArray.reduce((acc: { [k: string]: any }, file) => {
     acc[file.name] = file.filetype
     return acc
   }, {})

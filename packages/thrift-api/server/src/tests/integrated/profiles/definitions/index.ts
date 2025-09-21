@@ -23,7 +23,6 @@ export const testCreateAvatar = async function (
     .attach(fieldName, data, media.name)
     .field('description', media.description)
     .field('filetype', media.filetype)
-  console.log(`	${media.name} uploaded...`)
 
   response.should.have.status(CREATED)
   return response

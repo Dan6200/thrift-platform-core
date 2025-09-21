@@ -1,7 +1,6 @@
 //cspell:ignore cloudinary
 import { ProfileRequestData } from '#src/types/profile/index.js'
 import { testCreateAvatar } from '../../profiles/definitions/index.js'
-import { bulkDeleteImages } from '../../utils/bulk-delete.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
@@ -17,7 +16,6 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
   before(async () => {
     userId = await createUserForTesting(userInfo)
     token = await signInForTesting(userInfo)
-    await bulkDeleteImages('avatars')
   })
 
   it('it should upload an avatar for the user', async () => {
@@ -32,6 +30,5 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
 
   after(async () => {
     await deleteUserForTesting(userId)
-    await bulkDeleteImages('avatars')
   })
 }
