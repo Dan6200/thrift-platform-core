@@ -1,11 +1,10 @@
 //cspell:ignore cloudinary
 import { ProfileRequestData } from '#src/types/profile/index.js'
-import { testUploadAvatar } from '../../profiles/definitions/index.js'
+import { testCreateAvatar } from '../../profiles/definitions/index.js'
 import { bulkDeleteImages } from '../../utils/bulk-delete.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
-import { userInfo as aliyuInfo } from '../../data/users/vendors/user-aliyu/index.js'
 
 // globals
 const avatarMediaRoute = '/v1/media/avatar'
@@ -28,7 +27,7 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
       description: 'User avatar',
       filetype: 'image/jpeg',
     }
-    await testUploadAvatar(server, avatarMediaRoute, avatarMedia, token)
+    await testCreateAvatar(server, avatarMediaRoute, avatarMedia, token)
   })
 
   after(async () => {

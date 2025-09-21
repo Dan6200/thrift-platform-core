@@ -4,7 +4,7 @@ import {
   ProductRequestData,
   ProductMediaUpload,
 } from '#src/types/products/index.js'
-import { testUploadProductMedia } from '../../products/definitions/index.js'
+import { testCreateProductMedia } from './definitions.js'
 import { bulkDeleteImages } from '../../utils/bulk-delete.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
@@ -21,13 +21,11 @@ export default function ({
   productMedia,
 }: {
   userInfo: ProfileRequestData
-  products: ProductRequestData[]
   productMedia: ProductMediaUpload[][]
 }) {
   let token: string
   let product_id: string
   let userId: string
-  let aliyuUserId: string
 
   before(async () => {
     userId = await createUserForTesting(userInfo)
@@ -46,7 +44,7 @@ export default function ({
 
   it("it should add the product's media to an existing product", async () => {
     for (const media of productMedia) {
-      await testUploadProductMedia(server, productMediaRoute, media, userInfo, {
+      await testCreateProductMedia(server, productMediaRoute, media, userInfo, {
         product_id,
       })
     }
@@ -54,7 +52,6 @@ export default function ({
 
   after(async () => {
     await deleteUserForTesting(userId)
-    await deleteUserForTesting(aliyuUserId)
     await bulkDeleteImages('products')
   })
 }
