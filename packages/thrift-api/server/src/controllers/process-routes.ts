@@ -60,6 +60,7 @@ export default ({
         params,
         query,
         files: request.files,
+        file: request.file,
       })
 
       if (validateResult) {

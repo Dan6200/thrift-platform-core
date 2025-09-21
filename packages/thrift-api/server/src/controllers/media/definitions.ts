@@ -37,7 +37,7 @@ export const createProductMediaQuery = async ({
   const { variant_id } = variant
 
   let mediaDBResponse = <any>await Promise.all(
-    files.map(async (file: any) => {
+    (files as any[]).map(async (file: any) => {
       const { filename, originalname, path: filepath } = file
 
       const [media] = await knex('media')
@@ -65,7 +65,8 @@ export const createProductMediaQuery = async ({
 
 export const createAvatarQuery = async ({
   userId,
-  files,
+  body,
+  file,
 }: QueryParamsMedia) => {
   const uploader_id = userId
 
@@ -73,13 +74,10 @@ export const createAvatarQuery = async ({
     throw new BadRequestError('User not found')
   }
 
-  console.log(files)
-
-  if (!files || files.length === 0) {
+  if (!file) {
     throw new BadRequestError('No file uploaded')
   }
 
-  const file = Array.isArray(files) ? files[0] : files[Object.keys(files)[0]][0]
   const { filename, path: filepath, mimetype: filetype } = file
 
   const [media] = await knex('media')
@@ -88,7 +86,7 @@ export const createAvatarQuery = async ({
       filename,
       filepath,
       filetype,
-      description: 'User profile picture',
+      description: body.description,
     })
     .returning('*')
 

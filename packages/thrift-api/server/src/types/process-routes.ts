@@ -20,6 +20,7 @@ export type QueryParams = {
 
 export type QueryParamsMedia = QueryParams & {
   files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] }
+  file?: Express.Multer.File | { [fieldname: string]: Express.Multer.File }
 }
 
 export type QueryDB = (
