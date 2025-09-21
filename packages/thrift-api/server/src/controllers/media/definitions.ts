@@ -132,3 +132,34 @@ export const createAvatarQuery = async ({
 
   return media
 }
+
+export const getAvatarQuery = async ({ userId }: QueryParamsMedia) => {
+  const profile_id = userId
+  const media = await knex('profile_media')
+    .join('media', 'profile_media.media_id', 'media.media_id')
+    .where({ profile_id })
+    .first()
+  return media
+}
+
+export const updateAvatarQuery = async ({ userId, body, file }: QueryParamsMedia) => {
+  const profile_id = userId
+  const { description } = body
+  const { filename, path: filepath, mimetype: filetype } = file || {}
+
+  const { media_id } = await knex('profile_media').where({ profile_id }).first()
+
+  const [updatedMedia] = await knex('media')
+    .where({ media_id })
+    .update({ description, filename, filepath, filetype })
+    .returning('*')
+
+  return updatedMedia
+}
+
+export const deleteAvatarQuery = async ({ userId }: QueryParamsMedia) => {
+  const profile_id = userId
+  const { media_id } = await knex('profile_media').where({ profile_id }).first()
+  await knex('profile_media').where({ profile_id }).del()
+  await knex('media').where({ media_id }).del()
+}
