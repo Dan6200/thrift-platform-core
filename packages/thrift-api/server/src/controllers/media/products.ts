@@ -3,7 +3,7 @@ import {
   ProductMediaQuerySchema,
   ProductMediaRequestSchema,
   ProductMediaResponseSchema,
-} from '#src/app-schema/media.js'
+} from '#src/app-schema/media/products.js'
 import { ProcessRoute } from '../../types/process-routes.js'
 import processRoute from '../process-routes.js'
 import { validateReqData } from '../utils/request-validation.js'
