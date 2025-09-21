@@ -9,3 +9,9 @@ export type MediaType = {
   updated_at: string
 }
 
+export type MediaUpload = {
+  name: string
+  path: string
+  filetype: string
+  description: string | null
+}

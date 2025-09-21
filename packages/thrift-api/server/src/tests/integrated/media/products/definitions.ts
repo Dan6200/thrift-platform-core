@@ -1,8 +1,12 @@
+import chai from 'chai'
 import { ProductMediaUpload } from '#src/types/products/index.js'
 import { readFile } from 'node:fs/promises'
 import { ProfileRequestData } from '#src/types/profile/index.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
 import { ProductMediaResponseSchema } from '#src/app-schema/media.js'
+import { StatusCodes } from 'http-status-codes'
+
+const { CREATED } = StatusCodes
 
 export const testCreateProductMedia = async function (
   server: string,

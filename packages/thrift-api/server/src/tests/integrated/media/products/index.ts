@@ -1,9 +1,6 @@
 //cspell:ignore cloudinary
 import { ProfileRequestData } from '#src/types/profile/index.js'
-import {
-  ProductRequestData,
-  ProductMediaUpload,
-} from '#src/types/products/index.js'
+import { ProductMediaUpload } from '#src/types/products/index.js'
 import { testCreateProductMedia } from './definitions.js'
 import { bulkDeleteImages } from '../../utils/bulk-delete.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'

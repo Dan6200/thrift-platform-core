@@ -67,18 +67,20 @@ export const createAvatarQuery = async ({
   userId,
   files,
 }: QueryParamsMedia) => {
-  const uploader_id = userId;
+  const uploader_id = userId
 
   if (!uploader_id) {
-    throw new BadRequestError('User not found');
+    throw new BadRequestError('User not found')
   }
+
+  console.log(files)
 
   if (!files || files.length === 0) {
-    throw new BadRequestError('No file uploaded');
+    throw new BadRequestError('No file uploaded')
   }
 
-  const file = Array.isArray(files) ? files[0] : files[Object.keys(files)[0]][0];
-  const { filename, path: filepath, mimetype: filetype } = file;
+  const file = Array.isArray(files) ? files[0] : files[Object.keys(files)[0]][0]
+  const { filename, path: filepath, mimetype: filetype } = file
 
   const [media] = await knex('media')
     .insert({
@@ -88,7 +90,7 @@ export const createAvatarQuery = async ({
       filetype,
       description: 'User profile picture',
     })
-    .returning('*');
+    .returning('*')
 
   await knex('profile_media')
     .insert({
@@ -96,7 +98,7 @@ export const createAvatarQuery = async ({
       media_id: media.media_id,
     })
     .onConflict('profile_id')
-    .merge();
+    .merge()
 
-  return media;
-};
+  return media
+}

@@ -22,7 +22,7 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
 
   it('it should upload an avatar for the user', async () => {
     const avatarMedia = {
-      filename: 'avatar.jpg',
+      name: 'avatar.jpg',
       path: './server/src/tests/integrated/data/users/vendors/user-aliyu/profile/avatar.jpg',
       description: 'User avatar',
       filetype: 'image/jpeg',

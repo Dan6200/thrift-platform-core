@@ -2,7 +2,7 @@ import chai from 'chai'
 import chaiHttp from 'chai-http'
 import { readFile } from 'node:fs/promises'
 import { StatusCodes } from 'http-status-codes'
-import { ProfileRequestData } from '#src/types/profile/index.js'
+import { MediaUpload } from '#src/types/media.js'
 
 chai.use(chaiHttp).should()
 
@@ -11,20 +11,19 @@ const { CREATED } = StatusCodes
 export const testCreateAvatar = async function (
   server: string,
   urlPath: string,
-  media: any, // This should be a single file, not an array
+  media: MediaUpload, // This should be a single file, not an array
   token: string,
 ): Promise<any> {
-  const { filename, path: filepath } = media
-
-  const formData = new FormData()
-  formData.append('avatar', await readFile(filepath), filename) // 'avatar' is the field name for single file upload
-
+  const fieldName = 'avatar'
+  const data = await readFile(media.path)
   const response = await chai
     .request(server)
     .post(urlPath)
     .auth(token, { type: 'bearer' })
-    .set('Content-Type', 'multipart/form-data')
-    .send(formData)
+    .attach(fieldName, data, media.name)
+    .field('description', media.description)
+    .field('filetype', media.filetype)
+  console.log(`	${media.name} uploaded...`)
 
   response.should.have.status(CREATED)
   return response

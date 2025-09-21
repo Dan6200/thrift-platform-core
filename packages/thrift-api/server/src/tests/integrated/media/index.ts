@@ -8,8 +8,8 @@ export default function (user: {
   userInfo: ProfileRequestData
   productMedia?: ProductMediaUpload[][]
 }) {
-  // describe('Testing Avatar Creation', () => testAvatar(user))
-  if (user.productMedia) {
-    describe('Testing Media Creation', () => testProductMedia(user))
-  }
+  describe('Testing Avatar Creation', () => testAvatar(user))
+  // if (user.productMedia) {
+  //   describe('Testing Media Creation', () => testProductMedia(user))
+  // }
 }
