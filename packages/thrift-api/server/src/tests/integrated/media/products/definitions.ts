@@ -6,7 +6,7 @@ import { signInForTesting } from '../../helpers/signin-user.js'
 import { ProductMediaResponseSchema } from '#src/app-schema/media/products.js'
 import { StatusCodes } from 'http-status-codes'
 
-const { CREATED } = StatusCodes
+const { CREATED, OK, NO_CONTENT } = StatusCodes
 
 export const testCreateProductMedia = async function (
   server: string,
@@ -67,6 +67,45 @@ export const testCreateProductMedia = async function (
   if (checkMedia(response.body)) return response.body
   throw new Error('Invalid Database Result')
 }
+
+export const testGetProductMedia = async function (
+  server: string,
+  urlPath: string,
+  token: string,
+): Promise<any> {
+  const response = await chai.request(server).get(urlPath).auth(token, { type: 'bearer' })
+  response.should.have.status(OK)
+  return response
+}
+
+export const testUpdateProductMedia = async function (
+  server: string,
+  urlPath: string,
+  media: ProductMediaUpload,
+  token: string,
+): Promise<any> {
+  const fieldName = 'product-media'
+  const data = await readFile(media.path)
+  const response = await chai
+    .request(server)
+    .patch(urlPath)
+    .auth(token, { type: 'bearer' })
+    .attach(fieldName, data, media.name)
+    .field('description', media.description)
+  response.should.have.status(OK)
+  return response
+}
+
+export const testDeleteProductMedia = async function (
+  server: string,
+  urlPath: string,
+  token: string,
+): Promise<any> {
+  const response = await chai.request(server).delete(urlPath).auth(token, { type: 'bearer' })
+  response.should.have.status(NO_CONTENT)
+  return response
+}
+
 
 async function checkMedia(body: any) {
   const { error } = ProductMediaResponseSchema.validate(body)
