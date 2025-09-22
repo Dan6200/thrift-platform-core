@@ -10,7 +10,6 @@ const MediaResponseSchema = Joi.object({
   filepath: Joi.string().required(),
   filetype: Joi.string().required(),
   description: Joi.string().allow(null),
-  uploader_id: Joi.string().required(),
   profile_id: Joi.string().required(),
   created_at: Joi.date().required(),
   updated_at: Joi.date().required(),
