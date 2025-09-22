@@ -98,7 +98,7 @@ interface SectionData {
 interface ProductGrid extends SectionData {
   section_title: string
   section_type: 'product_grid'
-  section_data: ProductResponseData[]
+  section_data: any[]
 }
 
 interface HeroSection extends SectionData {
