@@ -12,12 +12,7 @@ import {
 } from '../../types/process-routes.js'
 import routeProcessor from '../process-routes.js'
 import { validateReqData } from '../utils/request-validation.js'
-import {
-  createProductMediaQuery,
-  getProductMediaQuery,
-  updateProductMediaQuery,
-  deleteProductMediaQuery,
-} from './definitions.js'
+import { createProductMediaQuery, getProductMediaQuery, updateProductMediaQuery, deleteProductMediaQuery } from './products/definitions.js'
 import { validateResData } from '../utils/response-validation.js'
 
 const { CREATED, OK, NO_CONTENT } = StatusCodes

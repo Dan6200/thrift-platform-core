@@ -9,12 +9,7 @@ import {
   ProcessRouteWithoutBodyAndDBResult,
 } from '../../types/process-routes.js'
 import routeProcessor from '../process-routes.js'
-import {
-  createAvatarQuery,
-  getAvatarQuery,
-  updateAvatarQuery,
-  deleteAvatarQuery,
-} from './definitions.js'
+import { createAvatarQuery, getAvatarQuery, updateAvatarQuery, deleteAvatarQuery } from './avatar/definitions.js'
 import { validateResData } from '../utils/response-validation.js'
 import { validateReqData } from '../utils/request-validation.js'
 
