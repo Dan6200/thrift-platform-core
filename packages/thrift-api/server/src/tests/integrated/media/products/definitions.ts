@@ -51,15 +51,9 @@ export const testCreateProductMedia = async function (
     {},
   )
 
-  const filetype = mediaArray.reduce((acc: { [k: string]: any }, file) => {
-    acc[file.name] = file.filetype
-    return acc
-  }, {})
-
   request.field('descriptions', JSON.stringify(descriptions))
   request.field('is_display_image', JSON.stringify(isDisplayImage))
   request.field('is_thumbnail_image', JSON.stringify(isThumbnailImage))
-  request.field('filetype', JSON.stringify(filetype))
 
   const response = await request
   response.should.have.status(CREATED)
@@ -73,7 +67,10 @@ export const testGetProductMedia = async function (
   urlPath: string,
   token: string,
 ): Promise<any> {
-  const response = await chai.request(server).get(urlPath).auth(token, { type: 'bearer' })
+  const response = await chai
+    .request(server)
+    .get(urlPath)
+    .auth(token, { type: 'bearer' })
   response.should.have.status(OK)
   return response
 }
@@ -101,14 +98,17 @@ export const testDeleteProductMedia = async function (
   urlPath: string,
   token: string,
 ): Promise<any> {
-  const response = await chai.request(server).delete(urlPath).auth(token, { type: 'bearer' })
+  const response = await chai
+    .request(server)
+    .delete(urlPath)
+    .auth(token, { type: 'bearer' })
   response.should.have.status(NO_CONTENT)
   return response
 }
-
 
 async function checkMedia(body: any) {
   const { error } = ProductMediaResponseSchema.validate(body)
   error && console.error(error)
   return !error
 }
+

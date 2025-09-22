@@ -22,7 +22,7 @@ export const testCreateAvatar = async function (
     .auth(token, { type: 'bearer' })
     .attach(fieldName, data, media.name)
     .field('description', media.description)
-    .field('filetype', media.filetype)
+  // .field('filetype', media.filetype)
 
   response.should.have.status(CREATED)
   return response.body

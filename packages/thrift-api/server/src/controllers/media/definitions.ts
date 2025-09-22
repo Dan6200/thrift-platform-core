@@ -19,14 +19,13 @@ export const createProductMediaQuery = async ({
     throw new BadRequestError('User not found')
   }
 
-  let { descriptions, is_display_image, is_thumbnail_image, filetype } = body
+  let { descriptions, is_display_image, is_thumbnail_image } = body
 
   if (descriptions) descriptions = JSON.parse(descriptions)
   else throw new BadRequestError('No descriptions provided')
 
   if (is_display_image) is_display_image = JSON.parse(is_display_image)
   if (is_thumbnail_image) is_thumbnail_image = JSON.parse(is_thumbnail_image)
-  if (filetype) filetype = JSON.parse(filetype)
 
   const filesArray = Array.isArray(files) ? files : [files]
 
@@ -45,7 +44,12 @@ export const createProductMediaQuery = async ({
 
   let mediaDBResponse = <any>await Promise.all(
     filesArray.map(async (file: any) => {
-      const { filename, originalname, path: filepath } = file
+      const {
+        filename,
+        originalname,
+        path: filepath,
+        mimetype: filetype,
+      } = file
 
       const [media] = await knex('media')
         .insert({
@@ -53,7 +57,7 @@ export const createProductMediaQuery = async ({
           filename,
           filepath,
           description: descriptions[originalname],
-          filetype: filetype[originalname],
+          filetype,
         })
         .returning('*')
 
@@ -76,7 +80,11 @@ export const getProductMediaQuery = async ({ params }: QueryParamsMedia) => {
   return media
 }
 
-export const updateProductMediaQuery = async ({ params, body, file }: QueryParamsMedia) => {
+export const updateProductMediaQuery = async ({
+  params,
+  body,
+  file,
+}: QueryParamsMedia) => {
   const { media_id } = params
   const { description } = body
   const { filename, path: filepath, mimetype: filetype } = file || {}
@@ -142,7 +150,11 @@ export const getAvatarQuery = async ({ userId }: QueryParamsMedia) => {
   return media
 }
 
-export const updateAvatarQuery = async ({ userId, body, file }: QueryParamsMedia) => {
+export const updateAvatarQuery = async ({
+  userId,
+  body,
+  file,
+}: QueryParamsMedia) => {
   const profile_id = userId
   const { description } = body
   const { filename, path: filepath, mimetype: filetype } = file || {}
