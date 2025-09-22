@@ -12,9 +12,7 @@ import {
   ProcessRouteWithoutBody,
   QueryParams,
 } from '../../types/process-routes.js'
-import DeliveryInfo, {
-  isValidDeliveryInfoRequest,
-} from '../../types/delivery-info.js'
+import { DeliveryInfo } from '../../types/delivery-info.js'
 import processRoute from '../process-routes.js'
 import { validateReqData } from '../utils/request-validation.js'
 import { validateResData } from '../utils/response-validation.js'
@@ -59,11 +57,6 @@ const createQuery = async ({ body, userId }: QueryParams): Promise<any[]> => {
 
   if (count >= LIMIT) {
     throw new ForbiddenError(`Cannot have more than ${LIMIT} addresses.`)
-  }
-
-  // Validate request body
-  if (!isValidDeliveryInfoRequest(body)) {
-    throw new BadRequestError('Invalid delivery info')
   }
 
   const {
@@ -215,9 +208,7 @@ const updateQuery = async ({
     throw new UnauthorizedError('Signin to access delivery information.')
   if (params == null) throw new BadRequestError('No route parameters provided')
   const { deliveryInfoId } = params
-  if (!isValidDeliveryInfoRequest(body))
-    throw new BadRequestError('Invalid data')
-  const deliveryData: DeliveryInfo = body
+  const deliveryData: DeliveryInfo = body as any
   if (!deliveryInfoId)
     throw new BadRequestError('Need delivery-info ID to update resource')
   // check if customer account is enabled

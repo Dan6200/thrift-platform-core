@@ -1,5 +1,5 @@
 // cspell: disable
-import DeliveryInfo from '#src/types/delivery-info.js'
+import { DeliveryInfo } from '#src/types/delivery-info.js'
 
 const listOfDeliveryInfo: DeliveryInfo[] = [
   {

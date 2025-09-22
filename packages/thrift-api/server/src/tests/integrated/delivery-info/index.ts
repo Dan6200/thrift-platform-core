@@ -1,4 +1,3 @@
-import DeliveryInfo from '#src/types/delivery-info.js'
 import {
   testCreateDelivery,
   testGetAllDelivery,
@@ -13,6 +12,7 @@ import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'
 import { testHasCustomerAccount } from '../profiles/definitions.js'
+import { DeliveryInfo } from '#src/types/delivery-info.js'
 
 export default function ({
   userInfo,
