@@ -4,8 +4,8 @@ import {
   StoreDataResponseListSchema,
   StoreDataResponseSchema,
   StoreIDSchema,
-} from '../../../app-schema/stores.js'
-import StoreData from '../../../../types/store-data.js'
+} from '#src/app-schema/stores.js'
+import StoreData from '#src/types/store-data.js'
 
 interface StoreDataId {
   store_info_id: number

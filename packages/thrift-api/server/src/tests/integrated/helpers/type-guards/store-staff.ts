@@ -3,7 +3,7 @@ import {
   UpdateStoreStaffSchema,
   StoreStaffListResponseSchema,
   StoreStaffResponseSchema,
-} from '../../../app-schema/store_staff.js'
+} from '#src/app-schema/store_staff.js'
 
 export const isValidAddStoreStaffRequest = (data: unknown) =>
   AddStoreStaffSchema.validate(data).error === undefined
