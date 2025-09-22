@@ -1,12 +1,43 @@
 import { StatusCodes } from 'http-status-codes'
-import {
-  isValidCartResponse,
-  isValidCartItems,
-  isValidCartUpdateRequest,
-  isValidCartAddItemRequest,
-} from '../../../../types/cart.js'
 import testRequest from '../../test-request/index.js'
 import { TestRequestWithBody, TestRequest } from '../../test-request/types.js'
+import {
+  addItemToCartSchema,
+  cartResponseSchema,
+  cartItemsSchema,
+  updateCartItemSchema,
+} from '../../../../app-schema/cart.js'
+import {
+  CartItemRequestData,
+  CartItem,
+  CartResponseData,
+} from '../../../../types/cart.js'
+
+export const isValidCartUpdateRequest = (
+  data: unknown,
+): data is CartItemRequestData => {
+  const { error } = updateCartItemSchema.validate(data)
+  return !error
+}
+
+export const isValidCartAddItemRequest = (
+  data: unknown,
+): data is CartItemRequestData => {
+  const { error } = addItemToCartSchema.validate(data)
+  return !error
+}
+
+export const isValidCartResponse = (
+  data: unknown,
+): data is CartResponseData[] => {
+  const { error } = cartResponseSchema.validate(data)
+  return !error
+}
+
+export const isValidCartItems = (data: unknown): data is CartItem[] => {
+  const { error } = cartItemsSchema.validate(data)
+  return !error
+}
 
 const { CREATED, OK, NO_CONTENT, NOT_FOUND } = StatusCodes
 
@@ -41,3 +72,4 @@ export const testGetNonExistentCart = (testRequest as TestRequest)({
   statusCode: NOT_FOUND,
   validateTestResData: null,
 })
+
