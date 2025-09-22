@@ -1,6 +1,5 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
-import assert from 'assert'
 import { ProfileRequestData } from '#src/types/profile/index.js'
 import { ProductReviewRequestData } from '#src/types/reviews.js'
 import {
@@ -9,6 +8,9 @@ import {
   testUpdateProductReview,
   testDeleteProductReview,
   testGetNonExistentProductReview,
+  testDeleteProductReviewForbidden,
+  testUpdateProductReviewForbidden,
+  testCreateProductReviewForbidden,
 } from './definitions/index.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
@@ -16,7 +18,7 @@ import { signInForTesting } from '../../helpers/signin-user.js'
 import { createStoreForTesting } from '../../helpers/create-store.js'
 import { createProductsForTesting } from '../../helpers/create-product.js'
 import { getProductsForTesting } from '../../helpers/get-product.js'
-import { userInfo as aliyuInfo } from '../../data/users/vendors/user-aliyu/index.js'
+import { userInfo as vendorInfo } from '../../data/users/vendors/user-aliyu/index.js'
 
 chai.use(chaiHttp).should()
 
@@ -26,7 +28,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   let customerId: string
   let vendorToken: string
   let vendorId: string
-  let storeId: string
+  let storeId: number
   let productId: number
   let variantId: number
   let orderId: number
@@ -40,8 +42,8 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     customerToken = await signInForTesting(customer.userInfo)
 
     // Create and sign in vendor
-    vendorId = await createUserForTesting(aliyuInfo)
-    vendorToken = await signInForTesting(aliyuInfo)
+    vendorId = await createUserForTesting(vendorInfo)
+    vendorToken = await signInForTesting(vendorInfo)
 
     // Create a store for the vendor
     const storeRes = await createStoreForTesting(vendorToken)
@@ -66,20 +68,22 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       .auth(customerToken, { type: 'bearer' })
       .send({
         store_id: storeId,
-        total_amount: 100.00, // Dummy total amount
-        order_items: [{
-          variant_id: variantId,
-          quantity: 1,
-          price_at_purchase: 100.00,
-        }],
+        total_amount: 100.0, // Dummy total amount
+        order_items: [
+          {
+            variant_id: variantId,
+            quantity: 1,
+            price_at_purchase: 100.0,
+          },
+        ],
       })
     orderRes.should.have.status(201)
     orderId = orderRes.body[0].order_id
     orderItemId = orderRes.body[0].order_items[0].order_item_id
 
     // Create and sign in a non-purchasing customer
-    nonPurchasingCustomerId = await createUserForTesting(ebukaInfo.userInfo)
-    nonPurchasingCustomerToken = await signInForTesting(ebukaInfo.userInfo)
+    nonPurchasingCustomerId = await createUserForTesting(customer.userInfo)
+    nonPurchasingCustomerToken = await signInForTesting(customer.userInfo)
   })
 
   after(async () => {

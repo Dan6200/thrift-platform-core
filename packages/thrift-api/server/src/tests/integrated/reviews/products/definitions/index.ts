@@ -1,11 +1,14 @@
 import { StatusCodes } from 'http-status-codes'
-import testRequest from '../../test-request/index.js'
-import { TestRequestWithBody, TestRequest } from '../../test-request/types.js'
+import testRequest from '#src/tests/integrated/test-request/index.js'
+import {
+  TestRequestWithBody,
+  TestRequest,
+} from '#src/tests/integrated/test-request/types.js'
 import {
   isValidProductReviewRequest,
   isValidProductReviewResponse,
   isValidProductReviewId,
-} from '../../helpers/type-guards/reviews.js'
+} from '../../../helpers/type-guards/reviews.js'
 
 const { CREATED, OK, NO_CONTENT, NOT_FOUND, FORBIDDEN } = StatusCodes
 
@@ -41,14 +44,18 @@ export const testGetNonExistentProductReview = (testRequest as TestRequest)({
   validateTestResData: null,
 })
 
-export const testCreateProductReviewForbidden = (testRequest as TestRequestWithBody)({
+export const testCreateProductReviewForbidden = (
+  testRequest as TestRequestWithBody
+)({
   verb: 'post',
   statusCode: FORBIDDEN,
   validateTestReqData: isValidProductReviewRequest,
   validateTestResData: null,
 })
 
-export const testUpdateProductReviewForbidden = (testRequest as TestRequestWithBody)({
+export const testUpdateProductReviewForbidden = (
+  testRequest as TestRequestWithBody
+)({
   verb: 'patch',
   statusCode: FORBIDDEN,
   validateTestReqData: isValidProductReviewRequest,

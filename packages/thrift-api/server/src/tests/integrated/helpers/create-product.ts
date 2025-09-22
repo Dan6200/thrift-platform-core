@@ -3,7 +3,7 @@ import { products } from '../data/users/vendors/user-aliyu/products/index.js'
 
 export async function createProductsForTesting(
   token: string,
-  store_id: string,
+  store_id: number,
 ) {
   return chai
     .request(process.env.SERVER!)
