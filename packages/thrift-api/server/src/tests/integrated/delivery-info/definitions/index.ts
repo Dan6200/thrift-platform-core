@@ -2,44 +2,11 @@ import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
 import { TestRequestWithBody, TestRequest } from '../../test-request/types.js'
 import {
-  DeliveryInfoRequestSchema,
-  DeliveryInfoResponseListSchema,
-  DeliveryInfoResponseSchema,
-  DeliveryInfoSchemaID,
-} from '#src/app-schema/delivery-info.js'
-import { DeliveryInfoId, DeliveryInfo } from '#src/types/delivery-info.js'
-
-export const isValidDeliveryInfoId = (
-  data: unknown,
-): data is DeliveryInfoId => {
-  const { error } = DeliveryInfoSchemaID.validate(data)
-  error && console.error(error)
-  return !error
-}
-
-export const isValidDeliveryInfoRequest = (
-  data: unknown,
-): data is DeliveryInfo => {
-  const { error } = DeliveryInfoRequestSchema.validate(data)
-  error && console.error(error)
-  return !error
-}
-
-export const isValidDeliveryInfoResponseList = (
-  data: unknown,
-): data is DeliveryInfo => {
-  const { error } = DeliveryInfoResponseListSchema.validate(data)
-  error && console.error(error)
-  return !error
-}
-
-export const isValidDeliveryInfoResponse = (
-  data: unknown,
-): data is DeliveryInfo => {
-  const { error } = DeliveryInfoResponseSchema.validate(data)
-  error && console.error(error)
-  return !error
-}
+  isValidDeliveryInfoId,
+  isValidDeliveryInfoRequest,
+  isValidDeliveryInfoResponseList,
+  isValidDeliveryInfoResponse,
+} from '../../helpers/type-guards/delivery-info.js'
 
 const { CREATED, OK, NOT_FOUND } = StatusCodes
 
@@ -89,4 +56,3 @@ export {
   testDeleteDelivery,
   testGetNonExistentDelivery,
 }
-

@@ -3,12 +3,12 @@ import {
   cartResponseSchema,
   cartItemsSchema,
   updateCartItemSchema,
-} from '../../../app-schema/cart.js'
+} from '#src/app-schema/cart.js'
 import {
   CartItemRequestData,
   CartItem,
   CartResponseData,
-} from '../../../../types/cart.js'
+} from '#src/types/cart.js'
 
 export const isValidCartUpdateRequest = (
   data: unknown,
