@@ -4,7 +4,7 @@ import {
   isValidStoreDataRequest,
   isValidStoreDataResponse,
   isValidStoreDataResponseList,
-} from '../../../../types/store-data.js'
+} from '../../helpers/type-guards/store-data.js'
 import testRequest from '../../test-request/index.js'
 import { TestRequestWithBody, TestRequest } from '../../test-request/types.js'
 

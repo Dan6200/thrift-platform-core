@@ -12,7 +12,7 @@ import {
   ProcessRouteWithoutBody,
   QueryParams,
 } from '../../types/process-routes.js'
-import StoreData, { isValidStoreDataRequest } from '../../types/store-data.js'
+import StoreData from '../../types/store-data.js'
 import processRoute from '../process-routes.js'
 import { validateReqData } from '../utils/request-validation.js'
 import { validateResData } from '../utils/response-validation.js'
@@ -42,9 +42,7 @@ const createQuery = async ({
   if (count > LIMIT)
     throw new ForbiddenError(`Cannot have more than ${LIMIT} stores`)
 
-  if (!isValidStoreDataRequest(body))
-    throw new BadRequestError('Invalid store data')
-  const storeData: StoreData = body
+  const storeData: StoreData = body as any // body is already validated by requestValidator
 
   const { store_address, pages, ...restOfStoreData } = storeData
 
@@ -254,9 +252,7 @@ const updateQuery = async ({
     throw new BadRequestError('No valid route parameters provided')
   const { storeId } = params
   if (!storeId) throw new BadRequestError('Need Store ID to update store')
-  if (!isValidStoreDataRequest(body))
-    throw new BadRequestError('Invalid request data')
-  const storeData = body
+  const storeData = body // already validated by requestValidator
 
   const hasAccess = await knex.raw('select has_store_access(?, ?, ?)', [
     userId,
