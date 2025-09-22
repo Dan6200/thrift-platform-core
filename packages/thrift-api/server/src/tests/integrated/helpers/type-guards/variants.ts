@@ -4,14 +4,14 @@ import {
   VariantRequestSchema,
   VariantResponseSchema,
   VariantUpdateRequestSchema,
-} from '../../../app-schema/products/variants.js'
+} from '#src/app-schema/products/variants.js'
 import {
   VariantId,
   VariantIdResponse,
   VariantRequestData,
   VariantResponseData,
   VariantUpdateRequestData,
-} from '../../../../types/products/variants.js'
+} from '#src/types/products/variants.js'
 
 export function isValidVariantId(data: unknown): data is VariantId {
   const { error } = VariantIdSchema.validate(data)
