@@ -1,4 +1,3 @@
-import { ProfileResponseSchema } from '#src/app-schema/profiles.js'
 import { ProfileData } from '#src/types/profile/index.js'
 
 export type ProfileRequestData = ProfileData &
@@ -28,11 +27,3 @@ interface ProfileResponse extends ProfileData {
 }
 
 export type ProfileResponseData = ProfileResponse & ProfileRequestData
-
-export const isValidProfileResponseData = (
-  data: unknown,
-): data is ProfileResponseData => {
-  const { error } = ProfileResponseSchema.validate(data)
-  error && console.error(error)
-  return !error
-}

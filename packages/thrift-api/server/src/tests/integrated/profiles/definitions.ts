@@ -2,7 +2,7 @@ import chai from 'chai'
 import chaiHttp from 'chai-http'
 import { StatusCodes } from 'http-status-codes'
 import { TestRequest, TestRequestWithQParams } from '../test-request/types.js'
-import { isValidProfileResponseData } from './types.js'
+import { isValidProfileResponseData } from '../helpers/type-guards/profile.js'
 import testRequest from '../test-request/index.js'
 
 chai.use(chaiHttp).should()
@@ -91,3 +91,4 @@ export const testHasCustomerAccountWithoutSignIn = testRequestWithoutSignIn({
 //   validateTestResData: null,
 //   validateTestReqData: isValidProfileRequestData,
 // })
+
