@@ -1,10 +1,15 @@
 import express from 'express'
 import multer from 'multer'
-import { cloudinaryStorage } from '../../controllers/utils/media-storage.js'
-import { createAvatar, getAvatar, updateAvatar, deleteAvatar } from '../../controllers/media/avatar.js'
+import { cloudinaryStorageAvatars } from '../../controllers/utils/media-storage.js'
+import {
+  createAvatar,
+  getAvatar,
+  updateAvatar,
+  deleteAvatar,
+} from '../../controllers/media/avatar.js'
 
 const router = express.Router()
-const upload = multer({ storage: cloudinaryStorage })
+const upload = multer({ storage: cloudinaryStorageAvatars })
 
 router
   .route('/')

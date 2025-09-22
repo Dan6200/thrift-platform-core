@@ -20,14 +20,26 @@ cloudinary.config({
 })
 
 export { cloudinary }
-let cloudinaryStorage: CloudinaryStorage | null = null
+let cloudinaryStorageProducts: CloudinaryStorage | null = null,
+  cloudinaryStorageAvatars: CloudinaryStorage | null = null
 
 if (process.env.NODE_ENV === 'testing') {
-  cloudinaryStorage = new CloudinaryStorage({
+  cloudinaryStorageAvatars = new CloudinaryStorage({
     cloudinary,
     params: {
       use_filename: true,
-      folder: 'sellit-media-testing',
+      folder: 'sellit-media-testing/avatars',
+      unique_filename: true,
+      overwrite: true,
+      public_id: (_req, file) =>
+        `${file.fieldname}-${Math.trunc(Math.random() * 1e9)}`,
+    },
+  } as Options)
+  cloudinaryStorageProducts = new CloudinaryStorage({
+    cloudinary,
+    params: {
+      use_filename: true,
+      folder: 'sellit-media-testing/products',
       unique_filename: true,
       overwrite: true,
       public_id: (_req, file) =>
@@ -35,11 +47,22 @@ if (process.env.NODE_ENV === 'testing') {
     },
   } as Options)
 } else {
-  cloudinaryStorage = new CloudinaryStorage({
+  cloudinaryStorageProducts = new CloudinaryStorage({
     cloudinary,
     params: {
       use_filename: true,
-      folder: 'sellit-media',
+      folder: 'sellit-media/products',
+      unique_filename: true,
+      overwrite: true,
+      public_id: (_req, file) =>
+        `${file.fieldname}-${Math.trunc(Math.random() * 1e9)}`,
+    },
+  } as Options)
+  cloudinaryStorageAvatars = new CloudinaryStorage({
+    cloudinary,
+    params: {
+      use_filename: true,
+      folder: 'sellit-media/avatars',
       unique_filename: true,
       overwrite: true,
       public_id: (_req, file) =>
@@ -48,4 +71,4 @@ if (process.env.NODE_ENV === 'testing') {
   } as Options)
 }
 
-export { cloudinaryStorage }
+export { cloudinaryStorageAvatars, cloudinaryStorageProducts }

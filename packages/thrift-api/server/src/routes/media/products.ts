@@ -1,10 +1,15 @@
 import express from 'express'
 import multer from 'multer'
-import { cloudinaryStorage } from '../../controllers/utils/media-storage.js'
-import { createProductMedia, getProductMedia, updateProductMedia, deleteProductMedia } from '../../controllers/media/products.js'
+import { cloudinaryStorageProducts } from '../../controllers/utils/media-storage.js'
+import {
+  createProductMedia,
+  getProductMedia,
+  updateProductMedia,
+  deleteProductMedia,
+} from '../../controllers/media/products.js'
 
 const router = express.Router()
-const upload = multer({ storage: cloudinaryStorage })
+const upload = multer({ storage: cloudinaryStorageProducts })
 const uploadLimit = 12
 router
   .route('/')

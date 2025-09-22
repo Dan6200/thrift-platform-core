@@ -12,7 +12,7 @@ export async function bulkDeleteImages(slug: 'products' | 'avatars') {
       if (publicIds.length > 0) {
         await cloudinary.api.delete_resources(publicIds)
       } else {
-        console.log('No assets found in the folder')
+        process.env.DEBUG && console.log('No assets found in the folder')
         break
       }
     } catch (err) {
