@@ -1,9 +1,6 @@
 import { knex } from '../../../../db/index.js'
 import { QueryParams } from '../../../../types/process-routes.js'
-import {
-  isValidVariantUpdateRequestData,
-  VariantResponseData,
-} from '../../../../types/products/variants.js'
+import { VariantResponseData } from '../../../../types/products/variants.js'
 import BadRequestError from '../../../../errors/bad-request.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 import ForbiddenError from '#src/errors/forbidden.js'
@@ -19,9 +16,6 @@ export default async ({
   }
   if (!params?.variantId) {
     throw new BadRequestError('Must provide a variant id.')
-  }
-  if (!isValidVariantUpdateRequestData(body)) {
-    throw new BadRequestError('Invalid variant data.')
   }
 
   const { variantId } = params
