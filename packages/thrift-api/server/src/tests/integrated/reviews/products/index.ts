@@ -31,6 +31,8 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   let variantId: number
   let orderId: number
   let orderItemId: number
+  let nonPurchasingCustomerId: string
+  let nonPurchasingCustomerToken: string
 
   before(async () => {
     // Create and sign in customer
@@ -74,11 +76,16 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     orderRes.should.have.status(201)
     orderId = orderRes.body[0].order_id
     orderItemId = orderRes.body[0].order_items[0].order_item_id
+
+    // Create and sign in a non-purchasing customer
+    nonPurchasingCustomerId = await createUserForTesting(ebukaInfo.userInfo)
+    nonPurchasingCustomerToken = await signInForTesting(ebukaInfo.userInfo)
   })
 
   after(async () => {
     await deleteUserForTesting(customerId)
     await deleteUserForTesting(vendorId)
+    await deleteUserForTesting(nonPurchasingCustomerId)
   })
 
   const productReviewPath = '/v1/reviews/products'
@@ -97,11 +104,33 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     })
   })
 
+  it('should prevent a non-purchasing customer from creating a product review', async () => {
+    const reviewData: ProductReviewRequestData = {
+      order_item_id: orderItemId,
+      rating: 1.0,
+      customer_remark: 'I did not buy this product.',
+    }
+    await testCreateProductReviewForbidden({
+      server,
+      path: productReviewPath,
+      token: nonPurchasingCustomerToken,
+      requestBody: reviewData,
+    })
+  })
+
   it('should allow a customer to get their product review', async () => {
     await testGetProductReview({
       server,
       path: `${productReviewPath}/${orderItemId}`,
       token: customerToken,
+    })
+  })
+
+  it('should allow a non-purchasing customer to view a product review', async () => {
+    await testGetProductReview({
+      server,
+      path: `${productReviewPath}/${orderItemId}`,
+      token: nonPurchasingCustomerToken,
     })
   })
 
@@ -119,11 +148,33 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     })
   })
 
+  it('should prevent a non-purchasing customer from updating a product review', async () => {
+    const updatedReviewData: ProductReviewRequestData = {
+      order_item_id: orderItemId,
+      rating: 1.0,
+      customer_remark: 'Attempted to update review as non-purchasing customer.',
+    }
+    await testUpdateProductReviewForbidden({
+      server,
+      path: `${productReviewPath}/${orderItemId}`,
+      token: nonPurchasingCustomerToken,
+      requestBody: updatedReviewData,
+    })
+  })
+
   it('should allow a customer to delete their product review', async () => {
     await testDeleteProductReview({
       server,
       path: `${productReviewPath}/${orderItemId}`,
       token: customerToken,
+    })
+  })
+
+  it('should prevent a non-purchasing customer from deleting a product review', async () => {
+    await testDeleteProductReviewForbidden({
+      server,
+      path: `${productReviewPath}/${orderItemId}`,
+      token: nonPurchasingCustomerToken,
     })
   })
 
