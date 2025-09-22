@@ -25,7 +25,7 @@ export const testCreateAvatar = async function (
     .field('filetype', media.filetype)
 
   response.should.have.status(CREATED)
-  return response
+  return response.body
 }
 
 export const testGetAvatar = async function (
@@ -33,9 +33,12 @@ export const testGetAvatar = async function (
   urlPath: string,
   token: string,
 ): Promise<any> {
-  const response = await chai.request(server).get(urlPath).auth(token, { type: 'bearer' })
+  const response = await chai
+    .request(server)
+    .get(urlPath)
+    .auth(token, { type: 'bearer' })
   response.should.have.status(OK)
-  return response
+  return response.body
 }
 
 export const testUpdateAvatar = async function (
@@ -53,7 +56,7 @@ export const testUpdateAvatar = async function (
     .attach(fieldName, data, media.name)
     .field('description', media.description)
   response.should.have.status(OK)
-  return response
+  return response.body
 }
 
 export const testDeleteAvatar = async function (
@@ -61,7 +64,11 @@ export const testDeleteAvatar = async function (
   urlPath: string,
   token: string,
 ): Promise<any> {
-  const response = await chai.request(server).delete(urlPath).auth(token, { type: 'bearer' })
+  const response = await chai
+    .request(server)
+    .delete(urlPath)
+    .auth(token, { type: 'bearer' })
   response.should.have.status(NO_CONTENT)
-  return response
+  return response.body
 }
+

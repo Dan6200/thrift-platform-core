@@ -4,16 +4,29 @@ import {
   ProductMediaRequestSchema,
   ProductMediaResponseSchema,
 } from '#src/app-schema/media/products.js'
-import { ProcessRoute } from '../../types/process-routes.js'
-import processRoute from '../process-routes.js'
+import {
+  ProcessRoute,
+  ProcessRouteWithoutBody,
+  ProcessRouteWithoutBodyAndDBResult,
+} from '../../types/process-routes.js'
+import routeProcessor from '../process-routes.js'
 import { validateReqData } from '../utils/request-validation.js'
-import { createProductMediaQuery, getProductMediaQuery, updateProductMediaQuery, deleteProductMediaQuery } from './definitions.js'
+import {
+  createProductMediaQuery,
+  getProductMediaQuery,
+  updateProductMediaQuery,
+  deleteProductMediaQuery,
+} from './definitions.js'
 import { validateResData } from '../utils/response-validation.js'
 
 const { CREATED, OK, NO_CONTENT } = StatusCodes
 
-const processPostRoute = <ProcessRoute>processRoute
-export const createProductMedia = processPostRoute({
+const processRoute = <ProcessRoute>routeProcessor
+const processRouteWithoutBody = <ProcessRouteWithoutBody>routeProcessor
+const processRouteWithoutBodyOrResponse = <ProcessRouteWithoutBodyAndDBResult>(
+  routeProcessor
+)
+export const createProductMedia = processRoute({
   Query: createProductMediaQuery,
   status: CREATED,
   validateBody: validateReqData(ProductMediaRequestSchema),
@@ -21,20 +34,21 @@ export const createProductMedia = processPostRoute({
   validateResult: validateResData(ProductMediaResponseSchema),
 })
 
-export const getProductMedia = processPostRoute({
+export const getProductMedia = processRouteWithoutBody({
   Query: getProductMediaQuery,
   status: OK,
   validateResult: validateResData(ProductMediaResponseSchema),
 })
 
-export const updateProductMedia = processPostRoute({
+export const updateProductMedia = processRoute({
   Query: updateProductMediaQuery,
   status: OK,
   validateBody: validateReqData(ProductMediaRequestSchema),
   validateResult: validateResData(ProductMediaResponseSchema),
 })
 
-export const deleteProductMedia = processPostRoute({
+export const deleteProductMedia = processRouteWithoutBodyOrResponse({
   Query: deleteProductMediaQuery,
   status: NO_CONTENT,
 })
+
