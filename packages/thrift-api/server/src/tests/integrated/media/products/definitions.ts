@@ -95,6 +95,7 @@ export const testUpdateProductMedia = async function (
     .auth(token, { type: 'bearer' })
     .attach(fieldName, data, media.name)
     .field('description', media.description)
+    .field('filetype', media.filetype)
   response.should.have.status(OK)
   return response.body
 }

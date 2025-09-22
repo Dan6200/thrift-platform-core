@@ -2,6 +2,7 @@ import { knex } from '#src/db/index.js'
 import { QueryParamsMedia } from '#src/types/process-routes.js'
 import BadRequestError from '#src/errors/bad-request.js'
 
+/* Handles bulk and singular uploads */
 export const createProductMediaQuery = async ({
   userId,
   query,
@@ -73,7 +74,7 @@ export const createProductMediaQuery = async ({
 
 export const getProductMediaQuery = async ({ params }: QueryParamsMedia) => {
   const { mediaId: media_id } = params
-  const media = await knex('media').where({ media_id }).first()
+  const media = await knex('media').where({ media_id }).select()
   return media
 }
 
@@ -83,10 +84,10 @@ export const updateProductMediaQuery = async ({
   file,
 }: QueryParamsMedia) => {
   const { mediaId: media_id } = params
-  const { description } = body
-  const { filename, path: filepath, mimetype: filetype } = file || {}
+  const { description, filetype } = body
+  const { filename, path: filepath } = file || {}
 
-  const [updatedMedia] = await knex('media')
+  const updatedMedia = await knex('media')
     .where({ media_id })
     .update({ description, filename, filepath, filetype })
     .returning('*')

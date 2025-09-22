@@ -5,10 +5,10 @@ export const ProductMediaQuerySchema = Joi.object({
 })
 
 export const UpdateProductMediaRequestSchema = Joi.object({
-  descriptions: Joi.string(),
+  description: Joi.string(),
   is_display_image: Joi.string(),
   is_thumbnail_image: Joi.string(),
-  filetypes: Joi.string(),
+  filetype: Joi.string(),
 })
 
 export const ProductMediaRequestSchema = Joi.object({

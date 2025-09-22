@@ -44,8 +44,8 @@ export const getProductMedia = processRouteWithoutBody({
 export const updateProductMedia = processRoute({
   Query: updateProductMediaQuery,
   status: OK,
-  validateBody: validateReqData(ProductMediaRequestSchema),
-  validateResult: validateResData(UpdateProductMediaRequestSchema),
+  validateBody: validateReqData(UpdateProductMediaRequestSchema),
+  validateResult: validateResData(ProductMediaResponseSchema),
 })
 
 export const deleteProductMedia = processRouteWithoutBodyOrResponse({
