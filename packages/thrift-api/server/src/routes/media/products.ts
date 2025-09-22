@@ -16,7 +16,7 @@ router
   .post(upload.array('product-media', uploadLimit), createProductMedia)
 
 router
-  .route('/:media_id')
+  .route('/:mediaId')
   .get(getProductMedia)
   .patch(upload.single('product-media'), updateProductMedia)
   .delete(deleteProductMedia)

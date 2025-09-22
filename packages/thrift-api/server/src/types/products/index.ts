@@ -70,6 +70,14 @@ export type ProductMediaUpload = {
   description: string
   is_display_image: boolean
   is_thumbnail_image: boolean
+  filetype:
+    | 'image/jpeg'
+    | 'image/jpg'
+    | 'image/png'
+    | 'video/mp4'
+    | 'video/webp'
+    | 'image/webp'
+    | 'video/mkv'
 }
 
 export type ProductMedia = MediaType & {

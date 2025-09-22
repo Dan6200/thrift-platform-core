@@ -3,6 +3,7 @@ import {
   ProductMediaQuerySchema,
   ProductMediaRequestSchema,
   ProductMediaResponseSchema,
+  UpdateProductMediaRequestSchema,
 } from '#src/app-schema/media/products.js'
 import {
   ProcessRoute,
@@ -44,7 +45,7 @@ export const updateProductMedia = processRoute({
   Query: updateProductMediaQuery,
   status: OK,
   validateBody: validateReqData(ProductMediaRequestSchema),
-  validateResult: validateResData(ProductMediaResponseSchema),
+  validateResult: validateResData(UpdateProductMediaRequestSchema),
 })
 
 export const deleteProductMedia = processRouteWithoutBodyOrResponse({

@@ -30,6 +30,11 @@ export const testCreateProductMedia = async function (
     }),
   )
 
+  const fileType = mediaArray.reduce((acc: { [k: string]: any }, file) => {
+    acc[file.name] = file.filetype
+    return acc
+  }, {})
+
   const descriptions = mediaArray.reduce((acc: { [k: string]: any }, file) => {
     acc[file.name] = file.description
     return acc
@@ -54,6 +59,7 @@ export const testCreateProductMedia = async function (
   request.field('descriptions', JSON.stringify(descriptions))
   request.field('is_display_image', JSON.stringify(isDisplayImage))
   request.field('is_thumbnail_image', JSON.stringify(isThumbnailImage))
+  request.field('filetypes', JSON.stringify(fileType))
 
   const response = await request
   response.should.have.status(CREATED)
@@ -72,7 +78,7 @@ export const testGetProductMedia = async function (
     .get(urlPath)
     .auth(token, { type: 'bearer' })
   response.should.have.status(OK)
-  return response
+  return response.body
 }
 
 export const testUpdateProductMedia = async function (
@@ -90,7 +96,7 @@ export const testUpdateProductMedia = async function (
     .attach(fieldName, data, media.name)
     .field('description', media.description)
   response.should.have.status(OK)
-  return response
+  return response.body
 }
 
 export const testDeleteProductMedia = async function (

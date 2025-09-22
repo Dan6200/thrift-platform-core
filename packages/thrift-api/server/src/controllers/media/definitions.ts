@@ -19,13 +19,15 @@ export const createProductMediaQuery = async ({
     throw new BadRequestError('User not found')
   }
 
-  let { descriptions, is_display_image, is_thumbnail_image } = body
+  let { descriptions, is_display_image, is_thumbnail_image, filetypes } = body
 
+  // filetype is sent from the client because multer does not reliably provide the correct mimetype for array uploads.
   if (descriptions) descriptions = JSON.parse(descriptions)
   else throw new BadRequestError('No descriptions provided')
 
   if (is_display_image) is_display_image = JSON.parse(is_display_image)
   if (is_thumbnail_image) is_thumbnail_image = JSON.parse(is_thumbnail_image)
+  if (filetypes) filetypes = JSON.parse(filetypes)
 
   const filesArray = Array.isArray(files) ? files : [files]
 
@@ -44,12 +46,7 @@ export const createProductMediaQuery = async ({
 
   let mediaDBResponse = <any>await Promise.all(
     filesArray.map(async (file: any) => {
-      const {
-        filename,
-        originalname,
-        path: filepath,
-        mimetype: filetype,
-      } = file
+      const { filename, originalname, path: filepath } = file
 
       const [media] = await knex('media')
         .insert({
@@ -57,7 +54,7 @@ export const createProductMediaQuery = async ({
           filename,
           filepath,
           description: descriptions[originalname],
-          filetype,
+          filetype: filetypes[originalname],
         })
         .returning('*')
 
@@ -75,7 +72,7 @@ export const createProductMediaQuery = async ({
 }
 
 export const getProductMediaQuery = async ({ params }: QueryParamsMedia) => {
-  const { media_id } = params
+  const { mediaId: media_id } = params
   const media = await knex('media').where({ media_id }).first()
   return media
 }
@@ -85,7 +82,7 @@ export const updateProductMediaQuery = async ({
   body,
   file,
 }: QueryParamsMedia) => {
-  const { media_id } = params
+  const { mediaId: media_id } = params
   const { description } = body
   const { filename, path: filepath, mimetype: filetype } = file || {}
 
@@ -98,7 +95,7 @@ export const updateProductMediaQuery = async ({
 }
 
 export const deleteProductMediaQuery = async ({ params }: QueryParamsMedia) => {
-  const { media_id } = params
+  const { mediaId: media_id } = params
   await knex('product_media_links').where({ media_id }).del()
   await knex('media').where({ media_id }).del()
 }
