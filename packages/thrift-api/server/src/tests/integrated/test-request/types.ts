@@ -3,20 +3,16 @@
 
 import { StatusCodes } from 'http-status-codes'
 
+export type RequestForTests = {
+  params?: { [k: string]: any }
+  query?: { [k: string]: any }
+  body?: any | any[]
+}
+
 export type TestRequestParams = {
   verb: 'get' | 'post' | 'delete' | 'put' | 'patch'
   statusCode: StatusCodes
-  validateTestReqData?: ({
-    req,
-    params,
-    query,
-    body,
-  }: {
-    req: { userId: string }
-    params: string
-    query: { [k: string]: any }
-    body: any | any[]
-  }) => boolean
+  validateTestReqData?: (req: RequestForTests) => boolean
   validateTestResData?: (data: unknown) => boolean
 }
 
@@ -59,8 +55,8 @@ type TestRequestOuterWQueryNBody = <T>(
 type TestRequestOuter = (requestParams: RequestParams) => Promise<any>
 
 export type RequestParams = {
-  req: { userId: string }
+  req: RequestForTests
+  path: string
   server: string
-  params: string
   token: string
 }

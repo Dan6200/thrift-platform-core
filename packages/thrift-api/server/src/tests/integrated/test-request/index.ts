@@ -1,5 +1,5 @@
 import chai from 'chai'
-import { TestRequestParams } from './types.js'
+import { RequestForTests, TestRequestParams } from './types.js'
 
 export default function ({
   verb,
@@ -8,14 +8,16 @@ export default function ({
   validateTestReqData,
 }: TestRequestParams) {
   return async function <T>({
+    req,
     server,
-    params,
+    path,
     query,
     token,
     body,
   }: {
+    req: RequestForTests
     server: string
-    params: string
+    path: string
     token: string
     query?: { [k: string]: any }
     body?: T
@@ -23,13 +25,13 @@ export default function ({
     // Validate the request body first
     if (body && !validateTestReqData)
       throw new Error('Must validate test request data')
-    if (validateTestReqData && !validateTestReqData({ params, body, query }))
+    if (validateTestReqData && !validateTestReqData(req))
       throw new Error('Invalid Test Request Data')
 
     // Make request
     const request = chai
       .request(server)
-      [verb](params)
+      [verb](path)
       .query(query ?? {})
       .send(<object>body)
 
