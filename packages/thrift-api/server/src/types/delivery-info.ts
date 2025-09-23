@@ -18,3 +18,23 @@ export interface DeliveryInfo {
   updated_at?: Date
 }
 
+export interface DeliveryInfoCreateRequest {
+  body: DeliveryInfo;
+  req: { userId: string };
+}
+
+export interface DeliveryInfoGetRequest {
+  params: { deliveryInfoId: number };
+  req: { userId: string };
+}
+
+export interface DeliveryInfoUpdateRequest {
+  params: { deliveryInfoId: number };
+  body: DeliveryInfo;
+  req: { userId: string };
+}
+
+export interface DeliveryInfoDeleteRequest {
+  params: { deliveryInfoId: number };
+  req: { userId: string };
+}

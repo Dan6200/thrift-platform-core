@@ -6,7 +6,7 @@ import {
   DeliveryInfoResponseListSchema,
   DeliveryInfoResponseSchema,
   DeliveryInfoSchemaID,
-} from '../../../app-schema/delivery-info.js'
+} from '#src/app-schema/delivery-info.js'
 import {
   DeliveryInfo,
   DeliveryInfoId,
@@ -14,7 +14,7 @@ import {
   DeliveryInfoGetRequest,
   DeliveryInfoUpdateRequest,
   DeliveryInfoDeleteRequest,
-} from '../../../../types/delivery-info.js'
+} from '#src/types/delivery-info.js'
 
 export const isValidDeliveryInfoId = (
   data: unknown,
@@ -71,3 +71,4 @@ export const isValidDeliveryInfoResponse = (
   error && console.error(error)
   return !error
 }
+
