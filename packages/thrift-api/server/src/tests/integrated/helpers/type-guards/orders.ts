@@ -2,8 +2,9 @@ import {
   OrderCreateRequestSchema,
   OrderResponseSchema,
   OrderIdSchema,
-  OrderGETAllResponseSchema,
+  // OrderGETAllResponseSchema,
   OrderQuerySchema,
+  OrderGETAllResponseSchema,
 } from '#src/app-schema/orders/index.js'
 import {
   OrderCreateRequestData,

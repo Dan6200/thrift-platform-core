@@ -1,6 +1,10 @@
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '#src/tests/integrated/test-request/index.js'
-import { TestRequestWithBody, TestRequest, TestRequestWithQParams } from '#src/tests/integrated/test-request/types.js'
+import {
+  TestRequestWithBody,
+  TestRequest,
+  TestRequestWithQParamsAndBody,
+} from '#src/tests/integrated/test-request/types.js'
 import {
   isValidOrderCreateRequest,
   isValidOrderResponse,
@@ -18,11 +22,11 @@ export const testCreateOrder = (testRequest as TestRequestWithBody)({
   validateTestResData: isValidOrderId,
 })
 
-export const testGetAllOrders = (testRequest as TestRequestWithQParams)({
+export const testGetAllOrders = (testRequest as TestRequestWithQParamsAndBody)({
   verb: 'get',
   statusCode: OK,
-  validateTestResData: isValidOrderGETAllResponse,
   validateTestReqData: isValidOrderQuery,
+  validateTestResData: isValidOrderGETAllResponse,
 })
 
 export const testGetOrder = (testRequest as TestRequest)({
