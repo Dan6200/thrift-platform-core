@@ -41,16 +41,18 @@ export default function ({
       server,
       path: '/v1/me',
       token,
+      req: {},
     }))
 
   it(`it should add multiple delivery addresses for the customer`, async () => {
     assert(!!listOfDeliveryInfo.length)
-    for (const deliveryInfo of listOfDeliveryInfo) {
+    for (const body of listOfDeliveryInfo) {
       const [{ delivery_info_id }] = await testCreateDelivery({
         server,
         path: deliveryPath,
-        requestBody: { ...deliveryInfo },
+        body,
         token,
+        req: { body },
       })
       deliveryIds.push(delivery_info_id)
     }
@@ -61,16 +63,19 @@ export default function ({
       server,
       path: deliveryPath,
       token,
+      req: {},
     })
   })
 
   it('it should retrieve all delivery information through a loop', async () => {
     assert(!!deliveryIds.length)
     for (const deliveryId of deliveryIds) {
+      const path = deliveryPath + '/' + deliveryId
       await testGetDelivery({
         server,
-        path: deliveryPath + '/' + deliveryId,
+        path,
         token,
+        req: { params: { deliveryInfoId: deliveryId } },
       })
     }
   })
@@ -81,11 +86,14 @@ export default function ({
         deliveryIds.length === listOfUpdatedDeliveryInfo.length,
     )
     for (const [idx, deliveryId] of deliveryIds.entries()) {
+      const body = { ...listOfUpdatedDeliveryInfo[idx] }
+      const path = deliveryPath + '/' + deliveryId
       await testUpdateDelivery({
         server,
-        path: deliveryPath + '/' + deliveryId,
-        requestBody: { ...listOfUpdatedDeliveryInfo[idx] },
+        path,
+        body,
         token,
+        req: { params: { deliveryInfoId: deliveryId }, body },
       })
     }
   })
@@ -97,6 +105,7 @@ export default function ({
         server,
         path: deliveryPath + '/' + deliveryId,
         token,
+        req: { params: { deliveryInfoId: deliveryId } },
       })
     }
   })
@@ -108,6 +117,7 @@ export default function ({
         server,
         path: `${deliveryPath}/${deliveryId}`,
         token,
+        req: { params: { deliveryInfoId: deliveryId } },
       })
     }
   })
