@@ -29,6 +29,10 @@ export const OrderResponseSchema = Joi.object({
   })).required(),
 })
 
+export const OrderGETResponseSchema = Joi.array().items(OrderResponseSchema).length(1)
+
+export const OrderGETAllResponseSchema = Joi.array().items(OrderResponseSchema)
+
 export const OrderIdSchema = Joi.object({
   order_id: Joi.number().integer().positive().required(),
 })
