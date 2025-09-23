@@ -1,5 +1,4 @@
 import { knex } from '#src/db/index.js'
-import BadRequestError from '#src/errors/bad-request.js'
 import InternalServerError from '#src/errors/internal-server.js'
 import { Request, Response, NextFunction } from 'express'
 import { DeliveryInfo } from '../../types/delivery-info.js'

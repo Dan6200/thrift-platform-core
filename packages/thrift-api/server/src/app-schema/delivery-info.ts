@@ -22,11 +22,17 @@ export const DeliveryInfoDataSchema = joi.object({
 // Schemas for request validation middleware
 export const DeliveryInfoCreateRequestSchema = joi.object({
   body: DeliveryInfoDataSchema.required(),
+  req: joi.object({
+    userId: joi.string().uuid().required(),
+  }).required(),
 })
 
 export const DeliveryInfoGetRequestSchema = joi.object({
   params: joi.object({
     deliveryInfoId: joi.number().integer().positive().required(),
+  }).required(),
+  req: joi.object({
+    userId: joi.string().uuid().required(),
   }).required(),
 })
 
@@ -35,77 +41,49 @@ export const DeliveryInfoUpdateRequestSchema = joi.object({
     deliveryInfoId: joi.number().integer().positive().required(),
   }).required(),
   body: DeliveryInfoDataSchema.required(),
+  req: joi.object({
+    userId: joi.string().uuid().required(),
+  }).required(),
 })
 
 export const DeliveryInfoDeleteRequestSchema = joi.object({
   params: joi.object({
     deliveryInfoId: joi.number().integer().positive().required(),
   }).required(),
+  req: joi.object({
+    userId: joi.string().uuid().required(),
+  }).required(),
 })
 
 // Schemas for response validation middleware
-export const DeliveryInfoSchemaID = joi
-  .array()
-  .items(
-    joi.object({
-      delivery_info_id: joi.number().required(),
-      created_at: joi.date().required(),
-      updated_at: joi.date().required(),
-      deleted_at: joi.date().optional(),
-    }),
-  )
-  .length(1)
-  .required()
+export const DeliveryInfoSchemaID = joi.object({
+  delivery_info_id: joi.number().required(),
+  created_at: joi.date().required(),
+  updated_at: joi.date().required(),
+  deleted_at: joi.date().optional(),
+}).required()
 
-export const DeliveryInfoResponseSchema = joi
-  .array()
-  .items(
-    joi.object({
-      delivery_info_id: joi.number().required(),
-      recipient_full_name: joi.string().min(3).max(60).required(),
-      address_line_1: joi.string().required(),
-      address_line_2: joi.string().allow('').required(),
-      city: joi.string().required(),
-      state: joi.string().required(),
-      zip_postal_code: joi.string().required(),
-      country: joi.string().required(),
-      phone_number: joi
-        .string()
-        .pattern(
-          /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/,
-        )
-        .required(),
-      delivery_instructions: joi.string().required(),
-      created_at: joi.date().required(),
-      updated_at: joi.date().required(),
-    }),
-  )
-  .length(1)
-  .required()
+export const DeliveryInfoResponseSchema = joi.object({
+  delivery_info_id: joi.number().required(),
+  recipient_full_name: joi.string().min(3).max(60).required(),
+  address_line_1: joi.string().required(),
+  address_line_2: joi.string().allow('').required(),
+  city: joi.string().required(),
+  state: joi.string().required(),
+  zip_postal_code: joi.string().required(),
+  country: joi.string().required(),
+  phone_number: joi
+    .string()
+    .pattern(
+      /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/,
+    )
+    .required(),
+  delivery_instructions: joi.string().required(),
+  created_at: joi.date().required(),
+  updated_at: joi.date().required(),
+}).required()
 
 export const DeliveryInfoResponseListSchema = joi
   .array()
-  .items(
-    joi
-      .object({
-        delivery_info_id: joi.number().required(),
-        recipient_full_name: joi.string().min(3).max(60).required(),
-        address_line_1: joi.string().required(),
-        address_line_2: joi.string().allow('').required(),
-        city: joi.string().required(),
-        state: joi.string().required(),
-        zip_postal_code: joi.string().required(),
-        country: joi.string().required(),
-        phone_number: joi
-          .string()
-          .pattern(
-            /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/,
-          )
-          .required(),
-        delivery_instructions: joi.string().required(),
-        created_at: joi.date().required(),
-        updated_at: joi.date().required(),
-      })
-      .required(),
-  )
+  .items(DeliveryInfoResponseSchema)
   .required()

@@ -1,6 +1,5 @@
 import { knex } from '#src/db/index.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import ForbiddenError from '#src/errors/forbidden.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import { Request, Response, NextFunction } from 'express'
 import { DeliveryInfo } from '../../types/delivery-info.js'
@@ -13,7 +12,8 @@ export const getDeliveryLogic = async (
   if (!req.userId) {
     throw new UnauthenticatedError('Signin to access delivery information.')
   }
-  if (!req.validatedParams) throw new BadRequestError('No route parameters provided')
+  if (!req.validatedParams)
+    throw new BadRequestError('No route parameters provided')
   const { deliveryInfoId } = req.validatedParams
 
   const result = await knex<DeliveryInfo>('delivery_info')
