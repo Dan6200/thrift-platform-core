@@ -39,6 +39,7 @@
     "@faker-js/faker": "^8.4.1",
     "@types/chai": "^4.3.20",
     "@types/mocha": "^10.0.10",
+    "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "axios": "^1.10.0",
     "chai": "^4.5.0",
@@ -97,6 +98,7 @@
     "stream-json": "^1.9.1",
     "swagger-ui-express": "^4.6.3",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "winston": "^3.17.0"
   }
 }
