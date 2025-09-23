@@ -1,7 +1,7 @@
 import { knex } from '#src/db/index.js'
 import { QueryParams } from '#src/types/process-routes.js'
 import BadRequestError from '#src/errors/bad-request.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import NotFoundError from '#src/errors/not-found.js'
 import InternalServerError from '#src/errors/internal-server.js'
 import ForbiddenError from '#src/errors/forbidden.js'
@@ -12,7 +12,7 @@ export const createOrderQuery = async ({
   query,
 }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('Authentication required')
+    throw new UnauthenticatedError('Authentication required')
   }
 
   const { store_id, delivery_info_id } = query
@@ -123,7 +123,7 @@ export const createOrderQuery = async ({
 
 export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('Authentication required')
+    throw new UnauthenticatedError('Authentication required')
   }
 
   const { order_id } = params
@@ -181,4 +181,3 @@ export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
 
   return { ...order, items: orderItems }
 }
-

@@ -4,7 +4,7 @@ import { knex } from '../../../db/index.js'
 import BadRequestError from '../../../errors/bad-request.js'
 import { QueryParams } from '../../../types/process-routes.js'
 import { ProductID } from '../../../types/products/index.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 
 /**
  * @param {QueryParams} {body, query, userId}
@@ -17,7 +17,7 @@ export default async ({
   query: { store_id: storeId },
 }: QueryParams): Promise<ProductID[]> => {
   if (!userId) {
-    throw new UnauthorizedError('Sign-in to create product.')
+    throw new UnauthenticatedError('Sign-in to create product.')
   }
   if (!storeId)
     throw new BadRequestError(

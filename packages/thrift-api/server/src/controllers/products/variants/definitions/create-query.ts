@@ -2,7 +2,7 @@ import { knex } from '../../../../db/index.js'
 import { QueryParams } from '../../../../types/process-routes.js'
 import { VariantIdResponse } from '../../../../types/products/variants.js'
 import BadRequestError from '../../../../errors/bad-request.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 import NotFoundError from '#src/errors/not-found.js'
 
@@ -12,7 +12,7 @@ export default async ({
   userId,
 }: QueryParams): Promise<VariantIdResponse[]> => {
   if (!userId) {
-    throw new UnauthorizedError('Sign-in to create a variant.')
+    throw new UnauthenticatedError('Sign-in to create a variant.')
   }
   if (!params?.productId) {
     throw new BadRequestError('Must provide a product id.')
@@ -22,7 +22,7 @@ export default async ({
   const variantData = body
 
   if (!userId) {
-    throw new UnauthorizedError('Sign-in to create a variant.')
+    throw new UnauthenticatedError('Sign-in to create a variant.')
   }
   if (!params?.productId) {
     throw new BadRequestError('Must provide a product id.')

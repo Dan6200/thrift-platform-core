@@ -6,7 +6,7 @@ import {
   DeliveryInfoResponseSchema,
 } from '../../app-schema/delivery-info.js'
 import BadRequestError from '../../errors/bad-request.js'
-import UnauthorizedError from '../../errors/unauthorized.js'
+import UnauthenticatedError from '../../errors/unauthenticated.js'
 import {
   ProcessRoute,
   ProcessRouteWithoutBody,
@@ -32,7 +32,7 @@ import InternalServerError from '#src/errors/internal-server.js'
 
 const createQuery = async ({ body, userId }: QueryParams): Promise<any[]> => {
   if (!userId)
-    throw new UnauthorizedError('Sign-in to access delivery information.')
+    throw new UnauthenticatedError('Sign-in to access delivery information.')
 
   // Check if the profile is a customer
   const profile = await knex('profiles')
@@ -116,7 +116,7 @@ const getAllQuery = async ({
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<DeliveryInfo[]>> => {
   if (!userId)
-    throw new UnauthorizedError('Sign-in to access delivery information.')
+    throw new UnauthenticatedError('Sign-in to access delivery information.')
   // check if customer account is enabled
   const result = await knex('profiles')
     .where('id', userId)
@@ -158,7 +158,7 @@ const getQuery = async ({
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<DeliveryInfo[]>> => {
   if (!userId)
-    throw new UnauthorizedError('Signin to access delivery information.')
+    throw new UnauthenticatedError('Signin to access delivery information.')
   if (params == null) throw new BadRequestError('No route parameters provided')
   const { deliveryInfoId } = params
   // check if customer account is enabled
@@ -205,7 +205,7 @@ const updateQuery = async ({
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<DeliveryInfo> | any[]> => {
   if (!userId)
-    throw new UnauthorizedError('Signin to access delivery information.')
+    throw new UnauthenticatedError('Signin to access delivery information.')
   if (params == null) throw new BadRequestError('No route parameters provided')
   const { deliveryInfoId } = params
   const deliveryData: DeliveryInfo = body as any
@@ -341,7 +341,7 @@ const deleteQuery = async ({
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<string>> => {
   if (!userId)
-    throw new UnauthorizedError('Signin to delete delivery information.')
+    throw new UnauthenticatedError('Signin to delete delivery information.')
   if (params == null) throw new BadRequestError('No route parameters provided')
   const { deliveryInfoId } = params
   if (!deliveryInfoId)

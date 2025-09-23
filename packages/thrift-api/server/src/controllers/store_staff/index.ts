@@ -17,14 +17,14 @@ import {
   StoreStaffListResponseSchema,
   RemoveStoreStaffResponseSchema,
 } from '#src/app-schema/store_staff.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
 
 const addStaffQuery = async ({ params, body, userId }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('You must be logged in to add staff.')
+    throw new UnauthenticatedError('You must be logged in to add staff.')
   }
   if (!params?.storeId) {
     throw new BadRequestError('Store ID is required.')
@@ -55,7 +55,7 @@ const addStaffQuery = async ({ params, body, userId }: QueryParams) => {
 
 const listStaffQuery = async ({ params, userId }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('You must be logged in to list staff.')
+    throw new UnauthenticatedError('You must be logged in to list staff.')
   }
   if (!params?.storeId) {
     throw new BadRequestError('Store ID is required.')
@@ -88,7 +88,7 @@ const listStaffQuery = async ({ params, userId }: QueryParams) => {
 
 const updateStaffQuery = async ({ params, body, userId }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('You must be logged in to update staff.')
+    throw new UnauthenticatedError('You must be logged in to update staff.')
   }
   if (!params?.storeId || !params?.staffId) {
     throw new BadRequestError('Store ID and Staff ID are required.')
@@ -120,7 +120,7 @@ const updateStaffQuery = async ({ params, body, userId }: QueryParams) => {
 
 const removeStaffQuery = async ({ params, userId }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('You must be logged in to remove staff.')
+    throw new UnauthenticatedError('You must be logged in to remove staff.')
   }
   if (!params?.storeId || !params?.staffId) {
     throw new BadRequestError('Store ID and Staff ID are required.')
@@ -179,4 +179,3 @@ export const removeStaff = processDeleteRoute({
   status: StatusCodes.NO_CONTENT,
   validateResult: validateResData(RemoveStoreStaffResponseSchema),
 })
-

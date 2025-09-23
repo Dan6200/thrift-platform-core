@@ -4,7 +4,7 @@ import BadRequestError from '../../../errors/bad-request.js'
 import { QueryParams } from '../../../types/process-routes.js'
 import { ProductResponseData } from '../../../types/products/index.js'
 import ForbiddenError from '#src/errors/forbidden.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 
 /* @param {QueryParams} {params, query, body, userId}
  * @returns {Promise<ProductResponseData[]>}
@@ -17,7 +17,7 @@ export default async ({
   query,
 }: QueryParams): Promise<ProductResponseData[]> => {
   if (!userId) {
-    throw new UnauthorizedError('Sign-in to update product.')
+    throw new UnauthenticatedError('Sign-in to update product.')
   }
   if (params == null) throw new BadRequestError('Must provide product id')
   const { productId } = params

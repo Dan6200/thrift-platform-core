@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express'
-import UnauthorizedError from '../errors/unauthorized.js'
+import UnauthenticatedError from '../errors/unauthenticated.js'
 import { RequestWithPayload } from '../types/request.js'
 import { supabase } from '#supabase-config'
 import InternalServerError from '#src/errors/internal-server.js'
@@ -21,7 +21,7 @@ export default async (
       } = await supabase.auth.getUser(token)
       if (error || !user.id) {
         console.error('Supabase token verification error:', error?.message)
-        throw new UnauthorizedError(
+        throw new UnauthenticatedError(
           'Invalid token please retry the signin process',
         )
       }

@@ -2,7 +2,7 @@ import { QueryResult, QueryResultRow } from 'pg'
 import { knex, pg } from '../../../db/index.js' // Adjust path
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import { validateDashboardQueryParams, getDateRangeClause } from './utils.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 
@@ -19,7 +19,7 @@ export default async ({
   const { storeId } = params
 
   if (!userId) {
-    throw new UnauthorizedError(
+    throw new UnauthenticatedError(
       'Authentication required to access dashboard data.',
     )
   }

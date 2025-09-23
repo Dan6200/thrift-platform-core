@@ -8,7 +8,7 @@ import { QueryResult, QueryResultRow } from 'pg'
 import { validateResData } from '../utils/response-validation.js'
 import { ProfileResponseSchema } from '../../app-schema/profiles.js'
 import { pg } from '#src/db/index.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 
 const { OK } = StatusCodes
 
@@ -19,7 +19,7 @@ const { OK } = StatusCodes
 const getQuery = async ({
   userId,
 }: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  if (!userId) throw new UnauthorizedError('Signin to access user account.')
+  if (!userId) throw new UnauthenticatedError('Signin to access user account.')
   return pg.query('select * from profiles where id=$1', [userId])
 }
 

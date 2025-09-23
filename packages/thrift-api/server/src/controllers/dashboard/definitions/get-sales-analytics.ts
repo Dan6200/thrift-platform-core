@@ -7,7 +7,7 @@ import {
   getPaginationAndSortClauses,
 } from './utils.js'
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 import { knex } from '../../../db/index.js'
 
@@ -25,7 +25,7 @@ export default async ({
   const { storeId } = params // Extract storeId
 
   if (!userId) {
-    throw new UnauthorizedError(
+    throw new UnauthenticatedError(
       'Authentication required to access dashboard data.',
     )
   }

@@ -3,7 +3,7 @@ import { knex, pg } from '../../../db/index.js' // Adjust path
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import { validateDashboardQueryParams } from './utils.js'
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 
 /**
@@ -19,7 +19,7 @@ export default async ({
   const { storeId } = params
 
   if (!userId) {
-    throw new UnauthorizedError(
+    throw new UnauthenticatedError(
       'Authentication required to access dashboard data.',
     )
   }
@@ -39,8 +39,7 @@ export default async ({
     )
   }
 
-  const { locationType } =
-    await validateDashboardQueryParams({ query })
+  const { locationType } = await validateDashboardQueryParams({ query })
 
   const allowedLocationTypes = ['country', 'city']
   if (locationType && !allowedLocationTypes.includes(locationType)) {

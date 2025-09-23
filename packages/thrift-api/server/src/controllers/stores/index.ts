@@ -6,7 +6,7 @@ import {
   StoreDataResponseSchema,
 } from '#src/app-schema/stores.js'
 import BadRequestError from '../../errors/bad-request.js'
-import UnauthorizedError from '../../errors/unauthorized.js'
+import UnauthenticatedError from '../../errors/unauthenticated.js'
 import {
   ProcessRoute,
   ProcessRouteWithoutBody,
@@ -25,7 +25,7 @@ const createQuery = async ({
   body,
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<string>> => {
-  if (!userId) throw new UnauthorizedError('Sign-in to create store')
+  if (!userId) throw new UnauthenticatedError('Sign-in to create store')
   const result = await knex('profiles')
     .where('id', userId)
     .select('is_vendor')
@@ -247,7 +247,7 @@ const updateQuery = async ({
   body,
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<number>> => {
-  if (!userId) throw new UnauthorizedError('Signin to modify store.')
+  if (!userId) throw new UnauthenticatedError('Signin to modify store.')
   if (params == null)
     throw new BadRequestError('No valid route parameters provided')
   const { storeId } = params
@@ -332,7 +332,7 @@ const deleteQuery = async ({
   params,
   userId,
 }: QueryParams): Promise<Knex.QueryBuilder<string>> => {
-  if (!userId) throw new UnauthorizedError('Signin to delete store.')
+  if (!userId) throw new UnauthenticatedError('Signin to delete store.')
   if (params == null)
     throw new BadRequestError('No valid route parameters provided')
   const { storeId } = params

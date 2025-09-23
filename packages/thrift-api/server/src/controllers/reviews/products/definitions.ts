@@ -1,7 +1,7 @@
 import { knex } from '#src/db/index.js'
 import { QueryParams } from '#src/types/process-routes.js'
 import BadRequestError from '#src/errors/bad-request.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import ForbiddenError from '#src/errors/forbidden.js'
 
 export const createProductReviewQuery = async ({
@@ -9,7 +9,7 @@ export const createProductReviewQuery = async ({
   body,
 }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('Authentication required')
+    throw new UnauthenticatedError('Authentication required')
   }
 
   const { order_item_id, rating, customer_remark } = body
@@ -50,7 +50,7 @@ export const getProductReviewQuery = async ({
   params,
 }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('Authentication required')
+    throw new UnauthenticatedError('Authentication required')
   }
 
   const { order_item_id } = params
@@ -73,7 +73,7 @@ export const updateProductReviewQuery = async ({
   body,
 }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('Authentication required')
+    throw new UnauthenticatedError('Authentication required')
   }
 
   const { order_item_id } = params
@@ -100,7 +100,7 @@ export const deleteProductReviewQuery = async ({
   params,
 }: QueryParams) => {
   if (!userId) {
-    throw new UnauthorizedError('Authentication required')
+    throw new UnauthenticatedError('Authentication required')
   }
 
   const { order_item_id } = params

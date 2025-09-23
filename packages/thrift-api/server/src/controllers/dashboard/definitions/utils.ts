@@ -1,7 +1,7 @@
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
 import ForbiddenError from '../../../errors/forbidden.js' // Adjust path
-import UnauthorizedError from '#src/errors/unauthorized.js' // Adjust path
+import UnauthenticatedError from '#src/errors/unauthenticated.js' // Adjust path
 import { knex } from '../../../db/index.js' // Adjust path
 
 /**
@@ -9,7 +9,7 @@ import { knex } from '../../../db/index.js' // Adjust path
  * Also performs authorization check for the store.
  * @param queryParams The QueryParams object from the route processor.
  * @returns An object containing validated parameters and the authorized storeId.
- * @throws {UnauthorizedError} If userId is missing.
+ * @throws {UnauthenticatedError} If userId is missing.
  * @throws {BadRequestError} If storeId or date formats are invalid.
  * @throws {ForbiddenError} If the user is not authorized for the specified store.
  */
