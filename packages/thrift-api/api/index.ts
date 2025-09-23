@@ -3,11 +3,14 @@ import cors from 'cors'
 import express, { Request, Response, Router } from 'express'
 import 'express-async-errors'
 import helmet from 'helmet'
-import morgan from 'morgan'
+import { requestLogger } from '#src/middleware/logging.js'
+
+// if (process.env.NODE_ENV === 'production') apiDocsPath = './api-docs/dist.yaml'
+// else apiDocsPath = './server/api-docs/dist.yaml'
 import rateLimiter from 'express-rate-limit'
 import cookieParser from 'cookie-parser'
 // routers
-import profileRouter from '#src/routes/user/index.js'
+import profileRouter from '#src/routes/profile/index.js'
 import deliveryRouter from '#src/routes/delivery-info/index.js'
 import storesRouter from '#src/routes/stores/index.js'
 import storeStaffRouter from '#src/routes/store_staff.js'
@@ -72,8 +75,7 @@ app.get('/api.json', (_req: Request, res: Response) =>
 
 app.use(helmet())
 app.use(cors())
-if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'))
-else app.use(morgan('dev'))
+app.use(requestLogger)
 // application routes
 const v1Router = Router()
 v1Router.use('/me', profileRouter)
