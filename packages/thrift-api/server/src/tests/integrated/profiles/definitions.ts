@@ -11,33 +11,29 @@ const { OK, UNAUTHORIZED } = StatusCodes
 
 const hasNoCustomerAccount = (data: unknown) => {
   const isValidData = isValidProfileResponseData(data)
-  if (!Array.isArray(data) || !isValidData)
-    throw new Error('Invalid Profile Data Response')
-  data[0].is_customer.should.be.false
+  if (!isValidData) throw new Error('Invalid Profile Data Response')
+  data.is_customer.should.be.true
   return true
 }
 
 const hasCustomerAccount = (data: unknown) => {
   const isValidData = isValidProfileResponseData(data)
-  if (!Array.isArray(data) || !isValidData)
-    throw new Error('Invalid Profile Data Response')
-  data[0].is_customer.should.be.true
+  if (!isValidData) throw new Error('Invalid Profile Data Response')
+  data.is_customer.should.be.true
   return true
 }
 
 const hasVendorAccount = (data: unknown) => {
   const isValidData = isValidProfileResponseData(data)
-  if (!Array.isArray(data) || !isValidData)
-    throw new Error('Invalid Profile Data Response')
-  data[0].is_vendor.should.be.true
+  if (!isValidData) throw new Error('Invalid Profile Data Response')
+  data.is_customer.should.be.true
   return true
 }
 
 const hasNoVendorAccount = (data: unknown) => {
   const isValidData = isValidProfileResponseData(data)
-  if (!Array.isArray(data) || !isValidData)
-    throw new Error('Invalid Profile Data Response')
-  data[0].is_vendor.should.be.false
+  if (!isValidData) throw new Error('Invalid Profile Data Response')
+  data.is_customer.should.be.true
   return true
 }
 
@@ -91,4 +87,3 @@ export const testHasCustomerAccountWithoutSignIn = testRequestWithoutSignIn({
 //   validateTestResData: null,
 //   validateTestReqData: isValidProfileRequestData,
 // })
-
