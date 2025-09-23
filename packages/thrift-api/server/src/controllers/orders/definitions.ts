@@ -4,16 +4,19 @@ import BadRequestError from '#src/errors/bad-request.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 import NotFoundError from '#src/errors/not-found.js'
 import InternalServerError from '#src/errors/internal-server.js'
+import ForbiddenError from '#src/errors/forbidden.js'
 
 export const createOrderQuery = async ({
   userId,
   body,
+  query,
 }: QueryParams) => {
   if (!userId) {
     throw new UnauthorizedError('Authentication required')
   }
 
-  const { store_id, delivery_info_id, items } = body
+  const { store_id, delivery_info_id } = query
+  const { items } = body
 
   if (!store_id || !items || items.length === 0) {
     throw new BadRequestError('Store ID and at least one item are required')
@@ -118,11 +121,7 @@ export const createOrderQuery = async ({
   }
 }
 
-export const getOrderQuery = async ({
-  userId,
-  params,
-  query,
-}: QueryParams) => {
+export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
   if (!userId) {
     throw new UnauthorizedError('Authentication required')
   }
@@ -134,12 +133,40 @@ export const getOrderQuery = async ({
     throw new BadRequestError('Order ID or Store ID is required')
   }
 
-  let ordersQuery = knex('orders').where({ customer_id: userId })
+  // Determine if the user is a vendor/staff or a customer
+  const profile = await knex('profiles').where({ id: userId }).first()
+  if (!profile) {
+    throw new NotFoundError('User profile not found')
+  }
 
-  if (order_id) {
-    ordersQuery = ordersQuery.andWhere({ order_id }).first()
-  } else if (store_id) {
-    ordersQuery = ordersQuery.andWhere({ store_id })
+  let ordersQuery = knex('orders')
+
+  if (store_id) {
+    // If store_id is provided, check vendor/staff access first
+    const isVendor = await knex('stores')
+      .where({ store_id, vendor_id: userId })
+      .first()
+
+    if (!isVendor) {
+      const isStaff = await knex('store_staff')
+        .where({ store_id, staff_id: userId })
+        .first()
+      if (!isStaff) {
+        throw new ForbiddenError("Access denied to this store's orders")
+      }
+    }
+    // If vendor or staff, limit by store_id
+    ordersQuery = ordersQuery.where({ store_id })
+    if (order_id) {
+      ordersQuery = ordersQuery.andWhere({ order_id }).first()
+    }
+  } else {
+    // If no store_id, assume customer context or general user
+    // Limit by customer_id
+    ordersQuery = ordersQuery.where({ customer_id: userId })
+    if (order_id) {
+      ordersQuery = ordersQuery.andWhere({ order_id }).first()
+    }
   }
 
   const order = await ordersQuery
@@ -154,3 +181,4 @@ export const getOrderQuery = async ({
 
   return { ...order, items: orderItems }
 }
+
