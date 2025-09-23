@@ -76,7 +76,7 @@ if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'))
 else app.use(morgan('dev'))
 // application routes
 const v1Router = Router()
-v1Router.use('/me', authenticateUser, profileRouter)
+v1Router.use('/me', profileRouter)
 v1Router.use('/delivery-info', authenticateUser, deliveryRouter)
 v1Router.use('/stores', authenticateUser, storesRouter)
 v1Router.use('/stores', authenticateUser, storeStaffRouter)
