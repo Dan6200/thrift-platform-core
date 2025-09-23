@@ -14,6 +14,7 @@ import testDashboard from './dashboard/index.js'
 import testStoreStaff from './store_staff/index.js'
 import testCart from './cart/index.js'
 import testProductReviews from './reviews/products/index.js'
+import testOrders from './orders/index.js'
 
 const users = [Ebuka, Aliyu, Aisha, Mustapha]
 const customers = [Ebuka, Aisha, Mustapha] // is_customer is true
@@ -114,6 +115,13 @@ export default function (): void {
     const { first_name: name } = userInfo
     describe(`Testing Product Reviews for ${name}`, () =>
       testProductReviews(customer))
+  }
+
+  /** Order related tests **/
+  for (let customer of customers) {
+    const { userInfo } = customer
+    const { first_name: name } = userInfo
+    describe(`Testing Orders for ${name}`, () => testOrders(customer))
   }
 
   //
