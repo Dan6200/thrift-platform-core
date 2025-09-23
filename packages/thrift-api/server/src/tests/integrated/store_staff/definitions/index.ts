@@ -35,24 +35,27 @@ export const testRemoveStaff = (testRequest as TestRequest)({
   statusCode: NO_CONTENT,
 })
 
-export const testAddStaffForbidden = (testRequest as TestRequestWithBody)({
+export const testAddStaffUnauthorized = (testRequest as TestRequestWithBody)({
   verb: 'post',
   statusCode: FORBIDDEN,
   validateTestReqData: isValidAddStoreStaffRequest,
 })
 
-export const testListStaffForbidden = (testRequest as TestRequest)({
+export const testListStaffUnauthorized = (testRequest as TestRequest)({
   verb: 'get',
   statusCode: FORBIDDEN,
 })
 
-export const testUpdateStaffForbidden = (testRequest as TestRequestWithBody)({
-  verb: 'put',
-  statusCode: FORBIDDEN,
-  validateTestReqData: isValidUpdateStoreStaffRequest,
-})
+export const testUpdateStaffUnauthorized = (testRequest as TestRequestWithBody)(
+  {
+    verb: 'put',
+    statusCode: FORBIDDEN,
+    validateTestReqData: isValidUpdateStoreStaffRequest,
+  },
+)
 
-export const testRemoveStaffForbidden = (testRequest as TestRequest)({
+export const testRemoveStaffUnauthorized = (testRequest as TestRequest)({
   verb: 'delete',
   statusCode: FORBIDDEN,
 })
+

@@ -18,7 +18,7 @@ import { validateReqData } from '../utils/request-validation.js'
 import { validateResData } from '../utils/response-validation.js'
 import { Knex } from 'knex'
 import { knex } from '#src/db/index.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 import InternalServerError from '#src/errors/internal-server.js'
 
 /**
@@ -41,7 +41,7 @@ const createQuery = async ({ body, userId }: QueryParams): Promise<any[]> => {
     .first()
 
   if (!profile?.is_customer) {
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'Profile is not a customer. Only customers can create delivery addresses.',
     )
   }
@@ -56,7 +56,7 @@ const createQuery = async ({ body, userId }: QueryParams): Promise<any[]> => {
   const count = Number(countResult?.count || 0)
 
   if (count >= LIMIT) {
-    throw new ForbiddenError(`Cannot have more than ${LIMIT} addresses.`)
+    throw new UnauthorizedError(`Cannot have more than ${LIMIT} addresses.`)
   }
 
   const {
@@ -123,7 +123,7 @@ const getAllQuery = async ({
     .select('is_customer')
     .limit(1)
   if (!result[0]?.is_customer)
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'Profile is not a customer. Only customers can view delivery addresses.',
     )
   const finalResult = knex<DeliveryInfo>('delivery_info')
@@ -167,7 +167,7 @@ const getQuery = async ({
     .select('is_customer')
     .limit(1)
   if (!result[0]?.is_customer)
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'Profile is not a customer. Only customers can view delivery addresses.',
     )
   return knex<DeliveryInfo>('delivery_info')
@@ -217,7 +217,7 @@ const updateQuery = async ({
     .select('is_customer')
     .limit(1)
   if (!result[0]?.is_customer)
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'Profile is not a customer. Only customers can view delivery addresses.',
     )
   const {
@@ -352,7 +352,7 @@ const deleteQuery = async ({
     .select('is_customer')
     .limit(1)
   if (!result[0]?.is_customer)
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'Profile is not a customer. Only customers can delete delivery addresses.',
     )
   return knex<DeliveryInfo>('delivery_info')

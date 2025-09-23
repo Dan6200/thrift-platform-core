@@ -1,6 +1,6 @@
 import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import BadRequestError from '../../../errors/bad-request.js' // Adjust path
-import ForbiddenError from '../../../errors/forbidden.js' // Adjust path
+import UnauthorizedError from '../../../errors/unauthorized.js' // Adjust path
 import UnauthenticatedError from '#src/errors/unauthenticated.js' // Adjust path
 import { knex } from '../../../db/index.js' // Adjust path
 
@@ -11,7 +11,7 @@ import { knex } from '../../../db/index.js' // Adjust path
  * @returns An object containing validated parameters and the authorized storeId.
  * @throws {UnauthenticatedError} If userId is missing.
  * @throws {BadRequestError} If storeId or date formats are invalid.
- * @throws {ForbiddenError} If the user is not authorized for the specified store.
+ * @throws {UnauthorizedError} If the user is not authorized for the specified store.
  */
 export async function validateDashboardQueryParams({ query }: QueryParams) {
   const {

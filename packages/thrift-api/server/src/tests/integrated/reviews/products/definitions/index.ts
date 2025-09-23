@@ -44,7 +44,7 @@ export const testGetNonExistentProductReview = (testRequest as TestRequest)({
   validateTestResData: null,
 })
 
-export const testCreateProductReviewForbidden = (
+export const testCreateProductReviewUnauthorized = (
   testRequest as TestRequestWithBody
 )({
   verb: 'post',
@@ -53,7 +53,7 @@ export const testCreateProductReviewForbidden = (
   validateTestResData: null,
 })
 
-export const testUpdateProductReviewForbidden = (
+export const testUpdateProductReviewUnauthorized = (
   testRequest as TestRequestWithBody
 )({
   verb: 'patch',
@@ -62,8 +62,10 @@ export const testUpdateProductReviewForbidden = (
   validateTestResData: null,
 })
 
-export const testDeleteProductReviewForbidden = (testRequest as TestRequest)({
-  verb: 'delete',
-  statusCode: FORBIDDEN,
-  validateTestResData: null,
-})
+export const testDeleteProductReviewUnauthorized = (testRequest as TestRequest)(
+  {
+    verb: 'delete',
+    statusCode: FORBIDDEN,
+    validateTestResData: null,
+  },
+)

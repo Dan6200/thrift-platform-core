@@ -253,7 +253,7 @@ Where `{storeId}` is the unique identifier for the tenant's store. This ensures 
 ### General API Considerations
 
 - **Authentication & Authorization**: As noted, all endpoints must be authenticated and authorized. The `storeId` in the path should be verified against the authenticated user's permissions.
-- **Error Handling**: Implement consistent error responses (e.g., 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error).
+- **Error Handling**: Implement consistent error responses (e.g., 400 Bad Request, 401 Unauthorized, 403 Unauthorized, 404 Not Found, 500 Internal Server Error).
 - **Data Validation**: Validate all incoming query parameters (e.g., date formats, integer values, valid enums for `interval`, `sortBy`, `sortOrder`).
 - **Performance**: Implement database indexing on frequently queried columns (e.g., `order_date`, `customer_id`, `store_id`, `created_at`). Server-side caching can also be used for frequently requested, less real-time data.
 

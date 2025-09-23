@@ -8,9 +8,9 @@ import {
   testUpdateProductReview,
   testDeleteProductReview,
   testGetNonExistentProductReview,
-  testDeleteProductReviewForbidden,
-  testUpdateProductReviewForbidden,
-  testCreateProductReviewForbidden,
+  testDeleteProductReviewUnauthorized,
+  testUpdateProductReviewUnauthorized,
+  testCreateProductReviewUnauthorized,
 } from './definitions/index.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
@@ -114,7 +114,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       rating: 1.0,
       customer_remark: 'I did not buy this product.',
     }
-    await testCreateProductReviewForbidden({
+    await testCreateProductReviewUnauthorized({
       server,
       path: productReviewPath,
       token: nonPurchasingCustomerToken,
@@ -158,7 +158,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       rating: 1.0,
       customer_remark: 'Attempted to update review as non-purchasing customer.',
     }
-    await testUpdateProductReviewForbidden({
+    await testUpdateProductReviewUnauthorized({
       server,
       path: `${productReviewPath}/${orderItemId}`,
       token: nonPurchasingCustomerToken,
@@ -175,7 +175,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   })
 
   it('should prevent a non-purchasing customer from deleting a product review', async () => {
-    await testDeleteProductReviewForbidden({
+    await testDeleteProductReviewUnauthorized({
       server,
       path: `${productReviewPath}/${orderItemId}`,
       token: nonPurchasingCustomerToken,

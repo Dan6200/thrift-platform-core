@@ -2,7 +2,7 @@ import { knex } from '#src/db/index.js'
 import { QueryParams } from '#src/types/process-routes.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 
 export const createProductReviewQuery = async ({
   userId,
@@ -30,7 +30,7 @@ export const createProductReviewQuery = async ({
   }
 
   if (orderItem.customer_id !== userId) {
-    throw new ForbiddenError('You can only review your own order items')
+    throw new UnauthorizedError('You can only review your own order items')
   }
 
   const [review] = await knex('product_reviews')

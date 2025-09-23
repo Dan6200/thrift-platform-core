@@ -5,10 +5,10 @@ import {
   testListStaff,
   testUpdateStaff,
   testRemoveStaff,
-  testAddStaffForbidden,
-  testListStaffForbidden,
-  testUpdateStaffForbidden,
-  testRemoveStaffForbidden,
+  testAddStaffUnauthorized,
+  testListStaffUnauthorized,
+  testUpdateStaffUnauthorized,
+  testRemoveStaffUnauthorized,
 } from './definitions/index.js'
 import { ProfileRequestData } from '../../../types/profile/index.js'
 import { createUserForTesting } from '../helpers/create-user.js'
@@ -66,7 +66,7 @@ export default function ({
     })
 
     it('it should not allow a non-owner to add a staff member', async () => {
-      await testAddStaffForbidden({
+      await testAddStaffUnauthorized({
         server,
         path: getStaffRoute(storeId),
         token: staffToken,
@@ -105,7 +105,7 @@ export default function ({
     })
 
     it("it should not allow a non-owner to update a staff member's role", async () => {
-      await testUpdateStaffForbidden({
+      await testUpdateStaffUnauthorized({
         server,
         path: getStaffIdRoute(storeId, staffId),
         token: staffToken,
@@ -134,7 +134,7 @@ export default function ({
           role: 'editor',
         },
       })
-      await testRemoveStaffForbidden({
+      await testRemoveStaffUnauthorized({
         server,
         path: getStaffIdRoute(storeId, staffId),
         token: staffToken,

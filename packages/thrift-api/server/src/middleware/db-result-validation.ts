@@ -7,14 +7,17 @@ export const validateDbResult = (
 ) => {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.dbResult) {
-      throw new InternalServerError('Database result not found on request object')
+      throw new InternalServerError(
+        'Database result not found on request object',
+      )
     }
 
     const { error, value } = schema.validate(req.dbResult)
 
     if (error) {
       throw new InternalServerError(
-        'Database result validation failed: ' + error.details.map((detail) => detail.message).join('; '),
+        'Database result validation failed: ' +
+          error.details.map((detail) => detail.message).join('; '),
       )
     }
 

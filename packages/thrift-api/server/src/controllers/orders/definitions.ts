@@ -4,7 +4,7 @@ import BadRequestError from '#src/errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import NotFoundError from '#src/errors/not-found.js'
 import InternalServerError from '#src/errors/internal-server.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 
 export const createOrderQuery = async ({
   userId,
@@ -152,7 +152,7 @@ export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
         .where({ store_id, staff_id: userId })
         .first()
       if (!isStaff) {
-        throw new ForbiddenError("Access denied to this store's orders")
+        throw new UnauthorizedError("Access denied to this store's orders")
       }
     }
     // If vendor or staff, limit by store_id

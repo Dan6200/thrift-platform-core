@@ -1,5 +1,5 @@
 //cspell:ignore jsonb
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 import { knex } from '../../../db/index.js'
 import BadRequestError from '../../../errors/bad-request.js'
 import { QueryParams } from '../../../types/process-routes.js'
@@ -31,7 +31,7 @@ export default async ({
     ['admin'],
   ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'You do not have permission to delete products from this store.',
     )
   }

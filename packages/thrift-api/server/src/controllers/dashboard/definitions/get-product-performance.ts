@@ -7,7 +7,7 @@ import {
   getPaginationAndSortClauses,
 } from './utils.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 import BadRequestError from '../../../errors/bad-request.js'
 
 /**
@@ -38,7 +38,7 @@ export default async ({
     ['admin', 'editor', 'viewer'],
   ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       "You are not authorized to access this store's dashboard.",
     )
   }

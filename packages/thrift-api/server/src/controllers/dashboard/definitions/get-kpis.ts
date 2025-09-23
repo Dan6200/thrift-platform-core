@@ -4,7 +4,7 @@ import { QueryParams } from '../../../types/process-routes.js' // Adjust path
 import { validateDashboardQueryParams, getDateRangeClause } from './utils.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import BadRequestError from '#src/errors/bad-request.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 
 /**
  * @param {QueryParams} { query, userId }
@@ -34,7 +34,7 @@ export default async ({
     ['admin', 'editor', 'viewer'],
   ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       "You are not authorized to access this store's dashboard.",
     )
   }

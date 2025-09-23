@@ -18,7 +18,7 @@ import {
   RemoveStoreStaffResponseSchema,
 } from '#src/app-schema/store_staff.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
 
@@ -38,7 +38,7 @@ const addStaffQuery = async ({ params, body, userId }: QueryParams) => {
     .where({ store_id: storeId, vendor_id: userId })
     .first()
   if (!store) {
-    throw new ForbiddenError('You are not the owner of this store.')
+    throw new UnauthorizedError('You are not the owner of this store.')
   }
 
   // Add the staff member
@@ -72,7 +72,7 @@ const listStaffQuery = async ({ params, userId }: QueryParams) => {
       .where({ store_id: storeId, staff_id: userId })
       .first()
     if (!isStaff) {
-      throw new ForbiddenError(
+      throw new UnauthorizedError(
         'You do not have permission to list staff for this store.',
       )
     }
@@ -102,7 +102,7 @@ const updateStaffQuery = async ({ params, body, userId }: QueryParams) => {
     .where({ store_id: storeId, vendor_id: userId })
     .first()
   if (!store) {
-    throw new ForbiddenError('You are not the owner of this store.')
+    throw new UnauthorizedError('You are not the owner of this store.')
   }
 
   // Update the staff member's role
@@ -133,7 +133,7 @@ const removeStaffQuery = async ({ params, userId }: QueryParams) => {
     .where({ store_id: storeId, vendor_id: userId })
     .first()
   if (!store) {
-    throw new ForbiddenError('You are not the owner of this store.')
+    throw new UnauthorizedError('You are not the owner of this store.')
   }
 
   // Remove the staff member

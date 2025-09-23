@@ -18,7 +18,7 @@ import { validateReqData } from '../utils/request-validation.js'
 import { validateResData } from '../utils/response-validation.js'
 import { Knex } from 'knex'
 import { knex } from '#src/db/index.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 import NotFoundError from '#src/errors/not-found.js'
 
 const createQuery = async ({
@@ -31,7 +31,7 @@ const createQuery = async ({
     .select('is_vendor')
     .limit(1)
   if (!result[0]?.is_vendor)
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'Vendor account disabled. Need to enable it to create a store',
     )
   const LIMIT = 5
@@ -40,7 +40,7 @@ const createQuery = async ({
   )[0]
   if (typeof count === 'string') count = parseInt(count)
   if (count > LIMIT)
-    throw new ForbiddenError(`Cannot have more than ${LIMIT} stores`)
+    throw new UnauthorizedError(`Cannot have more than ${LIMIT} stores`)
 
   const storeData: StoreData = body as any // body is already validated by requestValidator
 
@@ -260,7 +260,9 @@ const updateQuery = async ({
     ['admin', 'editor'], // Allow admins and editors to update
   ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError('You do not have permission to update this store.')
+    throw new UnauthorizedError(
+      'You do not have permission to update this store.',
+    )
   }
 
   const { store_address, pages, ...restOfStoreData } = storeData
@@ -344,7 +346,9 @@ const deleteQuery = async ({
     ['admin'],
   ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError('You do not have permission to delete this store.')
+    throw new UnauthorizedError(
+      'You do not have permission to delete this store.',
+    )
   }
   return knex<StoreData>('stores')
     .where('store_id', storeId)

@@ -2,7 +2,7 @@ import { knex } from '../../../../db/index.js'
 import { QueryParams } from '../../../../types/process-routes.js'
 import BadRequestError from '../../../../errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 import NotFoundError from '#src/errors/not-found.js'
 
 export default async ({ params, userId }: QueryParams): Promise<void> => {
@@ -30,7 +30,7 @@ export default async ({ params, userId }: QueryParams): Promise<void> => {
     ['admin'],
   ])
   if (!hasAccess.rows[0].has_store_access) {
-    throw new ForbiddenError(
+    throw new UnauthorizedError(
       'You do not have permission to delete this variant.',
     )
   }
