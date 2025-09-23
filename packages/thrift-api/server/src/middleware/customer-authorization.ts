@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { knex } from '#src/db/index.js'
 import UnauthenticatedError from '../errors/unauthenticated.js'
-import ForbiddenError from '../errors/forbidden.js'
+import UnauthorizedError from '../errors/unauthorized.js'
 
 export const customerAuthorization = async (
   req: Request,
@@ -9,7 +9,9 @@ export const customerAuthorization = async (
   next: NextFunction,
 ) => {
   if (!req.userId) {
-    throw new UnauthenticatedError('Authentication required for customer access')
+    throw new UnauthenticatedError(
+      'Authentication required for customer access',
+    )
   }
 
   const profile = await knex('profiles')
@@ -18,7 +20,9 @@ export const customerAuthorization = async (
     .first()
 
   if (!profile?.is_customer) {
-    throw new ForbiddenError('Access denied: Only customers can perform this action')
+    throw new UnauthorizedError(
+      'Access denied: Only customers can perform this action',
+    )
   }
 
   req.authorized = true

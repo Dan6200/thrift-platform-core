@@ -1,6 +1,6 @@
 import { knex } from '#src/db/index.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 import { Request, Response, NextFunction } from 'express'
 import { DeliveryInfo } from '../../types/delivery-info.js'
 

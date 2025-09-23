@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { knex } from '#src/db/index.js'
-import ForbiddenError from '#src/errors/forbidden.js'
+import UnauthorizedError from '#src/errors/unauthorized.js'
 
 export const checkDeliveryLimitLogic = async (
   req: Request,
@@ -16,7 +16,7 @@ export const checkDeliveryLimitLogic = async (
   const count = Number(countResult?.count || 0)
 
   if (count >= LIMIT) {
-    throw new ForbiddenError(`Cannot have more than ${LIMIT} addresses.`)
+    throw new UnauthorizedError(`Cannot have more than ${LIMIT} addresses.`)
   }
 
   next()
