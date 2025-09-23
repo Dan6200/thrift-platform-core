@@ -6,63 +6,61 @@ import { StatusCodes } from 'http-status-codes'
 export type TestRequestParams = {
   verb: 'get' | 'post' | 'delete' | 'put' | 'patch'
   statusCode: StatusCodes
-  validateTestResData?: (data: unknown, query?: { [k: string]: any }) => boolean
+  validateTestReqData?: ({
+    req,
+    params,
+    query,
+    body,
+  }: {
+    req: { userId: string }
+    params: string
+    query: { [k: string]: any }
+    body: any | any[]
+  }) => boolean
+  validateTestResData?: (data: unknown) => boolean
 }
-
-export type TestRequestParamsGeneral = {
-  validateTestReqData?: (data: unknown) => boolean
-} & TestRequestParams
 
 export type TestRequest = (
   testRequestParams: TestRequestParams,
-) => TestRequestInner
+) => TestRequestOuter
 
 export type TestRequestWithQParamsAndBody = (
   testRequestParams: TestRequestParams & {
     validateTestReqData: (data: unknown) => boolean
   },
-) => TestRequestInnerWQueryNBody
-
-export type TestRequestPublic = (
-  testRequestParams: TestRequestParams,
-) => TestRequestPublicInner
+) => TestRequestOuterWQueryNBody
 
 export type TestRequestWithQParams = (
   testRequestParams: TestRequestParams,
-) => TestRequestInnerWQuery
+) => TestRequestOuterWQuery
 
 export type TestRequestWithBody = (
   testRequestParams: TestRequestParams & {
     validateTestReqData: (data: unknown) => boolean
   },
-) => TestRequestInnerWBody
+) => TestRequestOuterWBody
 
-type TestRequestInnerWBody = <T>(
-  requestParams: RequestParams & { requestBody: T },
+type TestRequestOuterWBody = <T>(
+  requestParams: RequestParams & { body: T },
 ) => Promise<any>
 
-type TestRequestPublicInner = (
+type TestRequestOuterWQuery = (
   requestParams: RequestParams & {
     query: { [k: string]: any } | null
   },
 ) => Promise<any>
 
-type TestRequestInnerWQuery = (
-  requestParams: RequestParams & {
+type TestRequestOuterWQueryNBody = <T>(
+  requestParams: RequestParams & { body: T } & {
     query: { [k: string]: any } | null
   },
 ) => Promise<any>
 
-type TestRequestInnerWQueryNBody = <T>(
-  requestParams: RequestParams & { requestBody: T } & {
-    query: { [k: string]: any } | null
-  },
-) => Promise<any>
-
-type TestRequestInner = (requestParams: RequestParams) => Promise<any>
+type TestRequestOuter = (requestParams: RequestParams) => Promise<any>
 
 export type RequestParams = {
+  req: { userId: string }
   server: string
-  path: string
+  params: string
   token: string
 }

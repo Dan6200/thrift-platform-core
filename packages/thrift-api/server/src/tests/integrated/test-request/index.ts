@@ -1,37 +1,37 @@
 import chai from 'chai'
-import { TestRequestParamsGeneral } from './types.js'
+import { TestRequestParams } from './types.js'
 
 export default function ({
   verb,
   statusCode,
   validateTestResData,
   validateTestReqData,
-}: TestRequestParamsGeneral) {
+}: TestRequestParams) {
   return async function <T>({
     server,
-    path,
+    params,
     query,
     token,
-    requestBody,
+    body,
   }: {
     server: string
-    path: string
+    params: string
     token: string
     query?: { [k: string]: any }
-    requestBody?: T
+    body?: T
   }) {
     // Validate the request body first
-    if (requestBody && !validateTestReqData)
+    if (body && !validateTestReqData)
       throw new Error('Must validate test request data')
-    if (validateTestReqData && !validateTestReqData(requestBody))
+    if (validateTestReqData && !validateTestReqData({ params, body, query }))
       throw new Error('Invalid Test Request Data')
 
     // Make request
     const request = chai
       .request(server)
-      [verb](path)
+      [verb](params)
       .query(query ?? {})
-      .send(<object>requestBody)
+      .send(<object>body)
 
     process.env.DEBUG &&
       console.log('\nDEBUG: request ->' + JSON.stringify(request) + '\n')
@@ -49,7 +49,7 @@ export default function ({
     response.should.have.status(statusCode)
 
     // Validate the response body
-    if (validateTestResData && !validateTestResData(response.body, query)) {
+    if (validateTestResData && !validateTestResData(response.body)) {
       if (response.body.length === 0) {
         return []
       }
