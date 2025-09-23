@@ -1,10 +1,20 @@
 import {
-  DeliveryInfoRequestSchema,
+  DeliveryInfoCreateRequestSchema,
+  DeliveryInfoGetRequestSchema,
+  DeliveryInfoUpdateRequestSchema,
+  DeliveryInfoDeleteRequestSchema,
   DeliveryInfoResponseListSchema,
   DeliveryInfoResponseSchema,
   DeliveryInfoSchemaID,
-} from '#src/app-schema/delivery-info.js'
-import { DeliveryInfo, DeliveryInfoId } from '#src/types/delivery-info.js'
+} from '../../../app-schema/delivery-info.js'
+import {
+  DeliveryInfo,
+  DeliveryInfoId,
+  DeliveryInfoCreateRequest,
+  DeliveryInfoGetRequest,
+  DeliveryInfoUpdateRequest,
+  DeliveryInfoDeleteRequest,
+} from '../../../../types/delivery-info.js'
 
 export const isValidDeliveryInfoId = (
   data: unknown,
@@ -14,17 +24,41 @@ export const isValidDeliveryInfoId = (
   return !error
 }
 
-export const isValidDeliveryInfoRequest = (
+export const isValidDeliveryInfoCreateRequest = (
   data: unknown,
-): data is DeliveryInfo => {
-  const { error } = DeliveryInfoRequestSchema.validate(data)
+): data is DeliveryInfoCreateRequest => {
+  const { error } = DeliveryInfoCreateRequestSchema.validate(data)
+  error && console.error(error)
+  return !error
+}
+
+export const isValidDeliveryInfoGetRequest = (
+  data: unknown,
+): data is DeliveryInfoGetRequest => {
+  const { error } = DeliveryInfoGetRequestSchema.validate(data)
+  error && console.error(error)
+  return !error
+}
+
+export const isValidDeliveryInfoUpdateRequest = (
+  data: unknown,
+): data is DeliveryInfoUpdateRequest => {
+  const { error } = DeliveryInfoUpdateRequestSchema.validate(data)
+  error && console.error(error)
+  return !error
+}
+
+export const isValidDeliveryInfoDeleteRequest = (
+  data: unknown,
+): data is DeliveryInfoDeleteRequest => {
+  const { error } = DeliveryInfoDeleteRequestSchema.validate(data)
   error && console.error(error)
   return !error
 }
 
 export const isValidDeliveryInfoResponseList = (
   data: unknown,
-): data is DeliveryInfo => {
+): data is DeliveryInfo[] => {
   const { error } = DeliveryInfoResponseListSchema.validate(data)
   error && console.error(error)
   return !error
