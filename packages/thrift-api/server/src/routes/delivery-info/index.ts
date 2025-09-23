@@ -13,21 +13,18 @@ import {
   deleteDeliveryLogic,
 } from '../../logic/delivery-info/index.js' // Assuming an index.js will export all logic
 import {
-  DeliveryInfoRequestSchema,
+  DeliveryInfoCreateRequestSchema,
+  DeliveryInfoGetRequestSchema,
+  DeliveryInfoUpdateRequestSchema,
+  DeliveryInfoDeleteRequestSchema,
   DeliveryInfoResponseListSchema,
   DeliveryInfoResponseSchema,
   DeliveryInfoSchemaID,
 } from '../../app-schema/delivery-info.js'
 import { checkDeliveryLimitLogic } from '../../logic/delivery-info/check-delivery-limit.js'
-import Joi from 'joi'
 
 const router = express.Router()
 const { CREATED, OK, NO_CONTENT } = StatusCodes
-
-// Joi schema for delivery info ID in params
-const DeliveryInfoIdParamSchema = Joi.object({
-  deliveryInfoId: Joi.number().integer().positive().required(),
-})
 
 router
   .route('/')
@@ -35,7 +32,7 @@ router
     authenticateUser,
     customerAuthorization,
     checkDeliveryLimitLogic,
-    validate(Joi.object({ body: DeliveryInfoRequestSchema }), 'body'),
+    validate(DeliveryInfoCreateRequestSchema),
     createDeliveryLogic,
     validateDbResult(DeliveryInfoSchemaID),
     sendResponse(CREATED),
@@ -53,15 +50,15 @@ router
   .get(
     authenticateUser,
     customerAuthorization,
-    validate(Joi.object({ params: DeliveryInfoIdParamSchema }), 'params'),
+    validate(DeliveryInfoGetRequestSchema),
     getDeliveryLogic,
     validateDbResult(DeliveryInfoResponseSchema),
     sendResponse(OK),
   )
-  .put(
+  .patch(
     authenticateUser,
     customerAuthorization,
-    validate(Joi.object({ params: DeliveryInfoIdParamSchema, body: DeliveryInfoRequestSchema }), 'params'),
+    validate(DeliveryInfoUpdateRequestSchema),
     updateDeliveryLogic,
     validateDbResult(DeliveryInfoSchemaID),
     sendResponse(OK),
@@ -69,7 +66,7 @@ router
   .delete(
     authenticateUser,
     customerAuthorization,
-    validate(Joi.object({ params: DeliveryInfoIdParamSchema }), 'params'),
+    validate(DeliveryInfoDeleteRequestSchema),
     deleteDeliveryLogic,
     sendResponse(NO_CONTENT),
   )
