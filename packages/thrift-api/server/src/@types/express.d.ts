@@ -7,8 +7,8 @@ declare global {
       validatedParams?: Record<string, string>
       validatedQueryParams?: Record<string, any>
       validatedBody?: Record<string, any>
-      dbResult?: any[] // This will hold the result from the DB query middleware
-      validatedResponse?: any[] // This will hold the validated response data before sending
+      dbResult?: any | any[] // This will hold the result from the DB query middleware
+      validatedResponse?: any | any[] // This will hold the validated response data before sending
     }
   }
 }
