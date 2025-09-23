@@ -27,7 +27,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   let customerId: string
   let vendorToken: string
   let vendorId: string
-  let storeId: string
+  let storeId: number
   let productId: number
   let variantId: number
   let orderId: number

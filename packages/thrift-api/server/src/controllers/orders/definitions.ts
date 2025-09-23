@@ -117,7 +117,7 @@ export const createOrderQuery = async ({
     return { ...createdOrder, items: fetchedOrderItems }
   } catch (error) {
     await trx.rollback()
-    throw new InternalServerError(error.message)
+    throw new InternalServerError(error.toString())
   }
 }
 
