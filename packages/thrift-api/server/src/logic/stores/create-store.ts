@@ -1,7 +1,4 @@
 import { knex } from '#src/db/index.js'
-import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
-import NotFoundError from '#src/errors/not-found.js'
 import { Request, Response, NextFunction } from 'express'
 import StoreData from '../../types/store-data.js'
 
@@ -10,9 +7,6 @@ export const createStoreLogic = async (
   _res: Response,
   next: NextFunction,
 ) => {
-  // Authentication and vendor check are handled by preceding middlewares
-  // Store limit check is handled by preceding middleware
-
   const storeData: StoreData = req.validatedBody as StoreData
 
   const { store_address, pages, ...restOfStoreData } = storeData
