@@ -10,9 +10,6 @@ chai.use(chaiHttp).should()
 
 export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
   // Set server url
-  const server = process.env.SERVER!
-  const path = '/v1/me'
-  let token: string
   let userId: string
 
   before(async function () {
@@ -20,12 +17,7 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
   })
 
   it('should fail to get the user profile without sign-in', () =>
-    testGetProfileWithoutSignIn({
-      server,
-      path,
-      token,
-      query: { public: true },
-    }))
+    testGetProfileWithoutSignIn())
 
   after(async () => await deleteUserForTesting(userId))
 }
