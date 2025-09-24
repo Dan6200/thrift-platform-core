@@ -31,17 +31,17 @@ router
   .route('/')
   .post(
     authenticateUser,
+    validate(StoreCreateRequestSchema),
     vendorAuthorization,
     checkStoreLimit,
-    validate(StoreCreateRequestSchema),
     createStoreLogic,
     validateDbResult(StoreDataResponseSchema),
     sendResponse(CREATED),
   )
   .get(
     authenticateUser,
-    vendorAuthorization,
     validate(StoreGetAllRequestSchema),
+    vendorAuthorization,
     getAllStoresLogic,
     validateDbResult(StoreDataResponseListSchema),
     sendResponse(OK),
@@ -51,24 +51,24 @@ router
   .route('/:storeId')
   .get(
     authenticateUser,
-    hasStoreAccess(['admin', 'editor', 'viewer']),
     validate(StoreGetRequestSchema),
+    hasStoreAccess(['admin', 'editor', 'viewer']),
     getStoreLogic,
     validateDbResult(StoreDataResponseSchema),
     sendResponse(OK),
   )
-  .put(
+  .patch(
     authenticateUser,
-    hasStoreAccess(['admin', 'editor']),
     validate(StoreUpdateRequestSchema),
+    hasStoreAccess(['admin', 'editor']),
     updateStoreLogic,
     validateDbResult(StoreDataResponseSchema),
     sendResponse(OK),
   )
   .delete(
     authenticateUser,
-    hasStoreAccess(['admin']),
     validate(StoreDeleteRequestSchema),
+    hasStoreAccess(['admin']),
     deleteStoreLogic,
     sendResponse(NO_CONTENT),
   )
