@@ -34,7 +34,7 @@ router
     checkDeliveryLimitLogic,
     validate(DeliveryInfoCreateRequestSchema),
     createDeliveryLogic,
-    validateDbResult(DeliveryInfoSchemaID),
+    validateDbResult(DeliveryInfoResponseSchema),
     sendResponse(CREATED),
   )
   .get(
