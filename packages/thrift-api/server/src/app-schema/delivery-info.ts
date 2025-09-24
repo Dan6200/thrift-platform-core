@@ -22,6 +22,8 @@ export const DeliveryInfoDataSchema = joi.object({
 // Schemas for request validation middleware
 export const DeliveryInfoCreateRequestSchema = joi.object({
   body: DeliveryInfoDataSchema.required(),
+  query: joi.object().optional(),
+  params: joi.object().optional(),
 })
 
 export const DeliveryInfoGetRequestSchema = joi.object({
@@ -30,6 +32,8 @@ export const DeliveryInfoGetRequestSchema = joi.object({
       deliveryInfoId: joi.number().integer().positive().required(),
     })
     .required(),
+  query: joi.object().optional(),
+  body: joi.object().optional(),
 })
 
 export const DeliveryInfoUpdateRequestSchema = joi.object({
@@ -39,6 +43,7 @@ export const DeliveryInfoUpdateRequestSchema = joi.object({
     })
     .required(),
   body: DeliveryInfoDataSchema.required(),
+  query: joi.object().optional(),
 })
 
 export const DeliveryInfoDeleteRequestSchema = joi.object({
@@ -47,6 +52,8 @@ export const DeliveryInfoDeleteRequestSchema = joi.object({
       deliveryInfoId: joi.number().integer().positive().required(),
     })
     .required(),
+  query: joi.object().optional(),
+  body: joi.object().optional(),
 })
 
 // Schemas for response validation middleware
