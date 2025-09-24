@@ -72,18 +72,16 @@ export const getStoreLogic = async (
     ...coreStoreData
   } = store
 
-  req.dbResult = [
-    {
-      ...coreStoreData,
-      store_address: {
-        address_line_1,
-        address_line_2,
-        city,
-        state,
-        zip_postal_code,
-        country,
-      },
+  req.dbResult = {
+    ...coreStoreData,
+    store_address: {
+      address_line_1,
+      address_line_2,
+      city,
+      state,
+      zip_postal_code,
+      country,
     },
-  ]
+  }
   next()
 }
