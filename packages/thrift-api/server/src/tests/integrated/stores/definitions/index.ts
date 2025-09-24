@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
-import { TestRequest, TestRequestWithBody, RequestParams } from '../../test-request/types.js'
+import { TestRequest, RequestParams } from '../../test-request/types.js'
 import {
   StoreCreateRequestSchema,
   StoreGetAllRequestSchema,
@@ -9,7 +9,6 @@ import {
   StoreDeleteRequestSchema,
   StoreDataResponseListSchema,
   StoreDataResponseSchema,
-  StoreIDSchema,
 } from '#src/app-schema/stores.js'
 import { validateTestData } from '../../helpers/test-validators.js'
 
@@ -51,8 +50,6 @@ const validateStoreDeleteReq = (data: unknown) =>
   )
 
 // Response Validators
-const validateStoreIdRes = (data: unknown) =>
-  validateTestData(StoreIDSchema, data, 'Store ID Validation Error')
 const validateStoreDataListRes = (data: unknown) =>
   validateTestData(
     StoreDataResponseListSchema,
@@ -66,22 +63,19 @@ const validateStoreDataRes = (data: unknown) =>
     'Store Data Response Validation Error',
   )
 
-export const testCreateStore = (args: {
-  token: string
-  body: any
-}) => {
+export const testCreateStore = (args: { token: string; body: any }) => {
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
     query: {},
     params: {},
   }
-  return (testRequest as TestRequestWithBody)({
+  return (testRequest as TestRequest)({
     verb: 'post',
     statusCode: CREATED,
     path: storePathBase,
     validateTestReqData: validateStoreCreateReq,
-    validateTestResData: validateStoreIdRes,
+    validateTestResData: validateStoreDataRes,
   })(requestParams)
 }
 
@@ -137,12 +131,12 @@ export const testUpdateStore = (args: {
     params: args.params,
     query: {},
   }
-  return (testRequest as TestRequestWithBody)({
+  return (testRequest as TestRequest)({
     statusCode: OK,
     verb: 'put',
     path,
     validateTestReqData: validateStoreUpdateReq,
-    validateTestResData: validateStoreIdRes,
+    validateTestResData: validateStoreDataRes,
   })(requestParams)
 }
 
@@ -196,7 +190,7 @@ export const testCreateStoreWithoutVendorAccount = (args: {
     query: {},
     params: {},
   }
-  return (testRequest as TestRequestWithBody)({
+  return (testRequest as TestRequest)({
     verb: 'post',
     statusCode: UNAUTHORIZED,
     path: storePathBase,
@@ -216,7 +210,7 @@ export const testUpdateStoreWithoutVendorAccount = (args: {
     params: args.params,
     query: {},
   }
-  return (testRequest as TestRequestWithBody)({
+  return (testRequest as TestRequest)({
     statusCode: UNAUTHORIZED,
     verb: 'put',
     path,
@@ -242,3 +236,4 @@ export const testDeleteStoreWithoutVendorAccount = (args: {
     validateTestReqData: validateStoreDeleteReq,
   })(requestParams)
 }
+

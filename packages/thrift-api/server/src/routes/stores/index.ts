@@ -22,7 +22,6 @@ import {
   StoreDeleteRequestSchema,
   StoreDataResponseListSchema,
   StoreDataResponseSchema,
-  StoreIDSchema,
 } from '../../app-schema/stores.js'
 
 const router = express.Router()
@@ -36,7 +35,7 @@ router
     checkStoreLimit,
     validate(StoreCreateRequestSchema),
     createStoreLogic,
-    validateDbResult(StoreIDSchema),
+    validateDbResult(StoreDataResponseSchema),
     sendResponse(CREATED),
   )
   .get(
@@ -63,7 +62,7 @@ router
     hasStoreAccess(['admin', 'editor']),
     validate(StoreUpdateRequestSchema),
     updateStoreLogic,
-    validateDbResult(StoreIDSchema),
+    validateDbResult(StoreDataResponseSchema),
     sendResponse(OK),
   )
   .delete(
