@@ -1,6 +1,10 @@
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
-import { TestRequestWithBody, TestRequest } from '../../test-request/types.js'
+import {
+  TestRequestWithBody,
+  TestRequest,
+  RequestParams,
+} from '../../test-request/types.js'
 import {
   isValidDeliveryInfoId,
   isValidDeliveryInfoCreateRequest,
@@ -13,51 +17,130 @@ import {
 
 const { CREATED, OK, NOT_FOUND } = StatusCodes
 
-const testCreateDelivery = (testRequest as TestRequestWithBody)({
-  verb: 'post',
-  statusCode: CREATED,
-  validateTestReqData: isValidDeliveryInfoCreateRequest,
-  validateTestResData: isValidDeliveryInfoResponse,
-})
+const deliveryPathBase = '/v1/delivery-info'
+const buildDeliveryInfoPath = (deliveryInfoId: number) =>
+  `${deliveryPathBase}/${deliveryInfoId}`
 
-const testGetAllDelivery = (testRequest as TestRequest)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: isValidDeliveryInfoResponseList,
-})
-
-const testGetDelivery = (testRequest as TestRequest)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestReqData: isValidDeliveryInfoGetRequest,
-  validateTestResData: isValidDeliveryInfoResponse,
-})
-
-const testUpdateDelivery = (testRequest as TestRequestWithBody)({
-  statusCode: OK,
-  verb: 'put',
-  validateTestReqData: isValidDeliveryInfoUpdateRequest,
-  validateTestResData: isValidDeliveryInfoId,
-})
-
-const testDeleteDelivery = (testRequest as TestRequest)({
-  statusCode: OK,
-  verb: 'delete',
-  validateTestReqData: isValidDeliveryInfoDeleteRequest,
-  validateTestResData: isValidDeliveryInfoId,
-})
-
-const testGetNonExistentDelivery = (testRequest as TestRequest)({
-  verb: 'get',
-  statusCode: NOT_FOUND,
-  validateTestResData: null,
-})
-
-export {
-  testCreateDelivery,
-  testGetAllDelivery,
-  testGetDelivery,
-  testUpdateDelivery,
-  testDeleteDelivery,
-  testGetNonExistentDelivery,
+export const testCreateDelivery = (args: { token: string; body: any }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: args.body,
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequestWithBody)({
+    verb: 'post',
+    statusCode: CREATED,
+    path: deliveryPathBase,
+    validateTestReqData: isValidDeliveryInfoCreateRequest,
+    validateTestResData: isValidDeliveryInfoId,
+  })({
+    ...requestParams,
+  })
 }
+
+export const testGetAllDelivery = (args: { token: string }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path: deliveryPathBase,
+    validateTestResData: isValidDeliveryInfoResponseList,
+  })({
+    ...requestParams,
+  })
+}
+
+export const testGetDelivery = (args: {
+  token: string
+  params: { deliveryInfoId: number }
+}) => {
+  const path = buildDeliveryInfoPath(args.params.deliveryInfoId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    params: args.params,
+    body: {},
+    query: {},
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestReqData: isValidDeliveryInfoGetRequest,
+    validateTestResData: isValidDeliveryInfoResponse,
+  })({
+    ...requestParams,
+  })
+}
+
+export const testUpdateDelivery = (args: {
+  token: string
+  params: { deliveryInfoId: number }
+  body: any
+}) => {
+  const path = buildDeliveryInfoPath(args.params.deliveryInfoId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: args.body,
+    params: args.params,
+    query: {},
+  }
+  return (testRequest as TestRequestWithBody)({
+    statusCode: OK,
+    verb: 'put',
+    path,
+    validateTestReqData: isValidDeliveryInfoUpdateRequest,
+    validateTestResData: isValidDeliveryInfoId,
+  })({
+    ...requestParams,
+  })
+}
+
+export const testDeleteDelivery = (args: {
+  token: string
+  params: { deliveryInfoId: number }
+}) => {
+  const path = buildDeliveryInfoPath(args.params.deliveryInfoId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    params: args.params,
+    body: {},
+    query: {},
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'delete',
+    path,
+    validateTestReqData: isValidDeliveryInfoDeleteRequest,
+    validateTestResData: isValidDeliveryInfoId,
+  })({
+    ...requestParams,
+  })
+}
+
+export const testGetNonExistentDelivery = (args: {
+  token: string
+  params: { deliveryInfoId: number }
+}) => {
+  const path = buildDeliveryInfoPath(args.params.deliveryInfoId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    params: args.params,
+    body: {},
+    query: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: NOT_FOUND,
+    path,
+    validateTestResData: null,
+  })({
+    ...requestParams,
+  })
+}
+

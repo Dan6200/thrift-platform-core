@@ -31,8 +31,6 @@ export default function ({
     token = await signInForTesting(userInfo)
   })
 
-  const deliveryPath = '/v1/delivery-info'
-
   const deliveryIds: number[] = []
 
   it("should have a customer's account", () =>
