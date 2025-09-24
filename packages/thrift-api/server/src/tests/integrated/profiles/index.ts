@@ -22,6 +22,7 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
     it("should get the user's profile", () =>
       testGetProfile({
         token,
+        expectedData: userInfo,
       }))
 
     after(async () => await deleteUserForTesting(userId))

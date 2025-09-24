@@ -5,7 +5,7 @@ import { TestRequest, RequestParams } from '../test-request/types.js'
 import testRequest from '../test-request/index.js'
 import { ProfileResponseSchema } from '#src/app-schema/profiles.js'
 import { validateTestData } from '../helpers/test-validators.js'
-import { ProfileData } from '#src/types/profile/index.js'
+import { ProfileData, ProfileRequestData } from '#src/types/profile/index.js'
 
 chai.use(chaiHttp).should()
 
@@ -20,25 +20,35 @@ const validateProfileResponse = (data: unknown) =>
     'User Profile Response Validation Error',
   )
 
-const hasCustomerAccount = (data: unknown) => {
-  validateProfileResponse(data)
-  ;(data as ProfileData).is_customer.should.be.true
+const compareProfileData = (actual: any, expected: ProfileRequestData) => {
+  validateProfileResponse(actual)
+  const actualProfile = actual[0] as ProfileData
+
+  actualProfile.first_name.should.equal(expected.first_name)
+  actualProfile.last_name.should.equal(expected.last_name)
+  actualProfile.email.should.equal(expected.email)
+  actualProfile.phone.should.equal(expected.phone)
+  actualProfile.dob.should.equal(expected.dob)
+  actualProfile.country.should.equal(expected.country)
+  actualProfile.is_customer.should.equal(expected.is_customer)
+  actualProfile.is_vendor.should.equal(expected.is_vendor)
+
+  // Assert that server-generated fields exist and are of the correct type
+  actualProfile.should.have.property('id').that.is.a('string')
+  actualProfile.should.have.property('created_at').that.is.a('string')
+  actualProfile.should.have.property('updated_at').that.is.a('string')
+  // deleted_at is optional
+  if (actualProfile.deleted_at !== undefined) {
+    actualProfile.should.have.property('deleted_at').that.is.a('string')
+  }
+
   return true
 }
 
-const hasVendorAccount = (data: unknown) => {
-  validateProfileResponse(data)
-  ;(data as ProfileData).is_vendor.should.be.true
-  return true
-}
-
-const hasNoVendorAccount = (data: unknown) => {
-  validateProfileResponse(data)
-  ;(data as ProfileData).is_vendor.should.be.false
-  return true
-}
-
-export const testGetProfile = (args: { token: string }) => {
+export const testGetProfile = (args: {
+  token: string
+  expectedData: ProfileRequestData
+}) => {
   const requestParams: RequestParams = {
     token: args.token,
   }
@@ -47,10 +57,16 @@ export const testGetProfile = (args: { token: string }) => {
     statusCode: OK,
     path: profilePath,
     validateTestResData: validateProfileResponse,
+    compareData: (actual, expected) =>
+      compareProfileData(actual, expected as ProfileRequestData),
+    expectedData: args.expectedData,
   })(requestParams)
 }
 
-export const testHasCustomerAccount = (args: { token: string }) => {
+export const testHasCustomerAccount = (args: {
+  token: string
+  expectedData: ProfileRequestData
+}) => {
   const requestParams: RequestParams = {
     token: args.token,
   }
@@ -58,11 +74,17 @@ export const testHasCustomerAccount = (args: { token: string }) => {
     verb: 'get',
     statusCode: OK,
     path: profilePath,
-    validateTestResData: hasCustomerAccount,
+    validateTestResData: validateProfileResponse,
+    compareData: (actual, expected) =>
+      compareProfileData(actual, expected as ProfileRequestData),
+    expectedData: args.expectedData,
   })(requestParams)
 }
 
-export const testHasVendorAccount = (args: { token: string }) => {
+export const testHasVendorAccount = (args: {
+  token: string
+  expectedData: ProfileRequestData
+}) => {
   const requestParams: RequestParams = {
     token: args.token,
   }
@@ -70,11 +92,17 @@ export const testHasVendorAccount = (args: { token: string }) => {
     verb: 'get',
     statusCode: OK,
     path: profilePath,
-    validateTestResData: hasVendorAccount,
+    validateTestResData: validateProfileResponse,
+    compareData: (actual, expected) =>
+      compareProfileData(actual, expected as ProfileRequestData),
+    expectedData: args.expectedData,
   })(requestParams)
 }
 
-export const testHasNoVendorAccount = (args: { token: string }) => {
+export const testHasNoVendorAccount = (args: {
+  token: string
+  expectedData: ProfileRequestData
+}) => {
   const requestParams: RequestParams = {
     token: args.token,
   }
@@ -82,7 +110,10 @@ export const testHasNoVendorAccount = (args: { token: string }) => {
     verb: 'get',
     statusCode: OK,
     path: profilePath,
-    validateTestResData: hasNoVendorAccount,
+    validateTestResData: validateProfileResponse,
+    compareData: (actual, expected) =>
+      compareProfileData(actual, expected as ProfileRequestData),
+    expectedData: args.expectedData,
   })(requestParams)
 }
 
@@ -99,6 +130,6 @@ export const testHasCustomerAccountWithoutSignIn = () => {
     verb: 'get',
     statusCode: OK,
     path: profilePath,
-    validateTestResData: hasCustomerAccount,
+    validateTestResData: validateProfileResponse,
   })({})
 }
