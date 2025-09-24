@@ -2,7 +2,6 @@ import chai from 'chai'
 import chaiHttp from 'chai-http'
 import { StatusCodes } from 'http-status-codes'
 import { TestRequest, RequestParams } from '../test-request/types.js'
-import { isValidProfileResponseData } from '../helpers/type-guards/profile.js'
 import testRequest from '../test-request/index.js'
 import { ProfileResponseSchema } from '#src/app-schema/profiles.js'
 import { validateTestData } from '../helpers/test-validators.js'
@@ -14,33 +13,28 @@ const { OK, UNAUTHORIZED } = StatusCodes
 
 const profilePath = '/v1/me'
 
-const hasCustomerAccount = (data: unknown) => {
+const validateProfileResponse = (data: unknown) =>
   validateTestData(
     ProfileResponseSchema,
     data,
     'User Profile Response Validation Error',
-  ),
-    (data as ProfileData).is_customer.should.be.true
+  )
+
+const hasCustomerAccount = (data: unknown) => {
+  validateProfileResponse(data)
+  ;(data as ProfileData).is_customer.should.be.true
   return true
 }
 
 const hasVendorAccount = (data: unknown) => {
-  validateTestData(
-    ProfileResponseSchema,
-    data,
-    'User Profile Response Validation Error',
-  ),
-    (data as ProfileData).is_vendor.should.be.true
+  validateProfileResponse(data)
+  ;(data as ProfileData).is_vendor.should.be.true
   return true
 }
 
 const hasNoVendorAccount = (data: unknown) => {
-  validateTestData(
-    ProfileResponseSchema,
-    data,
-    'User Profile Response Validation Error',
-  ),
-    (data as ProfileData).is_vendor.should.be.false
+  validateProfileResponse(data)
+  ;(data as ProfileData).is_vendor.should.be.false
   return true
 }
 
@@ -52,7 +46,7 @@ export const testGetProfile = (args: { token: string }) => {
     verb: 'get',
     statusCode: OK,
     path: profilePath,
-    validateTestResData: isValidProfileResponseData,
+    validateTestResData: validateProfileResponse,
   })(requestParams)
 }
 
@@ -108,4 +102,3 @@ export const testHasCustomerAccountWithoutSignIn = () => {
     validateTestResData: hasCustomerAccount,
   })({})
 }
-
