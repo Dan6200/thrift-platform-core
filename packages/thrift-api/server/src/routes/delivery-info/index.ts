@@ -1,17 +1,17 @@
-import express from 'express'
-import { StatusCodes } from 'http-status-codes'
-import { validate } from '../../middleware/request-validation.js'
-import { validateDbResult } from '../../middleware/db-result-validation.js'
-import { sendResponse } from '../../middleware/send-response.js'
-import authenticateUser from '../../middleware/authentication.js'
-import { customerAuthorization } from '../../middleware/customer-authorization.js'
+import express from "express";
+import { StatusCodes } from "http-status-codes";
+import { validate } from "../request-validation.js";
+import { validateDbResult } from "../db-result-validation.js";
+import { sendResponse } from "../send-response.js";
+import authenticateUser from "../authentication.js";
+import { customerAuthorization } from "../authorization/customer-authorization.js";
 import {
   createDeliveryLogic,
   getAllDeliveriesLogic,
   getDeliveryLogic,
   updateDeliveryLogic,
   deleteDeliveryLogic,
-} from '../../logic/delivery-info/index.js' // Assuming an index.js will export all logic
+} from "../logic/delivery-info/index.js";
 import {
   DeliveryInfoCreateRequestSchema,
   DeliveryInfoGetRequestSchema,
@@ -20,14 +20,14 @@ import {
   DeliveryInfoResponseListSchema,
   DeliveryInfoResponseSchema,
   DeliveryInfoSchemaID,
-} from '../../app-schema/delivery-info.js'
-import { checkDeliveryLimitLogic } from '../../logic/delivery-info/check-delivery-limit.js'
+} from "../app-schema/delivery-info.js";
+import { checkDeliveryLimitLogic } from "../authorization/check-delivery-limit.js";
 
-const router = express.Router()
-const { CREATED, OK, NO_CONTENT } = StatusCodes
+const router = express.Router();
+const { CREATED, OK, NO_CONTENT } = StatusCodes;
 
 router
-  .route('/')
+  .route("/")
   .post(
     authenticateUser,
     customerAuthorization,
@@ -43,10 +43,10 @@ router
     getAllDeliveriesLogic,
     validateDbResult(DeliveryInfoResponseListSchema),
     sendResponse(OK),
-  )
+  );
 
 router
-  .route('/:deliveryInfoId')
+  .route("/:deliveryInfoId")
   .get(
     authenticateUser,
     customerAuthorization,
@@ -69,6 +69,6 @@ router
     validate(DeliveryInfoDeleteRequestSchema),
     deleteDeliveryLogic,
     sendResponse(NO_CONTENT),
-  )
+  );
 
-export default router
+export default router;
