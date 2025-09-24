@@ -43,7 +43,7 @@ export default function ({
     // Create stores using store information
     assert(!!stores.length)
     for (const store of stores) {
-      const { store_id } = await testCreateStore({
+      const [{ store_id }] = await testCreateStore({
         token,
         body: store,
       })
@@ -100,4 +100,3 @@ export default function ({
 
   after(async () => deleteUserForTesting(userId))
 }
-
