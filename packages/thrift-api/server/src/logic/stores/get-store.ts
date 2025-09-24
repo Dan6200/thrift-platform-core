@@ -8,9 +8,9 @@ export const getStoreLogic = async (
   _res: Response,
   next: NextFunction,
 ) => {
-  if (!req.validatedParams) throw new BadRequestError('No route parameters provided')
+  if (!req.validatedParams)
+    throw new BadRequestError('No valid route parameters provided')
   const { storeId } = req.validatedParams
-  if (!storeId) throw new BadRequestError('Need Store ID to retrieve store')
 
   const { vendor_id } = req.validatedQueryParams || {}
 

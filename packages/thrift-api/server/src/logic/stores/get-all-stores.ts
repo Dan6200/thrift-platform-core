@@ -1,12 +1,15 @@
 import { knex } from '#src/db/index.js'
 import { Request, Response, NextFunction } from 'express'
 import StoreData from '../../types/store-data.js'
+import BadRequestError from '#src/errors/bad-request.js'
 
 export const getAllStoresLogic = async (
   req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
+  if (!req.validatedQueryParams)
+    throw new BadRequestError('No valid query parameters provided')
   const { vendor_id } = req.validatedQueryParams || {}
 
   const query = knex<StoreData>('stores')
