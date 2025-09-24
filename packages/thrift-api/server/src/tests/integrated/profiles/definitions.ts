@@ -42,9 +42,6 @@ const hasNoVendorAccount = (data: unknown) => {
 export const testGetProfile = (args: { token: string }) => {
   const requestParams: RequestParams = {
     token: args.token,
-    body: {},
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     verb: 'get',
@@ -57,9 +54,6 @@ export const testGetProfile = (args: { token: string }) => {
 export const testHasCustomerAccount = (args: { token: string }) => {
   const requestParams: RequestParams = {
     token: args.token,
-    body: {},
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     verb: 'get',
@@ -72,9 +66,6 @@ export const testHasCustomerAccount = (args: { token: string }) => {
 export const testHasNoCustomerAccount = (args: { token: string }) => {
   const requestParams: RequestParams = {
     token: args.token,
-    body: {},
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     verb: 'get',
@@ -87,9 +78,6 @@ export const testHasNoCustomerAccount = (args: { token: string }) => {
 export const testHasVendorAccount = (args: { token: string }) => {
   const requestParams: RequestParams = {
     token: args.token,
-    body: {},
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     verb: 'get',
@@ -102,9 +90,6 @@ export const testHasVendorAccount = (args: { token: string }) => {
 export const testHasNoVendorAccount = (args: { token: string }) => {
   const requestParams: RequestParams = {
     token: args.token,
-    body: {},
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     verb: 'get',
@@ -114,31 +99,20 @@ export const testHasNoVendorAccount = (args: { token: string }) => {
   })(requestParams)
 }
 
-export const testGetProfileWithoutSignIn = (args: {}) => {
-  const requestParams: RequestParams = {
-    token: '',
-    body: {},
-    query: {},
-    params: {},
-  }
+export const testGetProfileWithoutSignIn = () => {
   return (testRequest as TestRequest)({
     verb: 'get',
     statusCode: UNAUTHORIZED,
     path: profilePath,
-  })(requestParams)
+  })({})
 }
 
-export const testHasCustomerAccountWithoutSignIn = (args: {}) => {
-  const requestParams: RequestParams = {
-    token: '',
-    body: {},
-    query: {},
-    params: {},
-  }
+export const testHasCustomerAccountWithoutSignIn = () => {
   return (testRequest as TestRequest)({
     verb: 'get',
     statusCode: OK,
     path: profilePath,
     validateTestResData: hasCustomerAccount,
-  })(requestParams)
+  })({})
 }
+
