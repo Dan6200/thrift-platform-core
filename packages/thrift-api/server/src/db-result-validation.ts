@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import Joi from 'joi'
-import InternalServerError from '../errors/internal-server.js'
+import InternalServerError from './errors/internal-server.js'
 import logger from '#src/utils/logger.js'
 import NotFoundError from '#src/errors/not-found.js'
 

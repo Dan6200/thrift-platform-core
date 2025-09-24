@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import InternalServerError from '../errors/internal-server.js'
+import InternalServerError from './errors/internal-server.js'
 
 export const sendResponse = (statusCode: StatusCodes) => {
   return (req: Request, res: Response, _next: NextFunction) => {

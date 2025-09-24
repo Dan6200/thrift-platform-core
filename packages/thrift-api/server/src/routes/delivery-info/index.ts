@@ -1,17 +1,17 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { validate } from '../request-validation.js'
-import { validateDbResult } from '../db-result-validation.js'
-import { sendResponse } from '../send-response.js'
-import authenticateUser from '../authentication.js'
-import { customerAuthorization } from '../authorization/customer-authorization.js'
+import { validate } from '../../request-validation.js'
+import { validateDbResult } from '../../db-result-validation.js'
+import { sendResponse } from '../../send-response.js'
+import authenticateUser from '../../authentication.js'
+import { customerAuthorization } from '../../authorization/customer-authorization.js'
 import {
   createDeliveryLogic,
   getAllDeliveriesLogic,
   getDeliveryLogic,
   updateDeliveryLogic,
   deleteDeliveryLogic,
-} from '../logic/delivery-info/index.js'
+} from '../../logic/delivery-info/index.js'
 import {
   DeliveryInfoCreateRequestSchema,
   DeliveryInfoGetRequestSchema,
@@ -19,8 +19,8 @@ import {
   DeliveryInfoDeleteRequestSchema,
   DeliveryInfoResponseListSchema,
   DeliveryInfoResponseSchema,
-} from '../app-schema/delivery-info.js'
-import { checkDeliveryLimitLogic } from '../authorization/check-delivery-limit.js'
+} from '../../app-schema/delivery-info.js'
+import { checkDeliveryLimitLogic } from '../../authorization/check-delivery-limit.js'
 
 const router = express.Router()
 const { CREATED, OK, NO_CONTENT } = StatusCodes

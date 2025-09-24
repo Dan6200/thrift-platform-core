@@ -1,19 +1,19 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { validate } from '../request-validation.js'
-import { validateDbResult } from '../db-result-validation.js'
-import { sendResponse } from '../send-response.js'
-import authenticateUser from '../authentication.js'
-import { vendorAuthorization } from '../authorization/vendor-authorization.js'
-import { checkStoreLimit } from '../authorization/check-store-limit.js'
-import { hasStoreAccess } from '../authorization/has-store-access.js'
+import { validate } from '../../request-validation.js'
+import { validateDbResult } from '../../db-result-validation.js'
+import { sendResponse } from '../../send-response.js'
+import authenticateUser from '../../authentication.js'
+import { vendorAuthorization } from '../../authorization/vendor-authorization.js'
+import { checkStoreLimit } from '../../authorization/check-store-limit.js'
+import { hasStoreAccess } from '../../authorization/has-store-access.js'
 import {
   createStoreLogic,
   getAllStoresLogic,
   getStoreLogic,
   updateStoreLogic,
   deleteStoreLogic,
-} from '../logic/stores/index.js'
+} from '../../logic/stores/index.js'
 import {
   StoreCreateRequestSchema,
   StoreGetAllRequestSchema,
@@ -23,7 +23,7 @@ import {
   StoreDataResponseListSchema,
   StoreDataResponseSchema,
   StoreIDSchema,
-} from '../app-schema/stores.js'
+} from '../../app-schema/stores.js'
 
 const router = express.Router()
 const { CREATED, OK, NO_CONTENT } = StatusCodes

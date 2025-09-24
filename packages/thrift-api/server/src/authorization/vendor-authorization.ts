@@ -3,7 +3,7 @@ import { knex } from '#src/db/index.js'
 import UnauthenticatedError from '../errors/unauthenticated.js'
 import UnauthorizedError from '../errors/unauthorized.js'
 
-export const isVendor = async (
+export const vendorAuthorization = async (
   req: Request,
   _res: Response,
   next: NextFunction,
@@ -18,7 +18,9 @@ export const isVendor = async (
     .first()
 
   if (!profile?.is_vendor) {
-    throw new UnauthorizedError('Access denied: Only vendors can perform this action')
+    throw new UnauthorizedError(
+      'Access denied: Only vendors can perform this action',
+    )
   }
 
   req.authorized = true

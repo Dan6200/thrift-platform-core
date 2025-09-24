@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import Joi from 'joi'
-import BadRequestError from '../errors/bad-request.js'
+import BadRequestError from './errors/bad-request.js'
 import logger from '#src/utils/logger.js'
 
 // A middleware factory to validate different parts of the request
