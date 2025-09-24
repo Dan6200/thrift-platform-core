@@ -1,13 +1,15 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
 import { StatusCodes } from 'http-status-codes'
-import { TestRequest, TestRequestWithQParams } from '../test-request/types.js'
+import { TestRequest, RequestParams } from '../test-request/types.js'
 import { isValidProfileResponseData } from '../helpers/type-guards/profile.js'
 import testRequest from '../test-request/index.js'
 
 chai.use(chaiHttp).should()
 
 const { OK, UNAUTHORIZED } = StatusCodes
+
+const profilePath = '/v1/me'
 
 const hasNoCustomerAccount = (data: unknown) => {
   const isValidData = isValidProfileResponseData(data)
@@ -37,53 +39,106 @@ const hasNoVendorAccount = (data: unknown) => {
   return true
 }
 
-const testRequestBase = <TestRequest>testRequest
-export const testGetProfile = testRequestBase({
-  verb: 'get',
-  statusCode: OK,
-  validateTestResData: isValidProfileResponseData,
-})
+export const testGetProfile = (args: { token: string }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path: profilePath,
+    validateTestResData: isValidProfileResponseData,
+  })(requestParams)
+}
 
-export const testHasCustomerAccount = testRequestBase({
-  verb: 'get',
-  statusCode: OK,
-  validateTestResData: hasCustomerAccount,
-})
+export const testHasCustomerAccount = (args: { token: string }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path: profilePath,
+    validateTestResData: hasCustomerAccount,
+  })(requestParams)
+}
 
-export const testHasNoCustomerAccount = testRequestBase({
-  verb: 'get',
-  statusCode: OK,
-  validateTestResData: hasNoCustomerAccount,
-})
+export const testHasNoCustomerAccount = (args: { token: string }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path: profilePath,
+    validateTestResData: hasNoCustomerAccount,
+  })(requestParams)
+}
 
-export const testHasVendorAccount = testRequestBase({
-  verb: 'get',
-  statusCode: OK,
-  validateTestResData: hasVendorAccount,
-})
+export const testHasVendorAccount = (args: { token: string }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path: profilePath,
+    validateTestResData: hasVendorAccount,
+  })(requestParams)
+}
 
-export const testHasNoVendorAccount = testRequestBase({
-  verb: 'get',
-  statusCode: OK,
-  validateTestResData: hasNoVendorAccount,
-})
+export const testHasNoVendorAccount = (args: { token: string }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path: profilePath,
+    validateTestResData: hasNoVendorAccount,
+  })(requestParams)
+}
 
-const testRequestWithoutSignIn = <TestRequestWithQParams>testRequest
-export const testGetProfileWithoutSignIn = testRequestWithoutSignIn({
-  verb: 'get',
-  statusCode: UNAUTHORIZED,
-})
+export const testGetProfileWithoutSignIn = (args: {}) => {
+  const requestParams: RequestParams = {
+    token: '',
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: UNAUTHORIZED,
+    path: profilePath,
+  })(requestParams)
+}
 
-export const testHasCustomerAccountWithoutSignIn = testRequestWithoutSignIn({
-  verb: 'get',
-  statusCode: OK,
-  validateTestResData: hasCustomerAccount,
-})
-
-/* Can only work for Admin accounts */
-// export const testGetNonExistentProfile = testRequests({
-//   verb: 'get',
-//   statusCode: UNAUTHORIZED,
-//   validateTestResData: null,
-//   validateTestReqData: isValidProfileRequestData,
-// })
+export const testHasCustomerAccountWithoutSignIn = (args: {}) => {
+  const requestParams: RequestParams = {
+    token: '',
+    body: {},
+    query: {},
+    params: {},
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path: profilePath,
+    validateTestResData: hasCustomerAccount,
+  })(requestParams)
+}
