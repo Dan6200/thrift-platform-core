@@ -7,25 +7,25 @@ export default function ({
   validateTestResData,
   validateTestReqData,
 }: TestRequestParams) {
-  return async function <T>({
-    req,
-    server,
-    path,
+  return async function ({
     query,
-    token,
+    params,
+    path,
     body,
+    token,
   }: {
-    req: RequestForTests
-    server: string
+    query: Pick<RequestForTests, 'query'>
+    params: Pick<RequestForTests, 'params'>
+    body: Pick<RequestForTests, 'body'>
     path: string
     token: string
-    query?: { [k: string]: any }
-    body?: T
   }) {
+    const server = process.env.SERVER!
     // Validate the request body first
     if (body && !validateTestReqData)
       throw new Error('Must validate test request data')
-    if (validateTestReqData && !validateTestReqData(req))
+    // simulate request object...
+    if (validateTestReqData && !validateTestReqData({ query, params, body }))
       throw new Error('Invalid Test Request Data')
 
     // Make request

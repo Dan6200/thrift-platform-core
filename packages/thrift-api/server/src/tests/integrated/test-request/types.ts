@@ -36,27 +36,19 @@ export type TestRequestWithBody = (
   },
 ) => TestRequestOuterWBody
 
-type TestRequestOuterWBody = <T>(
-  requestParams: RequestParams & { body: T },
-) => Promise<any>
+type TestRequestOuterWBody = (requestParams: RequestParams) => Promise<any>
 
-type TestRequestOuterWQuery = (
-  requestParams: RequestParams & {
-    query: { [k: string]: any } | null
-  },
-) => Promise<any>
+type TestRequestOuterWQuery = (requestParams: RequestParams) => Promise<any>
 
-type TestRequestOuterWQueryNBody = <T>(
-  requestParams: RequestParams & { body: T } & {
-    query: { [k: string]: any } | null
-  },
+type TestRequestOuterWQueryNBody = (
+  requestParams: RequestParams,
 ) => Promise<any>
 
 type TestRequestOuter = (requestParams: RequestParams) => Promise<any>
 
 export type RequestParams = {
-  req: RequestForTests
-  path: string
-  server: string
+  params?: { [k: string]: any }
+  query?: { [k: string]: any }
+  body?: any | any[]
   token: string
 }
