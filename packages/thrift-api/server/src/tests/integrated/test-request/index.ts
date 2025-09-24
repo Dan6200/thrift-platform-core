@@ -7,6 +7,8 @@ export default function ({
   path,
   validateTestResData,
   validateTestReqData,
+  expectedData, // New: Expected data for content validation
+  compareData, // New: Custom comparison function
 }: TestRequestParams) {
   return async function ({
     query,
@@ -14,10 +16,10 @@ export default function ({
     body,
     token,
   }: {
-    query: Pick<RequestForTests, 'query'>
-    params: Pick<RequestForTests, 'params'>
-    body: Pick<RequestForTests, 'body'>
-    token: string
+    query?: Pick<RequestForTests, 'query'>
+    params?: Pick<RequestForTests, 'params'>
+    body?: Pick<RequestForTests, 'body'>
+    token?: string
   }) {
     const server = process.env.SERVER!
     // Validate the request body first
@@ -49,12 +51,25 @@ export default function ({
       )
     response.should.have.status(statusCode)
 
-    // Validate the response body
+    // Validate the response body against schema
     if (validateTestResData && !validateTestResData(response.body)) {
       if (response.body.length === 0) {
         return []
       }
       throw new Error('Invalid Database Result') //Now allowing empty responses
+    }
+
+    // Validate the response body against expected data
+    if (expectedData !== undefined) {
+      if (compareData) {
+        if (!compareData(response.body, expectedData)) {
+          throw new Error('Response data does not match expected data (custom comparison)')
+        }
+      }
+      else {
+        // Default to deep equality comparison using chai
+        chai.expect(response.body).deep.equal(expectedData, 'Response data does not match expected data')
+      }
     }
 
     return response.body

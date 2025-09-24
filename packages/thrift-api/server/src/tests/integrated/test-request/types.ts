@@ -15,6 +15,8 @@ export type TestRequestParams = {
   statusCode: StatusCodes
   validateTestReqData?: (req: RequestForTests) => boolean
   validateTestResData?: (data: unknown) => boolean
+  expectedData?: any // New: Expected data for content validation
+  compareData?: (actual: any, expected: any) => boolean // New: Custom comparison function
 }
 
 export type TestRequest = (
