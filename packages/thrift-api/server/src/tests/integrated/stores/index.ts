@@ -23,7 +23,6 @@ export default function ({
   stores: StoreData[]
   updatedStores: StoreData[]
 }) {
-  const server = process.env.SERVER!
   let token: string
   let userId: string
   before(async () => {
@@ -32,14 +31,11 @@ export default function ({
     userId = await createUserForTesting(userInfo)
     token = await signInForTesting(userInfo)
   })
-  const path = '/v1/stores'
 
-  let storeIds: string[] = []
+  let storeIds: number[] = []
 
   it("should have a vendor's account", () =>
     testHasVendorAccount({
-      server,
-      path: '/v1/me',
       token,
     }))
 
@@ -48,23 +44,26 @@ export default function ({
     assert(!!stores.length)
     for (const store of stores) {
       const [{ store_id }] = await testCreateStore({
-        server,
         token,
-        path,
-        requestBody: store,
+        body: store,
       })
       storeIds.push(store_id)
     }
   })
 
   it('it should fetch all the stores with one request', async () => {
-    await testGetAllStores({ server, token, path })
+    await testGetAllStores({
+      token,
+    })
   })
 
   it('it should fetch all the stores with a loop', async () => {
     assert(!!storeIds.length)
     for (const storeId of storeIds) {
-      await testGetStore({ server, token, path: `${path}/${storeId}` })
+      await testGetStore({
+        token,
+        params: { storeId },
+      })
     }
   })
 
@@ -72,10 +71,9 @@ export default function ({
     assert(!!storeIds.length && storeIds.length === updatedStores.length)
     for (const [idx, storeId] of storeIds.entries()) {
       await testUpdateStore({
-        server,
         token,
-        path: path + '/' + storeId,
-        requestBody: updatedStores[idx],
+        params: { storeId },
+        body: updatedStores[idx],
       })
     }
   })
@@ -83,7 +81,10 @@ export default function ({
   it('should delete all the stores with a loop', async () => {
     assert(!!storeIds.length)
     for (const storeId of storeIds) {
-      await testDeleteStore({ server, token, path: path + '/' + storeId })
+      await testDeleteStore({
+        token,
+        params: { storeId },
+      })
     }
   })
 
@@ -91,9 +92,8 @@ export default function ({
     assert(!!storeIds.length)
     for (const storeId of storeIds) {
       await testGetNonExistentStore({
-        server,
         token,
-        path: path + '/' + storeId,
+        params: { storeId },
       })
     }
   })

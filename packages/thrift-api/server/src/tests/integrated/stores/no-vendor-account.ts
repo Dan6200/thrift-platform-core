@@ -22,12 +22,11 @@ export default function ({
   stores: StoreData[]
   updatedStores: StoreData[]
 }) {
-  const server = process.env.SERVER!
   let nonVendorToken: string
   let nonVendorUserId: string
   let vendorToken: string
   let vendorUserId: string
-  let storeId: string
+  let storeId: number
 
   before(async () => {
     vendorUserId = await createUserForTesting(vendorInfo)
@@ -49,16 +48,12 @@ export default function ({
     await deleteUserForTesting(nonVendorUserId)
   })
 
-  const path = '/v1/stores'
-
   it('should fail to create a store when no vendor account exists', async () => {
     assert(!!stores.length)
     for (const store of stores) {
       await testCreateStoreWithoutVendorAccount({
-        server,
         token: nonVendorToken,
-        path,
-        requestBody: store,
+        body: store,
       })
     }
   })
@@ -66,20 +61,17 @@ export default function ({
   it('should fail to update stores when no vendor account exists', async () => {
     for (const store of updatedStores) {
       await testUpdateStoreWithoutVendorAccount({
-        server,
         token: nonVendorToken,
-        path: path + '/' + storeId,
-        requestBody: store,
+        params: { storeId },
+        body: store,
       })
     }
   })
 
   it('should fail to delete stores when no vendor account exists', async () => {
     await testDeleteStoreWithoutVendorAccount({
-      server,
       token: nonVendorToken,
-      path: path + '/' + storeId,
+      params: { storeId },
     })
   })
 }
-
