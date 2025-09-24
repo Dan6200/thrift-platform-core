@@ -32,7 +32,7 @@ export const createDeliveryLogic = async (
         zip_postal_code,
         country,
       })
-      .returning('address_id')
+      .returning('*')
 
     const deliveryInfoToInsert = {
       customer_id: req.userId,
@@ -41,12 +41,12 @@ export const createDeliveryLogic = async (
       phone_number,
       delivery_instructions,
     }
-    const result = await trx('delivery_info')
+    const [result] = await trx('delivery_info')
       .insert(deliveryInfoToInsert)
-      .returning(['delivery_info_id', 'created_at', 'updated_at'])
+      .returning('*')
 
     await trx.commit()
-    req.dbResult = result
+    req.dbResult = { ...result, ...address }
     next()
   } catch (error) {
     await trx.rollback()
