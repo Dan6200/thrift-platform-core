@@ -125,6 +125,8 @@ export default interface StoreData {
     state: string
     zip_postal_code: string
     country: string
+    created_at?: Date
+    updated_at?: Date
   }
   pages?: Page[]
 }

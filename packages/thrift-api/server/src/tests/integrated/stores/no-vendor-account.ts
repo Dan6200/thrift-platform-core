@@ -32,7 +32,7 @@ export default function ({
     vendorUserId = await createUserForTesting(vendorInfo)
     vendorToken = await signInForTesting(vendorInfo)
     const response = await createStoreForTesting(vendorToken)
-    ;[{ store_id: storeId }] = response.body
+    ;({ store_id: storeId } = response.body)
   })
 
   beforeEach(async () => {
@@ -75,3 +75,4 @@ export default function ({
     })
   })
 }
+
