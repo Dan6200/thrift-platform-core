@@ -1,14 +1,15 @@
 import { StatusCodes } from 'http-status-codes'
 import { NextFunction, Request, Response } from 'express'
+import logger from '#src/utils/logger.js'
 
 const errorHandlerMiddleware = async (
   err: { statusCode: StatusCodes; message: 'string' },
   _req: Request,
   res: Response,
-  _next: NextFunction // Must have these 4 params to work
+  _next: NextFunction, // Must have these 4 params to work
 ) => {
   // error logging, comment out for production
-  console.error(err)
+  logger.error(err)
 
   let customError = {
     // set default
