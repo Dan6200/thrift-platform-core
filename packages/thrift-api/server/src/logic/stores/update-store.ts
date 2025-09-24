@@ -27,16 +27,18 @@ export const updateStoreLogic = async (
       throw new NotFoundError('Store not found')
     }
 
+    let updatedStoreAddress
     if (store_address) {
-      await trx('address')
+      ;[updatedStoreAddress] = await trx('address')
         .where('address_id', store.address_id)
         .update(store_address)
+        .returning('*')
     }
 
-    const returningStoreId = await trx('stores')
+    const [updatedStore] = await trx('stores')
       .where('store_id', storeId)
       .update(restOfStoreData)
-      .returning('store_id')
+      .returning('*')
 
     // Delete existing pages and sections
     const pageIds = await trx('pages')
@@ -47,36 +49,57 @@ export const updateStoreLogic = async (
     await trx('pages').where('store_id', storeId).del()
 
     // Insert new pages and sections
+    let updatedPages = []
     if (pages) {
       for (const page of pages) {
+        let updatedPageSections = []
         const { sections, ...restOfPage } = page
         const [pageResult] = await trx('pages')
           .insert({
             ...restOfPage,
             store_id: storeId,
           })
-          .returning('page_id')
+          .returning('*')
 
         if (sections) {
           for (const section of sections) {
             const { section_data, styles, ...restOfSection } = section
-            await trx('page_sections').insert({
-              ...restOfSection,
-              page_id: pageResult.page_id,
-              section_data: section_data ? JSON.stringify(section_data) : null,
-              styles: styles ? JSON.stringify(styles) : null,
-            })
+            const [sectionResult] = await trx('page_sections')
+              .insert({
+                ...restOfSection,
+                page_id: pageResult.page_id,
+                section_data: section_data
+                  ? JSON.stringify(section_data)
+                  : null,
+                styles: styles ? JSON.stringify(styles) : null,
+              })
+              .returning('*')
+            updatedPageSections.push(sectionResult)
           }
+          updatedPages.push({ ...pageResult, sections: updatedPageSections })
         }
       }
     }
 
     await trx.commit()
-    req.dbResult = returningStoreId
+    const { address_id, ...coreUpdatedStore } = updatedStore
+    req.dbResult = {
+      ...coreUpdatedStore,
+      store_address: updatedStoreAddress,
+      pages: updatedPages.map((updatedPage) => {
+        const { store_id, ...corePage } = updatedPage
+        return {
+          ...corePage,
+          sections: corePage.sections.map((updatedSection: any) => {
+            const { page_id, ...coreSection } = updatedSection
+            return coreSection
+          }),
+        }
+      }),
+    }
     next()
   } catch (error) {
     await trx.rollback()
     throw error
   }
 }
-
