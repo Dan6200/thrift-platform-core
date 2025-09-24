@@ -157,7 +157,6 @@ export const StoreDataRequestPartialSchema = joi.object({
   global_styles: StoreStylingSchema.optional(),
   store_address: joi
     .object({
-      address_id: joi.number().required(),
       address_line_1: joi.string().optional(),
       address_line_2: joi.string().optional(),
       city: joi.string().optional(),

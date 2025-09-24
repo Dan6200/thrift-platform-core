@@ -133,7 +133,7 @@ export const testUpdateStore = (args: {
   }
   return (testRequest as TestRequest)({
     statusCode: OK,
-    verb: 'put',
+    verb: 'patch',
     path,
     validateTestReqData: validateStoreUpdateReq,
     validateTestResData: validateStoreDataRes,
