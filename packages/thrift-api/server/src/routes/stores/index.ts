@@ -1,16 +1,77 @@
 import express from 'express'
+import { StatusCodes } from 'http-status-codes'
+import { validate } from '../../middleware/request-validation.js'
+import { validateDbResult } from '../../middleware/db-result-validation.js'
+import { sendResponse } from '../../middleware/send-response.js'
+import authenticateUser from '../../middleware/authentication.js'
+import { vendorAuthorization } from '../../middleware/vendor-authorization.js'
+import { checkStoreLimit } from '../../middleware/check-store-limit.js'
+import { hasStoreAccess } from '../../middleware/has-store-access.js'
 import {
-  createStore,
-  getAllStores,
-  getStore,
-  updateStore,
-  deleteStore,
-} from '../../controllers/stores/index.js'
+  createStoreLogic,
+  getAllStoresLogic,
+  getStoreLogic,
+  updateStoreLogic,
+  deleteStoreLogic,
+} from '../../logic/stores/index.js'
+import {
+  StoreCreateRequestSchema,
+  StoreGetAllRequestSchema,
+  StoreGetRequestSchema,
+  StoreUpdateRequestSchema,
+  StoreDeleteRequestSchema,
+  StoreDataResponseListSchema,
+  StoreDataResponseSchema,
+  StoreIDSchema,
+} from '../../app-schema/stores.js'
 
 const router = express.Router()
+const { CREATED, OK, NO_CONTENT } = StatusCodes
 
-router.route('/').post(createStore).get(getAllStores)
+router
+  .route('/')
+  .post(
+    authenticateUser,
+    vendorAuthorization,
+    checkStoreLimit,
+    validate(StoreCreateRequestSchema),
+    createStoreLogic,
+    validateDbResult(StoreIDSchema),
+    sendResponse(CREATED),
+  )
+  .get(
+    authenticateUser,
+    vendorAuthorization,
+    validate(StoreGetAllRequestSchema),
+    getAllStoresLogic,
+    validateDbResult(StoreDataResponseListSchema),
+    sendResponse(OK),
+  )
 
-router.route('/:storeId').get(getStore).put(updateStore).delete(deleteStore)
+router
+  .route('/:storeId')
+  .get(
+    authenticateUser,
+    hasStoreAccess(['admin', 'editor', 'viewer']),
+    validate(StoreGetRequestSchema),
+    getStoreLogic,
+    validateDbResult(StoreDataResponseSchema),
+    sendResponse(OK),
+  )
+  .put(
+    authenticateUser,
+    hasStoreAccess(['admin', 'editor']),
+    validate(StoreUpdateRequestSchema),
+    updateStoreLogic,
+    validateDbResult(StoreIDSchema),
+    sendResponse(OK),
+  )
+  .delete(
+    authenticateUser,
+    hasStoreAccess(['admin']),
+    validate(StoreDeleteRequestSchema),
+    deleteStoreLogic,
+    sendResponse(NO_CONTENT),
+  )
 
 export default router
