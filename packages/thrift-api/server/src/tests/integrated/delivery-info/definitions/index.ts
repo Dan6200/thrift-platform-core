@@ -33,7 +33,7 @@ export const testCreateDelivery = (args: { token: string; body: any }) => {
     statusCode: CREATED,
     path: deliveryPathBase,
     validateTestReqData: isValidDeliveryInfoCreateRequest,
-    validateTestResData: isValidDeliveryInfoId,
+    validateTestResData: isValidDeliveryInfoResponse,
   })({
     ...requestParams,
   })
