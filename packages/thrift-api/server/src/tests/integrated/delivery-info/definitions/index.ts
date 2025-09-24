@@ -1,12 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
+import { TestRequest, RequestParams } from '../../test-request/types.js'
 import {
-  TestRequestWithBody,
-  TestRequest,
-  RequestParams,
-} from '../../test-request/types.js'
-import {
-  isValidDeliveryInfoId,
   isValidDeliveryInfoCreateRequest,
   isValidDeliveryInfoGetRequest,
   isValidDeliveryInfoUpdateRequest,
@@ -25,10 +20,8 @@ export const testCreateDelivery = (args: { token: string; body: any }) => {
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
-    query: {},
-    params: {},
   }
-  return (testRequest as TestRequestWithBody)({
+  return (testRequest as TestRequest)({
     verb: 'post',
     statusCode: CREATED,
     path: deliveryPathBase,
@@ -42,9 +35,6 @@ export const testCreateDelivery = (args: { token: string; body: any }) => {
 export const testGetAllDelivery = (args: { token: string }) => {
   const requestParams: RequestParams = {
     token: args.token,
-    body: {},
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     statusCode: OK,
@@ -64,8 +54,6 @@ export const testGetDelivery = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
-    body: {},
-    query: {},
   }
   return (testRequest as TestRequest)({
     statusCode: OK,
@@ -88,9 +76,8 @@ export const testUpdateDelivery = (args: {
     token: args.token,
     body: args.body,
     params: args.params,
-    query: {},
   }
-  return (testRequest as TestRequestWithBody)({
+  return (testRequest as TestRequest)({
     statusCode: OK,
     verb: 'patch',
     path,
@@ -109,8 +96,6 @@ export const testDeleteDelivery = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
-    body: {},
-    query: {},
   }
   return (testRequest as TestRequest)({
     statusCode: NO_CONTENT,
@@ -131,8 +116,6 @@ export const testGetNonExistentDelivery = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
-    body: {},
-    query: {},
   }
   return (testRequest as TestRequest)({
     verb: 'get',
