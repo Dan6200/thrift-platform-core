@@ -105,7 +105,6 @@ const PageSchemaRequest = joi.object({
 })
 
 const PageSchemaResponse = joi.object({
-  store_id: joi.number().required(),
   page_id: joi.number().required(),
   page_slug: joi.string().required(),
   page_title: joi.string().required(),
@@ -121,6 +120,7 @@ const PageSchemaResponse = joi.object({
     .items(
       joi.object({
         section_id: joi.number().required(),
+        section_title: joi.string().required(),
         section_type: joi.string().required(),
         section_data: joi.any().required(),
         styles: StoreStylingSchema.optional(),
@@ -132,7 +132,7 @@ const PageSchemaResponse = joi.object({
     .required(),
 })
 
-export const StoreDataSchema = joi.object({
+export const StoreDataRequestSchema = joi.object({
   store_name: joi.string().min(3).max(50).required(),
   custom_domain: joi.string().hostname().allow(null).required(),
   favicon: joi.string().uri().allow(null).required(),
@@ -150,13 +150,14 @@ export const StoreDataSchema = joi.object({
   pages: joi.array().items(PageSchemaRequest).optional(),
 })
 
-export const StoreDataPartialSchema = joi.object({
+export const StoreDataRequestPartialSchema = joi.object({
   store_name: joi.string().min(3).max(50).optional(),
   favicon: joi.string().uri().optional(),
   custom_domain: joi.string().hostname().optional(),
   global_styles: StoreStylingSchema.optional(),
   store_address: joi
     .object({
+      address_id: joi.number().required(),
       address_line_1: joi.string().optional(),
       address_line_2: joi.string().optional(),
       city: joi.string().optional(),
@@ -170,73 +171,85 @@ export const StoreDataPartialSchema = joi.object({
 
 // Schemas for request validation middleware
 export const StoreCreateRequestSchema = joi.object({
-  body: StoreDataSchema.required(),
+  body: StoreDataRequestSchema.required(),
   query: joi.object().optional(),
   params: joi.object().optional(),
 })
 
 export const StoreGetAllRequestSchema = joi.object({
-  query: joi.object({
-    vendor_id: joi.string().uuid().optional(),
-  }).optional(),
+  query: joi
+    .object({
+      vendor_id: joi.string().uuid().optional(),
+    })
+    .optional(),
   body: joi.object().optional(),
   params: joi.object().optional(),
 })
 
 export const StoreGetRequestSchema = joi.object({
-  params: joi.object({
-    storeId: joi.number().integer().positive().required(),
-  }).required(),
-  query: joi.object({
-    vendor_id: joi.string().uuid().optional(),
-  }).optional(),
+  params: joi
+    .object({
+      storeId: joi.number().integer().positive().required(),
+    })
+    .required(),
+  query: joi
+    .object({
+      vendor_id: joi.string().uuid().optional(),
+    })
+    .optional(),
   body: joi.object().optional(),
 })
 
 export const StoreUpdateRequestSchema = joi.object({
-  params: joi.object({
-    storeId: joi.number().integer().positive().required(),
-  }).required(),
-  body: StoreDataPartialSchema.required(),
+  params: joi
+    .object({
+      storeId: joi.number().integer().positive().required(),
+    })
+    .required(),
+  body: StoreDataRequestPartialSchema.required(),
   query: joi.object().optional(),
 })
 
 export const StoreDeleteRequestSchema = joi.object({
-  params: joi.object({
-    storeId: joi.number().integer().positive().required(),
-  }).required(),
+  params: joi
+    .object({
+      storeId: joi.number().integer().positive().required(),
+    })
+    .required(),
   query: joi.object().optional(),
   body: joi.object().optional(),
 })
 
 // Schemas for response validation middleware
-export const StoreIDSchema = joi.object({
-  store_id: joi.number().required(),
-}).required()
-
-export const StoreDataResponseSchema = joi.object({
-  store_id: joi.number().required(),
-  store_name: joi.string().min(3).max(50).required(),
-  custom_domain: joi.string().hostname().allow(null).required(),
-  vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
-  favicon: joi.string().uri().allow(null).required(),
-  global_styles: StoreStylingSchema.required(),
-  store_address: joi
-    .object({
-      address_line_1: joi.string().required(),
-      address_line_2: joi.string().allow(null).optional(),
-      city: joi.string().required(),
-      state: joi.string().required(),
-      zip_postal_code: joi.string().required(),
-      country: joi.string().required(),
-    })
-    .required(),
-  pages: joi.array().items(PageSchemaResponse).optional(),
-  created_at: joi.date().required(),
-  updated_at: joi.date().required(),
-}).required()
+export const StoreDataResponseSchema = joi
+  .object({
+    store_id: joi.number().required(),
+    store_name: joi.string().min(3).max(50).required(),
+    custom_domain: joi.string().hostname().allow(null).required(),
+    vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
+    favicon: joi.string().uri().allow(null).required(),
+    global_styles: StoreStylingSchema.required(),
+    store_address: joi
+      .object({
+        address_id: joi.number().required(),
+        address_line_1: joi.string().required(),
+        address_line_2: joi.string().allow(null).optional(),
+        city: joi.string().required(),
+        state: joi.string().required(),
+        zip_postal_code: joi.string().required(),
+        country: joi.string().required(),
+        created_at: joi.date().required(),
+        updated_at: joi.date().required(),
+      })
+      .required(),
+    pages: joi.array().items(PageSchemaResponse).optional(),
+    created_at: joi.date().required(),
+    updated_at: joi.date().required(),
+  })
+  .required()
 
 export const StoreDataResponseListSchema = joi
   .array()
   .items(StoreDataResponseSchema)
   .required()
+
