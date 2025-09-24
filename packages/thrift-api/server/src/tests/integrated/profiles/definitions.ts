@@ -4,6 +4,9 @@ import { StatusCodes } from 'http-status-codes'
 import { TestRequest, RequestParams } from '../test-request/types.js'
 import { isValidProfileResponseData } from '../helpers/type-guards/profile.js'
 import testRequest from '../test-request/index.js'
+import { ProfileResponseSchema } from '#src/app-schema/profiles.js'
+import { validateTestData } from '../helpers/test-validators.js'
+import { ProfileData } from '#src/types/profile/index.js'
 
 chai.use(chaiHttp).should()
 
@@ -11,31 +14,33 @@ const { OK, UNAUTHORIZED } = StatusCodes
 
 const profilePath = '/v1/me'
 
-const hasNoCustomerAccount = (data: unknown) => {
-  const isValidData = isValidProfileResponseData(data)
-  if (!isValidData) throw new Error('Invalid Profile Data Response')
-  data.is_customer.should.be.true
-  return true
-}
-
 const hasCustomerAccount = (data: unknown) => {
-  const isValidData = isValidProfileResponseData(data)
-  if (!isValidData) throw new Error('Invalid Profile Data Response')
-  data.is_customer.should.be.true
+  validateTestData(
+    ProfileResponseSchema,
+    data,
+    'User Profile Response Validation Error',
+  ),
+    (data as ProfileData).is_customer.should.be.true
   return true
 }
 
 const hasVendorAccount = (data: unknown) => {
-  const isValidData = isValidProfileResponseData(data)
-  if (!isValidData) throw new Error('Invalid Profile Data Response')
-  data.is_customer.should.be.true
+  validateTestData(
+    ProfileResponseSchema,
+    data,
+    'User Profile Response Validation Error',
+  ),
+    (data as ProfileData).is_vendor.should.be.true
   return true
 }
 
 const hasNoVendorAccount = (data: unknown) => {
-  const isValidData = isValidProfileResponseData(data)
-  if (!isValidData) throw new Error('Invalid Profile Data Response')
-  data.is_customer.should.be.true
+  validateTestData(
+    ProfileResponseSchema,
+    data,
+    'User Profile Response Validation Error',
+  ),
+    (data as ProfileData).is_vendor.should.be.false
   return true
 }
 
@@ -60,18 +65,6 @@ export const testHasCustomerAccount = (args: { token: string }) => {
     statusCode: OK,
     path: profilePath,
     validateTestResData: hasCustomerAccount,
-  })(requestParams)
-}
-
-export const testHasNoCustomerAccount = (args: { token: string }) => {
-  const requestParams: RequestParams = {
-    token: args.token,
-  }
-  return (testRequest as TestRequest)({
-    verb: 'get',
-    statusCode: OK,
-    path: profilePath,
-    validateTestResData: hasNoCustomerAccount,
   })(requestParams)
 }
 
