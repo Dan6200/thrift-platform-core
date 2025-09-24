@@ -8,7 +8,6 @@ import {
   DeliveryInfoDeleteRequestSchema,
   DeliveryInfoResponseListSchema,
   DeliveryInfoResponseSchema,
-  DeliveryInfoSchemaID,
 } from '#src/app-schema/delivery-info.js'
 import { validateTestData } from '../../helpers/test-validators.js'
 
@@ -34,7 +33,7 @@ export const testCreateDelivery = (args: { token: string; body: any }) => {
         'Delivery Info Create Request Validation Error',
       ),
     validateTestResData: (data) =>
-      validateTestData(DeliveryInfoSchemaID, data, 'Delivery Info ID Validation Error'),
+      validateTestData(DeliveryInfoResponseSchema, data, 'Delivery Info Response Validation Error'),
   })({
     ...requestParams,
   })
@@ -117,7 +116,7 @@ export const testUpdateDelivery = (args: {
         'Delivery Info Update Request Validation Error',
       ),
     validateTestResData: (data) =>
-      validateTestData(DeliveryInfoSchemaID, data, 'Delivery Info ID Validation Error'),
+      validateTestData(DeliveryInfoResponseSchema, data, 'Delivery Info Response Validation Error'),
   })({
     ...requestParams,
   })
