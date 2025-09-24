@@ -60,7 +60,7 @@ router
     customerAuthorization,
     validate(DeliveryInfoUpdateRequestSchema),
     updateDeliveryLogic,
-    validateDbResult(DeliveryInfoSchemaID),
+    validateDbResult(DeliveryInfoResponseSchema),
     sendResponse(OK),
   )
   .delete(

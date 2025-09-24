@@ -15,7 +15,7 @@ import {
   isValidDeliveryInfoResponse,
 } from '../../helpers/type-guards/delivery-info.js'
 
-const { CREATED, OK, NOT_FOUND } = StatusCodes
+const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes
 
 const deliveryPathBase = '/v1/delivery-info'
 const buildDeliveryInfoPath = (deliveryInfoId: number) =>
@@ -92,10 +92,10 @@ export const testUpdateDelivery = (args: {
   }
   return (testRequest as TestRequestWithBody)({
     statusCode: OK,
-    verb: 'put',
+    verb: 'patch',
     path,
     validateTestReqData: isValidDeliveryInfoUpdateRequest,
-    validateTestResData: isValidDeliveryInfoId,
+    validateTestResData: isValidDeliveryInfoResponse,
   })({
     ...requestParams,
   })
@@ -113,11 +113,11 @@ export const testDeleteDelivery = (args: {
     query: {},
   }
   return (testRequest as TestRequest)({
-    statusCode: OK,
+    statusCode: NO_CONTENT,
     verb: 'delete',
     path,
     validateTestReqData: isValidDeliveryInfoDeleteRequest,
-    validateTestResData: isValidDeliveryInfoId,
+    validateTestResData: null,
   })({
     ...requestParams,
   })
