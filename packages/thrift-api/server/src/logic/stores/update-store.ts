@@ -27,12 +27,17 @@ export const updateStoreLogic = async (
       throw new NotFoundError('Store not found')
     }
 
-    let updatedStoreAddress
+    let updatedStoreAddress = null
     if (store_address) {
       ;[updatedStoreAddress] = await trx('address')
         .where('address_id', store.address_id)
         .update(store_address)
         .returning('*')
+    } else {
+      // If store_address was not provided in the update, fetch the existing one
+      updatedStoreAddress = await trx('address')
+        .where('address_id', store.address_id)
+        .first()
     }
 
     const [updatedStore] = await trx('stores')
@@ -76,8 +81,8 @@ export const updateStoreLogic = async (
               .returning('*')
             updatedPageSections.push(sectionResult)
           }
-          updatedPages.push({ ...pageResult, sections: updatedPageSections })
         }
+        updatedPages.push({ ...pageResult, sections: updatedPageSections })
       }
     }
 
@@ -86,7 +91,7 @@ export const updateStoreLogic = async (
     req.dbResult = {
       ...coreUpdatedStore,
       store_address: updatedStoreAddress,
-      pages: updatedPages.map((updatedPage) => {
+      pages: updatedPages.map((updatedPage: any) => {
         const { store_id, ...corePage } = updatedPage
         return {
           ...corePage,

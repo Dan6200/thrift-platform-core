@@ -23,11 +23,11 @@ export const createStoreLogic = async (
       })
       .returning('*')
 
-    let pagesResult = [],
-      sectionsResult = []
+    let pagesWithSections = []
 
     if (pages) {
       for (const page of pages) {
+        let currentSections = []
         const { sections, ...restOfPage } = page
         const [pageResult] = await trx('pages')
           .insert({
@@ -49,10 +49,10 @@ export const createStoreLogic = async (
                 styles: styles ? JSON.stringify(styles) : null,
               })
               .returning('*')
-            sectionsResult.push(sectionResult)
+            currentSections.push(sectionResult)
           }
         }
-        pagesResult.push(pageResult)
+        pagesWithSections.push({ ...pageResult, sections: currentSections })
       }
     }
 
@@ -61,11 +61,11 @@ export const createStoreLogic = async (
     req.dbResult = {
       ...coreStore,
       store_address: address,
-      pages: pagesResult.map((pageResult) => {
-        const { store_id, ...corePageResult } = pageResult
+      pages: pagesWithSections.map((pageWithSections: any) => {
+        const { store_id, ...corePageResult } = pageWithSections
         return {
           ...corePageResult,
-          sections: sectionsResult.map((section) => {
+          sections: corePageResult.sections.map((section: any) => {
             const { page_id, ...coreSection } = section
             return coreSection
           }),
