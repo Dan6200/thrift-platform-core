@@ -17,6 +17,46 @@ const deliveryPathBase = '/v1/delivery-info'
 const buildDeliveryInfoPath = (deliveryInfoId: number) =>
   `${deliveryPathBase}/${deliveryInfoId}`
 
+// Request Validators
+const validateDeliveryInfoCreateReq = (data: unknown) =>
+  validateTestData(
+    DeliveryInfoCreateRequestSchema,
+    data,
+    'Delivery Info Create Request Validation Error',
+  )
+const validateDeliveryInfoGetReq = (data: unknown) =>
+  validateTestData(
+    DeliveryInfoGetRequestSchema,
+    data,
+    'Delivery Info Get Request Validation Error',
+  )
+const validateDeliveryInfoUpdateReq = (data: unknown) =>
+  validateTestData(
+    DeliveryInfoUpdateRequestSchema,
+    data,
+    'Delivery Info Update Request Validation Error',
+  )
+const validateDeliveryInfoDeleteReq = (data: unknown) =>
+  validateTestData(
+    DeliveryInfoDeleteRequestSchema,
+    data,
+    'Delivery Info Delete Request Validation Error',
+  )
+
+// Response Validators
+const validateDeliveryInfoRes = (data: unknown) =>
+  validateTestData(
+    DeliveryInfoResponseSchema,
+    data,
+    'Delivery Info Response Validation Error',
+  )
+const validateDeliveryInfoListRes = (data: unknown) =>
+  validateTestData(
+    DeliveryInfoResponseListSchema,
+    data,
+    'Delivery Info Response List Validation Error',
+  )
+
 export const testCreateDelivery = (args: { token: string; body: any }) => {
   const requestParams: RequestParams = {
     token: args.token,
@@ -26,14 +66,8 @@ export const testCreateDelivery = (args: { token: string; body: any }) => {
     verb: 'post',
     statusCode: CREATED,
     path: deliveryPathBase,
-    validateTestReqData: (data) =>
-      validateTestData(
-        DeliveryInfoCreateRequestSchema,
-        data,
-        'Delivery Info Create Request Validation Error',
-      ),
-    validateTestResData: (data) =>
-      validateTestData(DeliveryInfoResponseSchema, data, 'Delivery Info Response Validation Error'),
+    validateTestReqData: validateDeliveryInfoCreateReq,
+    validateTestResData: validateDeliveryInfoRes,
   })({
     ...requestParams,
   })
@@ -47,18 +81,7 @@ export const testGetAllDelivery = (args: { token: string }) => {
     statusCode: OK,
     verb: 'get',
     path: deliveryPathBase,
-    validateTestReqData: (data) =>
-      validateTestData(
-        DeliveryInfoGetRequestSchema,
-        data,
-        'Delivery Info Get All Request Validation Error',
-      ),
-    validateTestResData: (data) =>
-      validateTestData(
-        DeliveryInfoResponseListSchema,
-        data,
-        'Delivery Info Response List Validation Error',
-      ),
+    validateTestResData: validateDeliveryInfoListRes,
   })({
     ...requestParams,
   })
@@ -77,18 +100,8 @@ export const testGetDelivery = (args: {
     statusCode: OK,
     verb: 'get',
     path,
-    validateTestReqData: (data) =>
-      validateTestData(
-        DeliveryInfoGetRequestSchema,
-        data,
-        'Delivery Info Get Request Validation Error',
-      ),
-    validateTestResData: (data) =>
-      validateTestData(
-        DeliveryInfoResponseSchema,
-        data,
-        'Delivery Info Response Validation Error',
-      ),
+    validateTestReqData: validateDeliveryInfoGetReq,
+    validateTestResData: validateDeliveryInfoRes,
   })({
     ...requestParams,
   })
@@ -109,14 +122,8 @@ export const testUpdateDelivery = (args: {
     statusCode: OK,
     verb: 'patch',
     path,
-    validateTestReqData: (data) =>
-      validateTestData(
-        DeliveryInfoUpdateRequestSchema,
-        data,
-        'Delivery Info Update Request Validation Error',
-      ),
-    validateTestResData: (data) =>
-      validateTestData(DeliveryInfoResponseSchema, data, 'Delivery Info Response Validation Error'),
+    validateTestReqData: validateDeliveryInfoUpdateReq,
+    validateTestResData: validateDeliveryInfoRes,
   })({
     ...requestParams,
   })
@@ -135,12 +142,7 @@ export const testDeleteDelivery = (args: {
     statusCode: NO_CONTENT,
     verb: 'delete',
     path,
-    validateTestReqData: (data) =>
-      validateTestData(
-        DeliveryInfoDeleteRequestSchema,
-        data,
-        'Delivery Info Delete Request Validation Error',
-      ),
+    validateTestReqData: validateDeliveryInfoDeleteReq,
     validateTestResData: null,
   })({
     ...requestParams,
@@ -160,14 +162,10 @@ export const testGetNonExistentDelivery = (args: {
     verb: 'get',
     statusCode: NOT_FOUND,
     path,
-    validateTestReqData: (data) =>
-      validateTestData(
-        DeliveryInfoGetRequestSchema,
-        data,
-        'Delivery Info Get Request Validation Error',
-      ),
+    validateTestReqData: validateDeliveryInfoGetReq,
     validateTestResData: null,
   })({
     ...requestParams,
   })
 }
+

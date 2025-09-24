@@ -2,20 +2,69 @@ import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
 import { TestRequest, TestRequestWithBody, RequestParams } from '../../test-request/types.js'
 import {
-  isValidStoreDataId,
-  isValidStoreCreateRequest,
-  isValidStoreGetAllRequest,
-  isValidStoreGetRequest,
-  isValidStoreUpdateRequest,
-  isValidStoreDeleteRequest,
-  isValidStoreDataResponse,
-  isValidStoreDataResponseList,
-} from '../../helpers/type-guards/store-data.js'
+  StoreCreateRequestSchema,
+  StoreGetAllRequestSchema,
+  StoreGetRequestSchema,
+  StoreUpdateRequestSchema,
+  StoreDeleteRequestSchema,
+  StoreDataResponseListSchema,
+  StoreDataResponseSchema,
+  StoreIDSchema,
+} from '#src/app-schema/stores.js'
+import { validateTestData } from '../../helpers/test-validators.js'
 
 const { CREATED, OK, NOT_FOUND, UNAUTHORIZED, NO_CONTENT } = StatusCodes
 
 const storePathBase = '/v1/stores'
 const buildStorePath = (storeId: number) => `${storePathBase}/${storeId}`
+
+// Request Validators
+const validateStoreCreateReq = (data: unknown) =>
+  validateTestData(
+    StoreCreateRequestSchema,
+    data,
+    'Store Create Request Validation Error',
+  )
+const validateStoreGetAllReq = (data: unknown) =>
+  validateTestData(
+    StoreGetAllRequestSchema,
+    data,
+    'Store Get All Request Validation Error',
+  )
+const validateStoreGetReq = (data: unknown) =>
+  validateTestData(
+    StoreGetRequestSchema,
+    data,
+    'Store Get Request Validation Error',
+  )
+const validateStoreUpdateReq = (data: unknown) =>
+  validateTestData(
+    StoreUpdateRequestSchema,
+    data,
+    'Store Update Request Validation Error',
+  )
+const validateStoreDeleteReq = (data: unknown) =>
+  validateTestData(
+    StoreDeleteRequestSchema,
+    data,
+    'Store Delete Request Validation Error',
+  )
+
+// Response Validators
+const validateStoreIdRes = (data: unknown) =>
+  validateTestData(StoreIDSchema, data, 'Store ID Validation Error')
+const validateStoreDataListRes = (data: unknown) =>
+  validateTestData(
+    StoreDataResponseListSchema,
+    data,
+    'Store Data List Response Validation Error',
+  )
+const validateStoreDataRes = (data: unknown) =>
+  validateTestData(
+    StoreDataResponseSchema,
+    data,
+    'Store Data Response Validation Error',
+  )
 
 export const testCreateStore = (args: {
   token: string
@@ -31,8 +80,8 @@ export const testCreateStore = (args: {
     verb: 'post',
     statusCode: CREATED,
     path: storePathBase,
-    validateTestReqData: isValidStoreCreateRequest,
-    validateTestResData: isValidStoreDataId,
+    validateTestReqData: validateStoreCreateReq,
+    validateTestResData: validateStoreIdRes,
   })(requestParams)
 }
 
@@ -50,8 +99,8 @@ export const testGetAllStores = (args: {
     statusCode: OK,
     verb: 'get',
     path: storePathBase,
-    validateTestReqData: isValidStoreGetAllRequest,
-    validateTestResData: isValidStoreDataResponseList,
+    validateTestReqData: validateStoreGetAllReq,
+    validateTestResData: validateStoreDataListRes,
   })(requestParams)
 }
 
@@ -71,8 +120,8 @@ export const testGetStore = (args: {
     statusCode: OK,
     verb: 'get',
     path,
-    validateTestReqData: isValidStoreGetRequest,
-    validateTestResData: isValidStoreDataResponse,
+    validateTestReqData: validateStoreGetReq,
+    validateTestResData: validateStoreDataRes,
   })(requestParams)
 }
 
@@ -92,8 +141,8 @@ export const testUpdateStore = (args: {
     statusCode: OK,
     verb: 'put',
     path,
-    validateTestReqData: isValidStoreUpdateRequest,
-    validateTestResData: isValidStoreDataId,
+    validateTestReqData: validateStoreUpdateReq,
+    validateTestResData: validateStoreIdRes,
   })(requestParams)
 }
 
@@ -112,7 +161,7 @@ export const testDeleteStore = (args: {
     statusCode: NO_CONTENT,
     verb: 'delete',
     path,
-    validateTestReqData: isValidStoreDeleteRequest,
+    validateTestReqData: validateStoreDeleteReq,
     validateTestResData: null,
   })(requestParams)
 }
@@ -132,6 +181,7 @@ export const testGetNonExistentStore = (args: {
     verb: 'get',
     statusCode: NOT_FOUND,
     path,
+    validateTestReqData: validateStoreGetReq,
     validateTestResData: null,
   })(requestParams)
 }
@@ -150,7 +200,7 @@ export const testCreateStoreWithoutVendorAccount = (args: {
     verb: 'post',
     statusCode: UNAUTHORIZED,
     path: storePathBase,
-    validateTestReqData: isValidStoreCreateRequest,
+    validateTestReqData: validateStoreCreateReq,
   })(requestParams)
 }
 
@@ -170,7 +220,7 @@ export const testUpdateStoreWithoutVendorAccount = (args: {
     statusCode: UNAUTHORIZED,
     verb: 'put',
     path,
-    validateTestReqData: isValidStoreUpdateRequest,
+    validateTestReqData: validateStoreUpdateReq,
   })(requestParams)
 }
 
@@ -189,6 +239,6 @@ export const testDeleteStoreWithoutVendorAccount = (args: {
     statusCode: UNAUTHORIZED,
     verb: 'delete',
     path,
-    validateTestReqData: isValidStoreDeleteRequest,
+    validateTestReqData: validateStoreDeleteReq,
   })(requestParams)
 }
