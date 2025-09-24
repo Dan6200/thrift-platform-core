@@ -4,25 +4,24 @@ import { RequestForTests, TestRequestParams } from './types.js'
 export default function ({
   verb,
   statusCode,
+  path,
   validateTestResData,
   validateTestReqData,
 }: TestRequestParams) {
   return async function ({
     query,
     params,
-    path,
     body,
     token,
   }: {
     query: Pick<RequestForTests, 'query'>
     params: Pick<RequestForTests, 'params'>
     body: Pick<RequestForTests, 'body'>
-    path: string
     token: string
   }) {
     const server = process.env.SERVER!
     // Validate the request body first
-    if (body && !validateTestReqData)
+    if (body && Object.entries(body).length !== 0 && !validateTestReqData)
       throw new Error('Must validate test request data')
     // simulate request object...
     if (validateTestReqData && !validateTestReqData({ query, params, body }))
@@ -32,7 +31,7 @@ export default function ({
     const request = chai
       .request(server)
       [verb](path)
-      .query(query ?? {})
+      .query(query)
       .send(<object>body)
 
     process.env.DEBUG &&
