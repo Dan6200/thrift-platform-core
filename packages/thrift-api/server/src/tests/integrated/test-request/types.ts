@@ -11,6 +11,7 @@ export type RequestForTests = {
 
 export type TestRequestParams = {
   verb: 'get' | 'post' | 'delete' | 'put' | 'patch'
+  path: string
   statusCode: StatusCodes
   validateTestReqData?: (req: RequestForTests) => boolean
   validateTestResData?: (data: unknown) => boolean
