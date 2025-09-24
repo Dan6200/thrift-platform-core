@@ -133,3 +133,24 @@ export interface StoreDataId {
   store_info_id: number
 }
 
+export interface StoreCreateRequest {
+  body: StoreData;
+}
+
+export interface StoreGetAllRequest {
+  query?: { vendor_id?: string };
+}
+
+export interface StoreGetRequest {
+  params: { storeId: number };
+  query?: { vendor_id?: string };
+}
+
+export interface StoreUpdateRequest {
+  params: { storeId: number };
+  body: StoreData;
+}
+
+export interface StoreDeleteRequest {
+  params: { storeId: number };
+}
