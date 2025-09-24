@@ -11,9 +11,6 @@ chai.use(chaiHttp).should()
 
 export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
   describe('Profile management', () => {
-    // Set server url
-    const server = process.env.SERVER!
-    const path = '/v1/me'
     let token: string
     let userId: string
 
@@ -24,8 +21,6 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
 
     it("should get the user's profile", () =>
       testGetProfile({
-        server,
-        path,
         token,
       }))
 
