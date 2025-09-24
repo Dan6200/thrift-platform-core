@@ -13,7 +13,9 @@ export const createStoreLogic = async (
 
   const trx = await knex.transaction()
   try {
-    const [address] = await trx('address').insert(store_address).returning('*')
+    const [address] = await trx('address')
+      .insert(store_address)
+      .returning('address_id')
 
     const [store] = await trx('stores')
       .insert({
@@ -21,10 +23,7 @@ export const createStoreLogic = async (
         ...restOfStoreData,
         address_id: address.address_id,
       })
-      .returning('*')
-
-    let pagesResult = [],
-      sectionsResult = []
+      .returning('store_id')
 
     if (pages) {
       for (const page of pages) {
@@ -34,44 +33,24 @@ export const createStoreLogic = async (
             ...restOfPage,
             store_id: store.store_id,
           })
-          .returning('*')
+          .returning('page_id')
 
         if (sections) {
           for (const section of sections) {
             const { section_data, styles, ...restOfSection } = section
-            const [sectionResult] = await trx('page_sections')
-              .insert({
-                ...restOfSection,
-                page_id: pageResult.page_id,
-                section_data: section_data
-                  ? JSON.stringify(section_data)
-                  : null,
-                styles: styles ? JSON.stringify(styles) : null,
-              })
-              .returning('*')
-            sectionsResult.push(sectionResult)
+            await trx('page_sections').insert({
+              ...restOfSection,
+              page_id: pageResult.page_id,
+              section_data: section_data ? JSON.stringify(section_data) : null,
+              styles: styles ? JSON.stringify(styles) : null,
+            })
           }
         }
-        pagesResult.push(pageResult)
       }
     }
 
     await trx.commit()
-    const { address_id, ...coreStore } = store
-    req.dbResult = {
-      ...coreStore,
-      store_address: address,
-      pages: pagesResult.map((pageResult) => {
-        const { store_id, ...corePageResult } = pageResult
-        return {
-          ...corePageResult,
-          sections: sectionsResult.map((section) => {
-            const { page_id, ...coreSection } = section
-            return coreSection
-          }),
-        }
-      }),
-    }
+    req.dbResult = [store]
     next()
   } catch (error) {
     await trx.rollback()
