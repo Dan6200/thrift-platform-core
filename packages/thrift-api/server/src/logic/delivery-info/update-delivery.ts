@@ -118,6 +118,7 @@ export const updateDeliveryLogic = async (
 
     req.dbResult = {
       ...updatedDeliveryInfo,
+      ...updatedAddress,
       created_at: earliestCreatedAt,
       updated_at: latestUpdatedAt,
     }

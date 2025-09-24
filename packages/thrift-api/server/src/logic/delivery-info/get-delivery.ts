@@ -20,20 +20,7 @@ export const getDeliveryLogic = async (
     .join('address', 'delivery_info.address_id', 'address.address_id')
     .where('delivery_info.delivery_info_id', deliveryInfoId)
     .where('delivery_info.customer_id', req.userId)
-    .select(
-      'delivery_info.delivery_info_id',
-      'delivery_info.recipient_full_name',
-      'delivery_info.phone_number',
-      'delivery_info.delivery_instructions',
-      'address.address_line_1',
-      'address.address_line_2',
-      'address.city',
-      'address.state',
-      'address.zip_postal_code',
-      'address.country',
-      'delivery_info.created_at',
-      'delivery_info.updated_at',
-    )
+    .select('*')
     .first()
   req.dbResult = result
   next()
