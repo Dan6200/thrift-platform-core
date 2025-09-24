@@ -23,7 +23,6 @@ export default function ({
   listOfDeliveryInfo: DeliveryInfo[]
   listOfUpdatedDeliveryInfo: DeliveryInfo[]
 }) {
-  const server = process.env.SERVER!
   let token: string
   let userId: string
 
@@ -38,21 +37,15 @@ export default function ({
 
   it("should have a customer's account", () =>
     testHasCustomerAccount({
-      server,
-      path: '/v1/me',
       token,
-      req: {},
     }))
 
   it(`it should add multiple delivery addresses for the customer`, async () => {
     assert(!!listOfDeliveryInfo.length)
     for (const body of listOfDeliveryInfo) {
-      const [{ delivery_info_id }] = await testCreateDelivery({
-        server,
-        path: deliveryPath,
+      const { delivery_info_id } = await testCreateDelivery({
         body,
         token,
-        req: { body },
       })
       deliveryIds.push(delivery_info_id)
     }
@@ -60,22 +53,16 @@ export default function ({
 
   it('it should retrieve all delivery information at once', async () => {
     await testGetAllDelivery({
-      server,
-      path: deliveryPath,
       token,
-      req: {},
     })
   })
 
   it('it should retrieve all delivery information through a loop', async () => {
     assert(!!deliveryIds.length)
     for (const deliveryId of deliveryIds) {
-      const path = deliveryPath + '/' + deliveryId
       await testGetDelivery({
-        server,
-        path,
         token,
-        req: { params: { deliveryInfoId: deliveryId } },
+        params: { deliveryInfoId: deliveryId },
       })
     }
   })
@@ -87,13 +74,10 @@ export default function ({
     )
     for (const [idx, deliveryId] of deliveryIds.entries()) {
       const body = { ...listOfUpdatedDeliveryInfo[idx] }
-      const path = deliveryPath + '/' + deliveryId
       await testUpdateDelivery({
-        server,
-        path,
-        body,
         token,
-        req: { params: { deliveryInfoId: deliveryId }, body },
+        params: { deliveryInfoId: deliveryId },
+        body,
       })
     }
   })
@@ -102,10 +86,8 @@ export default function ({
     assert(!!deliveryIds.length)
     for (const deliveryId of deliveryIds) {
       await testDeleteDelivery({
-        server,
-        path: deliveryPath + '/' + deliveryId,
         token,
-        req: { params: { deliveryInfoId: deliveryId } },
+        params: { deliveryInfoId: deliveryId },
       })
     }
   })
@@ -114,10 +96,8 @@ export default function ({
     assert(!!deliveryIds.length)
     for (const deliveryId of deliveryIds) {
       await testGetNonExistentDelivery({
-        server,
-        path: `${deliveryPath}/${deliveryId}`,
         token,
-        req: { params: { deliveryInfoId: deliveryId } },
+        params: { deliveryInfoId: deliveryId },
       })
     }
   })
