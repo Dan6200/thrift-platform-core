@@ -17,7 +17,7 @@ const testCreateDelivery = (testRequest as TestRequestWithBody)({
   verb: 'post',
   statusCode: CREATED,
   validateTestReqData: isValidDeliveryInfoCreateRequest,
-  validateTestResData: isValidDeliveryInfoId,
+  validateTestResData: isValidDeliveryInfoResponse,
 })
 
 const testGetAllDelivery = (testRequest as TestRequest)({
