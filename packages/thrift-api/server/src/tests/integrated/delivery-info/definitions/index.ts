@@ -2,13 +2,15 @@ import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
 import { TestRequest, RequestParams } from '../../test-request/types.js'
 import {
-  isValidDeliveryInfoCreateRequest,
-  isValidDeliveryInfoGetRequest,
-  isValidDeliveryInfoUpdateRequest,
-  isValidDeliveryInfoDeleteRequest,
-  isValidDeliveryInfoResponseList,
-  isValidDeliveryInfoResponse,
-} from '../../helpers/type-guards/delivery-info.js'
+  DeliveryInfoCreateRequestSchema,
+  DeliveryInfoGetRequestSchema,
+  DeliveryInfoUpdateRequestSchema,
+  DeliveryInfoDeleteRequestSchema,
+  DeliveryInfoResponseListSchema,
+  DeliveryInfoResponseSchema,
+  DeliveryInfoSchemaID,
+} from '#src/app-schema/delivery-info.js'
+import { validateTestData } from '../../helpers/test-validators.js'
 
 const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes
 
@@ -25,8 +27,14 @@ export const testCreateDelivery = (args: { token: string; body: any }) => {
     verb: 'post',
     statusCode: CREATED,
     path: deliveryPathBase,
-    validateTestReqData: isValidDeliveryInfoCreateRequest,
-    validateTestResData: isValidDeliveryInfoResponse,
+    validateTestReqData: (data) =>
+      validateTestData(
+        DeliveryInfoCreateRequestSchema,
+        data,
+        'Delivery Info Create Request Validation Error',
+      ),
+    validateTestResData: (data) =>
+      validateTestData(DeliveryInfoSchemaID, data, 'Delivery Info ID Validation Error'),
   })({
     ...requestParams,
   })
@@ -40,7 +48,18 @@ export const testGetAllDelivery = (args: { token: string }) => {
     statusCode: OK,
     verb: 'get',
     path: deliveryPathBase,
-    validateTestResData: isValidDeliveryInfoResponseList,
+    validateTestReqData: (data) =>
+      validateTestData(
+        DeliveryInfoGetRequestSchema,
+        data,
+        'Delivery Info Get All Request Validation Error',
+      ),
+    validateTestResData: (data) =>
+      validateTestData(
+        DeliveryInfoResponseListSchema,
+        data,
+        'Delivery Info Response List Validation Error',
+      ),
   })({
     ...requestParams,
   })
@@ -59,8 +78,18 @@ export const testGetDelivery = (args: {
     statusCode: OK,
     verb: 'get',
     path,
-    validateTestReqData: isValidDeliveryInfoGetRequest,
-    validateTestResData: isValidDeliveryInfoResponse,
+    validateTestReqData: (data) =>
+      validateTestData(
+        DeliveryInfoGetRequestSchema,
+        data,
+        'Delivery Info Get Request Validation Error',
+      ),
+    validateTestResData: (data) =>
+      validateTestData(
+        DeliveryInfoResponseSchema,
+        data,
+        'Delivery Info Response Validation Error',
+      ),
   })({
     ...requestParams,
   })
@@ -81,8 +110,14 @@ export const testUpdateDelivery = (args: {
     statusCode: OK,
     verb: 'patch',
     path,
-    validateTestReqData: isValidDeliveryInfoUpdateRequest,
-    validateTestResData: isValidDeliveryInfoResponse,
+    validateTestReqData: (data) =>
+      validateTestData(
+        DeliveryInfoUpdateRequestSchema,
+        data,
+        'Delivery Info Update Request Validation Error',
+      ),
+    validateTestResData: (data) =>
+      validateTestData(DeliveryInfoSchemaID, data, 'Delivery Info ID Validation Error'),
   })({
     ...requestParams,
   })
@@ -101,7 +136,12 @@ export const testDeleteDelivery = (args: {
     statusCode: NO_CONTENT,
     verb: 'delete',
     path,
-    validateTestReqData: isValidDeliveryInfoDeleteRequest,
+    validateTestReqData: (data) =>
+      validateTestData(
+        DeliveryInfoDeleteRequestSchema,
+        data,
+        'Delivery Info Delete Request Validation Error',
+      ),
     validateTestResData: null,
   })({
     ...requestParams,
@@ -121,9 +161,14 @@ export const testGetNonExistentDelivery = (args: {
     verb: 'get',
     statusCode: NOT_FOUND,
     path,
+    validateTestReqData: (data) =>
+      validateTestData(
+        DeliveryInfoGetRequestSchema,
+        data,
+        'Delivery Info Get Request Validation Error',
+      ),
     validateTestResData: null,
   })({
     ...requestParams,
   })
 }
-
