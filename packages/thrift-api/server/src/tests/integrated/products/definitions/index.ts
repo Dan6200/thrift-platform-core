@@ -1,85 +1,216 @@
 import chai from 'chai'
-import chaiHttp from 'chai-http'
 import { StatusCodes } from 'http-status-codes'
+import testRequest from '../../test-request/index.js'
+import { TestRequest, RequestParams } from '../../test-request/types.js'
 import {
-  isValidProductUpdateRequestData,
-  isValidProductCreateRequestData,
-  isValidProductGETResponseData,
-  isValidProductResponseData,
-  isValidProductId,
-  isValidProductGETAllResponseData,
-} from '../../helpers/type-guards/products.js'
+  validateProductCreateReq,
+  validateProductUpdateReq,
+  validateProductDeleteReq,
+  validateProductGetReq,
+  validateProductGetAllReq,
+  validateProductGETAllRes,
+  validateProductGETRes,
+  validateProductRes,
+} from '../../helpers/test-validators/products.js'
 import {
-  TestRequestWithQParams,
-  TestRequestWithQParamsAndBody,
-} from '../../test-request/types.js'
-import testRoutes from '../../test-request/index.js'
-import {
-  isValidVariantId,
-  isValidVariantRequestData,
-  isValidVariantUpdateRequestData,
-  isValidVariantResponseData,
-  isValidVariantIdResponseData,
-} from '../../helpers/type-guards/variants.js'
+  ProductRequestData,
+  ProductResponseData,
+} from '#src/types/products/index.js'
 
-chai.use(chaiHttp).should()
+const { CREATED, OK, NOT_FOUND, UNAUTHORIZED, NO_CONTENT } = StatusCodes
 
-const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes
+const productsPathBase = '/v1/products'
+const buildProductPath = (productId: number) =>
+  `${productsPathBase}/${productId}`
 
-export const testPostProduct = (<TestRequestWithQParamsAndBody>testRoutes)({
-  statusCode: CREATED,
-  verb: 'post',
-  validateTestReqData: isValidProductCreateRequestData,
-  validateTestResData: isValidProductId,
-})
+const compareProductData = (actual: any, expected: ProductResponseData) => {
+  const actualProduct = actual as ProductResponseData
+  // console.log('actual product', actualProduct)
+  // console.log('expected product', expected)
 
-export const testGetAllProducts = (<TestRequestWithQParams>testRoutes)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: isValidProductGETAllResponseData,
-})
+  actualProduct.title.should.equal(expected.title)
+  actualProduct.description.should.deep.equal(expected.description)
+  actualProduct.list_price.should.equal(expected.list_price)
+  actualProduct.net_price.should.equal(expected.net_price)
+  actualProduct.category_id.should.equal(expected.category_id)
+  actualProduct.subcategory_id.should.equal(expected.subcategory_id)
 
-export const testGetProduct = (<TestRequestWithQParams>testRoutes)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: isValidProductGETResponseData,
-})
+  // Assert that server-generated fields exist and are of the correct type
+  actualProduct.should.have.property('product_id').that.is.a('number')
+  actualProduct.should.have.property('vendor_id').that.is.a('string')
+  actualProduct.should.have.property('store_id').that.is.a('number')
+  actualProduct.should.have.property('created_at').that.is.a('string')
+  actualProduct.should.have.property('updated_at').that.is.a('string')
 
-export const testUpdateProduct = (<TestRequestWithQParamsAndBody>testRoutes)({
-  statusCode: OK,
-  verb: 'patch',
-  validateTestReqData: isValidProductUpdateRequestData,
-  validateTestResData: isValidProductResponseData,
-})
+  // Check that timestamps are recent (within the last 5 seconds)
+  const now = new Date()
+  const createdAt = new Date(actualProduct.created_at!)
+  const updatedAt = new Date(actualProduct.updated_at!)
+  const oneSecond = 1000 // 1000 milliseconds
 
-export const testDeleteProduct = (<TestRequestWithQParams>testRoutes)({
-  statusCode: NO_CONTENT,
-  verb: 'delete',
-  validateTestResData: null,
-})
+  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
+  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
 
-export const testGetNonExistentProduct = (<TestRequestWithQParams>testRoutes)({
-  verb: 'get',
-  statusCode: NOT_FOUND,
-  validateTestResData: null,
-})
+  // Compare variants and options
+  actualProduct.should.have.property('variants').that.is.an('array')
+  if (expected.variants) {
+    actualProduct.variants!.length.should.equal(expected.variants.length)
+    for (let i = 0; i < expected.variants.length; i++) {
+      const actualVariant = actualProduct.variants![i]
+      const expectedVariant = expected.variants[i]
+      actualVariant.sku.should.equal(expectedVariant.sku)
+      const expectedListPrice =
+        expectedVariant.list_price ?? expected.list_price
+      const expectedNetPrice = expectedVariant.net_price ?? expected.net_price
+      actualVariant.list_price.should.equal(expectedListPrice)
+      actualVariant.net_price.should.equal(expectedNetPrice)
+      actualVariant.quantity_available.should.equal(
+        expectedVariant.quantity_available,
+      )
+      actualVariant.should.have.property('options').that.is.an('array')
+      if (expectedVariant.options) {
+        actualVariant.options!.length.should.equal(
+          expectedVariant.options.length,
+        )
+        for (let j = 0; j < expectedVariant.options.length; j++) {
+          const actualOption = actualVariant.options![j]
+          const expectedOption = expectedVariant.options[j]
+          actualOption.option_name.should.equal(expectedOption.option_name)
+          actualOption.value.should.equal(expectedOption.value)
+        }
+      }
+    }
+  }
 
-export const testPostVariant = (<TestRequestWithQParamsAndBody>testRoutes)({
-  statusCode: CREATED,
-  verb: 'post',
-  validateTestReqData: isValidVariantRequestData,
-  validateTestResData: isValidVariantIdResponseData,
-})
+  return true
+}
 
-export const testUpdateVariant = (<TestRequestWithQParamsAndBody>testRoutes)({
-  statusCode: OK,
-  verb: 'patch',
-  validateTestReqData: isValidVariantUpdateRequestData,
-  validateTestResData: isValidVariantResponseData,
-})
+export const testCreateProduct = (args: {
+  token: string
+  body: any
+  query: { storeId: number }
+  expectedData: ProductRequestData
+}) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: args.body,
+    query: args.query,
+  }
+  return (testRequest as TestRequest)({
+    verb: 'post',
+    statusCode: CREATED,
+    path: productsPathBase,
+    validateTestReqData: validateProductCreateReq,
+    validateTestResData: validateProductRes,
+    compareData: (actual, expected) =>
+      compareProductData(actual, expected as ProductResponseData),
+    expectedData: args.expectedData,
+  })(requestParams)
+}
 
-export const testDeleteVariant = (<TestRequestWithQParams>testRoutes)({
-  statusCode: NO_CONTENT,
-  verb: 'delete',
-  validateTestResData: null,
-})
+export const testGetAllProducts = (args: {
+  token: string
+  query: { storeId: number }
+}) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    query: args.query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path: productsPathBase,
+    validateTestReqData: validateProductGetAllReq,
+    validateTestResData: validateProductGETAllRes,
+  })(requestParams)
+}
+
+export const testGetProduct = (args: {
+  token: string
+  params: { productId: number }
+  query: { storeId: number }
+  expectedData: ProductResponseData
+}) => {
+  const path = buildProductPath(args.params.productId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    params: args.params,
+    query: args.query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestReqData: validateProductGetReq,
+    validateTestResData: validateProductGETRes,
+    compareData: (actual, expected) =>
+      compareProductData(actual, expected as ProductResponseData),
+    expectedData: args.expectedData,
+  })(requestParams)
+}
+
+export const testUpdateProduct = (args: {
+  token: string
+  params: { productId: number }
+  query: { storeId: number }
+  body: any
+  expectedData: ProductRequestData
+}) => {
+  const path = buildProductPath(args.params.productId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: args.body,
+    params: args.params,
+    query: args.query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'patch',
+    path,
+    validateTestReqData: validateProductUpdateReq,
+    validateTestResData: validateProductRes,
+    compareData: (actual, expected) =>
+      compareProductData(actual, expected as ProductResponseData),
+    expectedData: args.expectedData,
+  })(requestParams)
+}
+
+export const testDeleteProduct = (args: {
+  token: string
+  params: { productId: number }
+  query: { storeId: number }
+}) => {
+  const path = buildProductPath(args.params.productId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    params: args.params,
+    query: args.query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: NO_CONTENT,
+    verb: 'delete',
+    path,
+    validateTestReqData: validateProductDeleteReq,
+    validateTestResData: null,
+  })(requestParams)
+}
+
+export const testGetNonExistentProduct = (args: {
+  token: string
+  params: { productId: number }
+  query: { storeId: number }
+}) => {
+  const path = buildProductPath(args.params.productId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    params: args.params,
+    query: args.query,
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: NOT_FOUND,
+    path,
+    validateTestReqData: validateProductGetReq,
+    validateTestResData: null,
+  })(requestParams)
+}
