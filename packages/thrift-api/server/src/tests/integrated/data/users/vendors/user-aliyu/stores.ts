@@ -24,7 +24,6 @@ export const listOfStores: StoreData[] = [
     },
     pages: [
       {
-        store_id: '1',
         page_slug: 'home',
         page_title: 'Inspire Denims Home',
         page_type: 'homepage',
@@ -199,18 +198,79 @@ export const listOfStores: StoreData[] = [
           },
         ],
       },
+      {
+        page_slug: 'about',
+        page_title: 'About Us',
+        page_type: 'standard',
+        seo_data: {
+          meta_description: 'Learn more about Inspire Denims.',
+          canonical_url: 'https://inspiredenims.com/about',
+          keywords: ['about us', 'story'],
+        },
+        sections: [],
+      },
+    ],
+  },
+  // Store 2: Store with no pages
+  {
+    store_name: 'Minimalist Wears',
+    favicon: null,
+    custom_domain: 'minimalist.com',
+    store_address: {
+      address_line_1: '789 Side St',
+      address_line_2: '',
+      city: 'Ibadan',
+      state: 'Oyo',
+      zip_postal_code: '200284',
+      country: 'Nigeria',
+    },
+    global_styles: {
+      layout_template: 'minimal',
+      font_family: 'Inter',
+    },
+    pages: [],
+  },
+  // Store 3: Store with a page but no sections
+  {
+    store_name: 'Sectionless Styles',
+    favicon: null,
+    custom_domain: null,
+    store_address: {
+      address_line_1: '101 Blank Canvas',
+      address_line_2: '',
+      city: 'Kano',
+      state: 'Kano',
+      zip_postal_code: '700231',
+      country: 'Nigeria',
+    },
+    global_styles: {
+      layout_template: 'grid',
+      font_family: 'Lato',
+    },
+    pages: [
+      {
+        page_slug: 'about',
+        page_title: 'About Us',
+        page_type: 'standard',
+        seo_data: {
+          meta_description: 'Learn more about Sectionless Styles.',
+          canonical_url: 'https://sectionless.com/about',
+          keywords: ['about us', 'story'],
+        },
+        sections: [],
+      },
     ],
   },
 ]
 
-export const updatedStores: StoreData[] = [
+export const updatedStores: Partial<StoreData>[] = [
   {
     store_name: 'Inspire Denims',
     favicon: 'https://inspiredenims.com/favicon.ico',
     custom_domain: 'inspiredenims.com',
     store_address: {
       address_line_1: '456, New Street',
-      address_line_2: 'Ikeja',
+      address_line_2: '100 Carpark',
       city: 'Lagos',
       state: 'Lagos',
       zip_postal_code: '100001',
@@ -226,7 +286,6 @@ export const updatedStores: StoreData[] = [
     },
     pages: [
       {
-        store_id: '1',
         page_slug: 'home',
         page_title: 'Inspire Denims Home - Updated',
         page_type: 'homepage',
@@ -260,4 +319,84 @@ export const updatedStores: StoreData[] = [
       },
     ],
   },
+  // Update for Store 2
+  {
+    store_name: 'Maximalist Wears',
+    custom_domain: 'maximalist.com',
+    store_address: {
+      address_line_1: '789 Main St',
+      address_line_2: 'Suite 100',
+      city: 'Ibadan',
+      state: 'Oyo',
+      zip_postal_code: '200285',
+      country: 'Nigeria',
+    },
+    global_styles: {
+      layout_template: 'default',
+      font_family: 'Roboto',
+    },
+    // Adding a page to test update
+    pages: [
+      {
+        page_slug: 'contact',
+        page_title: 'Contact Us',
+        page_type: 'standard',
+        seo_data: {
+          meta_description: 'Get in touch with Maximalist Wears.',
+          canonical_url: 'https://maximalist.com/contact',
+          keywords: ['contact', 'support'],
+        },
+        sections: [
+          {
+            section_type: 'text_block',
+            sort_order: 0,
+            section_title: 'Our Location',
+            section_data: {
+              content: 'Find us at 789 Main St, Ibadan.',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  // Update for Store 3
+  {
+    store_name: 'Section-Full Styles',
+    store_address: {
+      address_line_1: '101 Blank Canvas',
+      address_line_2: '',
+      city: 'Kano',
+      state: 'Kano',
+      zip_postal_code: '700231',
+      country: 'Nigeria',
+    },
+    global_styles: {
+      layout_template: 'grid',
+      font_family: 'Lato',
+    },
+    pages: [
+      {
+        page_slug: 'about',
+        page_title: 'About Our Company',
+        page_type: 'standard',
+        seo_data: {
+          meta_description: 'Learn more about Section-Full Styles.',
+          canonical_url: 'https://sectionfull.com/about',
+          keywords: ['about us', 'company'],
+        },
+        // Adding a section to test update
+        sections: [
+          {
+            section_type: 'hero',
+            sort_order: 0,
+            section_title: 'Our Story',
+            section_data: {
+              subtitle: 'From humble beginnings.',
+            },
+          },
+        ],
+      },
+    ],
+  },
 ]
+
