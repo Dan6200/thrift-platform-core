@@ -36,6 +36,7 @@ export default function ({
   it("should have a customer's account", () =>
     testHasCustomerAccount({
       token,
+      expectedData: userInfo,
     }))
 
   it(`it should add multiple delivery addresses for the customer`, async () => {
@@ -44,6 +45,7 @@ export default function ({
       const { delivery_info_id } = await testCreateDelivery({
         body,
         token,
+        expectedData: body,
       })
       deliveryIds.push(delivery_info_id)
     }
@@ -57,10 +59,11 @@ export default function ({
 
   it('it should retrieve all delivery information through a loop', async () => {
     assert(!!deliveryIds.length)
-    for (const deliveryId of deliveryIds) {
+    for (const [idx, deliveryId] of deliveryIds.entries()) {
       await testGetDelivery({
         token,
         params: { deliveryInfoId: deliveryId },
+        expectedData: listOfDeliveryInfo[idx],
       })
     }
   })
@@ -76,6 +79,7 @@ export default function ({
         token,
         params: { deliveryInfoId: deliveryId },
         body,
+        expectedData: body,
       })
     }
   })

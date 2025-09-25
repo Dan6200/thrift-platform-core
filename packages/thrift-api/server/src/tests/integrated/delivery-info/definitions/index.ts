@@ -10,6 +10,7 @@ import {
   DeliveryInfoResponseSchema,
 } from '#src/app-schema/delivery-info.js'
 import { validateTestData } from '../../helpers/test-validators.js'
+import { DeliveryInfo } from '#src/types/delivery-info.js'
 
 const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes
 
@@ -57,7 +58,24 @@ const validateDeliveryInfoListRes = (data: unknown) =>
     'Delivery Info Response List Validation Error',
   )
 
-export const testCreateDelivery = (args: { token: string; body: any }) => {
+const compareDeliveryInfoData = (actual: any, expected: DeliveryInfo) => {
+  validateDeliveryInfoRes(actual)
+  const actualDeliveryInfo = actual as DeliveryInfo
+
+  actualDeliveryInfo.recipient_full_name.should.equal(expected.recipient_full_name)
+  actualDeliveryInfo.address_line_1.should.equal(expected.address_line_1)
+  actualDeliveryInfo.address_line_2.should.equal(expected.address_line_2)
+  actualDeliveryInfo.city.should.equal(expected.city)
+  actualDeliveryInfo.state.should.equal(expected.state)
+  actualDeliveryInfo.zip_postal_code.should.equal(expected.zip_postal_code)
+  actualDeliveryInfo.country.should.equal(expected.country)
+  actualDeliveryInfo.phone_number.should.equal(expected.phone_number)
+  actualDeliveryInfo.delivery_instructions.should.equal(expected.delivery_instructions)
+
+  return true
+}
+
+export const testCreateDelivery = (args: { token: string; body: any; expectedData: DeliveryInfo }) => {
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
@@ -68,6 +86,9 @@ export const testCreateDelivery = (args: { token: string; body: any }) => {
     path: deliveryPathBase,
     validateTestReqData: validateDeliveryInfoCreateReq,
     validateTestResData: validateDeliveryInfoRes,
+    compareData: (actual, expected) =>
+      compareDeliveryInfoData(actual, expected as DeliveryInfo),
+    expectedData: args.expectedData,
   })({
     ...requestParams,
   })
@@ -90,6 +111,7 @@ export const testGetAllDelivery = (args: { token: string }) => {
 export const testGetDelivery = (args: {
   token: string
   params: { deliveryInfoId: number }
+  expectedData: DeliveryInfo
 }) => {
   const path = buildDeliveryInfoPath(args.params.deliveryInfoId)
   const requestParams: RequestParams = {
@@ -102,6 +124,9 @@ export const testGetDelivery = (args: {
     path,
     validateTestReqData: validateDeliveryInfoGetReq,
     validateTestResData: validateDeliveryInfoRes,
+    compareData: (actual, expected) =>
+      compareDeliveryInfoData(actual, expected as DeliveryInfo),
+    expectedData: args.expectedData,
   })({
     ...requestParams,
   })
@@ -111,6 +136,7 @@ export const testUpdateDelivery = (args: {
   token: string
   params: { deliveryInfoId: number }
   body: any
+  expectedData: DeliveryInfo
 }) => {
   const path = buildDeliveryInfoPath(args.params.deliveryInfoId)
   const requestParams: RequestParams = {
@@ -124,6 +150,9 @@ export const testUpdateDelivery = (args: {
     path,
     validateTestReqData: validateDeliveryInfoUpdateReq,
     validateTestResData: validateDeliveryInfoRes,
+    compareData: (actual, expected) =>
+      compareDeliveryInfoData(actual, expected as DeliveryInfo),
+    expectedData: args.expectedData,
   })({
     ...requestParams,
   })
@@ -168,4 +197,3 @@ export const testGetNonExistentDelivery = (args: {
     ...requestParams,
   })
 }
-
