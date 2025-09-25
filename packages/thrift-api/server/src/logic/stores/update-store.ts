@@ -18,6 +18,7 @@ export const updateStoreLogic = async (
 
   const trx = await knex.transaction()
   try {
+    // Get the address_id of the store to update the associated address
     const store = await trx('stores')
       .where('store_id', storeId)
       .select('address_id')
