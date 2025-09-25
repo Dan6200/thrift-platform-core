@@ -28,16 +28,16 @@ router
   .route('/:storeId/staff')
   .post(
     authenticateUser,
-    hasStoreAccess(['admin']),
     validate(AddStoreStaffRequestSchema),
+    hasStoreAccess(['admin']),
     addStaffLogic,
     validateDbResult(StoreStaffResponseSchema),
     sendResponse(CREATED),
   )
   .get(
     authenticateUser,
-    hasStoreAccess(['admin', 'editor', 'viewer']),
     validate(ListStoreStaffRequestSchema),
+    hasStoreAccess(['admin', 'editor', 'viewer']),
     listStaffLogic,
     validateDbResult(StoreStaffListResponseSchema),
     sendResponse(OK),
@@ -47,16 +47,16 @@ router
   .route('/:storeId/staff/:staffId')
   .patch(
     authenticateUser,
-    hasStoreAccess(['admin']),
     validate(UpdateStoreStaffRequestSchema),
+    hasStoreAccess(['admin']),
     updateStaffLogic,
     validateDbResult(StoreStaffResponseSchema),
     sendResponse(OK),
   )
   .delete(
     authenticateUser,
-    hasStoreAccess(['admin']),
     validate(RemoveStoreStaffRequestSchema),
+    hasStoreAccess(['admin']),
     removeStaffLogic,
     validateDbResult(RemoveStaffResponse),
     sendResponse(NO_CONTENT),
