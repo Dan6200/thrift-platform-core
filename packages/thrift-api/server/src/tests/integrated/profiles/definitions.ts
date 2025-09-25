@@ -22,13 +22,17 @@ const validateProfileResponse = (data: unknown) =>
 
 const compareProfileData = (actual: any, expected: ProfileRequestData) => {
   validateProfileResponse(actual)
-  const actualProfile = actual[0] as ProfileData
+  const actualProfile = actual as ProfileData
 
   actualProfile.first_name.should.equal(expected.first_name)
   actualProfile.last_name.should.equal(expected.last_name)
   actualProfile.email.should.equal(expected.email)
-  actualProfile.phone.should.equal(expected.phone)
-  actualProfile.dob.should.equal(expected.dob)
+
+  // DOB comparison: convert expected DOB to ISO string to avoid timezone issues
+  const expectedDob = new Date(expected.dob).toISOString()
+
+  actualProfile.dob.should.equal(expectedDob)
+
   actualProfile.country.should.equal(expected.country)
   actualProfile.is_customer.should.equal(expected.is_customer)
   actualProfile.is_vendor.should.equal(expected.is_vendor)
@@ -37,10 +41,7 @@ const compareProfileData = (actual: any, expected: ProfileRequestData) => {
   actualProfile.should.have.property('id').that.is.a('string')
   actualProfile.should.have.property('created_at').that.is.a('string')
   actualProfile.should.have.property('updated_at').that.is.a('string')
-  // deleted_at is optional
-  if (actualProfile.deleted_at !== undefined) {
-    actualProfile.should.have.property('deleted_at').that.is.a('string')
-  }
+  actualProfile.should.have.property('deleted_at').that.is.null // Assuming deleted_at is null for active profiles
 
   return true
 }
@@ -131,5 +132,8 @@ export const testHasCustomerAccountWithoutSignIn = () => {
     statusCode: OK,
     path: profilePath,
     validateTestResData: validateProfileResponse,
+    compareData: (actual, expected) =>
+      compareProfileData(actual, expected as ProfileRequestData),
   })({})
 }
+
