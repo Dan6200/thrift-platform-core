@@ -76,6 +76,8 @@ interface Page {
   page_type: 'homepage' | 'standard' | 'product_list' | 'custom'
   seo_data: SeoData
   sections: (ProductGrid | HeroSection | TextBlockSection)[]
+  created_at?: Date
+  updated_at?: Date
 }
 
 interface SectionData {
@@ -129,6 +131,8 @@ export default interface StoreData {
     updated_at?: Date
   }
   pages?: Page[]
+  created_at?: Date
+  updated_at?: Date
 }
 
 export interface StoreDataId {
@@ -136,23 +140,23 @@ export interface StoreDataId {
 }
 
 export interface StoreCreateRequest {
-  body: StoreData;
+  body: StoreData
 }
 
 export interface StoreGetAllRequest {
-  query?: { vendor_id?: string };
+  query?: { vendor_id?: string }
 }
 
 export interface StoreGetRequest {
-  params: { storeId: number };
-  query?: { vendor_id?: string };
+  params: { storeId: number }
+  query?: { vendor_id?: string }
 }
 
 export interface StoreUpdateRequest {
-  params: { storeId: number };
-  body: StoreData;
+  params: { storeId: number }
+  body: StoreData
 }
 
 export interface StoreDeleteRequest {
-  params: { storeId: number };
+  params: { storeId: number }
 }
