@@ -70,7 +70,7 @@ interface StoreStyling {
 }
 
 interface Page {
-  store_id: string
+  page_id?: string
   page_slug: string
   page_title: string
   page_type: 'homepage' | 'standard' | 'product_list' | 'custom'
@@ -86,6 +86,8 @@ interface SectionData {
   section_data: any
   sort_order: number
   styles?: Partial<StoreStyling>
+  created_at?: Date
+  updated_at?: Date
 }
 
 interface ProductGrid extends SectionData {
