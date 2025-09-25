@@ -29,118 +29,116 @@ const RequestVariantSchema = joi.object({
   options: joi.array().items(RequestVariantOptionSchema).min(1).required(),
 })
 
-export const ProductUpdateRequestSchema = joi
+// Base Schemas
+export const ProductUpdateDataSchema = joi.object({
+  title: joi.string().required(),
+  category_id: joi.number().required(),
+  subcategory_id: joi.number().required(),
+  description: joi.array().items(joi.string()),
+  list_price: joi.number().required(),
+  net_price: joi.number().required(),
+  variants: joi.array().items(RequestVariantSchema).optional(),
+})
+
+export const ProductCreateDataSchema = joi.object({
+  title: joi.string().required(),
+  category_id: joi.number().required(),
+  subcategory_id: joi.number().required(),
+  description: joi.array().items(joi.string()),
+  list_price: joi.number().required(),
+  net_price: joi.number().required(),
+  variants: joi.array().items(RequestVariantSchema).min(1).required(),
+})
+
+// Request Schemas
+export const ProductCreateRequestSchema = joi.object({
+  body: ProductCreateDataSchema.required(),
+  query: joi
+    .object({ storeId: joi.number().integer().positive().required() })
+    .required(),
+  params: joi.object().optional(),
+})
+
+export const ProductUpdateRequestSchema = joi.object({
+  body: ProductUpdateDataSchema.required(),
+  query: joi
+    .object({ storeId: joi.number().integer().positive().required() })
+    .required(),
+  params: joi
+    .object({ productId: joi.number().integer().positive().required() })
+    .required(),
+})
+
+export const ProductDeleteRequestSchema = joi.object({
+  query: joi
+    .object({ storeId: joi.number().integer().positive().required() })
+    .required(),
+  params: joi
+    .object({ productId: joi.number().integer().positive().required() })
+    .required(),
+  body: joi.object().optional(),
+})
+
+export const ProductGetRequestSchema = joi.object({
+  params: joi
+    .object({ productId: joi.number().integer().positive().required() })
+    .required(),
+  query: joi.object().optional(),
+  body: joi.object().optional(),
+})
+
+export const ProductGetAllRequestSchema = joi.object({
+  query: joi
+    .object({ storeId: joi.number().integer().positive().required() })
+    .required(),
+  params: joi.object().optional(),
+  body: joi.object().optional(),
+})
+
+export const ProductResponseSchema = joi
   .object({
+    product_id: joi.number().required(),
     title: joi.string().required(),
     category_id: joi.number().required(),
     subcategory_id: joi.number().required(),
     description: joi.array().items(joi.string()),
     list_price: joi.number().required(),
-    net_price: joi.number().required(),
-    variants: joi.array().items(RequestVariantSchema).optional(),
+    net_price: joi.number().allow(null).required(),
+    vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
+    store_id: joi.number().required(),
+    variants: joi.array().items(VariantSchema).allow(null),
+    created_at: joi.date().required(),
+    updated_at: joi.date().required(),
   })
-  .required()
-
-export const ProductCreateRequestSchema = joi
-  .object({
-    title: joi.string().required(),
-    category_id: joi.number().required(),
-    subcategory_id: joi.number().required(),
-    description: joi.array().items(joi.string()),
-    list_price: joi.number().required(),
-    net_price: joi.number().required(),
-    variants: joi.array().items(RequestVariantSchema).min(1).required(),
-  })
-  .required()
-
-export const ProductIdSchema = joi
-  .array()
-  .items(
-    joi.object({
-      product_id: joi.number().required(),
-    }),
-  )
-  .length(1)
   .required()
 
 export const ProductGETResponseSchema = joi
-  .array()
-  .items(
-    joi.object({
-      product_id: joi.number().required(),
-      title: joi.string().required(),
-      category_id: joi.number().required(),
-      category_name: joi.string().required(),
-      subcategory_id: joi.number().required(),
-      subcategory_name: joi.string().required(),
-      description: joi.array().items(joi.string()),
-      list_price: joi.number().required(),
-      net_price: joi.number().allow(null).required(),
-      products_sold: joi.number().required(),
-      average_rating: joi.number().allow(null).required(),
-      review_count: joi.number().allow(null).required(),
-      vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
-      store_id: joi.number().required(),
-      media: joi.array().allow(null),
-      variants: joi.array().items(VariantSchema).allow(null),
-      created_at: joi.date().required(),
-      updated_at: joi.date().required(),
-    }),
-  )
-  .length(1)
-  .required()
-
-export const ProductResponseSchema = joi
-  .array()
-  .items(
-    joi.object({
-      product_id: joi.number().required(),
-      title: joi.string().required(),
-      category_id: joi.number().required(),
-      subcategory_id: joi.number().required(),
-      description: joi.array().items(joi.string()),
-      list_price: joi.number().required(),
-      net_price: joi.number().allow(null).required(),
-      vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
-      store_id: joi.number().required(),
-      created_at: joi.date().required(),
-      updated_at: joi.date().required(),
-    }),
-  )
-  .length(1)
+  .object({
+    product_id: joi.number().required(),
+    title: joi.string().required(),
+    category_id: joi.number().required(),
+    category_name: joi.string().required(),
+    subcategory_id: joi.number().required(),
+    subcategory_name: joi.string().required(),
+    description: joi.array().items(joi.string()),
+    list_price: joi.number().required(),
+    net_price: joi.number().allow(null).required(),
+    products_sold: joi.number().required(),
+    average_rating: joi.number().allow(null).required(),
+    review_count: joi.number().allow(null).required(),
+    vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
+    store_id: joi.number().required(),
+    media: joi.array().allow(null),
+    variants: joi.array().items(VariantSchema).allow(null),
+    created_at: joi.date().required(),
+    updated_at: joi.date().required(),
+  })
   .required()
 
 export const ProductGETAllResponseSchema = joi
-  .array()
-  .items(
-    joi.object({
-      products: joi
-        .array()
-        .items(
-          joi.object({
-            product_id: joi.number().required(),
-            title: joi.string().required(),
-            category_id: joi.number().required(),
-            category_name: joi.string().required(),
-            subcategory_id: joi.number().required(),
-            subcategory_name: joi.string().required(),
-            description: joi.array().items(joi.string()).allow(null),
-            list_price: joi.number().required(),
-            net_price: joi.number().allow(null).required(),
-            products_sold: joi.number().required(),
-            average_rating: joi.number().allow(null).required(),
-            review_count: joi.number().allow(null).required(),
-            vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
-            store_id: joi.number().required(),
-            media: joi.array().allow(null),
-            variants: joi.array().items(VariantSchema).allow(null),
-            created_at: joi.date().required(),
-            updated_at: joi.date().required(),
-          }),
-        )
-        .allow(null),
-      total_count: joi.number().required(),
-    }),
-  )
-  .length(1)
+  .object({
+    products: joi.array().items(ProductGETResponseSchema).allow(null),
+    total_count: joi.number().required(),
+  })
   .required()
+
