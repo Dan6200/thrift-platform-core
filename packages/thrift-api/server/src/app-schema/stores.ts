@@ -82,7 +82,6 @@ const StoreStylingSchema = joi
   .allow(null)
 
 const PageSchemaRequest = joi.object({
-  store_id: joi.number().required(),
   page_slug: joi.string().required(),
   page_title: joi.string().required(),
   page_type: joi
@@ -140,7 +139,7 @@ export const StoreDataRequestSchema = joi.object({
   store_address: joi
     .object({
       address_line_1: joi.string().required(),
-      address_line_2: joi.string().optional(),
+      address_line_2: joi.string().allow(null, '').optional(),
       city: joi.string().required(),
       state: joi.string().required(),
       zip_postal_code: joi.string().required(),
@@ -158,7 +157,7 @@ export const StoreDataRequestPartialSchema = joi.object({
   store_address: joi
     .object({
       address_line_1: joi.string().optional(),
-      address_line_2: joi.string().optional(),
+      address_line_2: joi.string().allow(null, '').optional(),
       city: joi.string().optional(),
       state: joi.string().optional(),
       zip_postal_code: joi.string().optional(),
@@ -232,7 +231,7 @@ export const StoreDataResponseSchema = joi
       .object({
         address_id: joi.number().required(),
         address_line_1: joi.string().required(),
-        address_line_2: joi.string().allow(null).optional(),
+        address_line_2: joi.string().allow(null, '').optional(),
         city: joi.string().required(),
         state: joi.string().required(),
         zip_postal_code: joi.string().required(),
