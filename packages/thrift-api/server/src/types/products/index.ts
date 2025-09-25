@@ -25,6 +25,7 @@ export type ProductResponseData = {
   net_price: number
   variants?: ProductVariant[]
   media?: ProductMedia[]
+  created_at?: Date
   updated_at?: Date
 }
 
@@ -79,3 +80,4 @@ export type ProductMedia = MediaType & {
 export interface ProductID {
   product_id: number
 }
+
