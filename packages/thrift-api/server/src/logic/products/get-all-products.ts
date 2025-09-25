@@ -10,16 +10,15 @@ export const getAllProductsLogic = async (
   const { storeId, limit, sort, offset } = req.validatedQueryParams!
   let params: (string | undefined)[] = []
   let whereClause = ''
-  let paramIndex = 1
 
   if (req.userId && storeId) {
-    whereClause = `WHERE p.vendor_id=$${paramIndex} AND p.store_id=$${paramIndex + 1}`
+    whereClause = `WHERE p.vendor_id=:vendorId AND p.store_id=:storeId`
     params.push(req.userId, storeId)
   } else if (req.userId) {
-    whereClause = `WHERE p.vendor_id=$${paramIndex}`
+    whereClause = `WHERE p.vendor_id=:vendorId`
     params.push(req.userId)
   } else if (storeId) {
-    whereClause = `WHERE p.store_id=$${paramIndex}`
+    whereClause = `WHERE p.store_id=:storeId`
     params.push(storeId)
   }
 
@@ -89,7 +88,12 @@ export const getAllProductsLogic = async (
 SELECT JSON_AGG(product_data) AS products,
 	(SELECT COUNT(*) FROM products) AS total_count FROM product_data;`
 
-  const result = await knex.raw(dbQueryString, params)
+  const namedBindings = {
+    vendorId: req.userId,
+    storeId,
+  }
+  const result = await knex.raw(dbQueryString, namedBindings)
   req.dbResult = result.rows[0]
   next()
 }
+
