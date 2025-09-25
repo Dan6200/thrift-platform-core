@@ -204,6 +204,22 @@ export const productPartialUpdate: ProductRequestPartial[] = [
 
 export const variantsToCreate: VariantRequestData[] = [
   {
+    sku: 'FIT-CHG5-BLK',
+    quantity_available: 20,
+    options: [
+      { option_name: 'COLOR', value: 'BLACK' },
+      { option_name: 'BAND', value: 'S/L' },
+    ],
+  },
+  {
+    sku: 'FIT-CHG5-LNR',
+    quantity_available: 15,
+    options: [
+      { option_name: 'COLOR', value: 'LUNAR WHITE' },
+      { option_name: 'BAND', value: 'S/L' },
+    ],
+  },
+  {
     sku: 'AIRPODS-PRO-2-WHT',
     quantity_available: 50,
     options: [{ option_name: 'COLOR', value: 'WHITE' }],
