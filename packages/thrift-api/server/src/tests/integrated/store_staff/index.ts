@@ -39,7 +39,7 @@ export default function ({
     ownerToken = await signInForTesting(vendorInfo)
     staffToken = await signInForTesting(customerInfo)
     const response = await createStoreForTesting(ownerToken)
-    ;[{ store_id: storeId }] = response.body
+    ;({ store_id: storeId } = response.body)
   })
 
   after(async () => {
