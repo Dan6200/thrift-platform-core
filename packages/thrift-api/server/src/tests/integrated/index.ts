@@ -1,7 +1,7 @@
 //cspell:disable
 import testProfile from './profiles/index.js'
 import testProfileWithoutSignIn from './profiles/no-signin.js'
-import testStoresWithNoVendor from './stores/no-vendor-account.js'
+import testStoresWithNoAccess from './stores/no-access.js'
 import testStores from './stores/index.js'
 import testDelivery from './delivery-info/index.js'
 import testProducts from './products/index.js'
@@ -56,7 +56,7 @@ export default function (): void {
 
   for (let vendor of vendors) {
     describe(`Testing Store access without a vendor account`, () =>
-      testStoresWithNoVendor({
+      testStoresWithNoAccess({
         vendorInfo: vendor.userInfo,
         nonVendorInfo: customers[0].userInfo,
         stores: vendor.listOfStores,

@@ -37,6 +37,7 @@ export default function ({
   it("should have a vendor's account", () =>
     testHasVendorAccount({
       token,
+      expectedData: userInfo,
     }))
 
   it('should create a store for the vendor', async () => {
@@ -46,6 +47,7 @@ export default function ({
       const { store_id } = await testCreateStore({
         token,
         body: store,
+        expectedData: store,
       })
       storeIds.push(store_id)
     }
@@ -59,10 +61,11 @@ export default function ({
 
   it('it should fetch all the stores with a loop', async () => {
     assert(!!storeIds.length)
-    for (const storeId of storeIds) {
+    for (const [idx, storeId] of storeIds.entries()) {
       await testGetStore({
         token,
         params: { storeId },
+        expectedData: stores[idx],
       })
     }
   })
@@ -74,6 +77,7 @@ export default function ({
         token,
         params: { storeId },
         body: updatedStores[idx],
+        expectedData: updatedStores[idx],
       })
     }
   })
@@ -100,4 +104,3 @@ export default function ({
 
   after(async () => deleteUserForTesting(userId))
 }
-

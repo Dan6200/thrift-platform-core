@@ -3,6 +3,9 @@ import {
   testCreateStoreWithoutVendorAccount,
   testUpdateStoreWithoutVendorAccount,
   testDeleteStoreWithoutVendorAccount,
+  testCreateStoreWithoutSignin,
+  testUpdateStoreWithoutSignin,
+  testDeleteStoreWithoutSignin,
 } from '../stores/definitions/index.js'
 import assert from 'assert'
 import { ProfileRequestData } from '../../../types/profile/index.js'
@@ -74,5 +77,31 @@ export default function ({
       params: { storeId },
     })
   })
-}
 
+  it('should fail to create a store without signin', async () => {
+    assert(!!stores.length)
+    for (const store of stores) {
+      await testCreateStoreWithoutSignin({
+        token: '',
+        body: store,
+      })
+    }
+  })
+
+  it('should fail to update stores without signin', async () => {
+    for (const store of updatedStores) {
+      await testUpdateStoreWithoutSignin({
+        token: '',
+        params: { storeId },
+        body: store,
+      })
+    }
+  })
+
+  it('should fail to delete stores without signin', async () => {
+    await testDeleteStoreWithoutSignin({
+      token: '',
+      params: { storeId },
+    })
+  })
+}
