@@ -2,11 +2,12 @@ import { Request, Response, NextFunction } from 'express'
 import { knex } from '#src/db/index.js'
 import UnauthorizedError from '../errors/unauthorized.js'
 import BadRequestError from '../errors/bad-request.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
 
 export const hasStoreAccess = (requiredRoles: string[]) => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     if (!req.userId) {
-      throw new UnauthorizedError('Authentication required for store access')
+      throw new UnauthenticatedError('Authentication required for store access')
     }
 
     if (!req.validatedParams || !req.validatedParams.storeId) {
