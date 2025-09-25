@@ -1,3 +1,4 @@
+import chai from 'chai'
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
 import { TestRequest, RequestParams } from '../../test-request/types.js'
@@ -62,7 +63,9 @@ const compareDeliveryInfoData = (actual: any, expected: DeliveryInfo) => {
   validateDeliveryInfoRes(actual)
   const actualDeliveryInfo = actual as DeliveryInfo
 
-  actualDeliveryInfo.recipient_full_name.should.equal(expected.recipient_full_name)
+  actualDeliveryInfo.recipient_full_name.should.equal(
+    expected.recipient_full_name,
+  )
   actualDeliveryInfo.address_line_1.should.equal(expected.address_line_1)
   actualDeliveryInfo.address_line_2.should.equal(expected.address_line_2)
   actualDeliveryInfo.city.should.equal(expected.city)
@@ -70,12 +73,34 @@ const compareDeliveryInfoData = (actual: any, expected: DeliveryInfo) => {
   actualDeliveryInfo.zip_postal_code.should.equal(expected.zip_postal_code)
   actualDeliveryInfo.country.should.equal(expected.country)
   actualDeliveryInfo.phone_number.should.equal(expected.phone_number)
-  actualDeliveryInfo.delivery_instructions.should.equal(expected.delivery_instructions)
+  actualDeliveryInfo.delivery_instructions.should.equal(
+    expected.delivery_instructions,
+  )
+
+  // Assert that server-generated fields exist and are of the correct type
+  actualDeliveryInfo.should.have
+    .property('delivery_info_id')
+    .that.is.a('number')
+  actualDeliveryInfo.should.have.property('created_at').that.is.a('string')
+  actualDeliveryInfo.should.have.property('updated_at').that.is.a('string')
+
+  // Check that timestamps are recent (within the last 5 seconds)
+  const now = new Date()
+  const createdAt = new Date(actualDeliveryInfo.created_at!)
+  const updatedAt = new Date(actualDeliveryInfo.updated_at!)
+  const oneSecond = 1000 // 1000 milliseconds
+
+  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
+  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
 
   return true
 }
 
-export const testCreateDelivery = (args: { token: string; body: any; expectedData: DeliveryInfo }) => {
+export const testCreateDelivery = (args: {
+  token: string
+  body: any
+  expectedData: DeliveryInfo
+}) => {
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
