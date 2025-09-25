@@ -71,12 +71,6 @@ const validateStoreDataRes = (data: unknown) =>
 const compareStoreData = (actual: any, expected: StoreData) => {
   const actualStore = actual as StoreData
 
-  // const diff = jdp.diff(expected, actualStore)
-  // if (diff) {
-  //   console.log('Store data comparison failed. Diff:')
-  //   console.log(util.inspect(diff, null, 2, true))
-  // } else console.log('Store data comparison passed.')
-
   actualStore.store_name.should.equal(expected.store_name)
   expected.custom_domain &&
     actualStore.custom_domain.should.equal(expected.custom_domain)
