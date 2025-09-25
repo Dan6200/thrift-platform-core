@@ -1,3 +1,4 @@
+import chai from 'chai'
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
 import { TestRequest, RequestParams } from '../../test-request/types.js'
@@ -11,6 +12,7 @@ import {
   StoreDataResponseSchema,
 } from '#src/app-schema/stores.js'
 import { validateTestData } from '../../helpers/test-validators.js'
+import StoreData from '#src/types/store-data.js'
 
 const { CREATED, OK, NOT_FOUND, UNAUTHORIZED, NO_CONTENT } = StatusCodes
 
@@ -63,12 +65,42 @@ const validateStoreDataRes = (data: unknown) =>
     'Store Data Response Validation Error',
   )
 
-export const testCreateStore = (args: { token: string; body: any }) => {
+const compareStoreData = (actual: any, expected: StoreData) => {
+  validateStoreDataRes(actual)
+  const actualStore = actual as StoreData
+
+  actualStore.store_name.should.equal(expected.store_name)
+  actualStore.custom_domain.should.equal(expected.custom_domain)
+  actualStore.favicon.should.equal(expected.favicon)
+
+  // Deep comparison for nested objects
+  actualStore.store_address.should.deep.equal(expected.store_address)
+  // For pages and sections, we'll just check for existence and type for now
+  // A more detailed comparison might be needed depending on test requirements
+  actualStore.should.have.property('pages').that.is.an('array')
+
+  // Assert that server-generated fields exist and are of the correct type
+  actualStore.should.have.property('store_id').that.is.a('number')
+  actualStore.should.have.property('vendor_id').that.is.a('string')
+  actualStore.should.have.property('created_at').that.is.a('string')
+  actualStore.should.have.property('updated_at').that.is.a('string')
+
+  // Check that timestamps are recent (within the last 5 seconds)
+  const now = new Date()
+  const createdAt = new Date(actualStore.created_at!)
+  const updatedAt = new Date(actualStore.updated_at!)
+  const fiveSeconds = 5000 // 5000 milliseconds
+
+  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(fiveSeconds)
+  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(fiveSeconds)
+
+  return true
+}
+
+export const testCreateStore = (args: { token: string; body: any; expectedData: StoreData }) => {
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     verb: 'post',
@@ -76,6 +108,8 @@ export const testCreateStore = (args: { token: string; body: any }) => {
     path: storePathBase,
     validateTestReqData: validateStoreCreateReq,
     validateTestResData: validateStoreDataRes,
+    compareData: (actual, expected) => compareStoreData(actual, expected as StoreData),
+    expectedData: args.expectedData,
   })(requestParams)
 }
 
@@ -86,8 +120,6 @@ export const testGetAllStores = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     query: args.query || {},
-    body: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     statusCode: OK,
@@ -102,13 +134,13 @@ export const testGetStore = (args: {
   token: string
   params: { storeId: number }
   query?: { vendor_id?: string }
+  expectedData: StoreData
 }) => {
   const path = buildStorePath(args.params.storeId)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
     query: args.query || {},
-    body: {},
   }
   return (testRequest as TestRequest)({
     statusCode: OK,
@@ -116,6 +148,8 @@ export const testGetStore = (args: {
     path,
     validateTestReqData: validateStoreGetReq,
     validateTestResData: validateStoreDataRes,
+    compareData: (actual, expected) => compareStoreData(actual, expected as StoreData),
+    expectedData: args.expectedData,
   })(requestParams)
 }
 
@@ -123,13 +157,13 @@ export const testUpdateStore = (args: {
   token: string
   params: { storeId: number }
   body: any
+  expectedData: StoreData
 }) => {
   const path = buildStorePath(args.params.storeId)
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
     params: args.params,
-    query: {},
   }
   return (testRequest as TestRequest)({
     statusCode: OK,
@@ -137,6 +171,8 @@ export const testUpdateStore = (args: {
     path,
     validateTestReqData: validateStoreUpdateReq,
     validateTestResData: validateStoreDataRes,
+    compareData: (actual, expected) => compareStoreData(actual, expected as StoreData),
+    expectedData: args.expectedData,
   })(requestParams)
 }
 
@@ -148,8 +184,6 @@ export const testDeleteStore = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
-    body: {},
-    query: {},
   }
   return (testRequest as TestRequest)({
     statusCode: NO_CONTENT,
@@ -168,8 +202,6 @@ export const testGetNonExistentStore = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
-    body: {},
-    query: {},
   }
   return (testRequest as TestRequest)({
     verb: 'get',
@@ -187,8 +219,6 @@ export const testCreateStoreWithoutVendorAccount = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
-    query: {},
-    params: {},
   }
   return (testRequest as TestRequest)({
     verb: 'post',
@@ -208,7 +238,6 @@ export const testUpdateStoreWithoutVendorAccount = (args: {
     token: args.token,
     body: args.body,
     params: args.params,
-    query: {},
   }
   return (testRequest as TestRequest)({
     statusCode: UNAUTHORIZED,
@@ -226,8 +255,6 @@ export const testDeleteStoreWithoutVendorAccount = (args: {
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
-    body: {},
-    query: {},
   }
   return (testRequest as TestRequest)({
     statusCode: UNAUTHORIZED,
@@ -236,4 +263,3 @@ export const testDeleteStoreWithoutVendorAccount = (args: {
     validateTestReqData: validateStoreDeleteReq,
   })(requestParams)
 }
-
