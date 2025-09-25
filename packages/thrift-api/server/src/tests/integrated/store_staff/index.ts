@@ -15,11 +15,10 @@ import { createUserForTesting } from '../helpers/create-user.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'
 import { createStoreForTesting } from '../helpers/create-store.js'
+import { StoreStaff } from '#src/types/store_staff.js'
 
 // globals
 chai.use(chaiHttp).should()
-// Set server url
-const server = process.env.SERVER!
 
 export default function ({
   vendorInfo,
@@ -30,7 +29,7 @@ export default function ({
 }) {
   let ownerToken: string
   let staffToken: string
-  let storeId: string
+  let storeId: number
   let ownerId: string
   let staffId: string
 
@@ -48,29 +47,25 @@ export default function ({
     await deleteUserForTesting(staffId)
   })
 
-  const getStaffRoute = (sId: string) => `/v1/stores/${sId}/staff`
-  const getStaffIdRoute = (sId: string, stId: string) =>
-    `/v1/stores/${sId}/staff/${stId}`
-
   describe('Testing /store_staff endpoints', () => {
     it('it should allow the store owner to add a staff member', async () => {
+      const expectedData: StoreStaff = {
+        staff_id: staffId,
+        role: 'editor',
+      }
       await testAddStaff({
-        server,
-        path: getStaffRoute(storeId),
         token: ownerToken,
-        requestBody: {
-          staff_id: staffId,
-          role: 'editor',
-        },
+        params: { storeId },
+        body: expectedData,
+        expectedData,
       })
     })
 
     it('it should not allow a non-owner to add a staff member', async () => {
       await testAddStaffUnauthorized({
-        server,
-        path: getStaffRoute(storeId),
         token: staffToken,
-        requestBody: {
+        params: { storeId },
+        body: {
           staff_id: ownerId,
           role: 'admin',
         },
@@ -79,37 +74,36 @@ export default function ({
 
     it('it should allow the store owner to list staff members', async () => {
       await testListStaff({
-        server,
-        path: getStaffRoute(storeId),
         token: ownerToken,
+        params: { storeId },
       })
     })
 
     it('it should allow a staff member to list staff members', async () => {
       await testListStaff({
-        server,
-        path: getStaffRoute(storeId),
         token: staffToken,
+        params: { storeId },
       })
     })
 
     it("it should allow the store owner to update a staff member's role", async () => {
+      const expectedData: StoreStaff = {
+        staff_id: staffId,
+        role: 'viewer',
+      }
       await testUpdateStaff({
-        server,
-        path: getStaffIdRoute(storeId, staffId),
         token: ownerToken,
-        requestBody: {
-          role: 'viewer',
-        },
+        params: { storeId, staffId },
+        body: { role: 'viewer' },
+        expectedData,
       })
     })
 
     it("it should not allow a non-owner to update a staff member's role", async () => {
       await testUpdateStaffUnauthorized({
-        server,
-        path: getStaffIdRoute(storeId, staffId),
         token: staffToken,
-        requestBody: {
+        params: { storeId, staffId },
+        body: {
           role: 'admin',
         },
       })
@@ -117,27 +111,26 @@ export default function ({
 
     it('it should allow the store owner to remove a staff member', async () => {
       await testRemoveStaff({
-        server,
-        path: getStaffIdRoute(storeId, staffId),
         token: ownerToken,
+        params: { storeId, staffId },
       })
     })
 
     it('it should not allow a non-owner to remove a staff member', async () => {
       // Re-add the staff member first
+      const expectedData: StoreStaff = {
+        staff_id: staffId,
+        role: 'editor',
+      }
       await testAddStaff({
-        server,
-        path: getStaffRoute(storeId),
         token: ownerToken,
-        requestBody: {
-          staff_id: staffId,
-          role: 'editor',
-        },
+        params: { storeId },
+        body: expectedData,
+        expectedData,
       })
       await testRemoveStaffUnauthorized({
-        server,
-        path: getStaffIdRoute(storeId, staffId),
         token: staffToken,
+        params: { storeId, staffId },
       })
     })
   })
