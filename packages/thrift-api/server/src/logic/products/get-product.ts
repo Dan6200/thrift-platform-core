@@ -1,6 +1,7 @@
 import { knex } from '#src/db/index.js'
 import { Request, Response, NextFunction } from 'express'
 import BadRequestError from '#src/errors/bad-request.js'
+import logger from '#src/utils/logger.js'
 
 export const getProductLogic = async (
   req: Request,
@@ -11,19 +12,14 @@ export const getProductLogic = async (
     throw new BadRequestError('Must provide a product id as a parameter')
   const { productId } = req.validatedParams
   const { userId, storeId } = req.validatedQueryParams || {}
-  let sqlParams: (string | undefined)[] = [productId]
-  let whereClause = ' WHERE p.product_id=$1 '
-  let paramIndex = 2
+  let whereClause = ' WHERE p.product_id=:productId '
 
   if (userId && storeId) {
-    whereClause += `AND p.vendor_id=$${paramIndex} AND p.store_id=$${paramIndex + 1}`
-    sqlParams.push(userId, storeId)
+    whereClause += `AND p.vendor_id=:vendorId AND p.store_id=:storeId`
   } else if (userId) {
-    whereClause += `AND p.vendor_id=$${paramIndex}`
-    sqlParams.push(userId)
+    whereClause += `AND p.vendor_id=:vendorId`
   } else if (storeId) {
-    whereClause += `AND p.store_id=$${paramIndex}`
-    sqlParams.push(storeId)
+    whereClause += `AND p.store_id=:storeId`
   }
 
   const dbQueryString = `SELECT
@@ -87,7 +83,9 @@ GROUP BY
     c.category_name,
     s.subcategory_name`
 
-  const result = await knex.raw(dbQueryString, sqlParams)
+  const namedBindings = { productId, storeId, vendorId: req.userId }
+  const result = await knex.raw(dbQueryString, namedBindings)
   req.dbResult = result.rows[0]
   next()
 }
+
