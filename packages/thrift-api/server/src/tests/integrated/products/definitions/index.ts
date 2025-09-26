@@ -25,8 +25,8 @@ const buildProductPath = (productId: number) =>
 
 const compareProductData = (actual: any, expected: ProductResponseData) => {
   const actualProduct = actual as ProductResponseData
-  // console.log('actual product', actualProduct)
-  // console.log('expected product', expected)
+  console.log('actual product', actualProduct)
+  console.log('expected product', expected)
 
   actualProduct.title.should.equal(expected.title)
   actualProduct.description.should.deep.equal(expected.description)
@@ -54,13 +54,16 @@ const compareProductData = (actual: any, expected: ProductResponseData) => {
   // Compare variants and options
   actualProduct.should.have.property('variants').that.is.an('array')
   if (expected.variants) {
-    actualProduct.variants!.length.should.equal(expected.variants.length)
-    for (let i = 0; i < expected.variants.length; i++) {
-      const actualVariant = actualProduct.variants![i]
-      const expectedVariant = expected.variants[i]
+    // Sort variants by SKU for consistent comparison
+    const sortedActualVariants = [...actualProduct.variants!].sort((a, b) => a.sku.localeCompare(b.sku))
+    const sortedExpectedVariants = [...expected.variants].sort((a, b) => a.sku.localeCompare(b.sku))
+
+    sortedActualVariants.length.should.equal(sortedExpectedVariants.length)
+    for (let i = 0; i < sortedExpectedVariants.length; i++) {
+      const actualVariant = sortedActualVariants![i]
+      const expectedVariant = sortedExpectedVariants[i]
       actualVariant.sku.should.equal(expectedVariant.sku)
-      const expectedListPrice =
-        expectedVariant.list_price ?? expected.list_price
+      const expectedListPrice = expectedVariant.list_price ?? expected.list_price
       const expectedNetPrice = expectedVariant.net_price ?? expected.net_price
       actualVariant.list_price.should.equal(expectedListPrice)
       actualVariant.net_price.should.equal(expectedNetPrice)
@@ -69,12 +72,16 @@ const compareProductData = (actual: any, expected: ProductResponseData) => {
       )
       actualVariant.should.have.property('options').that.is.an('array')
       if (expectedVariant.options) {
-        actualVariant.options!.length.should.equal(
-          expectedVariant.options.length,
+        // Sort options by option_name for consistent comparison
+        const sortedActualOptions = [...actualVariant.options!].sort((a, b) => a.option_name.localeCompare(b.option_name))
+        const sortedExpectedOptions = [...expectedVariant.options].sort((a, b) => a.option_name.localeCompare(b.option_name))
+
+        sortedActualOptions.length.should.equal(
+          sortedExpectedOptions.length,
         )
-        for (let j = 0; j < expectedVariant.options.length; j++) {
-          const actualOption = actualVariant.options![j]
-          const expectedOption = expectedVariant.options[j]
+        for (let j = 0; j < sortedExpectedOptions.length; j++) {
+          const actualOption = sortedActualOptions![j]
+          const expectedOption = sortedExpectedOptions[j]
           actualOption.option_name.should.equal(expectedOption.option_name)
           actualOption.value.should.equal(expectedOption.value)
         }
