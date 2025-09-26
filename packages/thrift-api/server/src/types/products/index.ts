@@ -34,22 +34,22 @@ export type RequestVariantOption = {
   value: string
 }
 
-export type UpdateRequestVariant = {
-  sku: string
-  list_price?: number
-  net_price?: number
-  quantity_available: number
-  inventory_change_reason?: string
-  inventory_change_notes?: string
-  options: RequestVariantOption[]
-}
-
 export type RequestVariant = {
   sku: string
   list_price?: number
   net_price?: number
   quantity_available: number
   options: RequestVariantOption[]
+}
+
+export type UpdateRequestVariant = {
+  sku?: string
+  list_price?: number
+  net_price?: number
+  quantity_available?: number
+  inventory_change_reason?: string
+  inventory_change_notes?: string
+  options?: RequestVariantOption[]
 }
 
 export type ProductRequestData = {
@@ -59,7 +59,7 @@ export type ProductRequestData = {
   description: string[]
   list_price: number
   net_price: number
-  variants?: RequestVariant[] | UpdateRequestVariant[]
+  variants?: RequestVariant[]
 }
 
 export type UpdateProductRequestData = {
@@ -69,7 +69,7 @@ export type UpdateProductRequestData = {
   description?: string[]
   list_price?: number
   net_price?: number
-  variants?: RequestVariant[] | UpdateRequestVariant[]
+  variants?: UpdateRequestVariant[]
 }
 
 import { MediaType } from '../media.js'
@@ -97,4 +97,25 @@ export type ProductMedia = MediaType & {
 
 export interface ProductID {
   product_id: number
+}
+
+export interface VariantID {
+  variant_id: number
+}
+
+export interface ProductVariantRequest {
+  body: RequestVariant;
+  params: { productId: number };
+  query: { store_id: number };
+}
+
+export interface ProductVariantUpdateRequest {
+  body: UpdateRequestVariant;
+  params: { productId: number; variantId: number };
+  query: { store_id: number };
+}
+
+export interface ProductVariantDeleteRequest {
+  params: { productId: number; variantId: number };
+  query: { store_id: number };
 }
