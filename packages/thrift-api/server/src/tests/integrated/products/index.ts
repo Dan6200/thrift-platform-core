@@ -12,7 +12,14 @@ import {
   testUpdateProduct,
   testDeleteProduct,
   testGetNonExistentProduct,
+  testPostVariant,
+  testUpdateVariant,
+  testDeleteVariant,
 } from './definitions/index.js'
+import {
+  variantsToCreate,
+  variantUpdates,
+} from '../data/users/vendors/user-aliyu/products/index.js'
 import { ProfileRequestData } from '../../../types/profile/index.js'
 import assert from 'assert'
 import { createUserForTesting } from '../helpers/create-user.js'
@@ -36,6 +43,7 @@ export default function ({
   let storeId: number
   let userId: string
   const productIds: number[] = []
+  const variantIds: number[] = []
 
   before(async () => {
     userId = await createUserForTesting(userInfo)
@@ -53,6 +61,33 @@ export default function ({
         expectedData: product,
       })
       productIds.push(product_id)
+    }
+  })
+
+  it('it should create new variants for the first product', async () => {
+    const productId = productIds[0]
+    for (const variant of variantsToCreate) {
+      const { variant_id } = await testPostVariant({
+        params: { productId },
+        query: { storeId },
+        body: variant,
+        token,
+        expectedData: variant,
+      })
+      variantIds.push(variant_id)
+    }
+  })
+
+  it('it should update the newly created variants', async () => {
+    const productId = productIds[0]
+    for (const [i, variantId] of variantIds.entries()) {
+      await testUpdateVariant({
+        params: { productId, variantId },
+        query: { storeId },
+        body: variantUpdates[i],
+        token,
+        expectedData: variantUpdates[i],
+      })
     }
   })
 
@@ -90,6 +125,17 @@ export default function ({
         body: productPartialUpdate[idx],
         query: { storeId },
         expectedData,
+      })
+    }
+  })
+
+  it('it should delete the newly created variants', async () => {
+    const productId = productIds[0]
+    for (const variantId of variantIds) {
+      await testDeleteVariant({
+        query: { storeId },
+        params: { productId, variantId },
+        token,
       })
     }
   })
