@@ -41,6 +41,94 @@ export default async ({
     )
   }
 
+  // Assistant compare logic...
+  // let updatedVariants = [],
+  //   updatedVariantOptions = []
+  // if (variants) {
+  //   for (const variant of variants) {
+  //     let { options } = variant
+  //     let updatedOption = null,
+  //       updatedOptionVal = null
+  //     for (const option of options) {
+  //       // get or create option
+  //       let { option_id } = await knex('product_options')
+  //         .where({ option_name: option.option_name, product_id: productId })
+  //         .first('option_id')
+  //       ;[updatedOption] = await knex('product_options')
+  //         .insert({
+  //           option_id: option_id,
+  //           option_name: option.option_name,
+  //           product_id: productId,
+  //         })
+  //         .onConflict('option_id')
+  //         .merge()
+  //         .where({ 'product_options.product_id': productId })
+  //         .returning('*')
+  //       ;[updatedOptionVal] = await knex('product_option_values')
+  //         .insert({ value: option.value, option_id: option_id })
+  //         .onConflict(['option_id', 'value'])
+  //         .merge()
+  //         .returning('*')
+  //       updatedVariantOptions.push({
+  //         ...updatedOption,
+  //         value: updatedOptionVal,
+  //       })
+  //     }
+  //
+  //     let newVariantData = null,
+  //       quantity_available = null,
+  //       inventory_change_reason = null,
+  //       inventory_change_notes = null,
+  //       updatedVariant
+  //     ;({
+  //       options,
+  //       quantity_available,
+  //       inventory_change_reason,
+  //       inventory_change_notes,
+  //       ...newVariantData
+  //     } = variant as UpdateRequestVariant)
+  //
+  //     const [updateVariantResult] = await knex('product_variants')
+  //       .insert({ product_id: productId, ...newVariantData })
+  //       .where({ 'product_variants.product_id': productId })
+  //       .onConflict('sku')
+  //       .merge()
+  //       .returning('*')
+  //     if (quantity_available) {
+  //       if (!inventory_change_reason)
+  //         throw new BadRequestError(
+  //           'Must provide reason for change when updating inventory',
+  //         )
+  //       const trx = await knex.transaction()
+  //       const quantity_change =
+  //         quantity_available -
+  //         (
+  //           await trx('product_variant_inventory')
+  //             .first('quantity_available')
+  //             .where({ variant_id: updateVariantResult.variant_id })
+  //         ).quantity_available
+  //       await trx('inventory')
+  //         .insert({
+  //           quantity_change,
+  //           reason: inventory_change_reason,
+  //           notes: inventory_change_notes,
+  //         })
+  //         .where({ variant_id: updateVariantResult.variant_id })
+  //       const { quantity_available: newQuantity } = await trx(
+  //         'product_variant_inventory',
+  //       ).first('quantity_available')
+  //       updatedVariant = {
+  //         ...updateVariantResult,
+  //         quantity_available: newQuantity,
+  //       }
+  //     } else updatedVariant = { ...updateVariantResult }
+  //     updatedVariants.push({
+  //       ...updatedVariant,
+  //       options: updatedVariantOptions,
+  //     })
+  //   }
+  // } //else return variants
+
   const { quantity_available, ...restOfVariantData } = variantData
 
   const [updatedVariant] = await knex('product_variants')
