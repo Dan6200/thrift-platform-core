@@ -5,7 +5,6 @@ import { ProfileRequestData } from '#src/types/profile/index.js'
 export { listOfStores, updatedStores } from './stores.js'
 export {
   products,
-  productReplaced,
   productPartialUpdate,
   productMedia,
   updatedProductMedia,

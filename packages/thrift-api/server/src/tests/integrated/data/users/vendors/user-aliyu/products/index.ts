@@ -2,7 +2,7 @@
 import {
   ProductRequestData,
   ProductMediaUpload as ProductMedia,
-  ProductRequestPartial,
+  UpdateProductRequestData,
 } from '#src/types/products/index.js'
 import {
   VariantRequestData,
@@ -178,7 +178,7 @@ export const productReplaced: ProductRequestData[] = [
   },
 ]
 
-export const productPartialUpdate: ProductRequestPartial[] = [
+export const productPartialUpdate: UpdateProductRequestData[] = [
   {
     category_id: 2,
     list_price: 35000,

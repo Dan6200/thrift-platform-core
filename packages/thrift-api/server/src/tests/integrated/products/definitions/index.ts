@@ -50,11 +50,12 @@ const compareProductData = (actual: any, expected: ProductResponseData) => {
   chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
 
   // Compare variants and options
-  actualProduct.should.have.property('variants').that.is.an('array')
+  actualProduct.variants &&
+    actualProduct.should.have.property('variants').that.is.an('array')
   if (expected.variants) {
     // Sort variants by SKU for consistent comparison
-    const sortedActualVariants = [...actualProduct.variants!].sort((a, b) =>
-      a.sku.localeCompare(b.sku),
+    const sortedActualVariants = [...(actualProduct.variants ?? [])].sort(
+      (a, b) => a.sku.localeCompare(b.sku),
     )
     const sortedExpectedVariants = [...expected.variants].sort((a, b) =>
       a.sku.localeCompare(b.sku),

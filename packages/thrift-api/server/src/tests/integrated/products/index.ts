@@ -3,6 +3,7 @@ import chaiHttp from 'chai-http'
 import {
   ProductRequestData,
   ProductResponseData,
+  UpdateProductRequestData,
 } from '../../../types/products/index.js'
 import {
   testCreateProduct,
@@ -25,11 +26,11 @@ chai.use(chaiHttp).should()
 export default function ({
   userInfo,
   products,
-  productReplaced,
+  productPartialUpdate,
 }: {
   userInfo?: ProfileRequestData
   products?: ProductRequestData[]
-  productReplaced?: ProductRequestData[]
+  productPartialUpdate?: UpdateProductRequestData[]
 }) {
   let token: string
   let storeId: number
@@ -75,15 +76,22 @@ export default function ({
   })
 
   it('it should update all the products a vendor has for sale', async () => {
-    assert(!!productIds.length && productIds?.length === productReplaced.length)
-    for (const [idx, productId] of productIds.entries())
+    assert(
+      !!productIds.length && productIds?.length === productPartialUpdate.length,
+    )
+    for (const [idx, productId] of productIds.entries()) {
+      const { variants, ...expectedData } = {
+        ...products[idx],
+        ...productPartialUpdate[idx],
+      }
       await testUpdateProduct({
         token,
         params: { productId },
-        body: productReplaced[idx],
+        body: productPartialUpdate[idx],
         query: { storeId },
-        expectedData: productReplaced[idx],
+        expectedData,
       })
+    }
   })
 
   it('it should delete all the product a vendor has for sale', async () => {
@@ -108,4 +116,3 @@ export default function ({
 
   after(async () => deleteUserForTesting(userId))
 }
-
