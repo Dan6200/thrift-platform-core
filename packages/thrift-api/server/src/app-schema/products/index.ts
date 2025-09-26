@@ -31,12 +31,12 @@ const RequestVariantSchema = joi.object({
 
 // Base Schemas
 export const ProductUpdateDataSchema = joi.object({
-  title: joi.string().required(),
-  category_id: joi.number().required(),
-  subcategory_id: joi.number().required(),
-  description: joi.array().items(joi.string()),
-  list_price: joi.number().required(),
-  net_price: joi.number().required(),
+  title: joi.string().optional(),
+  category_id: joi.number().optional(),
+  subcategory_id: joi.number().optional(),
+  description: joi.array().items(joi.string()).optional(),
+  list_price: joi.number().optional(),
+  net_price: joi.number().optional(),
   variants: joi.array().items(RequestVariantSchema).optional(),
 })
 
@@ -141,4 +141,3 @@ export const ProductGETAllResponseSchema = joi
     total_count: joi.number().required(),
   })
   .required()
-

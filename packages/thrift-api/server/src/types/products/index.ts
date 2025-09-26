@@ -34,6 +34,16 @@ export type RequestVariantOption = {
   value: string
 }
 
+export type UpdateRequestVariant = {
+  sku: string
+  list_price?: number
+  net_price?: number
+  quantity_available: number
+  inventory_change_reason?: string
+  inventory_change_notes?: string
+  options: RequestVariantOption[]
+}
+
 export type RequestVariant = {
   sku: string
   list_price?: number
@@ -49,10 +59,18 @@ export type ProductRequestData = {
   description: string[]
   list_price: number
   net_price: number
-  variants?: RequestVariant[]
+  variants?: RequestVariant[] | UpdateRequestVariant[]
 }
 
-export type ProductRequestPartial = Partial<ProductRequestData>
+export type UpdateProductRequestData = {
+  title?: string
+  category_id?: number
+  subcategory_id?: number
+  description?: string[]
+  list_price?: number
+  net_price?: number
+  variants?: RequestVariant[] | UpdateRequestVariant[]
+}
 
 import { MediaType } from '../media.js'
 
@@ -80,4 +98,3 @@ export type ProductMedia = MediaType & {
 export interface ProductID {
   product_id: number
 }
-
