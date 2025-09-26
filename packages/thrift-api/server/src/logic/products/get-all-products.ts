@@ -9,13 +9,18 @@ export const getAllProductsLogic = async (
 ) => {
   const { storeId, limit, sort, offset } = req.validatedQueryParams!
   let whereClause = ''
+  const namedBindings: { [key: string]: any } = {}
 
   if (req.userId && storeId) {
     whereClause = `WHERE p.vendor_id=:vendorId AND p.store_id=:storeId`
+    namedBindings.vendorId = req.userId
+    namedBindings.storeId = storeId
   } else if (req.userId) {
     whereClause = `WHERE p.vendor_id=:vendorId`
+    namedBindings.vendorId = req.userId
   } else if (storeId) {
     whereClause = `WHERE p.store_id=:storeId`
+    namedBindings.storeId = storeId
   }
 
   let dbQueryString = `
@@ -84,12 +89,7 @@ export const getAllProductsLogic = async (
 SELECT JSON_AGG(product_data) AS products,
 	(SELECT COUNT(*) FROM products) AS total_count FROM product_data;`
 
-  const namedBindings = {
-    vendorId: req.userId,
-    storeId,
-  }
   const result = await knex.raw(dbQueryString, namedBindings)
   req.dbResult = result.rows[0]
   next()
 }
-
