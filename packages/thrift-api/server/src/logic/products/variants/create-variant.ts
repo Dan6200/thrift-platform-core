@@ -2,6 +2,7 @@ import { knex } from '#src/db/index.js'
 import { Request, Response, NextFunction } from 'express'
 import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
+import logger from '#src/utils/logger.js'
 
 export const createVariantLogic = async (
   req: Request,
@@ -9,7 +10,7 @@ export const createVariantLogic = async (
   next: NextFunction,
 ) => {
   const { productId } = req.validatedParams!
-  const { store_id: storeId } = req.validatedQueryParams!
+  const { storeId } = req.validatedQueryParams!
   const variantData = req.validatedBody!
 
   // Authorization for product access is handled by preceding middleware
@@ -22,29 +23,31 @@ export const createVariantLogic = async (
   }
 
   const newVariant = await knex.transaction(async (trx) => {
-    const valueIds = new Map<string, number>()
+    const valueMap = new Map<string, { value: string; value_id: number }>()
 
     for (const option of variantData.options) {
-      let { option_id } = (await trx('product_options')
-        .where({ product_id: productId, option_name: option.option_name })
-        .first('option_id')) || {}
+      let optionResult =
+        (await trx('product_options')
+          .where({ product_id: productId, option_name: option.option_name })
+          .first(['option_id', 'option_name'])) || {}
 
-      if (!option_id) {
-        ;[{ option_id }] = await trx('product_options')
+      if (!optionResult.option_id) {
+        ;[optionResult] = await trx('product_options')
           .insert({ product_id: productId, option_name: option.option_name })
-          .returning('option_id')
+          .returning(['option_id', 'option_name'])
       }
 
-      let { value_id } = (await trx('product_option_values')
-        .where({ option_id: option_id, value: option.value })
-        .first('value_id')) || {}
+      let value =
+        (await trx('product_option_values')
+          .where({ option_id: optionResult.option_id, value: option.value })
+          .first(['value_id', 'value'])) || {}
 
-      if (!value_id) {
-        ;[{ value_id }] = await trx('product_option_values')
-          .insert({ option_id: option_id, value: option.value })
-          .returning('value_id')
+      if (!value.value_id) {
+        ;[value] = await trx('product_option_values')
+          .insert({ option_id: optionResult.option_id, value: option.value })
+          .returning(['value_id', 'value'])
       }
-      valueIds.set(option.value, value_id)
+      valueMap.set(option.value, { ...optionResult, ...value })
     }
 
     const [createdVariant] = await trx('product_variants')
@@ -66,11 +69,19 @@ export const createVariantLogic = async (
 
     const links = variantData.options.map((opt: any) => ({
       variant_id: createdVariant.variant_id,
-      value_id: valueIds.get(opt.value),
+      value_id: valueMap.get(opt.value).value_id,
     }))
     await trx('variant_to_option_values').insert(links)
 
-    return createdVariant
+    const { quantity_available } = await trx('product_variant_inventory')
+      .where({ variant_id: createdVariant.variant_id })
+      .first('quantity_available')
+
+    return {
+      ...createdVariant,
+      options: [...valueMap.values()],
+      quantity_available,
+    }
   })
 
   req.dbResult = newVariant

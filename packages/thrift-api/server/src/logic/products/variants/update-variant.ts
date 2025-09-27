@@ -2,6 +2,7 @@ import { knex } from '#src/db/index.js'
 import { Request, Response, NextFunction } from 'express'
 import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
+import logger from '#src/utils/logger.js'
 
 export const updateVariantLogic = async (
   req: Request,
@@ -9,21 +10,30 @@ export const updateVariantLogic = async (
   next: NextFunction,
 ) => {
   const { productId, variantId } = req.validatedParams!
-  const { store_id: storeId } = req.validatedQueryParams!
+  const { storeId } = req.validatedQueryParams!
   const variantData = req.validatedBody!
 
   // Authorization for product/variant access is handled by preceding middleware
 
   const variant = await knex('product_variants as pv')
     .join('products as p', 'pv.product_id', 'p.product_id')
-    .where({ 'pv.variant_id': variantId, 'pv.product_id': productId, 'p.store_id': storeId })
+    .where({
+      'pv.variant_id': variantId,
+      'pv.product_id': productId,
+      'p.store_id': storeId,
+    })
     .first('pv.variant_id', 'p.list_price', 'p.net_price')
 
   if (!variant) {
     throw new NotFoundError('Variant not found for this product in this store.')
   }
 
-  const { quantity_available, inventory_change_reason, inventory_change_notes, ...restOfVariantData } = variantData
+  const {
+    quantity_available,
+    inventory_change_reason,
+    inventory_change_notes,
+    ...restOfVariantData
+  } = variantData
 
   const trx = await knex.transaction()
   try {
@@ -46,7 +56,9 @@ export const updateVariantLogic = async (
 
       if (quantityChange !== 0) {
         if (!inventory_change_reason) {
-          throw new BadRequestError('Inventory change reason is required when updating quantity.')
+          throw new BadRequestError(
+            'Inventory change reason is required when updating quantity.',
+          )
         }
         await trx('inventory').insert({
           variant_id: variantId,
