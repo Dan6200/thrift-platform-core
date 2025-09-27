@@ -204,18 +204,18 @@ export const productPartialUpdate: UpdateProductRequestData[] = [
 
 export const variantsToCreate: VariantRequestData[] = [
   {
-    sku: 'FIT-CHG5-BLK',
+    sku: 'FIT-CHG5-BLU',
     quantity_available: 20,
     options: [
-      { option_name: 'COLOR', value: 'BLACK' },
+      { option_name: 'COLOR', value: 'BLUE' },
       { option_name: 'BAND', value: 'S/L' },
     ],
   },
   {
-    sku: 'FIT-CHG5-LNR',
+    sku: 'FIT-CHG5-OFW',
     quantity_available: 15,
     options: [
-      { option_name: 'COLOR', value: 'LUNAR WHITE' },
+      { option_name: 'COLOR', value: 'OFF-WHITE' },
       { option_name: 'BAND', value: 'S/L' },
     ],
   },
