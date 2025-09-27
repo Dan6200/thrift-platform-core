@@ -13,6 +13,11 @@ import {
   deleteProductLogic,
 } from '#src/logic/products/index.js'
 import {
+  createVariantLogic,
+  updateVariantLogic,
+  deleteVariantLogic,
+} from '#src/logic/products/variants/index.js'
+import {
   ProductCreateRequestSchema,
   ProductGetAllRequestSchema,
   ProductGetRequestSchema,
@@ -22,6 +27,12 @@ import {
   ProductGETResponseSchema,
   ProductResponseSchema,
 } from '#src/app-schema/products/index.js'
+import {
+  ProductVariantCreateRequestSchema,
+  ProductVariantUpdateRequestSchema,
+  ProductVariantDeleteRequestSchema,
+  ProductVariantResponseSchema,
+} from '#src/app-schema/products/variants.js'
 
 const router = express.Router({ mergeParams: true })
 const { CREATED, OK, NO_CONTENT } = StatusCodes
@@ -67,7 +78,34 @@ router
     sendResponse(NO_CONTENT),
   )
 
-// Variant routes will be handled separately
+router
+  .route('/:productId/variants')
+  .post(
+    authenticateUser,
+    validate(ProductVariantCreateRequestSchema),
+    hasStoreAccess(['admin', 'editor']),
+    createVariantLogic,
+    validateDbResult(ProductVariantResponseSchema),
+    sendResponse(CREATED),
+  )
+
+router
+  .route('/:productId/variants/:variantId')
+  .patch(
+    authenticateUser,
+    validate(ProductVariantUpdateRequestSchema),
+    hasStoreAccess(['admin', 'editor']),
+    updateVariantLogic,
+    validateDbResult(ProductVariantResponseSchema),
+    sendResponse(OK),
+  )
+  .delete(
+    authenticateUser,
+    validate(ProductVariantDeleteRequestSchema),
+    hasStoreAccess(['admin']),
+    deleteVariantLogic,
+    sendResponse(NO_CONTENT),
+  )
 
 export default router
 
