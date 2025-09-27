@@ -26,7 +26,11 @@ export const UpdateRequestVariantSchema = joi.object({
   list_price: joi.number().optional(),
   net_price: joi.number().optional(),
   quantity_available: joi.number().optional(),
-  inventory_change_reason: joi.string().optional(),
+  inventory_change_reason: joi.string().when('quantity_available', {
+    is: joi.exist(),
+    then: joi.required(),
+    otherwise: joi.optional(),
+  }),
   inventory_change_notes: joi.string().optional(),
   options: joi.array().items(RequestVariantOptionSchema).min(1).optional(),
 })
