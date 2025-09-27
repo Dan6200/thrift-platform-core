@@ -1,0 +1,2 @@
+# Run lint-staged
+pnpm dlx lint-staged

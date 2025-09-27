@@ -5,7 +5,18 @@
   "scripts": {
     "install:all": "pnpm install",
     "build:all": "pnpm -r build",
-    "test:all": "pnpm -r test"
+    "test:all": "pnpm -r test",
+    "prepare": "husky"
   },
-  "devDependencies": {}
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.1",
+    "prettier": "^3.6.2"
+  }
 }
