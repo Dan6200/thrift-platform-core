@@ -63,15 +63,22 @@ export default function ({
     if (expectedData !== undefined) {
       if (compareData) {
         if (!compareData(response.body, expectedData)) {
-          throw new Error('Response data does not match expected data (custom comparison)')
+          throw new Error(
+            'Response data does not match expected data (custom comparison)',
+          )
         }
-      }
-      else {
+      } else {
         // Default to deep equality comparison using chai
-        chai.expect(response.body).deep.equal(expectedData, 'Response data does not match expected data')
+        chai
+          .expect(response.body)
+          .deep.equal(
+            expectedData,
+            'Response data does not match expected data',
+          )
       }
     }
 
     return response.body
   }
 }
+
