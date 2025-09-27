@@ -80,13 +80,15 @@ export default function ({
 
   it('it should update the newly created variants', async () => {
     const productId = productIds[0]
+    assert(!!variantIds.length)
     for (const [i, variantId] of variantIds.entries()) {
+      const expectedData = { ...variantsToCreate[i], ...variantUpdates[i] }
       await testUpdateVariant({
         params: { productId, variantId },
         query: { storeId },
         body: variantUpdates[i],
         token,
-        expectedData: variantUpdates[i],
+        expectedData,
       })
     }
   })
@@ -162,3 +164,4 @@ export default function ({
 
   after(async () => deleteUserForTesting(userId))
 }
+
