@@ -78,7 +78,14 @@ export const createProductLogic = async (
           list_price: variant.list_price || product.list_price,
           net_price: variant.net_price || product.net_price,
         })
-        .returning(['variant_id', 'sku', 'list_price', 'net_price'])
+        .returning([
+          'variant_id',
+          'sku',
+          'list_price',
+          'net_price',
+          'created_at',
+          'updated_at',
+        ])
 
       if (variant.quantity_available) {
         await trx('inventory').insert({

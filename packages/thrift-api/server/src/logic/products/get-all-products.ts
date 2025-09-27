@@ -50,6 +50,8 @@ export const getAllProductsLogic = async (
                     pv.sku,
                     pv.list_price,
                     pv.net_price,
+										pv.created_at,
+										pv.updated_at,
                     pvi.quantity_available::int,
                     (
                         SELECT COALESCE(json_agg(option_data), '[]'::json)
