@@ -3,11 +3,9 @@ import {
   ProductRequestData,
   ProductMediaUpload as ProductMedia,
   UpdateProductRequestData,
+  UpdateRequestVariant,
+  RequestVariant,
 } from '#src/types/products/index.js'
-import {
-  VariantRequestData,
-  VariantUpdateRequestData,
-} from '#src/types/products/variants.js'
 
 export const products: ProductRequestData[] = [
   {
@@ -202,7 +200,7 @@ export const productPartialUpdate: UpdateProductRequestData[] = [
   },
 ]
 
-export const variantsToCreate: VariantRequestData[] = [
+export const variantsToCreate: RequestVariant[] = [
   {
     sku: 'FIT-CHG5-BLU',
     quantity_available: 20,
@@ -226,10 +224,11 @@ export const variantsToCreate: VariantRequestData[] = [
   },
 ]
 
-export const variantUpdates: VariantUpdateRequestData[] = [
+export const variantUpdates: UpdateRequestVariant[] = [
   {
     list_price: 190000,
     quantity_available: 5,
+    inventory_change_reason: 'restock',
   },
   {
     net_price: 220000,
