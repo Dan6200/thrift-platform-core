@@ -2,7 +2,6 @@ import { knex } from '#src/db/index.js'
 import { Request, Response, NextFunction } from 'express'
 import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
-import logger from '#src/utils/logger.js'
 
 export const updateVariantLogic = async (
   req: Request,
@@ -29,30 +28,33 @@ export const updateVariantLogic = async (
   }
 
   const {
-    quantity_available,
     inventory_change_reason,
     inventory_change_notes,
     ...restOfVariantData
   } = variantData
+  let { quantity_available, ...variantDataWithoutQA } = restOfVariantData
 
   const trx = await knex.transaction()
   try {
     const [updatedVariant] = await trx('product_variants')
       .where({ variant_id: variantId })
-      .update(restOfVariantData)
+      .update(variantDataWithoutQA)
       .returning('*')
 
-    if (quantity_available !== undefined) {
+    let currentQuantity = 0,
+      quantityChange = 0
+    if (quantity_available) {
       // Acquire a lock on the inventory for this variant within the transaction
-      const currentInventory = await trx('product_variant_inventory')
+      const inventoryRecords = await trx('inventory')
         .where({ variant_id: variantId })
-        .first('quantity_available')
+        .select('quantity_change')
         .forUpdate()
 
-      const currentQuantity = currentInventory
-        ? currentInventory.quantity_available
-        : 0
-      const quantityChange = quantity_available - currentQuantity
+      currentQuantity = inventoryRecords.reduce(
+        (sum, record) => sum + record.quantity_change,
+        0,
+      )
+      quantityChange = quantity_available - currentQuantity
 
       if (quantityChange !== 0) {
         if (!inventory_change_reason) {
@@ -67,6 +69,11 @@ export const updateVariantLogic = async (
           notes: inventory_change_notes,
         })
       }
+      quantity_available = currentQuantity + quantityChange
+    } else {
+      ;({ quantity_available } = await trx('product_variant_inventory')
+        .where({ variant_id: variantId })
+        .first('quantity_available'))
     }
 
     // Fetch the full variant details for the response
@@ -76,17 +83,14 @@ export const updateVariantLogic = async (
       .where('vtov.variant_id', updatedVariant.variant_id)
       .select('po.option_id', 'po.option_name', 'pov.value_id', 'pov.value')
 
-    const inventory = await trx('product_variant_inventory')
-      .where({ variant_id: variantId })
-      .first('quantity_available')
-
     await trx.commit()
 
     req.dbResult = {
       ...updatedVariant,
       options,
-      quantity_available: inventory ? inventory.quantity_available : 0,
+      quantity_available,
     }
+
     next()
   } catch (error) {
     await trx.rollback()
