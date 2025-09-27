@@ -17,6 +17,7 @@ import {
   testDeleteVariant,
 } from './definitions/index.js'
 import {
+  expectedDataAfterVariantAdditionAndUpdates,
   variantsToCreate,
   variantUpdates,
 } from '../data/users/vendors/user-aliyu/products/index.js'
@@ -100,18 +101,6 @@ export default function ({
     })
   })
 
-  it('it should retrieve a specific product and its variants', async () => {
-    assert(!!productIds.length)
-    for (const [i, productId] of productIds.entries()) {
-      await testGetProduct({
-        token,
-        params: { productId },
-        query: { storeId },
-        expectedData: products[i] as unknown as ProductResponseData, // intentional typecast
-      })
-    }
-  })
-
   it('it should update all the products a vendor has for sale', async () => {
     assert(
       !!productIds.length && productIds?.length === productPartialUpdate.length,
@@ -127,6 +116,20 @@ export default function ({
         body: productPartialUpdate[idx],
         query: { storeId },
         expectedData,
+      })
+    }
+  })
+
+  it('it should retrieve a specific product and its variants. The return data should match updates in a synchronous test suite', async () => {
+    assert(!!productIds.length)
+    for (const [i, productId] of productIds.entries()) {
+      await testGetProduct({
+        token,
+        params: { productId },
+        query: { storeId },
+        expectedData: expectedDataAfterVariantAdditionAndUpdates[
+          i
+        ] as unknown as ProductResponseData, // intentional typecast
       })
     }
   })
