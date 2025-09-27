@@ -8,6 +8,12 @@ import {
   ProductGETResponseSchema,
   ProductResponseSchema,
 } from '#src/app-schema/products/index.js'
+import {
+  ProductVariantResponseSchema,
+  ProductVariantCreateRequestSchema,
+  ProductVariantUpdateRequestSchema,
+  ProductVariantDeleteRequestSchema,
+} from '#src/app-schema/products/variants.js'
 import { validateTestData } from '../test-validators.js'
 
 export const validateProductCreateReq = (data: unknown) =>
@@ -45,6 +51,27 @@ export const validateProductGetAllReq = (data: unknown) =>
     'Product Get All Request Validation Error',
   )
 
+export const validateProductVariantCreateReq = (data: unknown) =>
+  validateTestData(
+    ProductVariantCreateRequestSchema,
+    data,
+    'Product Variant Create Request Validation Error',
+  )
+
+export const validateProductVariantUpdateRequest = (data: unknown) =>
+  validateTestData(
+    ProductVariantUpdateRequestSchema,
+    data,
+    'Product Variant Update Request Validation Error',
+  )
+
+export const validateProductVariantDeleteReq = (data: unknown) =>
+  validateTestData(
+    ProductVariantDeleteRequestSchema,
+    data,
+    'Product Variant Delete Request Validation Error',
+  )
+
 export const validateProductGETAllRes = (data: unknown) =>
   validateTestData(
     ProductGETAllResponseSchema,
@@ -64,4 +91,11 @@ export const validateProductRes = (data: unknown) =>
     ProductResponseSchema,
     data,
     'Product Response Validation Error',
+  )
+
+export const validateProductVariantRes = (data: unknown) =>
+  validateTestData(
+    ProductVariantResponseSchema,
+    data,
+    'Product Variant Response Validation Error',
   )
