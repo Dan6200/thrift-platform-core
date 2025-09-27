@@ -3,15 +3,19 @@ export type VariantOption = {
   option_name: string
   value_id: number
   value: string
+  created_at?: Date
+  updated_at?: Date
 }
 
 export type ProductVariant = {
   variant_id: number
   sku: string
-  list_price: number
-  net_price: number
+  list_price?: number
+  net_price?: number
   quantity_available: number
   options: VariantOption[]
+  created_at?: Date
+  updated_at?: Date
 }
 
 export type ProductResponseData = {
@@ -104,18 +108,18 @@ export interface VariantID {
 }
 
 export interface ProductVariantRequest {
-  body: RequestVariant;
-  params: { productId: number };
-  query: { store_id: number };
+  body: RequestVariant
+  params: { productId: number }
+  query: { store_id: number }
 }
 
 export interface ProductVariantUpdateRequest {
-  body: UpdateRequestVariant;
-  params: { productId: number; variantId: number };
-  query: { store_id: number };
+  body: UpdateRequestVariant
+  params: { productId: number; variantId: number }
+  query: { store_id: number }
 }
 
 export interface ProductVariantDeleteRequest {
-  params: { productId: number; variantId: number };
-  query: { store_id: number };
+  params: { productId: number; variantId: number }
+  query: { store_id: number }
 }
