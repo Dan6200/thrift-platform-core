@@ -24,6 +24,8 @@ import {
   UpdateRequestVariant,
 } from '#src/types/products/index.js'
 import * as JDP from 'jsondiffpatch'
+import * as consoleFormatter from 'jsondiffpatch/formatters/console'
+
 const jdp = JDP.create()
 
 const { CREATED, OK, NOT_FOUND, UNAUTHORIZED, NO_CONTENT } = StatusCodes
@@ -34,82 +36,101 @@ const buildProductPath = (productId: number) =>
 const buildVariantPath = (productId: number, variantId: number) =>
   `${productsPathBase}/${productId}/variants/${variantId}`
 
+// Helper function to recursively sort options within a variant
+const sortVariantOptions = (variant: any) => {
+  if (variant.options) {
+    const sortedOptions = [...variant.options].sort((a, b) =>
+      a.option_name.localeCompare(b.option_name),
+    )
+    return { ...variant, options: sortedOptions }
+  }
+  return variant
+}
+
 const compareProductData = (actual: any, expected: ProductResponseData) => {
   const actualProduct = actual as ProductResponseData
 
-  // const diff = jdp.diff(expected, actualProduct)
-  // if (diff) {
-  //   console.log('Product data comparison failed. Diff:')
-  //   console.log(util.inspect(diff, null, 2, true))
-  // }
+  let sortedActual: any = { ...actualProduct }
+  let sortedExpected: any = { ...expected }
 
-  actualProduct.title.should.equal(expected.title)
-  actualProduct.description.should.deep.equal(expected.description)
-  actualProduct.list_price.should.equal(expected.list_price)
-  actualProduct.net_price.should.equal(expected.net_price)
-  actualProduct.category_id.should.equal(expected.category_id)
-  actualProduct.subcategory_id.should.equal(expected.subcategory_id)
-
-  // Assert that server-generated fields exist and are of the correct type
-  actualProduct.should.have.property('product_id').that.is.a('number')
-  actualProduct.should.have.property('vendor_id').that.is.a('string')
-  actualProduct.should.have.property('store_id').that.is.a('number')
-  actualProduct.should.have.property('created_at').that.is.a('string')
-  actualProduct.should.have.property('updated_at').that.is.a('string')
-
-  // Check that timestamps are recent (within the last 5 seconds)
-  const now = new Date()
-  const createdAt = new Date(actualProduct.created_at!)
-  const updatedAt = new Date(actualProduct.updated_at!)
-  const oneSecond = 1000 // 1000 milliseconds
-
-  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
-  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
-
-  // Compare variants and options
-  actualProduct.variants &&
-    actualProduct.should.have.property('variants').that.is.an('array')
   if (expected.variants) {
-    // Sort variants by SKU for consistent comparison
-    const sortedActualVariants = [...(actualProduct.variants ?? [])].sort(
-      (a, b) => a.sku.localeCompare(b.sku),
-    )
-    const sortedExpectedVariants = [...expected.variants].sort((a, b) =>
-      a.sku.localeCompare(b.sku),
-    )
+    const sortedActualVariants = [...(actualProduct.variants ?? [])]
+      .map(sortVariantOptions)
+      .sort((a, b) => a.sku.localeCompare(b.sku))
 
-    sortedActualVariants.length.should.equal(sortedExpectedVariants.length)
-    for (let i = 0; i < sortedExpectedVariants.length; i++) {
-      const actualVariant = sortedActualVariants![i]
-      const expectedVariant = sortedExpectedVariants[i]
-      actualVariant.sku.should.equal(expectedVariant.sku)
-      const expectedListPrice =
-        expectedVariant.list_price ?? expected.list_price
-      const expectedNetPrice = expectedVariant.net_price ?? expected.net_price
-      actualVariant.list_price.should.equal(expectedListPrice)
-      actualVariant.net_price.should.equal(expectedNetPrice)
-      actualVariant.quantity_available.should.equal(
-        expectedVariant.quantity_available,
-      )
-      actualVariant.should.have.property('options').that.is.an('array')
-      if (expectedVariant.options) {
-        // Sort options by option_name for consistent comparison
-        const sortedActualOptions = [...actualVariant.options!].sort((a, b) =>
-          a.option_name.localeCompare(b.option_name),
-        )
-        const sortedExpectedOptions = [...expectedVariant.options].sort(
-          (a, b) => a.option_name.localeCompare(b.option_name),
+    const sortedExpectedVariants = [...expected.variants]
+      .map(sortVariantOptions)
+      .sort((a, b) => a.sku.localeCompare(b.sku))
+
+    sortedActual.variants = sortedActualVariants
+    sortedExpected.variants = sortedExpectedVariants
+  }
+  try {
+    actualProduct.title.should.equal(expected.title)
+    actualProduct.description.should.deep.equal(expected.description)
+    actualProduct.list_price.should.equal(expected.list_price)
+    actualProduct.net_price.should.equal(expected.net_price)
+    actualProduct.category_id.should.equal(expected.category_id)
+    actualProduct.subcategory_id.should.equal(expected.subcategory_id)
+
+    // Assert that server-generated fields exist and are of the correct type
+    actualProduct.should.have.property('product_id').that.is.a('number')
+    actualProduct.should.have.property('vendor_id').that.is.a('string')
+    actualProduct.should.have.property('store_id').that.is.a('number')
+    actualProduct.should.have.property('created_at').that.is.a('string')
+    actualProduct.should.have.property('updated_at').that.is.a('string')
+
+    // Check that timestamps are recent (within the last 5 seconds)
+    const now = new Date()
+    const createdAt = new Date(actualProduct.created_at!)
+    const updatedAt = new Date(actualProduct.updated_at!)
+    const oneSecond = 1000 // 1000 milliseconds
+
+    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
+    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+
+    // Compare variants and options
+    actualProduct.variants &&
+      actualProduct.should.have.property('variants').that.is.an('array')
+    if (expected.variants) {
+      sortedActual.variants.length.should.equal(sortedExpected.variants.length)
+
+      for (let i = 0; i < sortedExpected.variants.length; i++) {
+        const actualVariant = sortedActual.variants[i]
+        const expectedVariant = sortedExpected.variants[i]
+
+        // Assertions on variant level
+        actualVariant.sku.should.equal(expectedVariant.sku)
+        const expectedListPrice =
+          expectedVariant.list_price ?? expected.list_price
+        const expectedNetPrice = expectedVariant.net_price ?? expected.net_price
+        actualVariant.list_price.should.equal(expectedListPrice)
+        actualVariant.net_price.should.equal(expectedNetPrice)
+        actualVariant.quantity_available.should.equal(
+          expectedVariant.quantity_available,
         )
 
-        sortedActualOptions.length.should.equal(sortedExpectedOptions.length)
-        for (let j = 0; j < sortedExpectedOptions.length; j++) {
-          const actualOption = sortedActualOptions![j]
-          const expectedOption = sortedExpectedOptions[j]
-          actualOption.option_name.should.equal(expectedOption.option_name)
-          actualOption.value.should.equal(expectedOption.value)
+        // Assertions on options level
+        if (expectedVariant.options) {
+          actualVariant.options.length.should.equal(
+            expectedVariant.options.length,
+          )
+          for (let j = 0; j < expectedVariant.options.length; j++) {
+            const actualOption = actualVariant.options[j]
+            const expectedOption = expectedVariant.options[j]
+            actualOption.option_name.should.equal(expectedOption.option_name)
+            actualOption.value.should.equal(expectedOption.value)
+          }
         }
       }
     }
+  } catch (assertionError) {
+    const delta = jdp.diff(sortedExpected, sortedActual)
+    if (delta) {
+      console.log('Product data comparison failed. Delta:')
+      consoleFormatter.log(delta)
+    }
+    throw assertionError
   }
 
   return true
@@ -121,34 +142,50 @@ const compareVariantData = (
 ) => {
   const actualVariant = actual as ProductVariant
 
-  const diff = jdp.diff(expected, actualVariant)
-  if (diff) {
-    console.log('Variant data comparison failed. Diff:')
-    console.log('expected', expected, 'actual', actual)
-    console.log(diff)
-    console.log(util.inspect(diff, null, Infinity, true))
+  const sortedActualVariant = sortVariantOptions(actualVariant)
+
+  const sortedExpected = sortVariantOptions(expected)
+
+  try {
+    actualVariant.sku.should.equal(expected.sku)
+    expected.list_price &&
+      actualVariant.list_price.should.equal(expected.list_price)
+    expected.net_price &&
+      actualVariant.net_price.should.equal(expected.net_price)
+    actualVariant.quantity_available.should.equal(expected.quantity_available)
+
+    // Assert that server-generated fields exist and are of the correct type
+    actualVariant.should.have.property('variant_id').that.is.a('number')
+    actualVariant.should.have.property('options').that.is.an('array')
+
+    if (expected.options) {
+      sortedActualVariant.options.length.should.equal(expected.options.length)
+      for (let j = 0; j < expected.options.length; j++) {
+        const actualOption = sortedActualVariant.options[j]
+        const expectedOption = sortedExpected.options[j]
+        actualOption.option_name.should.equal(expectedOption.option_name)
+        actualOption.value.should.equal(expectedOption.value)
+      }
+    }
+
+    // Check that timestamps are recent (within the last 5 seconds)
+    const now = new Date()
+    const createdAt = new Date(actualVariant.created_at!)
+    const updatedAt = new Date(actualVariant.updated_at!)
+    const oneSecond = 1000 // 1000 milliseconds
+
+    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
+    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+
+    return true
+  } catch (assertionError) {
+    const delta = jdp.diff(sortedExpected, sortedActualVariant)
+    if (delta) {
+      console.log('Product Variant data comparison failed. Delta:')
+      consoleFormatter.log(delta)
+    }
+    throw assertionError
   }
-
-  actualVariant.sku.should.equal(expected.sku)
-  expected.list_price &&
-    actualVariant.list_price.should.equal(expected.list_price)
-  expected.net_price && actualVariant.net_price.should.equal(expected.net_price)
-  actualVariant.quantity_available.should.equal(expected.quantity_available)
-
-  // Assert that server-generated fields exist and are of the correct type
-  actualVariant.should.have.property('variant_id').that.is.a('number')
-  actualVariant.should.have.property('options').that.is.an('array')
-
-  // Check that timestamps are recent (within the last 5 seconds)
-  const now = new Date()
-  const createdAt = new Date(actualVariant.created_at!)
-  const updatedAt = new Date(actualVariant.updated_at!)
-  const oneSecond = 1000 // 1000 milliseconds
-
-  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
-  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
-
-  return true
 }
 
 export const testCreateProduct = (args: {
