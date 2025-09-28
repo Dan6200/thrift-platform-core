@@ -17,7 +17,9 @@ import {
   RemoveCartItemRequestSchema,
   cartResponseSchema,
   cartItemsSchema,
+  cartItemResponseSchema,
 } from '#src/app-schema/cart.js'
+import { customerAuthorization } from '#src/authorization/customer-authorization.js'
 
 const router = Router()
 const { OK, CREATED, NO_CONTENT } = StatusCodes
@@ -25,6 +27,7 @@ const { OK, CREATED, NO_CONTENT } = StatusCodes
 router.get(
   '/',
   authenticateUser,
+  customerAuthorization,
   validate(GetCartRequestSchema),
   getCartLogic,
   validateDbResult(cartResponseSchema),
@@ -34,24 +37,27 @@ router.get(
 router.post(
   '/items',
   authenticateUser,
+  customerAuthorization,
   validate(AddItemToCartRequestSchema),
   addItemToCartLogic,
-  validateDbResult(cartItemsSchema),
+  validateDbResult(cartItemResponseSchema),
   sendResponse(CREATED),
 )
 
 router.put(
-  '/items/:item_id',
+  '/items/:itemId',
   authenticateUser,
+  customerAuthorization,
   validate(UpdateCartItemRequestSchema),
   updateCartItemLogic,
-  validateDbResult(cartItemsSchema),
+  validateDbResult(cartItemResponseSchema),
   sendResponse(OK),
 )
 
 router.delete(
-  '/items/:item_id',
+  '/items/:itemId',
   authenticateUser,
+  customerAuthorization,
   validate(RemoveCartItemRequestSchema),
   removeCartItemLogic,
   sendResponse(NO_CONTENT),
