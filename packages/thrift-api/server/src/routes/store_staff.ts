@@ -18,7 +18,6 @@ import {
   RemoveStoreStaffRequestSchema,
   StoreStaffResponseSchema,
   StoreStaffListResponseSchema,
-  RemoveStoreStaffResponseSchema as RemoveStaffResponse,
 } from '../app-schema/store_staff.js'
 
 const router = Router()
@@ -58,7 +57,6 @@ router
     validate(RemoveStoreStaffRequestSchema),
     hasStoreAccess(['admin']),
     removeStaffLogic,
-    validateDbResult(RemoveStaffResponse),
     sendResponse(NO_CONTENT),
   )
 

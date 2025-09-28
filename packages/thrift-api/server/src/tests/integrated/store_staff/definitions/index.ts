@@ -8,7 +8,6 @@ import {
   RemoveStoreStaffRequestSchema,
   StoreStaffResponseSchema,
   StoreStaffListResponseSchema,
-  RemoveStoreStaffResponseSchema,
 } from '#src/app-schema/store_staff.js'
 import { validateTestData } from '../../helpers/test-validators.js'
 import { StoreStaff } from '#src/types/store_staff.js'
@@ -58,12 +57,6 @@ const validateStaffListRes = (data: unknown) =>
     StoreStaffListResponseSchema,
     data,
     'Store Staff List Response Validation Error',
-  )
-const validateRemoveStaffRes = (data: unknown) =>
-  validateTestData(
-    RemoveStoreStaffResponseSchema,
-    data,
-    'Remove Store Staff Response Validation Error',
   )
 
 const compareStoreStaffData = (actual: any, expected: StoreStaff) => {

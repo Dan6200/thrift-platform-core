@@ -17,6 +17,5 @@ export const removeStaffLogic = async (
     throw new NotFoundError('Staff member not found for this store.')
   }
 
-  req.dbResult = { message: 'Staff member removed successfully.' }
   next()
 }
