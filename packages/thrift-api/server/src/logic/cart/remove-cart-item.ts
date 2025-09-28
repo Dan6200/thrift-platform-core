@@ -10,7 +10,7 @@ export const removeCartItemLogic = async (
     throw new Error('User not authenticated or params is missing')
   }
 
-  const { item_id } = req.validatedParams
+  const { itemId: item_id } = req.validatedParams
 
   const cart = await knex('shopping_cart')
     .where({ customer_id: req.userId })

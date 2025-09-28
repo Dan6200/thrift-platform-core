@@ -1,3 +1,4 @@
+import logger from '#src/utils/logger.js'
 import { knex } from '../../db/index.js'
 import { Request, Response, NextFunction } from 'express'
 
@@ -10,7 +11,7 @@ export const updateCartItemLogic = async (
     throw new Error('User not authenticated or request body/params is missing')
   }
 
-  const { item_id } = req.validatedParams
+  const { itemId: item_id } = req.validatedParams
   const { quantity } = req.validatedBody
 
   const result = await knex.transaction(async (trx) => {
@@ -41,12 +42,13 @@ export const updateCartItemLogic = async (
       throw new Error('Not enough stock')
     }
 
-    const updatedItem = await trx('shopping_cart_item')
+    const [updatedItem] = await trx('shopping_cart_item')
       .where({ item_id, cart_id: cart.cart_id })
       .update({ quantity })
       .returning('*')
 
-    return updatedItem
+    const { cart_id, ...result } = updatedItem
+    return result
   })
   req.dbResult = result
   next()
