@@ -20,14 +20,14 @@ export const AddItemToCartRequestSchema = Joi.object({
 export const UpdateCartItemRequestSchema = Joi.object({
   body: UpdateCartItemDataSchema.required(),
   params: Joi.object({
-    item_id: Joi.number().integer().positive().required(),
+    itemId: Joi.number().integer().positive().required(),
   }).required(),
   query: Joi.object().optional(),
 })
 
 export const RemoveCartItemRequestSchema = Joi.object({
   params: Joi.object({
-    item_id: Joi.number().integer().positive().required(),
+    itemId: Joi.number().integer().positive().required(),
   }).required(),
   body: Joi.object().optional(),
   query: Joi.object().optional(),
@@ -40,16 +40,19 @@ export const GetCartRequestSchema = Joi.object({
 })
 
 // Response Schemas
-const cartItemSchema = Joi.object({
+export const cartItemResponseSchema = Joi.object({
   item_id: Joi.number().integer().positive().required(),
   variant_id: Joi.number().integer().positive().required(),
   quantity: Joi.number().integer().positive().required(),
   created_at: Joi.date().required(),
   updated_at: Joi.date().required(),
+})
+
+const cartItemSchema = Joi.object({
   product_title: Joi.string().required(),
   price: Joi.number().min(0).required(),
   image_url: Joi.string().uri().allow(null),
-})
+}).concat(cartItemResponseSchema)
 
 export const cartResponseSchema = Joi.object({
   cart_id: Joi.number().integer().positive().required(),
@@ -60,5 +63,3 @@ export const cartResponseSchema = Joi.object({
   created_at: Joi.date().required(),
   updated_at: Joi.date().required(),
 }).required()
-
-export const cartItemsSchema = Joi.array().items(cartItemSchema)
