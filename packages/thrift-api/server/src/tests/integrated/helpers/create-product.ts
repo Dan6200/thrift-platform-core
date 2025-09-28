@@ -1,14 +1,18 @@
 import chai from 'chai'
 import { products } from '../data/users/vendors/user-aliyu/products/index.js'
 
-export async function createProductsForTesting(
+export async function* createProductsForTesting(
   token: string,
-  store_id: number,
+  storeId: number,
+  count = 0,
 ) {
-  return chai
-    .request(process.env.SERVER!)
-    .post('/v1/products')
-    .auth(token, { type: 'bearer' })
-    .query({ store_id })
-    .send(products[0])
+  for (const [i, product] of products.entries()) {
+    if (i === count) break
+    yield chai
+      .request(process.env.SERVER!)
+      .post('/v1/products')
+      .auth(token, { type: 'bearer' })
+      .query({ storeId })
+      .send(product)
+  }
 }
