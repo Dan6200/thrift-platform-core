@@ -5,6 +5,7 @@ import {
   GetCartRequestSchema,
   cartResponseSchema,
   cartItemsSchema,
+  cartItemResponseSchema,
 } from '#src/app-schema/cart.js'
 import { validateTestData } from '../test-validators.js'
 
@@ -39,9 +40,9 @@ export const validateGetCartReq = (data: unknown) =>
 export const validateCartRes = (data: unknown) =>
   validateTestData(cartResponseSchema, data, 'Cart Response Validation Error')
 
-export const validateCartItemsRes = (data: unknown) =>
+export const validateCartItemRes = (data: unknown) =>
   validateTestData(
-    cartItemsSchema,
+    cartItemResponseSchema,
     data,
-    'Cart Items Response Validation Error',
+    'Cart Item Response Validation Error',
   )
