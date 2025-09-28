@@ -32,18 +32,20 @@ export const addItemToCartLogic = async (
       throw new Error('Not enough stock')
     }
 
-    const query = `
-      INSERT INTO shopping_cart_item (cart_id, variant_id, quantity)
-      VALUES (?, ?, ?)
-      ON CONFLICT (cart_id, variant_id)
-      DO UPDATE SET quantity = shopping_cart_item.quantity + EXCLUDED.quantity
-      RETURNING *;
-    `
-    const params = [cart.cart_id, variant_id, quantity]
+    const [updatedItem] = await trx('shopping_cart_item')
+      .insert({
+        cart_id: cart.cart_id,
+        variant_id,
+        quantity,
+      })
+      .onConflict(['cart_id', 'variant_id'])
+      .merge({
+        quantity: knex.raw('shopping_cart_item.quantity + ?', [quantity]),
+      })
+      .returning('*')
 
-    const { rows: updatedItem } = await trx.raw(query, params)
-
-    return updatedItem
+    const { cart_id, ...result } = updatedItem
+    return result
   })
   req.dbResult = result
   next()
