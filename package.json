@@ -6,7 +6,8 @@
     "install:all": "pnpm install",
     "build:all": "pnpm -r build",
     "test:all": "pnpm -r test",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": [
