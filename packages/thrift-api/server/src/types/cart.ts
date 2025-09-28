@@ -18,4 +18,6 @@ export interface CartResponseData {
   items: CartItem[]
   total_items: number
   total_price: number
+  created_at?: Date
+  updated_at?: Date
 }
