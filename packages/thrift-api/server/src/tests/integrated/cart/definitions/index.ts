@@ -1,44 +1,208 @@
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
-import { TestRequestWithBody, TestRequest } from '../../test-request/types.js'
+import { TestRequest, RequestParams } from '../../test-request/types.js'
 import {
-  isValidCartUpdateRequest,
-  isValidCartAddItemRequest,
-  isValidCartResponse,
-  isValidCartItems,
-} from '../../helpers/type-guards/cart.js'
+  validateAddItemToCartReq,
+  validateUpdateCartItemReq,
+  validateRemoveCartItemReq,
+  validateGetCartReq,
+  validateCartRes,
+  validateCartItemRes,
+} from '../../helpers/test-validators/cart.js'
+import {
+  CartResponseData,
+  CartItem,
+  CartItemRequestData,
+} from '#src/types/cart.js'
+import chai from 'chai'
+import * as JDP from 'jsondiffpatch'
+import * as consoleFormatter from 'jsondiffpatch/formatters/console'
+
+const jdp = JDP.create()
 
 const { CREATED, OK, NO_CONTENT, NOT_FOUND } = StatusCodes
 
-export const testGetCart = (testRequest as TestRequest)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: isValidCartResponse,
-})
+const cartPathBase = '/v1/cart'
+const buildCartItemPath = (itemId: number) => `${cartPathBase}/items/${itemId}`
 
-export const testAddItemToCart = (testRequest as TestRequestWithBody)({
-  verb: 'post',
-  statusCode: CREATED,
-  validateTestReqData: isValidCartAddItemRequest,
-  validateTestResData: isValidCartItems,
-})
+type ExpectedData = Omit<CartResponseData, 'customer_id' | 'cart_id'>
 
-export const testUpdateCartItem = (testRequest as TestRequestWithBody)({
-  statusCode: OK,
-  verb: 'put',
-  validateTestReqData: isValidCartUpdateRequest,
-  validateTestResData: isValidCartItems,
-})
+const compareCartItem = (actual: any, expected: any) => {
+  const actualItem = actual as CartItem
+  try {
+    actualItem.variant_id.should.equal(expected.variant_id)
+    actualItem.quantity.should.equal(expected.quantity)
+    return true
+  } catch (assertionError) {
+    const delta = jdp.diff(expected, actualItem)
+    if (delta) {
+      console.log('Cart Item data comparison failed. Delta:')
+      consoleFormatter.log(delta)
+    }
+    throw assertionError
+  }
+}
 
-export const testRemoveCartItem = (testRequest as TestRequest)({
-  statusCode: NO_CONTENT,
-  verb: 'delete',
-  validateTestResData: null, // No response body to validate
-})
+const sortActualExpect = (actual: any, expected: any) => {
+  if (!expected.items.length || !actual.items.length)
+    return { sortedActualCart: actual, sortedExpected: expected }
+  const truncCount = Math.min(actual.items.length, expected.items.length)
+  const actualItemsTrunc = actual.items.slice(0, truncCount)
+  const expectedItemsTrunc = expected.items.slice(0, truncCount)
+  const actualItemsExtras = actual.items.slice(truncCount)
+  const expectedItemsExtras = expected.items.slice(truncCount)
+  const sortedActualItemsTrunc = sortItems(actualItemsTrunc)
+  const sortedExpectedItemsTrunc = sortItems(expectedItemsTrunc)
+  const sortedActualItems = sortedActualItemsTrunc.concat(actualItemsExtras)
+  const sortedExpectedItems =
+    sortedExpectedItemsTrunc.concat(expectedItemsExtras)
+  return {
+    sortedActualCart: { ...actual, items: [...sortedActualItems] },
+    sortedExpected: { ...expected, items: [...sortedExpectedItems] },
+  }
+}
 
-export const testGetNonExistentCart = (testRequest as TestRequest)({
-  verb: 'get',
-  statusCode: NOT_FOUND,
-  validateTestResData: null,
-})
+const sortItems = (items: any) => {
+  if (!items.length) return items
+  const sortedCartItems = [...items].sort((a, b) => a.variant_id - b.variant_id)
+  return sortedCartItems
+}
 
+const compareCartData = (actual: any, expected: ExpectedData) => {
+  const actualCart = actual as CartResponseData
+  const { sortedActualCart, sortedExpected } = sortActualExpect(
+    actualCart,
+    expected as any,
+  )
+  try {
+    actualCart.should.have.property('cart_id').that.is.a('number')
+    actualCart.should.have.property('customer_id').that.is.a('string')
+    actualCart.should.have.property('created_at').that.is.a('string')
+    actualCart.should.have.property('updated_at').that.is.a('string')
+
+    // Check that timestamps are recent (within the last 5 seconds)
+    const now = new Date()
+    const createdAt = new Date(actualCart.created_at!)
+    const updatedAt = new Date(actualCart.updated_at!)
+    const oneSecond = 1000 // 1000 milliseconds
+
+    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
+    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+
+    actualCart.total_items.should.equal(expected.total_items)
+    actualCart.total_price.should.equal(expected.total_price)
+
+    actualCart.should.have.property('items').that.is.an('array')
+    if (expected.items) {
+      actualCart.items!.length.should.equal(expected.items.length)
+      for (let i = 0; i < expected.items.length; i++) {
+        const actualItem = actualCart.items![i]
+        const expectedItem = expected.items[i]
+        actualItem.variant_id.should.equal(expectedItem.variant_id)
+        actualItem.quantity.should.equal(expectedItem.quantity)
+      }
+    }
+  } catch (assertionError) {
+    const delta = jdp.diff(sortedExpected, sortedActualCart)
+    if (delta) {
+      console.log('Cart data comparison failed. Delta:')
+      consoleFormatter.log(delta)
+    }
+    throw assertionError
+  }
+
+  return true
+}
+
+export const testGetCart = (args: {
+  token: string
+  expectedData: Omit<CartResponseData, 'cart_id' | 'customer_id'>
+}) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path: cartPathBase,
+    validateTestReqData: validateGetCartReq,
+    validateTestResData: validateCartRes,
+    compareData: (actual, expected) =>
+      compareCartData(actual, expected as ExpectedData),
+    expectedData: args.expectedData,
+  })(requestParams)
+}
+
+export const testAddItemToCart = (args: {
+  token: string
+  body: any
+  expectedData: CartItemRequestData & { price: number }
+}) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: args.body,
+  }
+  return (testRequest as TestRequest)({
+    verb: 'post',
+    statusCode: CREATED,
+    path: `${cartPathBase}/items`,
+    validateTestReqData: validateAddItemToCartReq,
+    validateTestResData: validateCartItemRes,
+    compareData: (actual, expected) => compareCartItem(actual, expected),
+    expectedData: args.expectedData,
+  })(requestParams)
+}
+
+export const testUpdateCartItem = (args: {
+  token: string
+  params: { itemId: number }
+  body: any
+  expectedData: CartItemRequestData | { product_title: string }
+}) => {
+  const path = buildCartItemPath(args.params.itemId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    body: args.body,
+    params: args.params,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'put',
+    path,
+    validateTestReqData: validateUpdateCartItemReq,
+    validateTestResData: validateCartItemRes,
+    compareData: (actual, expected) => compareCartItem(actual, expected),
+    expectedData: args.expectedData,
+  })(requestParams)
+}
+
+export const testRemoveCartItem = (args: {
+  token: string
+  params: { itemId: number }
+}) => {
+  const path = buildCartItemPath(args.params.itemId)
+  const requestParams: RequestParams = {
+    token: args.token,
+    params: args.params,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: NO_CONTENT,
+    verb: 'delete',
+    path,
+    validateTestReqData: validateRemoveCartItemReq,
+    validateTestResData: null,
+  })(requestParams)
+}
+
+export const testGetNonExistentCart = (args: { token: string }) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: NOT_FOUND,
+    path: cartPathBase,
+    validateTestReqData: validateGetCartReq,
+    validateTestResData: null,
+  })(requestParams)
+}

@@ -5,22 +5,25 @@ import {
   testRemoveCartItem,
 } from './definitions/index.js'
 import { ProfileRequestData } from '#src/types/profile/index.js'
-import { itemsToAdd } from '../data/users/customers/user-aisha/cart.js'
-import { getProductsForTesting } from '../helpers/get-product.js'
 import { createProductsForTesting } from '../helpers/create-product.js'
 import { createStoreForTesting } from '../helpers/create-store.js'
-import { userInfo as aliyuInfo } from '../data/users/vendors/user-aliyu/index.js'
+import {
+  userInfo as aliyuInfo,
+  products,
+} from '../data/users/vendors/user-aliyu/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'
+import assert from 'assert'
+import { CartItemRequestData, CartResponseData } from '#src/types/cart.js'
 
+type ExpectedData = Omit<CartResponseData, 'customer_id' | 'cart_id'>
 export default function (customer: { userInfo: ProfileRequestData }) {
-  const server = process.env.SERVER!
   let token: string
   let userId: string
   let aliyuUserId: string
-  let variantId: number
-  let cartItemId: number
+  let cartItemIds: number[] = []
+  const cartItems: (CartItemRequestData & { net_price: number })[] = []
 
   before(async () => {
     // Create and sign in customer
@@ -33,19 +36,23 @@ export default function (customer: { userInfo: ProfileRequestData }) {
 
     // Create a store for Aliyu
     const storeRes = await createStoreForTesting(aliyuToken)
-    const storeId = storeRes.body[0].store_id
+    const storeId = storeRes.body.store_id
 
-    // Create a product in that store
-    const productRes = await createProductsForTesting(aliyuToken, storeId)
-    const productId = productRes.body[0].product_id // Get the product_id
-
-    // Get the product details to extract variant_id
-    const fullProductRes = await getProductsForTesting(
+    // Create products in that store
+    for await (const response of createProductsForTesting(
       aliyuToken,
-      productId,
       storeId,
-    )
-    variantId = fullProductRes.body[0].variants[0].variant_id // Assuming at least one variant
+      products.length,
+    )) {
+      // Extract the variants
+      for (const {
+        variant_id,
+        net_price,
+        quantity_available: quantity,
+      } of response.body.variants) {
+        cartItems.push({ variant_id, net_price, quantity })
+      }
+    }
   })
 
   after(async () => {
@@ -55,35 +62,95 @@ export default function (customer: { userInfo: ProfileRequestData }) {
 
   it('should get an empty cart for a new user', async () => {
     await testGetCart({
-      server,
-      path: '/v1/cart',
       token,
+      expectedData: {
+        items: [],
+        total_items: 0,
+        total_price: 0,
+      },
     })
   })
 
   it('should add an item to the cart', async () => {
-    ;[{ item_id: cartItemId }] = await testAddItemToCart({
-      server,
-      path: '/v1/cart/items',
+    assert(!!cartItems.length)
+    for (const item of cartItems) {
+      const { net_price, ...restItem } = item
+      const { item_id } = await testAddItemToCart({
+        token,
+        body: restItem,
+        expectedData: { ...item, price: net_price } as any,
+      })
+      cartItemIds.push(item_id)
+    }
+  })
+
+  it('should get all the items in a cart', async () => {
+    await testGetCart({
       token,
-      requestBody: { variant_id: variantId, quantity: itemsToAdd[0].quantity },
+      expectedData: {
+        items: cartItems.map((item) => {
+          const { net_price, ...rest } = item
+          return rest
+        }) as any,
+        total_items: cartItems.reduce(
+          (count, { quantity }) => count + quantity,
+          0,
+        ),
+        total_price: cartItems.reduce(
+          (total, { net_price, quantity }) => total + net_price * quantity,
+          0,
+        ),
+      },
     })
   })
 
   it('should update the quantity of a specific item in the cart', async () => {
+    const updatedQuantity = 5
+    const { net_price, ...cartItemFiltered } = cartItems[0]
+    const expectedData = {
+      ...cartItemFiltered,
+      price: net_price,
+      quantity: updatedQuantity,
+    }
     await testUpdateCartItem({
-      server,
-      path: `/v1/cart/items/${cartItemId}`,
       token,
-      requestBody: { quantity: 5 },
+      params: { itemId: cartItemIds[0] },
+      body: { quantity: updatedQuantity },
+      expectedData,
     })
   })
 
   it('should remove an item from the cart', async () => {
     await testRemoveCartItem({
-      server,
-      path: `/v1/cart/items/${cartItemId}`,
       token,
+      params: { itemId: cartItemIds[2] },
+    })
+  })
+
+  it('should get all the items in a cart, and reflect all the modifications', async () => {
+    const updatedQuantity = 5
+    let total_price = cartItems[0].net_price * updatedQuantity, // first Item that was removed, needed for calculation later
+      total_items = 0
+    const calculatedItems = cartItems
+      .toSpliced(0, 1, {
+        variant_id: cartItems[0].variant_id,
+        quantity: updatedQuantity,
+        net_price: null,
+      })
+      .toSpliced(2, 1)
+      .map((item) => {
+        const { net_price, ...rest } = item
+        total_price += net_price * rest.quantity
+        total_items += rest.quantity
+        return rest
+      })
+    await testGetCart({
+      token,
+      expectedData: {
+        items: calculatedItems as any,
+        total_items,
+        total_price,
+      },
     })
   })
 }
