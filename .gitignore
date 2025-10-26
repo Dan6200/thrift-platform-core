@@ -4,6 +4,8 @@ reader-for-code-snip.mjs
 shadcn-download.sh
 todo.md
 
+generated_images
+
 # dependencies
 /node_modules
 /.pnp
