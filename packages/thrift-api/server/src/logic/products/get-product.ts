@@ -90,4 +90,3 @@ GROUP BY
   req.dbResult = result.rows[0]
   next()
 }
-

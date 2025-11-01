@@ -37,4 +37,3 @@ export function handleSortQuery(queryString: string): string {
 
   return dbQueryString + validSorts.join(', ')
 }
-

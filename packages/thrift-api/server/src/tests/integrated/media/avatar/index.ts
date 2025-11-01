@@ -49,4 +49,3 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
     await deleteUserForTesting(userId)
   })
 }
-

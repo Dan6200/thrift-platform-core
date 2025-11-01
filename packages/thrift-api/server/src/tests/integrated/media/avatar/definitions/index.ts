@@ -71,4 +71,3 @@ export const testDeleteAvatar = async function (
   response.should.have.status(NO_CONTENT)
   return response.body
 }
-

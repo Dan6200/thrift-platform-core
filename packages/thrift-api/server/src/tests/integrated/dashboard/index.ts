@@ -31,7 +31,7 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
       userId = await createUserForTesting(userInfo)
       token = await signInForTesting(userInfo)
       const storeResponse = await createStoreForTesting(token)
-      const [{ store_id }] = storeResponse.body
+      const { store_id } = storeResponse.body
       storeId = store_id
       path = `/v1/dashboard/${storeId}`
     })

@@ -28,4 +28,3 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
     after(async () => await deleteUserForTesting(userId))
   })
 }
-

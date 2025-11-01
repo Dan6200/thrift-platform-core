@@ -16,4 +16,3 @@ const MediaResponseSchema = Joi.object({
 })
 
 export const AvatarResponseSchema = MediaResponseSchema
-

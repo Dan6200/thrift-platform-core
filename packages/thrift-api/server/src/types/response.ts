@@ -10,7 +10,7 @@ type ResponseData = {
 }
 
 export function isTypeQueryResultRow(
-  dbResponse: unknown
+  dbResponse: unknown,
 ): dbResponse is QueryResult<QueryResultRow | QueryResultRow[]> {
   return (
     dbResponse != undefined &&
@@ -25,7 +25,7 @@ export function isTypeQueryResultRow(
 }
 
 export function isTypeQueryResultRowList(
-  dbResponse: unknown
+  dbResponse: unknown,
 ): dbResponse is QueryResult<QueryResultRow[]> {
   return (
     dbResponse != undefined &&

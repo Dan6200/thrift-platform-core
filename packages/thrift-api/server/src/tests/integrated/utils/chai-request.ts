@@ -8,7 +8,7 @@ export default async (
   verb: 'get' | 'patch' | 'put' | 'delete' | 'post',
   path: string,
   token?: string,
-  data?: object
+  data?: object,
 ) => {
   return chai
     .request(server)

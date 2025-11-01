@@ -399,4 +399,3 @@ export const updatedStores: Partial<StoreData>[] = [
     ],
   },
 ]
-

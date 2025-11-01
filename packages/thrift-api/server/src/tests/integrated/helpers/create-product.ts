@@ -7,7 +7,7 @@ export async function* createProductsForTesting(
   count = 0,
 ) {
   for (const [i, product] of products.entries()) {
-    if (i === count) break
+    if (i >= count) return
     yield chai
       .request(process.env.SERVER!)
       .post('/v1/products')

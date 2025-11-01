@@ -15,4 +15,3 @@ export const validateQuerySchema =
     if (error) throw new BadRequestError(error.message)
     return true
   }
-

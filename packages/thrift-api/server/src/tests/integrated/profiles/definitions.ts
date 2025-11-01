@@ -145,4 +145,3 @@ export const testHasCustomerAccountWithoutSignIn = () => {
       compareProfileData(actual, expected as ProfileRequestData),
   })({})
 }
-

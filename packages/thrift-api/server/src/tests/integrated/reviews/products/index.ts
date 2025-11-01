@@ -47,11 +47,20 @@ export default function (customer: { userInfo: ProfileRequestData }) {
 
     // Create a store for the vendor
     const storeRes = await createStoreForTesting(vendorToken)
-    storeId = storeRes.body[0].store_id
+    storeId = storeRes.body.store_id
 
     // Create a product in that store
-    const productRes = await createProductsForTesting(vendorToken, storeId)
-    productId = productRes.body[0].product_id
+    const productCreationPromises = []
+    for await (const promise of createProductsForTesting(
+      vendorToken,
+      storeId,
+      3,
+    )) {
+      productCreationPromises.push(promise)
+    }
+    const productResponses = await Promise.all(productCreationPromises)
+    const productRes = productResponses[0]
+    productId = productRes.body.product_id
 
     // Get the product details to extract variant_id
     const fullProductRes = await getProductsForTesting(

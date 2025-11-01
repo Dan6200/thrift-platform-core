@@ -13,7 +13,7 @@ export default function (user: {
   before(async () => await bulkDeleteImages('avatars'))
 
   describe('Testing Avatar Creation', () => testAvatar(user))
-  if (user.productMedia) {
+  if (user.userInfo.is_vendor) {
     describe('Testing Media Creation', () =>
       testProductMedia(user as typeof Aliyu))
   }

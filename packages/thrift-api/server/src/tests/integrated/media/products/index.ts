@@ -35,7 +35,7 @@ export default function ({
     token = await signInForTesting(userInfo)
 
     const {
-      body: [{ store_id }],
+      body: { store_id },
     } = await createStoreForTesting(token)
     const productCreationResponse = await createProductsForTesting(
       token,
@@ -102,4 +102,3 @@ export default function ({
     await bulkDeleteImages('products')
   })
 }
-

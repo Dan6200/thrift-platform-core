@@ -31,4 +31,3 @@ export type RequestParams = {
   body?: any | any[]
   token?: string
 }
-

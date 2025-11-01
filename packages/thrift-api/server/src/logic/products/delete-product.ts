@@ -10,7 +10,9 @@ export const deleteProductLogic = async (
 
   const { storeId } = req.validatedQueryParams!
 
-  await knex('products').where({ product_id: productId, store_id: storeId, vendor_id: req.userId }).del()
+  await knex('products')
+    .where({ product_id: productId, store_id: storeId, vendor_id: req.userId })
+    .del()
 
   next()
 }

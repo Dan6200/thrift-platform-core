@@ -15,7 +15,7 @@ export default async function retryQuery(
   query: (params: object) => Promise<any>,
   params: object,
   retries: number,
-  ms: number
+  ms: number,
 ): Promise<any> {
   let res: any
   try {

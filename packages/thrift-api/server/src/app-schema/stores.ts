@@ -250,4 +250,3 @@ export const StoreDataResponseListSchema = joi
   .array()
   .items(StoreDataResponseSchema)
   .required()
-

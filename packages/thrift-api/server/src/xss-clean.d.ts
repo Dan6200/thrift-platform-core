@@ -1,5 +1,5 @@
 declare module 'xss-clean' {
-	const value: Function;
+  const value: Function
 
-	export default value;
+  export default value
 }

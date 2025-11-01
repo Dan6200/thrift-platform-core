@@ -6,7 +6,7 @@ export default async function (
   pool: Pool,
   text?: string,
   values?: Array<any>,
-  name?: string
+  name?: string,
 ): Promise<QueryResult<QueryResultRow | QueryResultRow[]>> {
   const start = Date.now()
   setTimeout(() => {
@@ -28,7 +28,7 @@ export default async function (
     pool.query.bind(pool),
     { text, values, name },
     retryCount,
-    delay
+    delay,
   )
 
   const duration = Date.now() - start
