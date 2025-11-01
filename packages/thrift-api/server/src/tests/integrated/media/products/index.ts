@@ -37,11 +37,13 @@ export default function ({
     const {
       body: { store_id },
     } = await createStoreForTesting(token)
-    const productCreationResponse = await createProductsForTesting(
-      token,
-      store_id,
-    )
-    product_id = productCreationResponse.body[0].product_id
+    const productCreationPromises = []
+    for await (const promise of createProductsForTesting(token, store_id, 1)) {
+      productCreationPromises.push(promise)
+    }
+    const productResponses = await Promise.all(productCreationPromises)
+    const productRes = productResponses[0]
+    product_id = productRes.body.product_id
     await bulkDeleteImages('products')
   })
 
