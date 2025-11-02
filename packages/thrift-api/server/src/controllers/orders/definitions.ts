@@ -25,7 +25,7 @@ export const createOrderQuery = async ({
   const trx = await knex.transaction()
 
   try {
-    // Verify store exists and belongs to a vendor (optional, but good practice)
+    // Verify store exists and belongs to a vendor
     const store = await trx('stores').where({ store_id }).first()
     if (!store) {
       throw new NotFoundError('Store not found')
@@ -41,13 +41,40 @@ export const createOrderQuery = async ({
       }
     }
 
+    const variantIds = items.map((item) => item.variant_id)
+
+    const variants = await trx('product_variants')
+      .whereIn('variant_id', variantIds)
+      .select('variant_id', 'net_price', 'list_price')
+
+    const inventory = await trx('product_variant_inventory')
+      .whereIn('variant_id', variantIds)
+      .select('variant_id', 'quantity_available')
+
+    const variantsById = variants.reduce(
+      (acc, v) => {
+        acc[v.variant_id] = v
+        return acc
+      },
+      {} as Record<
+        number,
+        { variant_id: number; net_price: number; list_price: number }
+      >,
+    )
+
+    const inventoryById = inventory.reduce(
+      (acc, i) => {
+        acc[i.variant_id] = i
+        return acc
+      },
+      {} as Record<number, { variant_id: number; quantity_available: number }>,
+    )
+
     let total_amount = 0
     const orderItemsToInsert = []
 
     for (const item of items) {
-      const variant = await trx('product_variants')
-        .where({ variant_id: item.variant_id })
-        .first()
+      const variant = variantsById[item.variant_id]
 
       if (!variant) {
         throw new BadRequestError(
@@ -55,12 +82,8 @@ export const createOrderQuery = async ({
         )
       }
 
-      // Get current stock from inventory view
-      const inventory = await trx('product_variant_inventory')
-        .where({ variant_id: item.variant_id })
-        .first()
-
-      const availableQuantity = inventory ? inventory.quantity_available : 0
+      const availableQuantity =
+        inventoryById[item.variant_id]?.quantity_available || 0
 
       if (availableQuantity < item.quantity) {
         throw new BadRequestError(
@@ -86,7 +109,7 @@ export const createOrderQuery = async ({
         total_amount,
         status: 'pending',
       })
-      .returning('*')
+      .returning('order_id')
 
     for (const orderItem of orderItemsToInsert) {
       await trx('order_items').insert({
@@ -142,18 +165,16 @@ export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
   let ordersQuery = knex('orders')
 
   if (store_id) {
-    // If store_id is provided, check vendor/staff access first
-    const isVendor = await knex('stores')
-      .where({ store_id, vendor_id: userId })
-      .first()
+    const {
+      rows: [{ has_store_access }],
+    } = await knex.raw('select has_store_access(?, ?, ?)', [
+      userId,
+      store_id,
+      ['admin', 'editor'],
+    ])
 
-    if (!isVendor) {
-      const isStaff = await knex('store_staff')
-        .where({ store_id, staff_id: userId })
-        .first()
-      if (!isStaff) {
-        throw new UnauthorizedError("Access denied to this store's orders")
-      }
+    if (!has_store_access) {
+      throw new UnauthorizedError("Access denied to this store's orders")
     }
     // If vendor or staff, limit by store_id
     ordersQuery = ordersQuery.where({ store_id })
