@@ -1,56 +1,56 @@
 # cspell:disable
-version: '3'
-
-services:
-  redis:
-    image: 'redis:latest'
-    ports: ['6379:6379']
-    networks: [app-network]
-
-  thrift-app:
-    image: danielnyong/thrift_app
-    container_name: thrift-app
-    restart: unless-stopped
-    networks: [app-network]
-    depends_on: [redis]
-    ports: ['1024:1024']
-
-  webserver:
-    image: nginx:mainline-alpine
-    container_name: webserver
-    restart: unless-stopped
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - web-root:/var/www/html
-      - ./nginx-conf:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-    depends_on: [thrift-app]
-    networks: [app-network]
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    depends_on: [webserver]
-    # To create the ssl certificate:
-    # command: certonly --webroot --webroot-path=/var/www/html --email danielnyong66@gmail.com --agree-tos --no-eff-email --noninteractive --force-renewal -d api.thrift-search.com.ng
-    # Use the staging flag to avoid rate-limiting
-    # command: certonly --webroot --webroot-path=/var/www/html --email danielnyong66@gmail.com --agree-tos --no-eff-email --noninteractive --staging -d api.thrift-search.com.ng
-    # To renew every 12 hrs:
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $$ {!}; done;'"
-
-volumes:
-  certbot-etc:
-  certbot-var:
-  web-root:
-    driver: local
-
-networks:
-  app-network:
-    driver: bridge
+# version: '3'
+# DEPRECATED!!!
+# services:
+#   redis:
+#     image: 'redis:latest'
+#     ports: ['6379:6379']
+#     networks: [app-network]
+#
+#   thrift-app:
+#     image: danielnyong/thrift_app
+#     container_name: thrift-app
+#     restart: unless-stopped
+#     networks: [app-network]
+#     depends_on: [redis]
+#     ports: ['1024:1024']
+#
+#   webserver:
+#     image: nginx:mainline-alpine
+#     container_name: webserver
+#     restart: unless-stopped
+#     ports:
+#       - '80:80'
+#       - '443:443'
+#     volumes:
+#       - web-root:/var/www/html
+#       - ./nginx-conf:/etc/nginx/conf.d
+#       - certbot-etc:/etc/letsencrypt
+#       - certbot-var:/var/lib/letsencrypt
+#     depends_on: [thrift-app]
+#     networks: [app-network]
+#
+#   certbot:
+#     image: certbot/certbot
+#     container_name: certbot
+#     volumes:
+#       - certbot-etc:/etc/letsencrypt
+#       - certbot-var:/var/lib/letsencrypt
+#       - web-root:/var/www/html
+#     depends_on: [webserver]
+#     # To create the ssl certificate:
+#     # command: certonly --webroot --webroot-path=/var/www/html --email danielnyong66@gmail.com --agree-tos --no-eff-email --noninteractive --force-renewal -d api.thrift-search.com.ng
+#     # Use the staging flag to avoid rate-limiting
+#     # command: certonly --webroot --webroot-path=/var/www/html --email danielnyong66@gmail.com --agree-tos --no-eff-email --noninteractive --staging -d api.thrift-search.com.ng
+#     # To renew every 12 hrs:
+#     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $$ {!}; done;'"
+#
+# volumes:
+#   certbot-etc:
+#   certbot-var:
+#   web-root:
+#     driver: local
+#
+# networks:
+#   app-network:
+#     driver: bridge
