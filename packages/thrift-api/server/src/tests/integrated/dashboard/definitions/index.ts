@@ -1,10 +1,9 @@
 import { StatusCodes } from 'http-status-codes'
 import testRequest from '../../test-request/index.js'
-import { TestRequestWithQParams } from '../../test-request/types.js'
+import { TestRequest, RequestParams } from '../../test-request/types.js'
 import {
   DashboardKPIsResponseSchema,
   RevenueTrendResponseSchema,
-  SalesAnalyticsQuerySchema,
   SalesAnalyticsByProductResponseSchema,
   SalesAnalyticsByCategoryResponseSchema,
   SalesAnalyticsRecentOrdersResponseSchema,
@@ -18,106 +17,222 @@ import {
 
 const { OK } = StatusCodes
 
-export const testGetKPIs = (testRequest as TestRequestWithQParams)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = DashboardKPIsResponseSchema.validate(data)
-    return !error
-  },
-})
+const buildDashboardPath = (storeId: string, endpoint: string) =>
+  `/v1/dashboard/${storeId}/${endpoint}`
 
-export const testGetRevenueTrends = (testRequest as TestRequestWithQParams)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = RevenueTrendResponseSchema.validate(data)
-    return !error
-  },
-})
-
-export const testGetSalesAnalytics = (testRequest as TestRequestWithQParams)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data, query) => {
-    // This is a dynamic response based on the 'type' query parameter
-    // For simplicity, we'll validate against a union or a generic object for now
-    // In a real scenario, you'd have a more sophisticated validation here
-    if (query && query.type === 'by-product') {
-      const { error } = SalesAnalyticsByProductResponseSchema.validate(data)
+export const testGetKPIs = (args: {
+  token: string
+  query: { storeId: string; startDate: string; endDate: string }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'kpis')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = DashboardKPIsResponseSchema.validate(data)
       return !error
-    } else if (query && query.type === 'by-category') {
-      const { error } = SalesAnalyticsByCategoryResponseSchema.validate(data)
+    },
+  })(requestParams)
+}
+
+export const testGetRevenueTrends = (args: {
+  token: string
+  query: {
+    storeId: string
+    startDate: string
+    endDate: string
+    interval: string
+  }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'revenue-trends')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = RevenueTrendResponseSchema.validate(data)
       return !error
-    } else if (query && query.type === 'recent-orders') {
-      const { error } = SalesAnalyticsRecentOrdersResponseSchema.validate(data)
+    },
+  })(requestParams)
+}
+
+export const testGetSalesAnalytics = (args: {
+  token: string
+  query: {
+    storeId: string
+    type: string
+    offset?: number
+    limit?: number
+    sortBy?: string
+    sortOrder?: string
+    status?: string
+  }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'sales-analytics')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data, query) => {
+      if (query && query.type === 'by-product') {
+        const { error } = SalesAnalyticsByProductResponseSchema.validate(data)
+        return !error
+      } else if (query && query.type === 'by-category') {
+        const { error } = SalesAnalyticsByCategoryResponseSchema.validate(data)
+        return !error
+      } else if (query && query.type === 'recent-orders') {
+        const { error } =
+          SalesAnalyticsRecentOrdersResponseSchema.validate(data)
+        return !error
+      }
+      return true
+    },
+  })(requestParams)
+}
+
+export const testGetCustomerAcquisitionTrends = (args: {
+  token: string
+  query: {
+    storeId: string
+    startDate: string
+    endDate: string
+    interval: string
+  }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'customer-acquisition-trends')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = CustomerAcquisitionTrendResponseSchema.validate(data)
       return !error
-    }
-    // Fallback for unknown types or if no type is provided
-    return true // Or throw an error for invalid type
-  },
-})
+    },
+  })(requestParams)
+}
 
-export const testGetCustomerAcquisitionTrends = (
-  testRequest as TestRequestWithQParams
-)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = CustomerAcquisitionTrendResponseSchema.validate(data)
-    return !error
-  },
-})
+export const testGetCustomersByLocation = (args: {
+  token: string
+  query: { storeId: string; locationType: string }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'customers-by-location')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = CustomersByLocationResponseSchema.validate(data)
+      return !error
+    },
+  })(requestParams)
+}
 
-export const testGetCustomersByLocation = (
-  testRequest as TestRequestWithQParams
-)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = CustomersByLocationResponseSchema.validate(data)
-    return !error
-  },
-})
+export const testGetCustomerLifetimeValue = (args: {
+  token: string
+  query: { storeId: string; limit: number; sortBy: string; sortOrder: string }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'customer-lifetime-value')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = CustomerCLVResponseSchema.validate(data)
+      return !error
+    },
+  })(requestParams)
+}
 
-export const testGetCustomerLifetimeValue = (
-  testRequest as TestRequestWithQParams
-)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = CustomerCLVResponseSchema.validate(data)
-    return !error
-  },
-})
+export const testGetTopSellingProducts = (args: {
+  token: string
+  query: { storeId: string; startDate: string; endDate: string; limit: number }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'top-selling-products')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = TopSellingProductsResponseSchema.validate(data)
+      return !error
+    },
+  })(requestParams)
+}
 
-export const testGetTopSellingProducts = (
-  testRequest as TestRequestWithQParams
-)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = TopSellingProductsResponseSchema.validate(data)
-    return !error
-  },
-})
+export const testGetLowStockProducts = (args: {
+  token: string
+  query: { storeId: string; threshold: number; limit: number }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'low-stock-products')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = LowStockProductsResponseSchema.validate(data)
+      return !error
+    },
+  })(requestParams)
+}
 
-export const testGetLowStockProducts = (testRequest as TestRequestWithQParams)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = LowStockProductsResponseSchema.validate(data)
-    return !error
-  },
-})
-
-export const testGetProductPerformance = (
-  testRequest as TestRequestWithQParams
-)({
-  statusCode: OK,
-  verb: 'get',
-  validateTestResData: (data: unknown) => {
-    const { error } = ProductPerformanceResponseSchema.validate(data)
-    return !error
-  },
-})
+export const testGetProductPerformance = (args: {
+  token: string
+  query: { storeId: string; startDate: string; endDate: string }
+}) => {
+  const { storeId, ...query } = args.query
+  const path = buildDashboardPath(storeId, 'product-performance')
+  const requestParams: RequestParams = {
+    token: args.token,
+    query,
+  }
+  return (testRequest as TestRequest)({
+    statusCode: OK,
+    verb: 'get',
+    path,
+    validateTestResData: (data: unknown) => {
+      const { error } = ProductPerformanceResponseSchema.validate(data)
+      return !error
+    },
+  })(requestParams)
+}
