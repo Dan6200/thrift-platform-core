@@ -16,21 +16,22 @@ import { deleteUserForTesting } from '#src/tests/integrated/helpers/delete-user.
 import { signInForTesting } from '#src/tests/integrated/helpers/signin-user.js'
 import { createStoreForTesting } from '#src/tests/integrated/helpers/create-store.js'
 import { createProductsForTesting } from '#src/tests/integrated/helpers/create-product.js'
-import { getProductsForTesting } from '#src/tests/integrated/helpers/get-product.js'
-import { userInfo as aliyuInfo } from '#src/tests/integrated/data/users/vendors/user-aliyu/index.js'
+import {
+  userInfo as aliyuInfo,
+  products,
+} from '#src/tests/integrated/data/users/vendors/user-aliyu/index.js'
 
 chai.use(chaiHttp).should()
 
 export default function (customer: { userInfo: ProfileRequestData }) {
-  const server = process.env.SERVER!
   let customerToken: string
   let customerId: string
   let vendorToken: string
   let vendorId: string
   let storeId: number
-  let productId: number
   let variantId: number
   let orderId: number
+  let variantPrice: number
 
   before(async () => {
     // Create and sign in customer
@@ -50,29 +51,20 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     for await (const promise of createProductsForTesting(
       vendorToken,
       storeId,
-      3,
+      1,
     )) {
       productCreationPromises.push(promise)
     }
     const productResponses = await Promise.all(productCreationPromises)
     const productRes = productResponses[0]
-    productId = productRes.body.product_id
-
-    // Get the product details to extract variant_id
-    const fullProductRes = await getProductsForTesting(
-      vendorToken,
-      productId,
-      storeId,
-    )
-    variantId = fullProductRes.body[0].variants[0].variant_id // Assuming at least one variant
+    variantId = productRes.body.variants[0].variant_id
+    variantPrice = productRes.body.variants[0].net_price
   })
 
   after(async () => {
     await deleteUserForTesting(customerId)
     await deleteUserForTesting(vendorId)
   })
-
-  const ordersPath = '/v1/orders'
 
   it('should allow a customer to create an order', async () => {
     const orderData: OrderCreateRequestData = {
@@ -84,19 +76,19 @@ export default function (customer: { userInfo: ProfileRequestData }) {
         },
       ],
     }
-    const [{ order_id }] = await testCreateOrder({
-      server,
-      path: ordersPath,
+    const { order_id } = await testCreateOrder({
       token: customerToken,
-      requestBody: orderData,
+      body: orderData,
+      expectedData: {
+        ...orderData,
+        total_amount: variantPrice * 1,
+      },
     })
     orderId = order_id
   })
 
   it('should allow a customer to get all their orders', async () => {
     await testGetAllOrders({
-      server,
-      path: ordersPath,
       token: customerToken,
       query: { store_id: storeId },
     })
@@ -104,9 +96,8 @@ export default function (customer: { userInfo: ProfileRequestData }) {
 
   it('should allow a customer to get a specific order', async () => {
     await testGetOrder({
-      server,
-      path: `${ordersPath}/${orderId}`,
       token: customerToken,
+      params: { orderId },
     })
   })
 
@@ -121,26 +112,27 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       ],
     }
     await testUpdateOrder({
-      server,
-      path: `${ordersPath}/${orderId}`,
       token: customerToken,
-      requestBody: updatedOrderData,
+      params: { orderId },
+      body: updatedOrderData,
+      expectedData: {
+        ...updatedOrderData,
+        total_amount: variantPrice * 2,
+      },
     })
   })
 
   it('should allow a customer to delete an order', async () => {
     await testDeleteOrder({
-      server,
-      path: `${ordersPath}/${orderId}`,
       token: customerToken,
+      params: { orderId },
     })
   })
 
   it('should fail to get a deleted order', async () => {
     await testGetNonExistentOrder({
-      server,
-      path: `${ordersPath}/${orderId}`,
       token: customerToken,
+      params: { orderId },
     })
   })
 }
