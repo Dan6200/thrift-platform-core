@@ -60,11 +60,13 @@ const compareOrderData = (actual: any, expected: any) => {
 export const testCreateOrder = (args: {
   token: string
   body: OrderCreateRequestData
+  query: { store_id: number }
   expectedData: any
 }) => {
   const requestParams: RequestParams = {
     token: args.token,
     body: args.body,
+    query: args.query,
   }
   return (testRequest as TestRequest)({
     verb: 'post',
@@ -97,11 +99,13 @@ export const testGetAllOrders = (args: {
 export const testGetOrder = (args: {
   token: string
   params: { orderId: number }
+  query: { store_id: number }
 }) => {
   const path = buildOrderPath(args.params.orderId)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
+    query: args.query,
   }
   return (testRequest as TestRequest)({
     verb: 'get',

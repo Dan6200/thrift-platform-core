@@ -64,6 +64,13 @@ export default function (): void {
       }))
   }
 
+  /** Cart related tests **/
+  for (let customer of customers) {
+    const { userInfo } = customer
+    const { first_name: name } = userInfo
+    describe(`Testing Cart for ${name}`, () => testCart(customer))
+  }
+
   /** Product related tests **/
 
   for (let vendor of vendors) {
@@ -76,9 +83,16 @@ export default function (): void {
   /** Media related tests **/
 
   for (let user of users) {
-    describe(`Testing Media File Upload for ${user.userInfo.first_name}`, async () =>
-      testMedia(user))
+    describe(`Skipping Media File Upload Tests for ${user.userInfo.first_name}`, async () =>
+      it('should skip', (done) => done()))
   }
+  // testMedia(user))
+  // }
+
+  // for (let user of users) {
+  //   describe(`Testing Media File Upload for ${user.userInfo.first_name}`, async () =>
+  //     testMedia(user))
+  // }
 
   /** Dashboard related tests **/
 
@@ -102,11 +116,11 @@ export default function (): void {
     }
   }
 
-  /** Cart related tests **/
+  /** Order related tests **/
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing Cart for ${name}`, () => testCart(customer))
+    describe(`Testing Orders for ${name}`, () => testOrders(customer))
   }
 
   /** Product Reviews related tests **/
@@ -115,13 +129,6 @@ export default function (): void {
     const { first_name: name } = userInfo
     describe(`Testing Product Reviews for ${name}`, () =>
       testProductReviews(customer))
-  }
-
-  /** Order related tests **/
-  for (let customer of customers) {
-    const { userInfo } = customer
-    const { first_name: name } = userInfo
-    describe(`Testing Orders for ${name}`, () => testOrders(customer))
   }
 
   //

@@ -14,9 +14,9 @@ import {
 } from '#src/types/orders.js'
 
 export const isValidOrderCreateRequest = (
-  data: unknown,
+  data: any,
 ): data is OrderCreateRequestData => {
-  const { error } = OrderCreateRequestSchema.validate(data)
+  const { error } = OrderCreateRequestSchema.validate(data.body)
   error && console.error(error)
   return !error
 }
@@ -43,8 +43,8 @@ export const isValidOrderGETAllResponse = (
   return !error
 }
 
-export const isValidOrderQuery = (data: unknown): data is OrderQueryData => {
-  const { error } = OrderQuerySchema.validate(data)
+export const isValidOrderQuery = (data: any): data is OrderQueryData => {
+  const { error } = OrderQuerySchema.validate(data.query)
   error && console.error(error)
   return !error
 }
