@@ -8,15 +8,7 @@ import { SalesBreakdown } from '@/components/dashboard/SalesBreakdown'
 import { OrdersTable } from '@/components/dashboard/OrdersTable'
 import { CustomerInsights } from '@/components/dashboard/CustomerInsights'
 import { ProductPerformance } from '@/components/dashboard/ProductPerformance'
-import {
-  mockApiService,
-  KPIData,
-  RevenueData,
-  SalesData,
-  Order,
-  CustomerData,
-  Product,
-} from '@/app/vendor-analytics/services/mockApi'
+import apiService from '@/app/vendor-analytics/services/api'
 import {
   DollarSign,
   ShoppingCart,
@@ -62,13 +54,10 @@ export default function Dashboard() {
       try {
         // Load KPIs
         setIsLoadingKPIs(true)
-        const kpis = await mockApiService.getKPIs(STORE_ID, startDate, endDate)
-        setKpiData(kpis)
-        setIsLoadingKPIs(false)
-
+        const kpis = await apiService.getKPIs(STORE_ID, startDate, endDate)
         // Load revenue data
         setIsLoadingRevenue(true)
-        const revenue = await mockApiService.getRevenueData(
+        const revenue = await apiService.getRevenueData(
           STORE_ID,
           startDate,
           endDate,
@@ -78,26 +67,25 @@ export default function Dashboard() {
 
         // Load sales data
         setIsLoadingSales(true)
-        const sales = await mockApiService.getSalesData(STORE_ID)
+        const sales = await apiService.getSalesData(STORE_ID)
         setSalesData(sales)
         setIsLoadingSales(false)
 
         // Load orders
         setIsLoadingOrders(true)
-        const ordersData = await mockApiService.getRecentOrders(STORE_ID)
+        const ordersData = await apiService.getRecentOrders(STORE_ID)
         setOrders(ordersData)
         setIsLoadingOrders(false)
 
         // Load customer data
         setIsLoadingCustomers(true)
-        const customers = await mockApiService.getCustomerData(STORE_ID)
+        const customers = await apiService.getCustomerData(STORE_ID)
         setCustomerData(customers)
         setIsLoadingCustomers(false)
 
         // Load products
         setIsLoadingProducts(true)
-        const productsData =
-          await mockApiService.getProductPerformance(STORE_ID)
+        const productsData = await apiService.getProductPerformance(STORE_ID)
         setProducts(productsData)
         setIsLoadingProducts(false)
       } catch (error) {
@@ -248,4 +236,3 @@ export default function Dashboard() {
     </div>
   )
 }
-
