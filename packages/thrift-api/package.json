@@ -29,6 +29,7 @@
     "tests:assistant": "TZ=UTC SERVER=localhost:1037 NODE_ENV=testing mocha server/src/tests --config server/src/tests/.mocharc.json",
     "tests:assistant:debug": "TZ=UTC SERVER=localhost:1037 NODE_ENV=testing DEBUG=1 mocha server/src/tests --config server/src/tests/.mocharc.json",
     "dev": "TZ=UTC NODE_ENV=development tsx watch server/src/server.ts",
+    "dev:debug": "TZ=UTC DEBUG=1 NODE_ENV=development tsx watch server/src/server.ts",
     "reset-db": "supabase db reset",
     "build": "tsc -p tsconfig.json"
   },
