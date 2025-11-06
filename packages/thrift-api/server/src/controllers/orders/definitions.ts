@@ -152,8 +152,12 @@ export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
   const { order_id } = params
   const { store_id } = query
 
-  if (!order_id && !store_id) {
-    throw new BadRequestError('Order ID or Store ID is required')
+  if (!order_id) {
+    throw new BadRequestError('Order ID is required')
+  }
+
+  if (!store_id) {
+    throw new BadRequestError('Store ID is required')
   }
 
   // Determine if the user is a vendor/staff or a customer
@@ -165,29 +169,29 @@ export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
   let ordersQuery = knex('orders')
 
   if (store_id) {
-    const {
-      rows: [{ has_store_access }],
-    } = await knex.raw('select has_store_access(?, ?, ?)', [
-      userId,
-      store_id,
-      ['admin', 'editor'],
-    ])
+    // If store_id is provided, check if the user is a customer or vendor/staff
+    if (profile.is_vendor) {
+      const {
+        rows: [{ has_store_access }],
+      } = await knex.raw('select has_store_access(?, ?, ?)', [
+        userId,
+        store_id,
+        ['admin', 'editor'],
+      ])
 
-    if (!has_store_access) {
-      throw new UnauthorizedError("Access denied to this store's orders")
+      if (!has_store_access) {
+        throw new UnauthorizedError("Access denied to this store's orders")
+      }
+      // If vendor or staff, limit by store_id
+      ordersQuery = ordersQuery.where({ store_id })
+    } else {
+      // If customer, limit by customer_id and store_id
+      ordersQuery = ordersQuery.where({ customer_id: userId, store_id })
     }
-    // If vendor or staff, limit by store_id
-    ordersQuery = ordersQuery.where({ store_id })
-    if (order_id) {
-      ordersQuery = ordersQuery.andWhere({ order_id }).first()
-    }
+
+    ordersQuery = ordersQuery.andWhere({ order_id }).first()
   } else {
-    // If no store_id, assume customer context or general user
-    // Limit by customer_id
-    ordersQuery = ordersQuery.where({ customer_id: userId })
-    if (order_id) {
-      ordersQuery = ordersQuery.andWhere({ order_id }).first()
-    }
+    ordersQuery = ordersQuery.where({ customer_id: userId, order_id }).first()
   }
 
   const order = await ordersQuery
@@ -197,8 +201,127 @@ export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
   }
 
   const orderItems = await knex('order_items')
-    .where({ order_id: order.order_id })
+    .where('order_id', order.order_id)
     .select('order_item_id', 'variant_id', 'quantity', 'price_at_purchase')
 
   return { ...order, items: orderItems }
+}
+
+export const getAllOrdersQuery = async ({ userId, query }: QueryParams) => {
+  if (!userId) {
+    throw new UnauthenticatedError('Authentication required')
+  }
+
+  const { store_id } = query
+
+  if (!store_id) {
+    throw new BadRequestError('Store ID is required')
+  }
+
+  // Determine if the user is a vendor/staff or a customer
+  const profile = await knex('profiles').where({ id: userId }).first()
+  if (!profile) {
+    throw new NotFoundError('User profile not found')
+  }
+
+  let ordersQuery = knex('orders')
+
+  if (store_id) {
+    // If store_id is provided, check if the user is a customer or vendor/staff
+    if (profile.is_vendor) {
+      const {
+        rows: [{ has_store_access }],
+      } = await knex.raw('select has_store_access(?, ?, ?)', [
+        userId,
+        store_id,
+        ['admin', 'editor'],
+      ])
+
+      if (!has_store_access) {
+        throw new UnauthorizedError("Access denied to this store's orders")
+      }
+      // If vendor or staff, limit by store_id
+      ordersQuery = ordersQuery.where({ store_id })
+    } else {
+      // If customer, limit by customer_id and store_id
+      ordersQuery = ordersQuery.where({ customer_id: userId, store_id })
+    }
+  } else {
+    ordersQuery = ordersQuery.where({ customer_id: userId })
+  }
+
+  const orders = await ordersQuery
+
+  if (!orders.length) {
+    throw new NotFoundError('Order not found')
+  }
+
+  const orderItems = await knex('order_items')
+    .whereIn(
+      'order_id',
+      orders.map((o) => o.order_id),
+    )
+    .select(
+      'order_id',
+      'order_item_id',
+      'variant_id',
+      'quantity',
+      'price_at_purchase',
+    )
+
+  const itemsByOrderId = orderItems.reduce(
+    (acc, items) => {
+      const id = items.order_id
+      acc[id] = acc[id] ?? []
+      acc[id].push(items)
+      return acc
+    },
+    {} as Record<
+      number,
+      {
+        order_id: number
+        variant_id: number
+        quantity: number
+        price_at_purchase: number
+        order_item_id: number
+      }[]
+    >,
+  )
+
+  const fullOrderResponse = orders.map((order) => ({
+    ...order,
+    items: itemsByOrderId[order.order_id] ?? [],
+  }))
+
+  /* TODO: Refactor to a more efficient query...
+	 * const fullOrderResponse = await knex('orders')
+  // Ensure you only select the orders you care about
+  .whereIn('orders.order_id', orders.map((o) => o.order_id)) 
+  
+  // Start the join to pull in the order_items
+  .leftJoin('order_items', 'orders.order_id', 'order_items.order_id')
+  
+  // Group the results by the columns of the main 'orders' table
+  .groupBy('orders.order_id') 
+  
+  // Select all order columns
+  .select('orders.*') 
+  
+  // Use json_agg() to group the item columns into a JSON array called 'items'
+  // row_to_json() converts the selected columns into a JSON object for each row
+  .select(
+    knex.raw(`
+      json_agg(
+        json_build_object(
+          'order_item_id', order_items.order_item_id,
+          'variant_id', order_items.variant_id,
+          'quantity', order_items.quantity,
+          'price_at_purchase', order_items.price_at_purchase
+        )
+      ) as items
+    `)
+  );
+	*/
+
+  return fullOrderResponse
 }
