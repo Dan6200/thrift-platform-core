@@ -6,7 +6,6 @@ export const OrderItemRequestSchema = Joi.object({
 })
 
 export const OrderCreateRequestSchema = Joi.object({
-  store_id: Joi.number().integer().positive().required(),
   delivery_info_id: Joi.number().integer().positive().allow(null),
   items: Joi.array().items(OrderItemRequestSchema).min(1).required(),
 })
@@ -26,6 +25,7 @@ export const OrderResponseSchema = Joi.object({
   items: Joi.array()
     .items(
       Joi.object({
+        order_id: Joi.number().integer().positive().optional(),
         order_item_id: Joi.number().integer().positive().required(),
         variant_id: Joi.number().integer().positive().required(),
         quantity: Joi.number().integer().positive().required(),
@@ -35,9 +35,7 @@ export const OrderResponseSchema = Joi.object({
     .required(),
 })
 
-export const OrderGETResponseSchema = Joi.array()
-  .items(OrderResponseSchema)
-  .length(1)
+export const OrderGETResponseSchema = OrderResponseSchema
 
 export const OrderGETAllResponseSchema = Joi.array().items(OrderResponseSchema)
 
