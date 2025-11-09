@@ -171,6 +171,10 @@
   --shadow-2xl: var(--shadow-2xl);
 }
 
+.glass-effect {
+  @apply bg-gray-700/10 backdrop-blur-md border border-white/20;
+}
+
 .disable-scrollbars {
   /* Chrome/Safari/Webkit */
   ::-webkit-scrollbar {
