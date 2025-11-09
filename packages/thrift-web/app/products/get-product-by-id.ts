@@ -3,7 +3,7 @@ import { ProductSchema } from '@/types/products'
 export default async function getProductById(id: number) {
   // fetch product
   const response = await fetch(
-    process.env.NEXT_PUBLIC_SERVER + '/v1/products/' + id + '?public=true',
+    process.env.NEXT_PUBLIC_SERVER + '/v1/products/' + id,
     { next: { revalidate: 30 * 60 } },
   ).then((res) => {
     if (res.status === 404) return null
