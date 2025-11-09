@@ -1,9 +1,9 @@
 // Purpose: Page for displaying all products
 
 import { Product } from '@/components/products/product'
-import { isProduct, isProductData } from '@/types/products'
 import getProductById from '../get-product-by-id'
 import getProducts from '../get-products'
+import { ProductData, ProductSchema } from '@/types/products'
 
 export default async function ProductPage({
   params,
@@ -16,7 +16,7 @@ export default async function ProductPage({
     // TODO: Add 404 page
     throw new Error('Product not found')
   }
-  if (!isProduct(response)) throw new Error('Invalid product')
+  ProductSchema.parse(response)
   const product = response
   return <Product product={product} />
 }
@@ -24,13 +24,10 @@ export default async function ProductPage({
 /**
  * Generate static paths for a few pages
  */
-// Limit static generation to 100 pages
-const LIMIT = 100
+// Limit static generation to 200 products
+const LIMIT = 200
 export async function generateStaticParams() {
-  const data: unknown = await getProducts()
-  if (!isProductData(data)) {
-    throw new Error('Failed to fetch products')
-  }
+  const data: ProductData = await getProducts({})
   const { products } = data
 
   return products
