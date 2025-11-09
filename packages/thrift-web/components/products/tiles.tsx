@@ -17,11 +17,11 @@ export const ProductsTiles = ({
   productsToDisplay: Product[]
 }) => {
   const isSmallScreen = useAtomValue(isSmallScreenAtom)
-  const [shoppingCart, setShoppingCart] = useAtom(shoppingCartAtom)
+  const [, setShoppingCart] = useAtom(shoppingCartAtom)
   const addItem = useSetAtom(addItemAtom)
   const totalItems = useAtomValue(getTotalCountAtom)
   const { toast } = useToast()
-  const [showToast, setShowToast] = useState(false)
+  const [showToast] = useState(false)
   useEffect(() => {
     if (showToast)
       toast({
@@ -49,4 +49,3 @@ export const ProductsTiles = ({
     </div>
   )
 }
-
