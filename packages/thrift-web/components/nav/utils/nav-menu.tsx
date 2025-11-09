@@ -53,21 +53,21 @@ export function NavMenu({
     }
   }
   return (
-    <NavigationMenu className="max-w-none flex flex-row items-center justify-between w-[90vw] mx-auto px-4 py-2 rounded-xl shadow-md bg-background/10 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 shadow-gray-500 my-8">
-      <div className="justify-start flex">
+    <NavigationMenu className="max-w-none flex flex-row items-center justify-between w-[90vw] mx-auto px-4 py-2 rounded-xl shadow-lg glass-effect my-8">
+      <div className="justify-start flex items-center">
         <Link
           href="/"
-          className={`${font?.className} bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-2xl font-bold text-shadow-lg`}
+          className={`${font?.className} text-white text-2xl font-bold`}
         >
           Thrift
         </Link>
         <NavigationMenuList className="ml-16 bg-transparent">
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent hover:bg-accent/20 shadow-around shadow-gray-300">
+            <NavigationMenuTrigger className="bg-transparent hover:bg-white/20 focus:bg-white/20 rounded-md">
               Welcome
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="bg-transparent">
-              <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-transparent">
+            <NavigationMenuContent className="rounded-xl glass-effect">
+              <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <Link
@@ -102,10 +102,10 @@ export function NavMenu({
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-accent/20 hover:bg-accent/60 shadow-lg">
+            <NavigationMenuTrigger className="bg-transparent hover:bg-white/20 focus:bg-white/20 rounded-md">
               Browse Categories
             </NavigationMenuTrigger>
-            <NavigationMenuContent>
+            <NavigationMenuContent className="rounded-xl glass-effect">
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                 {components.map((component) => (
                   <ListItem
@@ -122,7 +122,7 @@ export function NavMenu({
         </NavigationMenuList>
       </div>
       <Search
-        className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col z-1000 items-center  mt-[.75rem] left-[50%] translate-x-[-50%]"
+        className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col z-1000 items-center mt-[.75rem] left-[50%] translate-x-[-50%]"
         ref={searchRef}
         {...{ show, setShow }}
       />
@@ -135,7 +135,7 @@ export function NavMenu({
           )}
           <Button
             variant="outline"
-            className="my-2 p-0 w-10"
+            className="my-2 p-0 w-10 bg-transparent hover:bg-white/20 focus:bg-white/20 border-none"
             onClick={() => {
               toggleDrawer(true)
             }}
@@ -147,7 +147,10 @@ export function NavMenu({
           <Link href="/account" passHref>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="border-none">
+                <Button
+                  variant="outline"
+                  className="border-none bg-transparent hover:bg-white/20 focus:bg-white/20"
+                >
                   Hello
                   {user && user.token && user.first_name && (
                     <span className="w-20 flex items-center justify-between">
@@ -157,16 +160,16 @@ export function NavMenu({
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent className="rounded-xl glass-effect">
                 <section className="flex flex-col space-y-2">
                   <Link
                     href="/create-vendor"
-                    className="rounded-md p-2 hover:bg-accent"
+                    className="rounded-md p-2 hover:bg-white/20"
                   >
                     Create A Vendor Account
                   </Link>
                   <Button
-                    className="w-full text-destructive text-md"
+                    className="w-full text-destructive text-md bg-transparent hover:bg-destructive/20"
                     onClick={
                       user ? signOutWrapper.bind(null, setUser) : undefined
                     }
@@ -179,7 +182,10 @@ export function NavMenu({
           </Link>
         ) : (
           <Link href="/auth/login">
-            <Button type="button" className="text-md py-1 px-3">
+            <Button
+              type="button"
+              className="text-md py-1 px-3 bg-primary/80 hover:bg-primary"
+            >
               Sign In
             </Button>
           </Link>
@@ -190,4 +196,3 @@ export function NavMenu({
     </NavigationMenu>
   )
 }
-
