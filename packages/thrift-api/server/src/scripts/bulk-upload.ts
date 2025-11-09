@@ -3,7 +3,7 @@ import fs from 'fs/promises'
 
 async function bulkUpload(dir: string) {
   const files = await fs.readdir(dir)
-  const folder = 'sellit-media'
+  const folder = 'sellit-media/products'
   try {
     const uploadPromises = files.map(async (file) => {
       const publicId = folder + '/' + file.split('.')[0]
