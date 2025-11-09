@@ -3,11 +3,15 @@ import { Products } from '@/components/products'
 import { isProductData } from '@/types/products'
 import getProducts from './get-products'
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   // Products component now handles fetching internally
   return (
     <>
-      <Products />
+      <Products searchParams={searchParams} />
     </>
   )
 }
