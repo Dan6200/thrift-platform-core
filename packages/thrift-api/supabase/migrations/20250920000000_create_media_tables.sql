@@ -99,8 +99,12 @@ DECLARE
     v_filename TEXT;
     v_filepath TEXT;
     v_options_string TEXT;
-		v_desc_string TEXT;
+    v_desc_string TEXT;
+    v_dam_folder_prefix TEXT;
 BEGIN
+    -- Get the DAM folder prefix from the app_config table
+    SELECT config_value INTO v_dam_folder_prefix FROM public.app_config WHERE config_key = 'dam_folder_prefix';
+
     FOR v_variant_record IN
         SELECT
             pv.variant_id,
@@ -126,10 +130,10 @@ BEGIN
             v_options_string := '_' || regexp_replace(v_variant_record.options, '[^a-zA-Z0-9_]+', '_', 'g');
         END IF;
 
-				v_desc_string := v_variant_record.title || ' ' || regexp_replace(v_variant_record.options, '_', ' ');
+        v_desc_string := v_variant_record.title || ' ' || COALESCE(regexp_replace(v_variant_record.options, '_', ' ', 'g'), '');
 
         v_filename := v_filename || v_options_string || '.jpg';
-        v_filepath := 'sellit-media/' || v_filename;
+        v_filepath := v_dam_folder_prefix || 'products/' || v_filename;
 
         -- Insert into media table
         INSERT INTO public.media (filename, filepath, filetype, description, uploader_id)
