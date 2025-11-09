@@ -1,5 +1,4 @@
-//cspell:ignore ponyfill
-import { isProduct } from '@/types/products'
+import { ProductSchema } from '@/types/products'
 
 export default async function getProductById(id: number) {
   // fetch product
@@ -11,6 +10,6 @@ export default async function getProductById(id: number) {
     return res.json()
   })
   if (response == null) throw new Error('Product not found')
-  if (!isProduct(response)) throw new Error('Invalid product')
+  if (!ProductSchema.parse(response)) throw new Error('Invalid product')
   return response
 }
