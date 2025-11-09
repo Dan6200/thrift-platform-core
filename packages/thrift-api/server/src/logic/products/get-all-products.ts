@@ -33,9 +33,10 @@ export const getAllProductsLogic = async (
             SELECT json_agg(media_data)
             FROM (
                 SELECT
-                    m.*,
-                    pml.is_display_image,
-                    pml.is_thumbnail_image
+										m.*,
+										pml.is_display_image,
+										pml.is_thumbnail_image,
+										pml.variant_id
                 FROM product_variants pv
                 JOIN product_media_links pml ON pv.variant_id = pml.variant_id
                 JOIN media m ON pml.media_id = m.media_id
@@ -92,6 +93,7 @@ SELECT JSON_AGG(product_data) AS products,
 	(SELECT COUNT(*) FROM products) AS total_count FROM product_data;`
 
   const result = await knex.raw(dbQueryString, namedBindings)
+  console.log(result.rows[0][0])
   req.dbResult = result.rows[0]
   next()
 }

@@ -32,7 +32,8 @@ export const getProductLogic = async (
             SELECT
                 m.*,
                 pml.is_display_image,
-                pml.is_thumbnail_image
+                pml.is_thumbnail_image,
+								pml.variant_id
             FROM product_variants pv
             JOIN product_media_links pml ON pv.variant_id = pml.variant_id
             JOIN media m ON pml.media_id = m.media_id
