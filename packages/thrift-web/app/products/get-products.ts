@@ -1,5 +1,5 @@
 //cspell:ignore ponyfill
-import { isProductData, isProducts, ProductData } from '@/types/products'
+import { ProductData, ProductDataSchema } from '@/types/products'
 
 export default async function getProducts({
   page = 1,
@@ -9,14 +9,12 @@ export default async function getProducts({
   limit?: number
 }) {
   // fetch products
-  console.log(process.env.NEXT_PUBLIC_SERVER)
   const response = await fetch(
     process.env.NEXT_PUBLIC_SERVER +
       '/v1/products?' +
       new URLSearchParams({
-        public: 'true',
         sort: '-created_at',
-        offset: page.toString(),
+        offset: String((page - 1) * limit),
         limit: limit.toString(),
       }),
     { next: { revalidate: 60 * 60 } },
@@ -25,15 +23,9 @@ export default async function getProducts({
     return res.json()
   })
 
-  if (!isProductData(response)) {
-    throw new Error('Failed to fetch data')
-  }
+  ProductDataSchema.parse(response)
 
-  const { products, total_products } = response // should be total_count
+  const { products, total_count } = response
 
-  if (!isProducts(products)) {
-    throw new Error('Failed to fetch products')
-  }
-
-  return { products, total_products } as ProductData
+  return { products, total_count } as ProductData
 }
