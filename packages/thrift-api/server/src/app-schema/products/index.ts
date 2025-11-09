@@ -72,7 +72,7 @@ export const ProductGetRequestSchema = joi.object({
     .object({ productId: joi.number().integer().positive().required() })
     .required(),
   query: joi
-    .object({ storeId: joi.number().integer().positive().required() })
+    .object({ storeId: joi.number().integer().positive().optional() })
     .required(),
   body: joi.object().optional(),
 })
