@@ -4,6 +4,7 @@ import {
   UpdateRequestVariantSchema,
   VariantOptionSchema,
 } from './variants.js'
+import { ProductMediaResponseSchema } from '../media/products.js'
 
 export const ProductVariantResponseSchema = joi.object({
   variant_id: joi.number().required(),
@@ -79,14 +80,14 @@ export const ProductGetRequestSchema = joi.object({
 export const ProductGetAllRequestSchema = joi.object({
   query: joi
     .object({
-      storeId: joi.number().integer().positive().required(),
+      storeId: joi.number().integer().positive().optional(),
       category: joi.string().optional(),
       subcategory: joi.string().optional(),
       min_price: joi.number().positive().optional(),
       max_price: joi.number().positive().optional(),
       sort: joi.string().optional(),
       order: joi.string().valid('asc', 'desc').optional(),
-      page: joi.number().integer().min(1).optional(),
+      offset: joi.number().integer().min(0).optional(),
       limit: joi.number().integer().min(1).optional(),
     })
     .required(),
@@ -132,7 +133,7 @@ export const ProductGETResponseSchema = joi
     review_count: joi.number().allow(null).required(),
     vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
     store_id: joi.number().required(),
-    media: joi.array().allow(null),
+    media: ProductMediaResponseSchema.allow(null),
     variants: joi.array().items(ProductVariantResponseSchema).allow(null),
     created_at: joi.date().required(),
     updated_at: joi.date().required(),
