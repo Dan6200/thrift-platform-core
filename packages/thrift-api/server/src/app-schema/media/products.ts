@@ -27,6 +27,9 @@ const MediaResponseSchema = Joi.object({
   uploader_id: Joi.string().required(),
   created_at: Joi.date().required(),
   updated_at: Joi.date().required(),
+  is_display_image: Joi.boolean().optional(),
+  is_thumbnail_image: Joi.boolean().optional(),
+  variant_id: Joi.number().required(),
 })
 
 export const ProductMediaResponseSchema = Joi.array().items(MediaResponseSchema)
