@@ -41,7 +41,7 @@ export const createOrderQuery = async ({
       }
     }
 
-    const variantIds = items.map((item) => item.variant_id)
+    const variantIds = items.map((item: any) => item.variant_id)
 
     const variants = await trx('product_variants')
       .whereIn('variant_id', variantIds)
@@ -194,7 +194,7 @@ export const getOrderQuery = async ({ userId, params, query }: QueryParams) => {
     ordersQuery = ordersQuery.where({ customer_id: userId, order_id }).first()
   }
 
-  const order = await ordersQuery
+  const order = (await ordersQuery) as any
 
   if (!order) {
     throw new NotFoundError('Order not found')
