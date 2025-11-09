@@ -9,12 +9,22 @@ import { Button } from '../../ui/button'
 import { Card, CardContent } from '../../ui/card'
 import { GoBackLink } from '../go-back-link'
 import { ProductImage } from '../image'
-import { Product as ProductType } from '@/types/products'
+import { Product as ProductType, ProductVariant } from '@/types/products'
 import { BuyNow } from '../utils/buy-now'
 import { Price } from './utils/price'
+import { VariantSelector } from './utils/variant-selector'
 
 export function Product({ product }: { product: ProductType }) {
-  console.log(product)
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    null,
+  )
+
+  useEffect(() => {
+    if (product.variants && product.variants.length > 0) {
+      setSelectedVariant(product.variants[0])
+    }
+  }, [product.variants])
+
   const displayImg = product.media.find((img) => img.is_display_image)
   if (!displayImg)
     throw new Error('Cant find display image for product detail--Tag: 1')
@@ -60,33 +70,45 @@ export function Product({ product }: { product: ProductType }) {
             />
           </div>
           <div className="p-0 flex flex-col my-4 lg:p-4 w-full justify-between lg:h-48 lg:text-lg">
+            {product.variants && (
+              <VariantSelector
+                variants={product.variants}
+                selectedVariant={selectedVariant}
+                onSelectVariant={setSelectedVariant}
+              />
+            )}
             <Price
-              netPrice={product?.net_price}
-              listPrice={product?.list_price}
+              netPrice={selectedVariant?.net_price ?? product?.net_price}
+              listPrice={selectedVariant?.list_price ?? product?.list_price}
             />
             <div className="text-md flex mb-4">
               <p>
                 items left:{'\u00A0'.repeat(4)}
-                {product.quantity_available}
+                {selectedVariant?.quantity_available ?? 0}
               </p>
             </div>
             <div className="flex w-full mb-4 gap-2 sm:gap-4 justify-between">
               <Button
                 className="text-base h-[3rem] font-bold w-full flex-1"
                 onClick={() => {
+                  if (!selectedVariant) return
+                  const itemToAdd = { ...product, ...selectedVariant }
                   shoppingCart
-                    ? addItem(product)
-                    : setShoppingCart(new ShoppingCart(product, null))
+                    ? addItem(itemToAdd)
+                    : setShoppingCart(new ShoppingCart(itemToAdd, null))
                   setShowToast(true)
                 }}
+                disabled={
+                  !selectedVariant || selectedVariant.quantity_available === 0
+                }
               >
                 Add To Cart
               </Button>
               <BuyNow
                 imgData={displayImg}
-                netPrice={product?.net_price}
-                listPrice={product?.list_price}
-                quantityAvailable={product?.quantity_available}
+                netPrice={selectedVariant?.net_price ?? product?.net_price}
+                listPrice={selectedVariant?.list_price ?? product?.list_price}
+                quantityAvailable={selectedVariant?.quantity_available ?? 0}
                 isProductPage={true}
               />
             </div>
