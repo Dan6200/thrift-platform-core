@@ -1,114 +1,80 @@
-export type ImgData = {
-  filename: string
-  filepath: string
-  description: string
-  is_display_image: boolean
-  is_landing_image: boolean
-  is_video: boolean
-}
+import { z } from 'zod'
 
-export interface Product {
-  product_id: number
-  title: string
-  category_id: number
-  category_name: string
-  subcategory_id: number
-  subcategory_name: string
-  description: string[]
-  list_price: number
-  net_price: number
-  quantity_available: number
-  created_at: string
-  updated_at: string
-  vendor_id: string
-  average_rating: number | null
-  review_count: number | null
-  media: ImgData[]
-}
+// 1. ImgData Schema
+export const ImgDataSchema = z.object({
+  filename: z.string(),
+  filepath: z.string(),
+  filetype: z.string(),
+  description: z.string(),
+  uploader_id: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  is_display_image: z.boolean(),
+  is_thumbnail_image: z.boolean(),
+})
 
-export type ProductData = {
-  products: Product[]
-  total_products: string
-}
+export type ImgData = z.infer<typeof ImgDataSchema>
 
-export function isProductData(
-  productData: unknown,
-): productData is ProductData {
-  return (
-    isObj(productData, 'productData') &&
-    !isNull(productData, 'productData') &&
-    isObj((productData as ProductData).products, 'productData.products') &&
-    !isNull((productData as ProductData).products, 'productData.products') &&
-    isString(
-      (productData as ProductData).total_products,
-      'productData.total_products',
-    )
-  )
-}
+// Corresponds to Joi's VariantOptionSchema
+export const VariantOptionSchema = z.object({
+  option_name: z.string(),
+  value: z.string(),
+})
 
-export function isProducts(products: unknown): products is Product[] {
-  return (
-    Array.isArray(products) && products.every((product) => isProduct(product))
-  )
-}
+export type VariantOption = z.infer<typeof VariantOptionSchema>
 
-export function isProduct(product: unknown): product is Product {
-  return (
-    isObj(product, 'product') &&
-    !isNull(product, 'product') &&
-    isNumber((product as Product).product_id, 'product_id') &&
-    isString((product as Product).title, 'title') &&
-    !isNull((product as Product).description, 'description') &&
-    isObj((product as Product).description, 'description') &&
-    isNumber((product as Product).category_id, 'category_id') &&
-    isString((product as Product).category_name, 'category_name') &&
-    isNumber((product as Product).subcategory_id, 'subcategory_id') &&
-    isString((product as Product).subcategory_name, 'subcategory_name') &&
-    isString((product as Product).vendor_id, 'vendor_id') &&
-    isNumber((product as Product).list_price, 'list_price') &&
-    isNumber((product as Product).net_price, 'net_price') &&
-    isString((product as Product).created_at, 'created_at') &&
-    isString((product as Product).updated_at, 'updated_at') &&
-    isNumber((product as Product).quantity_available, 'quantity_available') &&
-    !isNull(
-      (product as Product).media,
-      'media',
-      (product as Product).product_id,
-    ) &&
-    isObj((product as Product).media, 'media') &&
-    (product as Product).media.every((media) =>
-      isString(media.filename, 'media.filename'),
-    )
-  )
-}
+// Corresponds to Joi's ProductVariantResponseSchema
+export const ProductVariantSchema = z.object({
+  variant_id: z.number(),
+  sku: z.string(),
+  list_price: z.number().nullable(),
+  net_price: z.number().nullable(),
+  quantity_available: z.number(),
+  options: z.array(VariantOptionSchema),
+  created_at: z.string(),
+  updated_at: z.string(),
+})
 
-function isObj(obj: unknown, fieldName: string): obj is object {
-  const condition = typeof obj === 'object'
-  if (!condition) throw new Error(`${fieldName} must be of type object: ${obj}`)
-  return condition
-}
+export type ProductVariant = z.infer<typeof ProductVariantSchema>
 
-function isString(val: unknown, fieldName: string): val is string {
-  const condition = typeof val === 'string'
-  if (!condition) throw new Error(`${fieldName} must be of type string: ${val}`)
-  return condition
-}
+// 2. Product Schema
+export const ProductSchema = z.object({
+  product_id: z.number().int(),
+  title: z.string().min(1, 'Product title cannot be empty'),
+  category_id: z.number().int(),
+  category_name: z.string(),
+  subcategory_id: z.number().int(),
+  subcategory_name: z.string(),
+  // Assuming description is an array of strings, as per your type definition
+  description: z.array(z.string()),
+  list_price: z.number().positive(),
+  net_price: z.number().positive(),
+  // Use z.string().datetime() for ISO 8601 strings if they represent dates/times
+  created_at: z.string(),
+  updated_at: z.string(),
+  vendor_id: z.string(),
+  // null or number
+  average_rating: z.number().nullable(),
+  review_count: z.number().int().nullable(),
+  // An array of ImgData objects
+  media: z
+    .array(ImgDataSchema)
+    .min(1, 'Product must have at least one media item'),
+  variants: z.array(ProductVariantSchema).nullable(),
+})
 
-function isNumber(val: unknown, fieldName: string): val is number {
-  const condition = typeof val === 'number'
-  if (!condition) throw new Error(`${fieldName} must be of type number: ${val}`)
-  return condition
-}
+export type Product = z.infer<typeof ProductSchema>
 
-function isNull(
-  val: unknown,
-  fieldName: string,
-  product_id?: string | number,
-): val is null {
-  const condition = val === null
-  if (condition)
-    throw new Error(
-      `${fieldName} value is null: ${val}, product_id?: ${product_id ?? ''}`,
-    )
-  return condition
-}
+// 3. ProductData Schema
+export const ProductDataSchema = z.object({
+  // An array of Product objects
+  products: z.array(ProductSchema),
+  total_count: z.number().int().min(0),
+})
+
+export type ProductData = z.infer<typeof ProductDataSchema>
+
+// The custom validation functions are now replaced by:
+// ProductDataSchema.parse(data)
+// ProductSchema.safeParse(data)
+// etc.
