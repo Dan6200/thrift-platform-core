@@ -82,17 +82,15 @@ export default function (): void {
 
   /** Media related tests **/
 
-  for (let user of users) {
-    describe(`Skipping Media File Upload Tests for ${user.userInfo.first_name}`, async () =>
-      it('should skip', (done) => done()))
-  }
-  // testMedia(user))
+  // for (let user of users) {
+  //   describe(`Skipping Media File Upload Tests for ${user.userInfo.first_name}`, async () =>
+  //     it('should skip', (done) => done()))
   // }
 
-  // for (let user of users) {
-  //   describe(`Testing Media File Upload for ${user.userInfo.first_name}`, async () =>
-  //     testMedia(user))
-  // }
+  for (let user of users) {
+    describe(`Testing Media File Upload for ${user.userInfo.first_name}`, async () =>
+      testMedia(user))
+  }
 
   /** Dashboard related tests **/
 
