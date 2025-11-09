@@ -23,7 +23,8 @@ import {
 } from '@/components/ui/popover'
 import { UserAccount } from '@/components/user-account/types'
 import { getTotalCountAtom } from '@/atoms'
-import { ShoppingCartDrawer } from '@/components/shopping-cart/drawer'
+import { ShoppingCartDrawerContent } from '@/components/shopping-cart/drawer'
+import { Drawer, DrawerTrigger } from '@/components/ui/drawer'
 import Search from '@/components/search'
 import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
@@ -40,12 +41,11 @@ export function NavMenu({
   setUser: SetUser
 }) {
   const totalItems = useAtomValue(getTotalCountAtom)
-  const [isOpen, toggleDrawer] = useState(false)
   const searchRef = useRef<null | HTMLDivElement>(null)
   const [show, setShow] = useState(false)
   useEffect(() => {
     document.addEventListener('click', hide)
-    return () => document.addEventListener('click', hide)
+    return () => document.removeEventListener('click', hide)
   }, [])
   const hide = (e: Event) => {
     if (searchRef.current && !searchRef.current.contains(e.target as any)) {
@@ -57,7 +57,7 @@ export function NavMenu({
       <div className="justify-start flex items-center">
         <Link
           href="/"
-          className={`${font?.className} text-white text-2xl font-bold`}
+          className={`${font?.className} text-foreground text-2xl font-bold`}
         >
           Thrift
         </Link>
@@ -127,22 +127,24 @@ export function NavMenu({
         {...{ show, setShow }}
       />
       <div className="flex space-x-4 items-center justify-between">
-        <div className="relative h-12 w-12 p-0 z-10">
-          {!!totalItems && (
-            <span className="bg-primary text-primary-foreground w-6 text-center block absolute right-0 top-0 text-sm rounded-full">
-              {totalItems}
-            </span>
-          )}
-          <Button
-            variant="outline"
-            className="my-2 p-0 w-10 bg-transparent hover:bg-white/20 focus:bg-white/20 border-none"
-            onClick={() => {
-              toggleDrawer(true)
-            }}
-          >
-            <ShoppingCart className="w-5" />
-          </Button>
-        </div>
+        <Drawer direction="right">
+          <DrawerTrigger asChild>
+            <div className="relative h-12 w-12 p-0 z-10">
+              {!!totalItems && (
+                <span className="bg-primary text-primary-foreground w-6 text-center block absolute right-0 top-0 text-sm rounded-full">
+                  {totalItems}
+                </span>
+              )}
+              <Button
+                variant="outline"
+                className="my-2 p-0 w-10 bg-transparent hover:bg-white/20 focus:bg-white/20 border-none"
+              >
+                <ShoppingCart className="w-5" />
+              </Button>
+            </div>
+          </DrawerTrigger>
+          <ShoppingCartDrawerContent />
+        </Drawer>
         {user?.token ? (
           <Link href="/account" passHref>
             <Popover>
@@ -192,7 +194,6 @@ export function NavMenu({
         )}
         <ModeToggle />
       </div>
-      <ShoppingCartDrawer isOpen={isOpen} toggleDrawer={toggleDrawer} />
     </NavigationMenu>
   )
 }
