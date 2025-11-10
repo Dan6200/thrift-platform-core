@@ -58,13 +58,10 @@ export function Product({ product }: { product: ProductType }) {
           key={product?.product_id}
           id="card-content-product"
         >
-          <div
-            id="img-bg"
-            className="bg-white h-96 sm:h-[44rem] rounded-lg w-full"
-          >
+          <div id="img-bg" className="rounded-lg overflow-clip w-full">
             <ProductImage
               imgData={displayImg}
-              className="object-contain py-4 mx-auto h-full"
+              className="object-contain h-full"
               width={640}
               height={512}
             />
