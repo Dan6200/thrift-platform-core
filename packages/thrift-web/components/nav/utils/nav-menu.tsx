@@ -43,6 +43,7 @@ export function NavMenu({
   const totalItems = useAtomValue(getTotalCountAtom)
   const searchRef = useRef<null | HTMLDivElement>(null)
   const [show, setShow] = useState(false)
+  // const [parentBackDrop, setParentBackDrop] = useState(true)
   useEffect(() => {
     document.addEventListener('click', hide)
     return () => document.removeEventListener('click', hide)
@@ -53,11 +54,13 @@ export function NavMenu({
     }
   }
   return (
-    <NavigationMenu className="max-w-none flex flex-row items-center justify-between w-[90vw] mx-auto px-4 py-2 rounded-xl shadow-lg glass-effect my-8">
+    <NavigationMenu
+      className={`max-w-none flex flex-row items-center justify-between w-[90vw] mx-auto px-4 py-2 rounded-xl shadow-lg border border-white/20 bg-accent/10 my-8`}
+    >
       <div className="justify-start flex items-center">
         <Link
           href="/"
-          className={`${font?.className} text-foreground text-2xl font-bold`}
+          className={`${font?.className} text-secondary text-2xl font-bold`}
         >
           Thrift
         </Link>
@@ -66,7 +69,7 @@ export function NavMenu({
             <NavigationMenuTrigger className="bg-transparent hover:bg-white/20 focus:bg-white/20 rounded-md">
               Welcome
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl glass-effect">
+            <NavigationMenuContent className="rounded-xl backdrop-blur-md bg-accent/30">
               <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
@@ -105,7 +108,7 @@ export function NavMenu({
             <NavigationMenuTrigger className="bg-transparent hover:bg-white/20 focus:bg-white/20 rounded-md">
               Browse Categories
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl glass-effect">
+            <NavigationMenuContent className="rounded-xl backdrop-blur-xl bg-accent/30">
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                 {components.map((component) => (
                   <ListItem
@@ -122,7 +125,7 @@ export function NavMenu({
         </NavigationMenuList>
       </div>
       <Search
-        className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col z-1000 items-center mt-[.75rem] left-[50%] translate-x-[-50%]"
+        className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] border-white/20 flex flex-col z-1000 items-center mt-[.75rem] left-[50%] translate-x-[-50%]"
         ref={searchRef}
         {...{ show, setShow }}
       />
