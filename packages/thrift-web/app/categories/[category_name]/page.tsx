@@ -1,8 +1,8 @@
 // Purpose: Page for displaying all products
 import { Products } from '@/components/products'
-import { isProducts } from '@/types/products'
 import { notFound } from 'next/navigation'
 import filterByField from './filter'
+import { ProductSchema } from '@/types/products'
 
 export default async function ProductsPage({
   params,
@@ -20,7 +20,7 @@ export default async function ProductsPage({
     '=',
     category_name,
   )
-  if (!isProducts(products) || !isProducts(moreProducts)) {
+  if (!ProductSchema.parse(products) || !ProductSchema.parse(moreProducts)) {
     throw new Error('Invalid product data')
   }
   const newProducts = [...products, ...moreProducts]
