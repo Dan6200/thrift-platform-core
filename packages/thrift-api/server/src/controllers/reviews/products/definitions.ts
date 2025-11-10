@@ -45,24 +45,14 @@ export const createProductReviewQuery = async ({
   return review
 }
 
-export const getProductReviewQuery = async ({
-  userId,
-  params,
-}: QueryParams) => {
-  if (!userId) {
-    throw new UnauthenticatedError('Authentication required')
-  }
-
+export const getProductReviewQuery = async ({ params }: QueryParams) => {
   const { order_item_id } = params
 
   if (!order_item_id) {
     throw new BadRequestError('Order item ID is required')
   }
 
-  const review = await knex('product_reviews')
-    .where({ order_item_id })
-    .andWhere({ customer_id: userId })
-    .first()
+  const review = await knex('product_reviews').where({ order_item_id }).first()
 
   return review
 }
@@ -81,6 +71,18 @@ export const updateProductReviewQuery = async ({
 
   if (!order_item_id || rating === undefined) {
     throw new BadRequestError('Order item ID and rating are required')
+  }
+
+  const existingReview = await knex('product_reviews')
+    .where({ order_item_id })
+    .first()
+
+  if (!existingReview) {
+    throw new BadRequestError('Review not found')
+  }
+
+  if (existingReview.customer_id !== userId) {
+    throw new UnauthorizedError('You can only update your own reviews')
   }
 
   const [updatedReview] = await knex('product_reviews')
@@ -107,6 +109,18 @@ export const deleteProductReviewQuery = async ({
 
   if (!order_item_id) {
     throw new BadRequestError('Order item ID is required')
+  }
+
+  const existingReview = await knex('product_reviews')
+    .where({ order_item_id })
+    .first()
+
+  if (!existingReview) {
+    throw new BadRequestError('Review not found')
+  }
+
+  if (existingReview.customer_id !== userId) {
+    throw new UnauthorizedError('You can only delete your own reviews')
   }
 
   await knex('product_reviews')
