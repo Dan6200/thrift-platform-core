@@ -5,12 +5,14 @@ import {
   RequestParams,
 } from '#src/tests/integrated/test-request/types.js'
 import {
-  isValidOrderCreateRequest,
-  isValidOrderResponse,
-  isValidOrderId,
-  isValidOrderGETAllResponse,
-  isValidOrderQuery,
-} from '#src/tests/integrated/helpers/type-guards/orders.js'
+  validateCreateOrderReq,
+  validateUpdateOrderReq,
+  validateDeleteOrderReq,
+  validateGetOrderReq,
+  validateGetAllOrdersReq,
+  validateOrderRes,
+  validateGetAllOrdersRes,
+} from '#src/tests/integrated/helpers/test-validators/orders.js'
 import { OrderCreateRequestData, OrderResponseData } from '#src/types/orders.js'
 import chai from 'chai'
 import * as JDP from 'jsondiffpatch'
@@ -21,7 +23,7 @@ const jdp = JDP.create()
 const { CREATED, OK, NO_CONTENT, NOT_FOUND } = StatusCodes
 
 const ordersPathBase = '/v1/orders'
-const buildOrderPath = (orderId: number) => `${ordersPathBase}/${orderId}`
+const buildOrderPath = (order_id: number) => `${ordersPathBase}/${order_id}`
 
 const compareOrderData = (actual: any, expected: any) => {
   const actualOrder = actual as OrderResponseData
@@ -72,8 +74,8 @@ export const testCreateOrder = (args: {
     verb: 'post',
     statusCode: CREATED,
     path: ordersPathBase,
-    validateTestReqData: isValidOrderCreateRequest,
-    validateTestResData: isValidOrderResponse,
+    validateTestReqData: validateCreateOrderReq,
+    validateTestResData: validateOrderRes,
     compareData: (actual, expected) => compareOrderData(actual, expected),
     expectedData: args.expectedData,
   })(requestParams)
@@ -91,17 +93,17 @@ export const testGetAllOrders = (args: {
     verb: 'get',
     statusCode: OK,
     path: ordersPathBase,
-    validateTestReqData: isValidOrderQuery,
-    validateTestResData: isValidOrderGETAllResponse,
+    validateTestReqData: validateGetAllOrdersReq,
+    validateTestResData: validateGetAllOrdersRes,
   })(requestParams)
 }
 
 export const testGetOrder = (args: {
   token: string
-  params: { orderId: number }
+  params: { order_id: number }
   query: { store_id: number }
 }) => {
-  const path = buildOrderPath(args.params.orderId)
+  const path = buildOrderPath(args.params.order_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -111,17 +113,18 @@ export const testGetOrder = (args: {
     verb: 'get',
     statusCode: OK,
     path,
-    validateTestResData: isValidOrderResponse,
+    validateTestReqData: validateGetOrderReq,
+    validateTestResData: validateOrderRes,
   })(requestParams)
 }
 
 export const testUpdateOrder = (args: {
   token: string
-  params: { orderId: number }
+  params: { order_id: number }
   body: OrderCreateRequestData
   expectedData: any
 }) => {
-  const path = buildOrderPath(args.params.orderId)
+  const path = buildOrderPath(args.params.order_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -131,8 +134,8 @@ export const testUpdateOrder = (args: {
     verb: 'patch',
     statusCode: OK,
     path,
-    validateTestReqData: isValidOrderCreateRequest, // Assuming partial update uses the same schema for now
-    validateTestResData: isValidOrderResponse,
+    validateTestReqData: validateUpdateOrderReq,
+    validateTestResData: validateOrderRes,
     compareData: (actual, expected) => compareOrderData(actual, expected),
     expectedData: args.expectedData,
   })(requestParams)
@@ -140,9 +143,9 @@ export const testUpdateOrder = (args: {
 
 export const testDeleteOrder = (args: {
   token: string
-  params: { orderId: number }
+  params: { order_id: number }
 }) => {
-  const path = buildOrderPath(args.params.orderId)
+  const path = buildOrderPath(args.params.order_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -151,15 +154,16 @@ export const testDeleteOrder = (args: {
     verb: 'delete',
     statusCode: NO_CONTENT,
     path,
+    validateTestReqData: validateDeleteOrderReq,
     validateTestResData: null,
   })(requestParams)
 }
 
 export const testGetNonExistentOrder = (args: {
   token: string
-  params: { orderId: number }
+  params: { order_id: number }
 }) => {
-  const path = buildOrderPath(args.params.orderId)
+  const path = buildOrderPath(args.params.order_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -168,6 +172,7 @@ export const testGetNonExistentOrder = (args: {
     verb: 'get',
     statusCode: NOT_FOUND,
     path,
+    validateTestReqData: validateGetOrderReq,
     validateTestResData: null,
   })(requestParams)
 }

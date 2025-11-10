@@ -30,7 +30,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   let vendorId: string
   let storeId: number
   let variantId: number
-  let orderId: number
+  let order_id: number
   let variantPrice: number
 
   before(async () => {
@@ -67,7 +67,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   })
 
   it('should allow a customer to create an order', async () => {
-    const orderData: OrderCreateRequestData = {
+    const orderData: Omit<OrderCreateRequestData, 'store_id'> = {
       items: [
         {
           variant_id: variantId,
@@ -75,7 +75,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
         },
       ],
     }
-    const { order_id } = await testCreateOrder({
+    ;({ order_id } = await testCreateOrder({
       token: customerToken,
       body: orderData,
       query: { store_id: storeId },
@@ -84,8 +84,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
         store_id: storeId,
         total_amount: variantPrice * 1,
       },
-    })
-    orderId = order_id
+    }))
   })
 
   it('should allow a customer to get all their orders', async () => {
@@ -98,7 +97,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   it('should allow a customer to get a specific order', async () => {
     await testGetOrder({
       token: customerToken,
-      params: { orderId },
+      params: { order_id },
       query: { store_id: storeId },
     })
   })
@@ -115,7 +114,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   //   }
   //   await testUpdateOrder({
   //     token: customerToken,
-  //     params: { orderId },
+  //     params: { order_id },
   //     body: updatedOrderData,
   //     expectedData: {
   //       ...updatedOrderData,
@@ -127,14 +126,14 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   // it('should allow a customer to delete an order', async () => {
   //   await testDeleteOrder({
   //     token: customerToken,
-  //     params: { orderId },
+  //     params: { order_id },
   //   })
   // })
 
   // it('should fail to get a deleted order', async () => {
   //   await testGetNonExistentOrder({
   //     token: customerToken,
-  //     params: { orderId },
+  //     params: { order_id },
   //   })
   // })
 }

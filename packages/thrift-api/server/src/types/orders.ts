@@ -4,7 +4,6 @@ export interface OrderItemRequestData {
 }
 
 export interface OrderCreateRequestData {
-  store_id: number
   delivery_info_id?: number | null
   items: OrderItemRequestData[]
 }
