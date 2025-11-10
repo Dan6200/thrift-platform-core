@@ -3,7 +3,7 @@
 import { ProductImage } from '../products/image'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
-import { Minus, PanelRightClose, Plus, Trash2 } from 'lucide-react'
+import { Minus, Plus, Trash2 } from 'lucide-react'
 import ShippingInfo from '@/types/shipping-info'
 import { useSetAtom } from 'jotai'
 import { Dispatch, SetStateAction } from 'react'
@@ -24,7 +24,6 @@ type DecreaseItemCount = ReturnType<
 
 export function ShoppingCart({
   removeItem,
-  toggleDrawer,
   items,
   increaseItemCount,
   decreaseItemCount,
@@ -35,21 +34,10 @@ export function ShoppingCart({
   increaseItemCount: IncreaseItemCount
   decreaseItemCount: DecreaseItemCount
   total?: number
-  toggleDrawer?: Dispatch<SetStateAction<boolean>>
   removeItem?: RemoveItem
 }) {
   return (
-    <div className="flex flex-col justify-between container p-4 bg-background text-foreground ">
-      {toggleDrawer && (
-        <Button
-          onClick={() => toggleDrawer(false)}
-          variant="outline"
-          size="icon"
-          className="border-none relative"
-        >
-          <PanelRightClose />
-        </Button>
-      )}
+    <div className="flex flex-col justify-between container p-4 bg-transparent text-foreground">
       <h2 className="text-center p8 font-semibold text-2xl w-full my-8">
         Items in Cart
       </h2>
@@ -59,9 +47,9 @@ export function ShoppingCart({
             return (
               <Card
                 key={product.product_id}
-                className="flex items-center w-full"
+                className="flex bg-transparent items-center w-full"
               >
-                <CardContent className="rounded-md w-full border-b p-4 flex flex-col  sm:flex-row items-center justify-between h-44 sm:h-24">
+                <CardContent className="rounded-md w-full border-b border-border p-4 flex flex-col  sm:flex-row items-center justify-between h-44 sm:h-24">
                   <ProductImage
                     className="py-1 object-contain w-32 mx-auto rounded-sm bg-white max-h-24 sm:max-h-20 object-center border dark:border-none"
                     imgData={product?.media?.find(
@@ -72,13 +60,13 @@ export function ShoppingCart({
                   />
                   <div className="w-full flex sm:px-8 justify-between">
                     <div className="flex justify-between sm:justify-normal items-center">
-                      <div className="flex h-fit mr-2 items-center border w-28 justify-between p-0 rounded-md">
+                      <div className="flex h-fit mr-2 items-center border border-border bg-transparent w-28 justify-between p-0 rounded-md overflow-clip">
                         <Button
                           onClick={() => {
                             count > 1 ? decreaseItemCount(index) : null
                           }}
                           variant={'outline'}
-                          className="p-2 border-r border-y-0 border-l-0 h-7 rounded-none m-0"
+                          className="p-2 border-r border-y-0 border-l-0 bg-transparent h-7 rounded-none m-0"
                         >
                           <Minus className="w-4" />
                         </Button>
@@ -90,13 +78,14 @@ export function ShoppingCart({
                               : null
                           }}
                           variant={'outline'}
-                          className="p-2 border-l border-y-0 border-r-0 h-7 rounded-none m-0"
+                          className="p-2 border-l border-y-0 border-r-0 bg-transparent h-7 rounded-none m-0"
                         >
                           <Plus className="w-4" />
                         </Button>
                       </div>
                       <Button
                         variant="outline"
+                        className="bg-transparent"
                         onClick={() =>
                           removeItem ? removeItem(product) : null
                         }
