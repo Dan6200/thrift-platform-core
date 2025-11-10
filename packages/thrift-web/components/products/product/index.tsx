@@ -13,6 +13,7 @@ import { Product as ProductType, ProductVariant } from '@/types/products'
 import { BuyNow } from '../utils/buy-now'
 import { Price } from './utils/price'
 import { VariantSelector } from './utils/variant-selector'
+import { ProductReviews } from './utils/product-reviews'
 
 export function Product({ product }: { product: ProductType }) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
@@ -25,7 +26,36 @@ export function Product({ product }: { product: ProductType }) {
     }
   }, [product.variants])
 
-  const displayImg = product.media.find((img) => img.is_display_image)
+  const handleOptionSelect = (optionName: string, value: string) => {
+    if (!selectedVariant) return
+
+    const currentOptions = Object.fromEntries(
+      selectedVariant.options.map((opt) => [opt.option_name, opt.value]),
+    )
+
+    const nextOptions = {
+      ...currentOptions,
+      [optionName]: value,
+    }
+
+    const nextVariant = product.variants?.find((variant) =>
+      variant.options.every(
+        (opt) => nextOptions[opt.option_name] === opt.value,
+      ),
+    )
+
+    if (nextVariant) {
+      setSelectedVariant(nextVariant)
+    }
+    // If no matching variant is found, the selection state does not change.
+  }
+
+  const displayImg = product.media.find(
+    (img) =>
+      (selectedVariant?.variant_id ?? product?.variants?.[0].variant_id) ===
+        img.variant_id && img.is_display_image,
+  )
+
   if (!displayImg)
     throw new Error('Cant find display image for product detail--Tag: 1')
   const [shoppingCart, setShoppingCart] = useAtom(shoppingCartAtom)
@@ -40,7 +70,7 @@ export function Product({ product }: { product: ProductType }) {
       })
   }, [toast, showToast, totalItems])
   return (
-    <div className="container mx-auto p-4 sm:px-8 h-full my-20">
+    <div className="container mx-auto p-4 sm:px-8 my-20">
       <GoBackLink className="cursor-pointer text-base md:text-lg text-blue-700 dark:text-blue-200 mb-4 block">
         <MoveLeft className="inline mr-4" />
         Go back
@@ -51,10 +81,10 @@ export function Product({ product }: { product: ProductType }) {
       </h2>
       <Card
         id="product-card"
-        className="flex px-4 py-6 sm:px-8 sm:py-10 flex-col gap-5 lg:gap-7 lg:flex-row items-center rounded-xl w-full lg:mx-auto"
+        className="h-full flex px-4 py-6 sm:px-8 sm:py-10 flex-col gap-5 lg:gap-7 lg:flex-row items-center rounded-xl w-full lg:mx-auto"
       >
         <CardContent
-          className="flex flex-col p-0 w-full lg:w-[45%] lg:h-full items-center justify-between"
+          className="flex flex-col p-0 w-full h-fit lg:w-[45%] items-center justify-between"
           key={product?.product_id}
           id="card-content-product"
         >
@@ -66,12 +96,12 @@ export function Product({ product }: { product: ProductType }) {
               height={512}
             />
           </div>
-          <div className="p-0 flex flex-col my-4 lg:p-4 w-full justify-between lg:h-48 lg:text-lg">
+          <div className="p-0 flex flex-col my-4 lg:p-4 w-full justify-between lg:text-lg">
             {product.variants && (
               <VariantSelector
                 variants={product.variants}
                 selectedVariant={selectedVariant}
-                onSelectVariant={setSelectedVariant}
+                onOptionSelect={handleOptionSelect}
               />
             )}
             <Price
@@ -113,25 +143,32 @@ export function Product({ product }: { product: ProductType }) {
         </CardContent>
         <div className="border-b-2 lg:border-l-2 lg:border-b-0 block w-[95%] lg:w-[.5pt] lg:h-80"></div>
         <CardContent
-          className="p-0 px-2 w-full lg:w-[50%]"
+          className="p-0 px-2 w-full lg:w-[50%] h-full"
           id="card-content-description"
         >
           <h3 className="w-full mx-auto text-xl lg:text-2xl mb-6 lg:mb-12 font-bold text-center">
             About This Product
           </h3>
-          {product?.description && (
-            <div className="gap-4 flex flex-col mb-8">
-              {product?.description?.map((desc, index) => (
-                <p
-                  className="text-md break-words font-light md:text-xl"
-                  key={index}
-                >
-                  {/* remove &nbsp; that breaks ui */}
-                  {desc.replace(/\u00A0/, ' ')}
-                </p>
-              ))}
-            </div>
-          )}
+          <div className="flex flex-col justify-between">
+            {product?.description && (
+              <div className="gap-4 flex flex-col mb-8">
+                {product?.description?.map((desc, index) => (
+                  <p
+                    className="text-md break-words font-light md:text-xl"
+                    key={index}
+                  >
+                    {/* remove &nbsp; that breaks ui */}
+                    {desc.replace(/\u00A0/, ' ')}
+                  </p>
+                ))}
+              </div>
+            )}
+            <ProductReviews
+              product_id={product.product_id}
+              average_rating={product.average_rating}
+              review_count={product.review_count}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

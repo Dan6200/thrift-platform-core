@@ -11,6 +11,7 @@ export const ImgDataSchema = z.object({
   updated_at: z.string(),
   is_display_image: z.boolean(),
   is_thumbnail_image: z.boolean(),
+  variant_id: z.number(),
 })
 
 export type ImgData = z.infer<typeof ImgDataSchema>
