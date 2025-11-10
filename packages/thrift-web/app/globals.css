@@ -172,7 +172,7 @@
 }
 
 .glass-effect {
-  @apply bg-gray-700/10 backdrop-blur-md border border-white/20;
+  @apply bg-accent/10 backdrop-blur-md border border-white/10;
 }
 
 .disable-scrollbars {
