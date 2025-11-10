@@ -30,7 +30,7 @@ export function ShoppingCartDrawerContent() {
   const removeItem = useSetAtom(removeItemAtom)
 
   return (
-    <DrawerContent className="h-full w-[50vw] bg-background text-foreground glass-effect">
+    <DrawerContent className="bg-background text-background glass-effect dark:text-foreground">
       <DrawerHeader>
         <DrawerTitle>Your Shopping Cart</DrawerTitle>
         <DrawerDescription>
