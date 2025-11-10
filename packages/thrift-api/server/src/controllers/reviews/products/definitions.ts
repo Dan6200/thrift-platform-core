@@ -3,6 +3,7 @@ import { QueryParams } from '#src/types/process-routes.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
+import NotFoundError from '#src/errors/not-found.js'
 
 export const createProductReviewQuery = async ({
   userId,
@@ -54,6 +55,10 @@ export const getProductReviewQuery = async ({ params }: QueryParams) => {
 
   const review = await knex('product_reviews').where({ order_item_id }).first()
 
+  if (!review) {
+    throw new NotFoundError('Review not found')
+  }
+
   return review
 }
 
@@ -78,7 +83,7 @@ export const updateProductReviewQuery = async ({
     .first()
 
   if (!existingReview) {
-    throw new BadRequestError('Review not found')
+    throw new NotFoundError('Review not found')
   }
 
   if (existingReview.customer_id !== userId) {
@@ -116,7 +121,7 @@ export const deleteProductReviewQuery = async ({
     .first()
 
   if (!existingReview) {
-    throw new BadRequestError('Review not found')
+    throw new NotFoundError('Review not found')
   }
 
   if (existingReview.customer_id !== userId) {
