@@ -17,21 +17,16 @@ import { deleteUserForTesting } from '../../helpers/delete-user.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
 import { createStoreForTesting } from '../../helpers/create-store.js'
 import { createProductsForTesting } from '../../helpers/create-product.js'
-import { getProductsForTesting } from '../../helpers/get-product.js'
 import { userInfo as vendorInfo } from '../../data/users/vendors/user-aliyu/index.js'
 
 chai.use(chaiHttp).should()
 
 export default function (customer: { userInfo: ProfileRequestData }) {
-  const server = process.env.SERVER!
   let customerToken: string
   let customerId: string
   let vendorToken: string
   let vendorId: string
   let storeId: number
-  let productId: number
-  let variantId: number
-  let orderId: number
   let orderItemId: number
   let nonPurchasingCustomerId: string
   let nonPurchasingCustomerToken: string
@@ -60,39 +55,29 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     }
     const productResponses = await Promise.all(productCreationPromises)
     const productRes = productResponses[0]
-    productId = productRes.body.product_id
-
-    // Get the product details to extract variant_id
-    const fullProductRes = await getProductsForTesting(
-      vendorToken,
-      productId,
-      storeId,
-    )
-    variantId = fullProductRes.body[0].variants[0].variant_id // Assuming at least one variant
+    const variantId = productRes.body.variants[0].variant_id
 
     // Create an order for the customer with the product variant
     const orderRes = await chai
-      .request(server)
+      .request(process.env.SERVER!)
       .post('/v1/orders')
       .auth(customerToken, { type: 'bearer' })
+      .query({ store_id: storeId })
       .send({
-        store_id: storeId,
-        total_amount: 100.0, // Dummy total amount
-        order_items: [
-          {
-            variant_id: variantId,
-            quantity: 1,
-            price_at_purchase: 100.0,
-          },
-        ],
+        items: [{ variant_id: variantId, quantity: 1 }],
       })
     orderRes.should.have.status(201)
-    orderId = orderRes.body[0].order_id
-    orderItemId = orderRes.body[0].order_items[0].order_item_id
+    orderItemId = orderRes.body.items[0].order_item_id
 
     // Create and sign in a non-purchasing customer
-    nonPurchasingCustomerId = await createUserForTesting(customer.userInfo)
-    nonPurchasingCustomerToken = await signInForTesting(customer.userInfo)
+    const nonPurchasingUserInfo = {
+      ...customer.userInfo,
+      email: `nonpurchasing-${customer.userInfo.email}`,
+      username: `nonpurchasing-${customer.userInfo.username}`,
+      phone: `+1${Math.floor(Math.random() * 10000000000)}`, // Generate a random phone number
+    }
+    nonPurchasingCustomerId = await createUserForTesting(nonPurchasingUserInfo)
+    nonPurchasingCustomerToken = await signInForTesting(nonPurchasingUserInfo)
   })
 
   after(async () => {
@@ -101,8 +86,6 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     await deleteUserForTesting(nonPurchasingCustomerId)
   })
 
-  const productReviewPath = '/v1/reviews/products'
-
   it('should allow a customer to create a product review', async () => {
     const reviewData: ProductReviewRequestData = {
       order_item_id: orderItemId,
@@ -110,10 +93,8 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       customer_remark: 'Great product, very satisfied!',
     }
     await testCreateProductReview({
-      server,
-      path: productReviewPath,
       token: customerToken,
-      requestBody: reviewData,
+      body: reviewData,
     })
   })
 
@@ -124,26 +105,22 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       customer_remark: 'I did not buy this product.',
     }
     await testCreateProductReviewUnauthorized({
-      server,
-      path: productReviewPath,
       token: nonPurchasingCustomerToken,
-      requestBody: reviewData,
+      body: reviewData,
     })
   })
 
   it('should allow a customer to get their product review', async () => {
     await testGetProductReview({
-      server,
-      path: `${productReviewPath}/${orderItemId}`,
       token: customerToken,
+      params: { orderItemId },
     })
   })
 
   it('should allow a non-purchasing customer to view a product review', async () => {
     await testGetProductReview({
-      server,
-      path: `${productReviewPath}/${orderItemId}`,
       token: nonPurchasingCustomerToken,
+      params: { orderItemId },
     })
   })
 
@@ -154,10 +131,9 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       customer_remark: 'Absolutely love it! Highly recommend.',
     }
     await testUpdateProductReview({
-      server,
-      path: `${productReviewPath}/${orderItemId}`,
       token: customerToken,
-      requestBody: updatedReviewData,
+      params: { orderItemId },
+      body: updatedReviewData,
     })
   })
 
@@ -168,34 +144,30 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       customer_remark: 'Attempted to update review as non-purchasing customer.',
     }
     await testUpdateProductReviewUnauthorized({
-      server,
-      path: `${productReviewPath}/${orderItemId}`,
       token: nonPurchasingCustomerToken,
-      requestBody: updatedReviewData,
+      params: { orderItemId },
+      body: updatedReviewData,
     })
   })
 
   it('should allow a customer to delete their product review', async () => {
     await testDeleteProductReview({
-      server,
-      path: `${productReviewPath}/${orderItemId}`,
       token: customerToken,
+      params: { orderItemId },
     })
   })
 
   it('should prevent a non-purchasing customer from deleting a product review', async () => {
     await testDeleteProductReviewUnauthorized({
-      server,
-      path: `${productReviewPath}/${orderItemId}`,
       token: nonPurchasingCustomerToken,
+      params: { orderItemId },
     })
   })
 
   it('should fail to get a deleted product review', async () => {
     await testGetNonExistentProductReview({
-      server,
-      path: `${productReviewPath}/${orderItemId}`,
       token: customerToken,
+      params: { orderItemId },
     })
   })
 }
