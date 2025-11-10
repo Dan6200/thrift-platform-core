@@ -28,7 +28,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
     return (
       <InstantSearch indexName="products" searchClient={searchClient}>
         <div className={className} ref={searchRef}>
-          <span className="bg-transparent flex h-10 px-3 w-full justify-between rounded-md text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+          <span className="bg-transparent flex h-10 px-3 w-full justify-between rounded-md border border-white/20 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
             <SearchBox
               onClick={() => setShow(true)}
               submitIconComponent={SearchIcon as any}
@@ -40,7 +40,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
                 form: 'w-full flex justify-between',
                 loadingIcon: 'hidden',
                 input:
-                  'h-9 px-3 py-1 order-2 border-r-1 w-[90%] bg-inherit focus-visible:outline-none',
+                  'h-9 px-3 py-1 order-2 w-[90%] bg-inherit focus-visible:outline-none',
               }}
             />
           </span>
