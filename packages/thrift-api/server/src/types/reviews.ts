@@ -1,5 +1,4 @@
 export interface ProductReviewRequestData {
-  order_item_id: number
   rating: number
   customer_remark?: string | null
 }

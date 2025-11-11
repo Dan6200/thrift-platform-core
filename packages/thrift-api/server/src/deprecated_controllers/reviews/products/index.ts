@@ -1,7 +1,9 @@
 import { StatusCodes } from 'http-status-codes'
 import {
-  ProductReviewRequestSchema,
+  GetProductReviewRequestSchema,
+  CreateProductReviewRequestSchema,
   ProductReviewResponseSchema,
+  UpdateProductReviewRequestSchema,
 } from '#src/app-schema/reviews/products.js'
 import processRoute from '../../process-routes.js'
 import { validateReqData } from '../../utils/request-validation.js'
@@ -18,7 +20,7 @@ const { CREATED, OK, NO_CONTENT } = StatusCodes
 export const createProductReview = processRoute({
   Query: createProductReviewQuery,
   status: CREATED,
-  validateBody: validateReqData(ProductReviewRequestSchema),
+  validateBody: validateReqData(CreateProductReviewRequestSchema),
   validateResult: validateResData(ProductReviewResponseSchema),
 })
 
@@ -31,11 +33,12 @@ export const getProductReview = processRoute({
 export const updateProductReview = processRoute({
   Query: updateProductReviewQuery,
   status: OK,
-  validateBody: validateReqData(ProductReviewRequestSchema),
+  validateBody: validateReqData(UpdateProductReviewRequestSchema),
   validateResult: validateResData(ProductReviewResponseSchema),
 })
 
 export const deleteProductReview = processRoute({
   Query: deleteProductReviewQuery,
   status: NO_CONTENT,
+  validateBody: validateReqData(UpdateProductReviewRequestSchema),
 })

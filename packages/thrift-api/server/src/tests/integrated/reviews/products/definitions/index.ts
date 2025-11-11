@@ -5,40 +5,45 @@ import {
   RequestParams,
 } from '#src/tests/integrated/test-request/types.js'
 import {
-  isValidProductReviewRequest,
-  isValidProductReviewResponse,
-  isValidProductReviewId,
-} from '../../../helpers/type-guards/reviews.js'
+  validateCreateProductReviewReq,
+  validateUpdateProductReviewReq,
+  validateDeleteProductReviewReq,
+  validateGetProductReviewReq,
+  validateProductReviewRes,
+} from '../../../helpers/test-validators/reviews.js'
 import { ProductReviewRequestData } from '#src/types/reviews.js'
 
 const { CREATED, OK, NO_CONTENT, NOT_FOUND, FORBIDDEN } = StatusCodes
 
 const reviewsPathBase = '/v1/reviews/products'
-const buildReviewPath = (orderItemId: number) =>
-  `${reviewsPathBase}/${orderItemId}`
+const buildReviewPath = (order_item_id: number) =>
+  `${reviewsPathBase}/${order_item_id}`
 
 export const testCreateProductReview = (args: {
   token: string
+  params: { order_item_id: number }
   body: ProductReviewRequestData
 }) => {
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
+    params: args.params,
     body: args.body,
   }
   return (testRequest as TestRequest)({
     verb: 'post',
     statusCode: CREATED,
-    path: reviewsPathBase,
-    validateTestReqData: isValidProductReviewRequest,
-    validateTestResData: isValidProductReviewResponse,
+    path,
+    validateTestReqData: validateCreateProductReviewReq,
+    validateTestResData: validateProductReviewRes,
   })(requestParams)
 }
 
 export const testGetProductReview = (args: {
   token: string
-  params: { orderItemId: number }
+  params: { order_item_id: number }
 }) => {
-  const path = buildReviewPath(args.params.orderItemId)
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -47,16 +52,17 @@ export const testGetProductReview = (args: {
     verb: 'get',
     statusCode: OK,
     path,
-    validateTestResData: isValidProductReviewResponse,
+    validateTestReqData: validateGetProductReviewReq,
+    validateTestResData: validateProductReviewRes,
   })(requestParams)
 }
 
 export const testUpdateProductReview = (args: {
   token: string
-  params: { orderItemId: number }
+  params: { order_item_id: number }
   body: ProductReviewRequestData
 }) => {
-  const path = buildReviewPath(args.params.orderItemId)
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -66,16 +72,16 @@ export const testUpdateProductReview = (args: {
     verb: 'patch',
     statusCode: OK,
     path,
-    validateTestReqData: isValidProductReviewRequest,
-    validateTestResData: isValidProductReviewResponse,
+    validateTestReqData: validateUpdateProductReviewReq,
+    validateTestResData: validateProductReviewRes,
   })(requestParams)
 }
 
 export const testDeleteProductReview = (args: {
   token: string
-  params: { orderItemId: number }
+  params: { order_item_id: number }
 }) => {
-  const path = buildReviewPath(args.params.orderItemId)
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -84,15 +90,16 @@ export const testDeleteProductReview = (args: {
     verb: 'delete',
     statusCode: NO_CONTENT,
     path,
+    validateTestReqData: validateDeleteProductReviewReq,
     validateTestResData: null,
   })(requestParams)
 }
 
 export const testGetNonExistentProductReview = (args: {
   token: string
-  params: { orderItemId: number }
+  params: { order_item_id: number }
 }) => {
-  const path = buildReviewPath(args.params.orderItemId)
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -101,33 +108,37 @@ export const testGetNonExistentProductReview = (args: {
     verb: 'get',
     statusCode: NOT_FOUND,
     path,
+    validateTestReqData: validateGetProductReviewReq,
     validateTestResData: null,
   })(requestParams)
 }
 
 export const testCreateProductReviewUnauthorized = (args: {
   token: string
+  params: { order_item_id: number }
   body: ProductReviewRequestData
 }) => {
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
+    params: args.params,
     body: args.body,
   }
   return (testRequest as TestRequest)({
     verb: 'post',
     statusCode: FORBIDDEN,
-    path: reviewsPathBase,
-    validateTestReqData: isValidProductReviewRequest,
+    path,
+    validateTestReqData: validateCreateProductReviewReq,
     validateTestResData: null,
   })(requestParams)
 }
 
 export const testUpdateProductReviewUnauthorized = (args: {
   token: string
-  params: { orderItemId: number }
+  params: { order_item_id: number }
   body: ProductReviewRequestData
 }) => {
-  const path = buildReviewPath(args.params.orderItemId)
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -137,16 +148,16 @@ export const testUpdateProductReviewUnauthorized = (args: {
     verb: 'patch',
     statusCode: FORBIDDEN,
     path,
-    validateTestReqData: isValidProductReviewRequest,
+    validateTestReqData: validateUpdateProductReviewReq,
     validateTestResData: null,
   })(requestParams)
 }
 
 export const testDeleteProductReviewUnauthorized = (args: {
   token: string
-  params: { orderItemId: number }
+  params: { order_item_id: number }
 }) => {
-  const path = buildReviewPath(args.params.orderItemId)
+  const path = buildReviewPath(args.params.order_item_id)
   const requestParams: RequestParams = {
     token: args.token,
     params: args.params,
@@ -155,6 +166,7 @@ export const testDeleteProductReviewUnauthorized = (args: {
     verb: 'delete',
     statusCode: FORBIDDEN,
     path,
+    validateTestReqData: validateDeleteProductReviewReq,
     validateTestResData: null,
   })(requestParams)
 }

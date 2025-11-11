@@ -8,24 +8,36 @@ export const ProductReviewDataSchema = Joi.object({
 
 // Request Schemas
 export const CreateProductReviewRequestSchema = Joi.object({
-  body: ProductReviewDataSchema.required(),
   params: Joi.object({
     order_item_id: Joi.number().integer().positive().required(),
   }).required(),
+  body: ProductReviewDataSchema.required(),
   query: Joi.object().optional(),
 })
 
-export const UpdateProductReviewRequestSchema = CreateProductReviewRequestSchema
+export const UpdateProductReviewRequestSchema = Joi.object({
+  params: Joi.object({
+    order_item_id: Joi.number().integer().positive().required(),
+  }).required(),
+  body: ProductReviewDataSchema.required(),
+  query: Joi.object().optional(),
+})
 
 export const GetProductReviewRequestSchema = Joi.object({
-  body: Joi.object().optional(),
   params: Joi.object({
     order_item_id: Joi.number().integer().positive().required(),
   }).required(),
+  body: Joi.object().optional(),
   query: Joi.object().optional(),
 })
 
-export const DeleteProductReviewRequestSchema = GetProductReviewRequestSchema
+export const DeleteProductReviewRequestSchema = Joi.object({
+  params: Joi.object({
+    order_item_id: Joi.number().integer().positive().required(),
+  }).required(),
+  body: Joi.object().optional(),
+  query: Joi.object().optional(),
+})
 
 // Response Schemas
 export const ProductReviewResponseSchema = Joi.object({

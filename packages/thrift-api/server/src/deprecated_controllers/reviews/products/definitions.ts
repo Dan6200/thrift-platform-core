@@ -8,12 +8,14 @@ import NotFoundError from '#src/errors/not-found.js'
 export const createProductReviewQuery = async ({
   userId,
   body,
+  params,
 }: QueryParams) => {
   if (!userId) {
     throw new UnauthenticatedError('Authentication required')
   }
 
-  const { order_item_id, rating, customer_remark } = body
+  const { order_item_id } = params
+  const { rating, customer_remark } = body
 
   if (!order_item_id || rating === undefined) {
     throw new BadRequestError('Order item ID and rating are required')
