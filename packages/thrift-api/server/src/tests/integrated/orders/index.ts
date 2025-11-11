@@ -67,7 +67,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   })
 
   it('should allow a customer to create an order', async () => {
-    const orderData: Omit<OrderCreateRequestData, 'store_id'> = {
+    const orderData = {
       items: [
         {
           variant_id: variantId,
@@ -75,7 +75,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
         },
       ],
     }
-    ;({ order_id } = await testCreateOrder({
+    const response = await testCreateOrder({
       token: customerToken,
       body: orderData,
       query: { store_id: storeId },
@@ -84,7 +84,8 @@ export default function (customer: { userInfo: ProfileRequestData }) {
         store_id: storeId,
         total_amount: variantPrice * 1,
       },
-    }))
+    })
+    order_id = response.order_id
   })
 
   it('should allow a customer to get all their orders', async () => {
@@ -103,8 +104,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   })
 
   // it('should allow a customer to update an order', async () => {
-  //   const updatedOrderData: OrderCreateRequestData = {
-  //     store_id: storeId,
+  //   const updatedOrderData = {
   //     items: [
   //       {
   //         variant_id: variantId,
@@ -118,6 +118,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   //     body: updatedOrderData,
   //     expectedData: {
   //       ...updatedOrderData,
+  //       store_id: storeId,
   //       total_amount: variantPrice * 2,
   //     },
   //   })
