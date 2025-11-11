@@ -1,32 +1,29 @@
-import { QueryResult, QueryResultRow } from 'pg'
-import { pg } from '../../../db/index.js' // Adjust path
-import { QueryParams } from '../../../types/process-routes.js' // Adjust path
+import { Request, Response, NextFunction } from 'express'
+import { pg } from '../../db/index.js'
 import {
-  validateDashboardQueryParams,
+  validateAnalyticsQueryParams,
   getDateRangeClause,
   getPaginationAndSortClauses,
 } from './utils.js'
-import BadRequestError from '../../../errors/bad-request.js' // Adjust path
+import BadRequestError from '../../errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
-import { knex } from '../../../db/index.js'
+import { knex } from '../../db/index.js'
 
 /**
- * @param {QueryParams} { query, userId }
- * @returns {Promise<QueryResult<QueryResultRow>>}
  * @description Retrieves various sales performance reports based on type.
  */
-
-export default async ({
-  query,
-  userId,
-  params, // Add params here
-}: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { storeId } = params // Extract storeId
+export const getSalesAnalyticsLogic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { storeId } = req.validatedParams
+  const { userId } = req
 
   if (!userId) {
     throw new UnauthenticatedError(
-      'Authentication required to access dashboard data.',
+      'Authentication required to access analytics data.',
     )
   }
 
@@ -41,7 +38,7 @@ export default async ({
   ])
   if (!hasAccess.rows[0].has_store_access) {
     throw new UnauthorizedError(
-      "You are not authorized to access this store's dashboard.",
+      "You are not authorized to access this store's analytics.",
     )
   }
 
@@ -54,7 +51,11 @@ export default async ({
     sortBy,
     sortOrder,
     status,
-  } = await validateDashboardQueryParams({ query }) // Remove userId from here
+  } = await validateAnalyticsQueryParams({
+    query: req.validatedQueryParams,
+    userId,
+    params: req.validatedParams,
+  })
 
   if (!type) {
     throw new BadRequestError(
@@ -62,7 +63,7 @@ export default async ({
     )
   }
 
-  const sqlParams: (string | Date)[] = [storeId] // Change params to sqlParams
+  const sqlParams: (string | Date)[] = [storeId]
   let paramIndex = 2 // $1 is storeId
   let dbQueryString = ''
 
@@ -70,7 +71,7 @@ export default async ({
     parsedStartDate,
     parsedEndDate,
     'o.order_date',
-    sqlParams, // Changed from params
+    sqlParams,
     paramIndex,
   )
   paramIndex = nextParamIndex
@@ -128,7 +129,7 @@ export default async ({
       let statusClause = ''
       if (status) {
         statusClause = `AND o.status = $${paramIndex}`
-        sqlParams.push(status as string) // Changed from params.push
+        sqlParams.push(status as string)
         paramIndex++
       }
       const paginationSortClauseOrder = getPaginationAndSortClauses(
@@ -156,5 +157,7 @@ export default async ({
       throw new BadRequestError('Invalid sales report type.')
   }
 
-  return pg.query(dbQueryString, sqlParams) // Changed from params
+  const result = await pg.query(dbQueryString, sqlParams)
+  req.dbResult = result.rows
+  next()
 }

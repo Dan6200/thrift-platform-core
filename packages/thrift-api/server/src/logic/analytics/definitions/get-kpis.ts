@@ -1,26 +1,24 @@
-import { QueryResult, QueryResultRow } from 'pg'
-import { knex, pg } from '../../../db/index.js' // Adjust path
-import { QueryParams } from '../../../types/process-routes.js' // Adjust path
-import { validateDashboardQueryParams, getDateRangeClause } from './utils.js'
+import { Request, Response, NextFunction } from 'express'
+import { knex, pg } from '../../db/index.js'
+import { validateAnalyticsQueryParams, getDateRangeClause } from './utils.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import BadRequestError from '#src/errors/bad-request.js'
-import UnauthorizedError from '#src/errors/unauthorized.js'
+import BadRequestError from '../../errors/bad-request.js'
+import UnauthorizedError from '../../errors/unauthorized.js'
 
 /**
- * @param {QueryParams} { query, userId }
- * @returns {Promise<QueryResult<QueryResultRow>>}
  * @description Retrieves aggregated key performance indicators for the specified store and timeframe.
  */
-export default async ({
-  query,
-  userId,
-  params,
-}: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { storeId } = params
+export const getKPIsLogic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { storeId } = req.validatedParams
+  const { userId } = req
 
   if (!userId) {
     throw new UnauthenticatedError(
-      'Authentication required to access dashboard data.',
+      'Authentication required to access analytics data.',
     )
   }
 
@@ -35,12 +33,12 @@ export default async ({
   ])
   if (!hasAccess.rows[0].has_store_access) {
     throw new UnauthorizedError(
-      "You are not authorized to access this store's dashboard.",
+      "You are not authorized to access this store's analytics.",
     )
   }
 
-  const { parsedStartDate, parsedEndDate } = await validateDashboardQueryParams(
-    { query, userId, params },
+  const { parsedStartDate, parsedEndDate } = await validateAnalyticsQueryParams(
+    { query: req.validatedQueryParams, userId, params: req.validatedParams },
   )
 
   const sqlParams: (string | Date)[] = [storeId]
@@ -73,13 +71,23 @@ export default async ({
       COALESCE(SUM(o.total_amount), 0.00) AS "totalRevenue",
       COUNT(DISTINCT o.order_id) AS "totalOrders",
       COALESCE(AVG(o.total_amount), 0.00) AS "averageOrderValue",
-      COUNT(DISTINCT CASE WHEN p_customer.created_at ${profileCreatedAtClause ? profileCreatedAtClause.replace('AND p_customer.created_at', '') : ''} THEN p_customer.id ELSE NULL END) AS "newCustomers",
-      COUNT(DISTINCT CASE WHEN p_customer.created_at NOT ${profileCreatedAtClause ? profileCreatedAtClause.replace('AND p_customer.created_at', '') : ''} AND o.customer_id IS NOT NULL THEN p_customer.id ELSE NULL END) AS "returningCustomers"
+      COUNT(DISTINCT CASE WHEN p_customer.created_at ${
+        profileCreatedAtClause
+          ? profileCreatedAtClause.replace('AND p_customer.created_at', '')
+          : ''
+      } THEN p_customer.id ELSE NULL END) AS "newCustomers",
+      COUNT(DISTINCT CASE WHEN p_customer.created_at NOT ${
+        profileCreatedAtClause
+          ? profileCreatedAtClause.replace('AND p_customer.created_at', '')
+          : ''
+      } AND o.customer_id IS NOT NULL THEN p_customer.id ELSE NULL END) AS "returningCustomers"
     FROM orders o
     LEFT JOIN profiles p_customer ON o.customer_id = p_customer.id
     WHERE o.store_id = $1
     ${orderDateClause}
   ;`
 
-  return pg.query(dbQueryString, sqlParams)
+  const result = await pg.query(dbQueryString, sqlParams)
+  req.dbResult = result.rows
+  next()
 }

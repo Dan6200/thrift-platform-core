@@ -1,30 +1,28 @@
-import { QueryResult, QueryResultRow } from 'pg'
-import { knex, pg } from '../../../db/index.js' // Adjust path
-import { QueryParams } from '../../../types/process-routes.js' // Adjust path
+import { Request, Response, NextFunction } from 'express'
+import { knex, pg } from '../../db/index.js'
 import {
-  validateDashboardQueryParams,
+  validateAnalyticsQueryParams,
   getDateRangeClause,
   getPaginationAndSortClauses,
 } from './utils.js'
+import BadRequestError from '../../errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
-import BadRequestError from '../../../errors/bad-request.js'
 
 /**
- * @param {QueryParams} { query, userId }
- * @returns {Promise<QueryResult<QueryResultRow>>}
- * @description Compares product purchases (views are external and will be null).
+ * @description Lists top-selling products by units or revenue.
  */
-export default async ({
-  query,
-  userId,
-  params,
-}: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { storeId } = params
+export const getTopSellingProductsLogic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { storeId } = req.validatedParams
+  const { userId } = req
 
   if (!userId) {
     throw new UnauthenticatedError(
-      'Authentication required to access dashboard data.',
+      'Authentication required to access analytics data.',
     )
   }
 
@@ -39,19 +37,28 @@ export default async ({
   ])
   if (!hasAccess.rows[0].has_store_access) {
     throw new UnauthorizedError(
-      "You are not authorized to access this store's dashboard.",
+      "You are not authorized to access this store's analytics.",
     )
   }
 
-  const { parsedStartDate, parsedEndDate, parsedLimit, parsedOffset } =
-    await validateDashboardQueryParams({ query })
+  const { parsedStartDate, parsedEndDate, sortBy, parsedLimit } =
+    await validateAnalyticsQueryParams({
+      query: req.validatedQueryParams,
+      userId,
+      params: req.validatedParams,
+    })
 
+  if (sortBy && !['units', 'revenue'].includes(sortBy)) {
+    throw new BadRequestError('Invalid sortBy. Must be units or revenue.')
+  }
+
+  const sortColumn = sortBy === 'revenue' ? '"totalRevenue"' : '"unitsSold"'
   const paginationSortClause = getPaginationAndSortClauses(
-    'purchases',
+    sortColumn,
     'desc',
-    parsedLimit,
-    parsedOffset,
-  ) // Sort by purchases by default
+    parsedLimit || 10,
+    null,
+  ) // Default limit 10, no offset for top-N
 
   const sqlParams: (string | Date)[] = [storeId]
   let paramIndex = 2 // $1 is storeId
@@ -69,8 +76,8 @@ export default async ({
     SELECT
       p.product_id AS "productId",
       p.title AS "productTitle",
-      COALESCE(SUM(oi.quantity), 0) AS purchases,
-      NULL AS views -- Views are external and not in this DB schema
+      COALESCE(SUM(oi.quantity), 0) AS "unitsSold",
+      COALESCE(SUM(oi.quantity * oi.price_at_purchase), 0.00) AS "totalRevenue"
     FROM products p
     JOIN product_variants pv ON p.product_id = pv.product_id
     JOIN order_items oi ON pv.variant_id = oi.variant_id
@@ -80,5 +87,7 @@ export default async ({
     ${paginationSortClause};
   `
 
-  return pg.query(dbQueryString, sqlParams)
+  const result = await pg.query(dbQueryString, sqlParams)
+  req.dbResult = result.rows
+  next()
 }

@@ -1,26 +1,24 @@
-import { QueryResult, QueryResultRow } from 'pg'
-import { knex, pg } from '../../../db/index.js' // Adjust path
-import { QueryParams } from '../../../types/process-routes.js' // Adjust path
-import { validateDashboardQueryParams } from './utils.js'
-import BadRequestError from '../../../errors/bad-request.js' // Adjust path
+import { Request, Response, NextFunction } from 'express'
+import { knex, pg } from '../../db/index.js'
+import { validateAnalyticsQueryParams } from './utils.js'
+import BadRequestError from '../../errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 
 /**
- * @param {QueryParams} { query, userId }
- * @returns {Promise<QueryResult<QueryResultRow>>}
  * @description Breakdown of customers by geographic location.
  */
-export default async ({
-  query,
-  userId,
-  params,
-}: QueryParams): Promise<QueryResult<QueryResultRow>> => {
-  const { storeId } = params
+export const getCustomersByLocationLogic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { storeId } = req.validatedParams
+  const { userId } = req
 
   if (!userId) {
     throw new UnauthenticatedError(
-      'Authentication required to access dashboard data.',
+      'Authentication required to access analytics data.',
     )
   }
 
@@ -35,11 +33,15 @@ export default async ({
   ])
   if (!hasAccess.rows[0].has_store_access) {
     throw new UnauthorizedError(
-      "You are not authorized to access this store's dashboard.",
+      "You are not authorized to access this store's analytics.",
     )
   }
 
-  const { locationType } = await validateDashboardQueryParams({ query })
+  const { locationType } = await validateAnalyticsQueryParams({
+    query: req.validatedQueryParams,
+    userId,
+    params: req.validatedParams,
+  })
 
   const allowedLocationTypes = ['country', 'city']
   if (locationType && !allowedLocationTypes.includes(locationType)) {
@@ -47,7 +49,6 @@ export default async ({
   }
 
   const groupByColumn = locationType === 'city' ? 'a.city' : 'a.country'
-  const locationAlias = locationType === 'city' ? 'city' : 'country' // For the response field name
 
   const sqlParams: string[] = [storeId]
 
@@ -64,5 +65,7 @@ export default async ({
     ORDER BY "customerCount" DESC;
   `
 
-  return pg.query(dbQueryString, sqlParams)
+  const result = await pg.query(dbQueryString, sqlParams)
+  req.dbResult = result.rows
+  next()
 }

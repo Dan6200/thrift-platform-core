@@ -1,8 +1,8 @@
-import { QueryParams } from '../../../types/process-routes.js' // Adjust path
-import BadRequestError from '../../../errors/bad-request.js' // Adjust path
-import UnauthorizedError from '../../../errors/unauthorized.js' // Adjust path
-import UnauthenticatedError from '#src/errors/unauthenticated.js' // Adjust path
-import { knex } from '../../../db/index.js' // Adjust path
+import { QueryParams } from '../../types/process-routes.js'
+import BadRequestError from '../../errors/bad-request.js'
+import UnauthorizedError from '../../errors/unauthorized.js'
+import UnauthenticatedError from '#src/errors/unauthenticated.js'
+import { knex } from '../../db/index.js'
 
 /**
  * Validates common query parameters (storeId, userId, dates, pagination).
@@ -13,7 +13,7 @@ import { knex } from '../../../db/index.js' // Adjust path
  * @throws {BadRequestError} If storeId or date formats are invalid.
  * @throws {UnauthorizedError} If the user is not authorized for the specified store.
  */
-export async function validateDashboardQueryParams({ query }: QueryParams) {
+export async function validateAnalyticsQueryParams({ query }: QueryParams) {
   const {
     startDate,
     endDate,
