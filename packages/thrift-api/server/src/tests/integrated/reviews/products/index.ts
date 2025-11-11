@@ -69,7 +69,6 @@ export default function (customer: { userInfo: ProfileRequestData }) {
         items: [{ variant_id: variantId, quantity: 1 }],
       })
     orderRes.should.have.status(201)
-    console.log(orderRes.body)
     orderItemId = orderRes.body.items[0].order_item_id
 
     // Create and sign in a non-purchasing customer to test authorization
@@ -154,16 +153,16 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     })
   })
 
-  it('should allow a customer to delete their product review', async () => {
-    await testDeleteProductReview({
-      token: customerToken,
+  it('should prevent a non-purchasing customer from deleting a product review', async () => {
+    await testDeleteProductReviewUnauthorized({
+      token: nonPurchasingCustomerToken,
       params: { order_item_id: orderItemId },
     })
   })
 
-  it('should prevent a non-purchasing customer from deleting a product review', async () => {
-    await testDeleteProductReviewUnauthorized({
-      token: nonPurchasingCustomerToken,
+  it('should allow a customer to delete their product review', async () => {
+    await testDeleteProductReview({
+      token: customerToken,
       params: { order_item_id: orderItemId },
     })
   })
