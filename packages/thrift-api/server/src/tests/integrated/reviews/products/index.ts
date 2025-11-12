@@ -20,6 +20,7 @@ import { createProductsForTesting } from '../../helpers/create-product.js'
 import { userInfo as vendorInfo } from '../../data/users/vendors/user-aliyu/index.js'
 import { userInfo as mustaphaInfo } from '../../data/users/customers/user-mustapha/index.js'
 import { userInfo as ebukaInfo } from '../../data/users/customers/user-ebuka/index.js'
+import { createOrderForTesting } from '../../helpers/create-order.js'
 
 chai.use(chaiHttp).should()
 
@@ -60,14 +61,13 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     const variantId = productRes.body.variants[0].variant_id
 
     // Create an order for the customer with the product variant
-    const orderRes = await chai
-      .request(process.env.SERVER!)
-      .post('/v1/orders')
-      .auth(customerToken, { type: 'bearer' })
-      .query({ store_id: storeId })
-      .send({
+    const orderRes = await createOrderForTesting(
+      customerToken,
+      { store_id: storeId },
+      {
         items: [{ variant_id: variantId, quantity: 1 }],
-      })
+      },
+    )
     orderRes.should.have.status(201)
     orderItemId = orderRes.body.items[0].order_item_id
 
