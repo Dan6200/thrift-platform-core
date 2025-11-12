@@ -10,7 +10,7 @@ import * as Ebuka from './data/users/customers/user-ebuka/index.js'
 import * as Aisha from './data/users/customers/user-aisha/index.js'
 import * as Mustapha from './data/users/customers/user-mustapha/index.js'
 import * as Aliyu from './data/users/vendors/user-aliyu/index.js'
-import testDashboard from './dashboard/index.js'
+import testAnalytics from './analytics/index.js'
 import testStoreStaff from './store_staff/index.js'
 import testCart from './cart/index.js'
 import testProductReviews from './reviews/products/index.js'
@@ -98,7 +98,7 @@ export default function (): void {
     const { userInfo } = vendor
     const { first_name: name } = userInfo
     describe(`Testing Dashboard Analytics for ${name}`, () =>
-      testDashboard(vendor))
+      testAnalytics(vendor))
   }
 
   /** Store Staff related tests **/
