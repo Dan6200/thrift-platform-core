@@ -1,8 +1,5 @@
-import { QueryParams } from '../../types/process-routes.js'
-import BadRequestError from '../../errors/bad-request.js'
-import UnauthorizedError from '../../errors/unauthorized.js'
-import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import { knex } from '../../db/index.js'
+import { QueryParams } from '#src/types/process-routes.js'
+import BadRequestError from '#src/errors/bad-request.js'
 
 /**
  * Validates common query parameters (storeId, userId, dates, pagination).

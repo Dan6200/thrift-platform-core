@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
-import { pg } from '../../db/index.js'
+import { pg } from '#src/db/index.js'
 import {
   validateAnalyticsQueryParams,
   getDateRangeClause,
   getPaginationAndSortClauses,
 } from './utils.js'
-import BadRequestError from '../../errors/bad-request.js'
+import BadRequestError from '#src/errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
-import { knex } from '../../db/index.js'
+import { knex } from '#src/db/index.js'
 
 /**
  * @description Retrieves various sales performance reports based on type.

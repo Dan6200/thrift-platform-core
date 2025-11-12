@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import { knex, pg } from '../../db/index.js'
+import { knex, pg } from '#src/db/index.js'
 import { validateAnalyticsQueryParams } from './utils.js'
-import BadRequestError from '../../errors/bad-request.js'
+import BadRequestError from '#src/errors/bad-request.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
 import UnauthorizedError from '#src/errors/unauthorized.js'
 
