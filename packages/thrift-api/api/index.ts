@@ -18,7 +18,7 @@ import productsMediaRouter from '#src/routes/media/products.js'
 import avatarMediaRouter from '#src/routes/media/avatar.js'
 import productsRouter from '#src/routes/products/index.js'
 import cartRouter from '#src/routes/cart/index.js'
-import dashboardRouter from '#src/routes/dashboard/index.js'
+import analyticsRouter from '#src/routes/analytics.js'
 import productReviewsRouter from '#src/routes/reviews/products.js'
 import ordersRouter from '#src/routes/orders/index.js'
 
@@ -79,16 +79,16 @@ app.use(requestLogger)
 // application routes
 const v1Router = Router()
 v1Router.use('/me', profileRouter)
-v1Router.use('/delivery-info', authenticateUser, deliveryRouter)
-v1Router.use('/stores', authenticateUser, storesRouter)
-v1Router.use('/stores', authenticateUser, storeStaffRouter)
-v1Router.use('/products', authenticateUser, productsRouter)
-v1Router.use('/media/products', authenticateUser, productsMediaRouter)
-v1Router.use('/media/avatar', authenticateUser, avatarMediaRouter)
-v1Router.use('/dashboard', authenticateUser, dashboardRouter)
-v1Router.use('/cart', authenticateUser, cartRouter)
-v1Router.use('/reviews/products', authenticateUser, productReviewsRouter)
-v1Router.use('/orders', authenticateUser, ordersRouter)
+v1Router.use('/delivery-info', deliveryRouter)
+v1Router.use('/stores', storesRouter)
+v1Router.use('/stores', storeStaffRouter)
+v1Router.use('/products', productsRouter)
+v1Router.use('/cart', cartRouter)
+v1Router.use('/media/products', productsMediaRouter)
+v1Router.use('/media/avatar', avatarMediaRouter)
+v1Router.use('/reviews/products', productReviewsRouter)
+v1Router.use('/orders', ordersRouter)
+v1Router.use('/analytics', analyticsRouter)
 
 app.use('/v1', v1Router)
 // helper middlewares
