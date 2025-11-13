@@ -16,11 +16,15 @@ import {
   testUpdateVariant,
   testDeleteVariant,
 } from './definitions/index.js'
-import {
+import { loadYamlFile } from '../helpers/load-data.js'
+
+const {
   expectedDataAfterVariantAdditionAndUpdates,
   variantsToCreate,
   variantUpdates,
-} from '../data/users/vendors/user-aliyu/products/index.js'
+} = loadYamlFile(
+  'server/src/tests/integrated/data/users/vendors/user-aliyu/products/index.yml',
+)
 import { ProfileRequestData } from '../../../types/profile/index.js'
 import assert from 'assert'
 import { createUserForTesting } from '../helpers/create-user.js'

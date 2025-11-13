@@ -5,6 +5,7 @@ import { ProfileRequestData } from '#src/types/profile/index.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
 import { ProductMediaResponseSchema } from '#src/app-schema/media/products.js'
 import { StatusCodes } from 'http-status-codes'
+import Joi from 'joi'
 
 const { CREATED, OK, NO_CONTENT } = StatusCodes
 
@@ -114,7 +115,7 @@ export const testDeleteProductMedia = async function (
 }
 
 async function checkMedia(body: any) {
-  const { error } = ProductMediaResponseSchema.validate(body)
+  const { error } = Joi.array().items(ProductMediaResponseSchema).validate(body)
   error && console.error(error)
   return !error
 }

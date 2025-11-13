@@ -16,10 +16,11 @@ import { deleteUserForTesting } from '#src/tests/integrated/helpers/delete-user.
 import { signInForTesting } from '#src/tests/integrated/helpers/signin-user.js'
 import { createStoreForTesting } from '#src/tests/integrated/helpers/create-store.js'
 import { createProductsForTesting } from '#src/tests/integrated/helpers/create-product.js'
-import {
-  userInfo as aliyuInfo,
-  products,
-} from '#src/tests/integrated/data/users/vendors/user-aliyu/index.js'
+import { loadUserData } from '../helpers/load-data.js'
+
+const { userInfo: aliyuInfo, products } = loadUserData(
+  'server/src/tests/integrated/data/users/vendors/user-aliyu',
+)
 
 chai.use(chaiHttp).should()
 
