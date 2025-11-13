@@ -7,10 +7,13 @@ import {
   updateProductMedia,
   deleteProductMedia,
 } from '../../controllers/media/products.js'
+import authentication from '#src/authentication.js'
 
 const router = express.Router()
 const upload = multer({ storage: cloudinaryStorageProducts })
 const uploadLimit = 12
+
+router.use(authentication)
 router
   .route('/')
   .post(upload.array('product-media', uploadLimit), createProductMedia)

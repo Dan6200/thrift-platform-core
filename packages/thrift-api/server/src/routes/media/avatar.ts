@@ -7,9 +7,12 @@ import {
   updateAvatar,
   deleteAvatar,
 } from '../../controllers/media/avatar.js'
+import authentication from '#src/authentication.js'
 
 const router = express.Router()
 const upload = multer({ storage: cloudinaryStorageAvatars })
+
+router.use(authentication)
 
 router
   .route('/')
