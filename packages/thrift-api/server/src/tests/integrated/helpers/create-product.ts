@@ -1,5 +1,8 @@
 import chai from 'chai'
-import { products } from '../data/users/vendors/user-aliyu/products/index.js'
+import { loadUserData } from './load-data.js'
+const { products } = loadUserData(
+  'server/src/tests/integrated/data/users/vendors/user-aliyu/products',
+)
 
 export async function* createProductsForTesting(
   token: string,

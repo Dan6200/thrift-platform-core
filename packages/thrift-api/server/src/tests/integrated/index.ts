@@ -6,15 +6,25 @@ import testStores from './stores/index.js'
 import testDelivery from './delivery-info/index.js'
 import testProducts from './products/index.js'
 import testMedia from './media/index.js'
-import * as Ebuka from './data/users/customers/user-ebuka/index.js'
-import * as Aisha from './data/users/customers/user-aisha/index.js'
-import * as Mustapha from './data/users/customers/user-mustapha/index.js'
-import * as Aliyu from './data/users/vendors/user-aliyu/index.js'
+import { loadUserData } from './helpers/load-data.js'
 import testAnalytics from './analytics/index.js'
 import testStoreStaff from './store_staff/index.js'
 import testCart from './cart/index.js'
 import testProductReviews from './reviews/products/index.js'
 import testOrders from './orders/index.js'
+
+const Ebuka = loadUserData(
+  'server/src/tests/integrated/data/users/customers/user-ebuka',
+)
+const Aisha = loadUserData(
+  'server/src/tests/integrated/data/users/customers/user-aisha',
+)
+const Mustapha = loadUserData(
+  'server/src/tests/integrated/data/users/customers/user-mustapha',
+)
+const Aliyu = loadUserData(
+  'server/src/tests/integrated/data/users/vendors/user-aliyu',
+)
 
 const users = [Ebuka, Aliyu, Aisha, Mustapha]
 const customers = [Ebuka, Aisha, Mustapha] // is_customer is true
