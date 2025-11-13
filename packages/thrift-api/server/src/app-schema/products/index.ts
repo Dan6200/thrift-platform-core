@@ -133,7 +133,7 @@ export const ProductGETResponseSchema = joi
     review_count: joi.number().allow(null).required(),
     vendor_id: joi.string().guid({ version: 'uuidv4' }).required(),
     store_id: joi.number().required(),
-    media: ProductMediaResponseSchema.allow(null),
+    media: joi.array().items(ProductMediaResponseSchema).allow(null),
     variants: joi.array().items(ProductVariantResponseSchema).allow(null),
     created_at: joi.date().required(),
     updated_at: joi.date().required(),

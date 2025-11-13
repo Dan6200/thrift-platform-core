@@ -142,7 +142,7 @@ export const DashboardKPIsResponseSchema = joi
       conversionRate: joi.number().precision(2).allow(null).optional(), // Can be null as per spec
     }),
   )
-  .length(1)
+  .min(1)
 
 export const RevenueTrendResponseSchema = joi
   .array()
@@ -152,7 +152,7 @@ export const RevenueTrendResponseSchema = joi
       revenue: joi.number().precision(2).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 // Sales Analytics Response Schemas (can be unioned or handled dynamically in controller)
 export const SalesAnalyticsByProductResponseSchema = joi
@@ -165,7 +165,7 @@ export const SalesAnalyticsByProductResponseSchema = joi
       totalRevenue: joi.number().precision(2).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 export const SalesAnalyticsByCategoryResponseSchema = joi
   .array()
@@ -176,7 +176,7 @@ export const SalesAnalyticsByCategoryResponseSchema = joi
       totalRevenue: joi.number().precision(2).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 export const SalesAnalyticsRecentOrdersResponseSchema = joi
   .array()
@@ -189,7 +189,7 @@ export const SalesAnalyticsRecentOrdersResponseSchema = joi
       orderDate: joi.string().isoDate().required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 // Example of a union schema if you prefer to validate all types in one go at the controller level
 // export const SalesAnalyticsResponseUnionSchema = joi.alternatives().try(
@@ -206,7 +206,7 @@ export const CustomerAcquisitionTrendResponseSchema = joi
       newCustomers: joi.number().integer().min(0).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 export const CustomersByLocationResponseSchema = joi
   .array()
@@ -216,7 +216,7 @@ export const CustomersByLocationResponseSchema = joi
       customerCount: joi.number().integer().min(0).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 export const CustomerCLVResponseSchema = joi
   .array()
@@ -227,7 +227,7 @@ export const CustomerCLVResponseSchema = joi
       clv: joi.number().precision(2).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 export const TopSellingProductsResponseSchema = joi
   .array()
@@ -239,7 +239,7 @@ export const TopSellingProductsResponseSchema = joi
       totalRevenue: joi.number().precision(2).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 export const LowStockProductsResponseSchema = joi
   .array()
@@ -250,7 +250,7 @@ export const LowStockProductsResponseSchema = joi
       quantityAvailable: joi.number().integer().min(0).required(),
     }),
   )
-  .length(1)
+  .min(1)
 
 export const ProductPerformanceResponseSchema = joi
   .array()
@@ -262,4 +262,4 @@ export const ProductPerformanceResponseSchema = joi
       views: joi.number().integer().min(0).allow(null).required(), // Explicitly allow null for views
     }),
   )
-  .length(1)
+  .min(1)

@@ -18,7 +18,7 @@ export const ProductMediaRequestSchema = Joi.object({
   filetypes: Joi.string().required(),
 })
 
-const MediaResponseSchema = Joi.object({
+export const ProductMediaResponseSchema = Joi.object({
   media_id: Joi.number().required(),
   filename: Joi.string().required(),
   filepath: Joi.string().required(),
@@ -31,5 +31,3 @@ const MediaResponseSchema = Joi.object({
   is_thumbnail_image: Joi.boolean().optional(),
   variant_id: Joi.number().required(),
 })
-
-export const ProductMediaResponseSchema = Joi.array().items(MediaResponseSchema)
