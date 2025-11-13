@@ -29,7 +29,7 @@ import {
   ProductVariantResponseSchema,
 } from '#src/app-schema/products/variants.js'
 
-const router = express.Router({ mergeParams: true })
+const router = express.Router()
 const { CREATED, OK, NO_CONTENT } = StatusCodes
 
 router
