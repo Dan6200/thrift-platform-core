@@ -19,6 +19,7 @@ import {
   deleteProductMediaQuery,
 } from './products/definitions.js'
 import { validateResData } from '../utils/response-validation.js'
+import Joi from 'joi'
 
 const { CREATED, OK, NO_CONTENT } = StatusCodes
 
@@ -32,13 +33,17 @@ export const createProductMedia = processRoute({
   status: CREATED,
   validateBody: validateReqData(ProductMediaRequestSchema),
   validateQuery: validateReqData(ProductMediaQuerySchema),
-  validateResult: validateResData(ProductMediaResponseSchema),
+  validateResult: validateResData(
+    Joi.array().items(ProductMediaResponseSchema),
+  ),
 })
 
 export const getProductMedia = processRouteWithoutBody({
   Query: getProductMediaQuery,
   status: OK,
-  validateResult: validateResData(ProductMediaResponseSchema),
+  validateResult: validateResData(
+    Joi.array().items(ProductMediaResponseSchema),
+  ),
 })
 
 export const updateProductMedia = processRoute({

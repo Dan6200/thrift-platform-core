@@ -66,7 +66,7 @@ export const createProductMediaQuery = async ({
         is_thumbnail_image: is_thumbnail_image[originalname],
       })
 
-      return media
+      return { variant_id, ...media }
     }),
   )
   return mediaDBResponse
@@ -74,7 +74,10 @@ export const createProductMediaQuery = async ({
 
 export const getProductMediaQuery = async ({ params }: QueryParamsMedia) => {
   const { mediaId: media_id } = params
-  const media = await knex('media').where({ media_id }).select()
+  const media = await knex('media as m')
+    .join('product_media_links as pml', 'pml.media_id', 'm.media_id')
+    .where('m.media_id', media_id)
+    .select()
   return media
 }
 
@@ -87,12 +90,19 @@ export const updateProductMediaQuery = async ({
   const { description, filetype } = body
   const { filename, path: filepath } = file || {}
 
-  const updatedMedia = await knex('media')
+  // TODO: update the fields in the product media links too, not just media table...
+  // Add a select for now...
+  const [updatedMedia] = await knex('media')
     .where({ media_id })
     .update({ description, filename, filepath, filetype })
     .returning('*')
 
-  return updatedMedia
+  const { variant_id } = await knex('product_media_links')
+    .where({ media_id })
+    .select('variant_id')
+    .first()
+
+  return { variant_id, ...updatedMedia }
 }
 
 export const deleteProductMediaQuery = async ({ params }: QueryParamsMedia) => {
