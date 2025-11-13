@@ -36,10 +36,14 @@ export const updateVariantLogic = async (
 
   const trx = await knex.transaction()
   try {
-    const [updatedVariant] = await trx('product_variants')
-      .where({ variant_id: variantId })
-      .update(variantDataWithoutQA)
-      .returning('*')
+    let updatedVariant
+    if (Object.keys(variantDataWithoutQA).length) {
+      console.log('variant data without qa', variantDataWithoutQA)
+      ;[updatedVariant] = await trx('product_variants')
+        .where({ variant_id: variantId })
+        .update(variantDataWithoutQA)
+        .returning('*')
+    }
 
     let currentQuantity = 0,
       quantityChange = 0
@@ -80,7 +84,7 @@ export const updateVariantLogic = async (
     const options = await trx('variant_to_option_values as vtov')
       .join('product_option_values as pov', 'vtov.value_id', 'pov.value_id')
       .join('product_options as po', 'pov.option_id', 'po.option_id')
-      .where('vtov.variant_id', updatedVariant.variant_id)
+      .where('vtov.variant_id', updatedVariant?.variant_id ?? variantId)
       .select('po.option_id', 'po.option_name', 'pov.value_id', 'pov.value')
 
     await trx.commit()
