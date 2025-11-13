@@ -21,6 +21,7 @@ import cartRouter from '#src/routes/cart/index.js'
 import analyticsRouter from '#src/routes/analytics.js'
 import productReviewsRouter from '#src/routes/reviews/products.js'
 import ordersRouter from '#src/routes/orders/index.js'
+import cmsRouter from '#src/routes/cms/index.js' // Import the new CMS router
 
 // middlewares
 import errorHandlerMiddleware from '#src/error-handler.js'
@@ -89,6 +90,7 @@ v1Router.use('/media/avatar', avatarMediaRouter)
 v1Router.use('/reviews/products', productReviewsRouter)
 v1Router.use('/orders', ordersRouter)
 v1Router.use('/analytics', analyticsRouter)
+v1Router.use('/cms', cmsRouter) // Integrate the CMS router
 
 app.use('/v1', v1Router)
 // helper middlewares
