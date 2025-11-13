@@ -1,8 +1,6 @@
 import { knex } from '#src/db/index.js'
 import { Request, Response, NextFunction } from 'express'
-import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
-import logger from '#src/utils/logger.js'
 
 export const createVariantLogic = async (
   req: Request,
