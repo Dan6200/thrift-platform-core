@@ -18,39 +18,113 @@ import {
 import { createStoreForTesting } from '../helpers/create-store.js'
 import { createProductsForTesting } from '../helpers/create-product.js'
 import { createOrderForTesting } from '../helpers/create-order.js'
+import { knex } from '#src/db/index.js'
+import { faker } from '@faker-js/faker'
+import { loadUserData } from '../helpers/load-data.js'
+import { updateVariantForTesting } from '../helpers/product-variants.js'
+import { ProductVariant } from '#src/types/products/index.js'
+
+const Ebuka = loadUserData(
+  'server/src/tests/integrated/data/users/customers/user-ebuka',
+)
+const Aisha = loadUserData(
+  'server/src/tests/integrated/data/users/customers/user-aisha',
+)
+const Mustapha = loadUserData(
+  'server/src/tests/integrated/data/users/customers/user-mustapha',
+)
 
 chai.use(chaiHttp).should()
 
 export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
   describe('Analytics', () => {
     let token: string
-    let userId: string
     let storeId: number
+    const userIds: string[] = []
 
     before(async function () {
-      userId = await createUserForTesting(userInfo)
+      this.timeout(100000) // Increase timeout for seeding
+      const vendorId = await createUserForTesting(userInfo)
+      userIds.push(vendorId)
       token = await signInForTesting(userInfo)
       const storeResponse = await createStoreForTesting(token)
       storeId = storeResponse.body.store_id
 
-      // Create a product in that store
+      // Create and sign in customers
+      const customers = [Ebuka.userInfo, Aisha.userInfo, Mustapha.userInfo]
+      const customerTokens: { [key: string]: string } = {}
+      for (const customerInfo of customers) {
+        const customerId = await createUserForTesting(customerInfo)
+        userIds.push(customerId)
+        customerTokens[customerId] = await signInForTesting(customerInfo)
+      }
+
+      // Create products and collect variants
+      const variants: (ProductVariant & { product_id: number })[] = []
       const productCreationPromises = []
       for await (const promise of createProductsForTesting(token, storeId, 3)) {
         productCreationPromises.push(promise)
       }
       const productResponses = await Promise.all(productCreationPromises)
-      const productRes = productResponses[0]
-      const variantId = productRes.body.variants[0].variant_id
+      for (const res of productResponses) {
+        const productId = res.body.product_id
+        const variantsWithProductId = res.body.variants.map((v: any) => ({
+          ...v,
+          product_id: productId,
+        }))
+        variants.push(...variantsWithProductId)
+      }
 
-      // Create an order for the customer with the product variant
-      const orderRes = await createOrderForTesting(
-        token,
-        { store_id: storeId },
-        {
-          items: [{ variant_id: variantId, quantity: 1 }],
-        },
-      )
-      orderRes.should.have.status(201)
+      // Create random orders
+      const orderCreationPromises = []
+      for (let i = 0; i < 30; i++) {
+        const randomCustomerId = faker.helpers.arrayElement(
+          Object.keys(customerTokens),
+        )
+        const randomCustomerToken = customerTokens[randomCustomerId]
+        const randomVariant = faker.helpers.arrayElement(variants)
+        const randomQuantity = faker.number.int({ min: 1, max: 3 })
+
+        // Restock the ordered variant
+        await updateVariantForTesting(
+          token, // vendor token
+          randomVariant.product_id,
+          randomVariant.variant_id,
+          storeId,
+          {
+            quantity_available: 1000,
+            inventory_change_reason: 'restock_before_order_simulation',
+          },
+        )
+
+        const promise = createOrderForTesting(
+          randomCustomerToken,
+          { store_id: storeId },
+          {
+            items: [
+              {
+                variant_id: randomVariant.variant_id,
+                quantity: randomQuantity,
+              },
+            ],
+          },
+        ).then(async (orderRes) => {
+          orderRes.should.have.status(201)
+          const orderId = orderRes.body.order_id
+          const orderDate = faker.date.between({
+            from: '2024-01-01T00:00:00.000Z',
+            to: '2024-12-31T23:59:59.999Z',
+          })
+          await knex('orders').where({ order_id: orderId }).update({
+            created_at: orderDate,
+            updated_at: orderDate,
+          })
+        })
+        orderCreationPromises.push(promise)
+      }
+      await Promise.all(orderCreationPromises).catch((reason) => {
+        console.error(reason)
+      })
     })
 
     it('should get KPIs', async () => {
@@ -158,6 +232,10 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
       })
     })
 
-    after(async () => await deleteUserForTesting(userId))
+    after(async () => {
+      for (const userId of userIds) {
+        await deleteUserForTesting(userId)
+      }
+    })
   })
 }
