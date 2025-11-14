@@ -1,4 +1,4 @@
-import { cloudinary } from '#src/controllers/utils/media-storage.js'
+import { cloudinary } from '#src/utils/media-storage.js'
 
 export async function bulkDeleteImages(slug: 'products' | 'avatars') {
   while (true) {

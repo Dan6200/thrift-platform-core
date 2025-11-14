@@ -1,4 +1,4 @@
-import { cloudinary } from '#src/controllers/utils/media-storage.js'
+import { cloudinary } from '#src/utils/media-storage.js'
 import fs from 'fs/promises'
 
 async function bulkUpload(dir: string) {
@@ -37,7 +37,7 @@ async function bulkUpload(dir: string) {
     const uploadedResults = results.filter(Boolean) // Filter out nulls (skipped files)
     console.log(
       'Uploaded files: ',
-      uploadedResults.map((result) => result.public_id),
+      uploadedResults.map((result: any) => result.public_id),
     )
   } catch (err) {
     console.error('Error Bulk uploading files', err)

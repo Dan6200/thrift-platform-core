@@ -6,7 +6,8 @@ import { sendResponse } from '#src/send-response.js'
 import authenticateUser from '#src/authentication.js'
 import { vendorAuthorization } from '#src/authorization/vendor-authorization.js'
 import { checkStoreLimit } from '#src/authorization/check-store-limit.js'
-import { createStoreLogic } from '#src/logic/stores/index.js'
+import { createStoreLogic, updateStoreLogic } from '#src/logic/stores/index.js'
+import { hasStoreAccess } from '#src/authorization/has-store-access.js'
 import {
   StoreCreateRequestSchema,
   StoreDataResponseSchema,

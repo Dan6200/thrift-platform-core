@@ -37,9 +37,9 @@ export default function (): void {
     const { userInfo } = user
     const { first_name: name } = userInfo
     describe(`Testing retrieving user Profile for ${name}`, () =>
-      testProfile(user))
+      testProfile(user as any))
     describe(`Testing retrieving user Profile without Signing In`, () =>
-      testProfileWithoutSignIn(user))
+      testProfileWithoutSignIn(user as any))
   }
 
   /** Delivery Info related tests **/
@@ -48,7 +48,7 @@ export default function (): void {
     const { userInfo } = customer
     const { first_name: name } = userInfo
     describe(`Testing the Delivery Information of ${name}'s account`, async () =>
-      testDelivery(customer))
+      testDelivery(customer as any))
   }
 
   /** Stores related tests **/
@@ -78,7 +78,7 @@ export default function (): void {
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing Cart for ${name}`, () => testCart(customer))
+    describe(`Testing Cart for ${name}`, () => testCart(customer as any))
   }
 
   /** Product related tests **/
@@ -99,7 +99,7 @@ export default function (): void {
 
   for (let user of users) {
     describe(`Testing Media File Upload for ${user.userInfo.first_name}`, async () =>
-      testMedia(user))
+      testMedia(user as any))
   }
 
   /** Dashboard related tests **/
@@ -108,7 +108,7 @@ export default function (): void {
     const { userInfo } = vendor
     const { first_name: name } = userInfo
     describe(`Testing Dashboard Analytics for ${name}`, () =>
-      testAnalytics(vendor))
+      testAnalytics(vendor as any))
   }
 
   /** Store Staff related tests **/
@@ -128,7 +128,7 @@ export default function (): void {
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing Orders for ${name}`, () => testOrders(customer))
+    describe(`Testing Orders for ${name}`, () => testOrders(customer as any))
   }
 
   /** Product Reviews related tests **/
@@ -136,7 +136,7 @@ export default function (): void {
     const { userInfo } = customer
     const { first_name: name } = userInfo
     describe(`Testing Product Reviews for ${name}`, () =>
-      testProductReviews(customer))
+      testProductReviews(customer as any))
   }
 
   //

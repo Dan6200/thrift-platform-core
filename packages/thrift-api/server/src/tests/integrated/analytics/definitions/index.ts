@@ -89,7 +89,7 @@ export const testGetSalesAnalytics = (args: {
     statusCode: OK,
     verb: 'get',
     path,
-    validateTestResData: (data, query) => {
+    validateTestResData: (data: any) => {
       if (query && query.type === 'by-product') {
         const { error } = SalesAnalyticsByProductResponseSchema.validate(data)
         return !error

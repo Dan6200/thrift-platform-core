@@ -16,7 +16,6 @@ import {
   UpdateCartItemRequestSchema,
   RemoveCartItemRequestSchema,
   cartResponseSchema,
-  cartItemsSchema,
   cartItemResponseSchema,
 } from '#src/app-schema/cart.js'
 import { customerAuthorization } from '#src/authorization/customer-authorization.js'

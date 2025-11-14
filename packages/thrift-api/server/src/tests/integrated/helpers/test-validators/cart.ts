@@ -4,7 +4,7 @@ import {
   RemoveCartItemRequestSchema,
   GetCartRequestSchema,
   cartResponseSchema,
-  cartItemsSchema,
+  CartItemDataSchema,
   cartItemResponseSchema,
 } from '#src/app-schema/cart.js'
 import { validateTestData } from '../test-validators.js'
