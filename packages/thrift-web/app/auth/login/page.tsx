@@ -1,20 +1,11 @@
-import { LoginForm } from '@/components/form/login'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { LoginForm } from '@/components/auth/login-form'
 
-// Login page
-export default function Login() {
+export default function LoginPage() {
   return (
-    <>
-      <div className="container mx-auto my-20 p-4">
-        <Card className="w-full sm:w-96 mx-auto">
-          <CardHeader className="w-full mx-auto my-8 text-2xl font-bold text-center">
-            Welcome Back
-          </CardHeader>
-          <CardContent>
-            <LoginForm />
-          </CardContent>
-        </Card>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="p-8 w-full max-w-sm md:max-w-5xl rounded-xl shadow-lg">
+        <LoginForm />
       </div>
-    </>
+    </div>
   )
 }
