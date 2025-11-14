@@ -1,0 +1,112 @@
+import { z } from 'zod'
+
+// Corresponds to DashboardKPIsResponseSchema
+export const DashboardKPISchema = z.object({
+  totalRevenue: z.number(),
+  totalOrders: z.number().int(),
+  averageOrderValue: z.number(),
+  newCustomers: z.number().int(),
+  returningCustomers: z.number().int(),
+  conversionRate: z.number().nullable().optional(),
+})
+export type DashboardKPIs = z.infer<typeof DashboardKPISchema>
+
+// Corresponds to RevenueTrendResponseSchema
+export const RevenueTrendSchema = z.object({
+  date: z.string().datetime(),
+  revenue: z.number(),
+})
+export type RevenueTrend = z.infer<typeof RevenueTrendSchema>
+
+// Corresponds to SalesAnalyticsByProductResponseSchema
+export const SalesByProductSchema = z.object({
+  productId: z.number().int(),
+  productTitle: z.string(),
+  unitsSold: z.number().int(),
+  totalRevenue: z.number(),
+})
+export type SalesByProduct = z.infer<typeof SalesByProductSchema>
+
+// Corresponds to SalesAnalyticsByCategoryResponseSchema
+export const SalesByCategorySchema = z.object({
+  categoryId: z.number().int(),
+  categoryName: z.string(),
+  totalRevenue: z.number(),
+})
+export type SalesByCategory = z.infer<typeof SalesByCategorySchema>
+
+// Corresponds to SalesAnalyticsRecentOrdersResponseSchema and OrderResponseSchema
+export const RecentOrderSchema = z.object({
+  order_id: z.number().int(),
+  customer_id: z.string().uuid(),
+  store_id: z.number().int(),
+  delivery_info_id: z.number().int().nullable(),
+  order_date: z.string().datetime(),
+  total_amount: z.number(),
+  status: z.enum([
+    'pending',
+    'processing',
+    'shipped',
+    'delivered',
+    'cancelled',
+  ]),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+  items: z.array(
+    z.object({
+      order_item_id: z.number().int(),
+      variant_id: z.number().int(),
+      quantity: z.number().int(),
+      price_at_purchase: z.number(),
+    }),
+  ),
+})
+export type RecentOrder = z.infer<typeof RecentOrderSchema>
+
+// A combined schema for the sales breakdown component
+export const SalesDataSchema = z.object({
+  byProduct: z.array(SalesByProductSchema),
+  byCategory: z.array(SalesByCategorySchema),
+})
+export type SalesData = z.infer<typeof SalesDataSchema>
+
+// Corresponds to CustomerAcquisitionTrendResponseSchema
+export const CustomerAcquisitionTrendSchema = z.object({
+  date: z.string().datetime(),
+  newCustomers: z.number().int(),
+})
+export type CustomerAcquisitionTrend = z.infer<
+  typeof CustomerAcquisitionTrendSchema
+>
+
+// Corresponds to CustomersByLocationResponseSchema
+export const CustomersByLocationSchema = z.object({
+  location: z.string(),
+  customerCount: z.number().int(),
+})
+export type CustomersByLocation = z.infer<typeof CustomersByLocationSchema>
+
+// Corresponds to CustomerCLVResponseSchema
+export const CustomerCLVSchema = z.object({
+  customerId: z.string().uuid(),
+  customerName: z.string(),
+  clv: z.number(),
+})
+export type CustomerCLV = z.infer<typeof CustomerCLVSchema>
+
+// A combined schema for the customer insights component
+export const CustomerDataSchema = z.object({
+  acquisitionTrend: z.array(CustomerAcquisitionTrendSchema),
+  byLocation: z.array(CustomersByLocationSchema),
+  clv: z.array(CustomerCLVSchema),
+})
+export type CustomerData = z.infer<typeof CustomerDataSchema>
+
+// Corresponds to ProductPerformanceResponseSchema
+export const ProductPerformanceSchema = z.object({
+  productId: z.number().int(),
+  productTitle: z.string(),
+  purchases: z.number().int(),
+  views: z.number().int().nullable(),
+})
+export type ProductPerformance = z.infer<typeof ProductPerformanceSchema>
