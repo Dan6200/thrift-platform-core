@@ -1,4 +1,13 @@
 import winston from 'winston'
+import fs from 'fs'
+import path from 'path'
+
+const logDir = process.env.NODE_ENV === 'production' ? '/tmp' : 'logs'
+
+// Create the log directory if it does not exist
+if (process.env.NODE_ENV !== 'production' && !fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir)
+}
 
 const logger = winston.createLogger({
   level: 'info',
@@ -13,8 +22,13 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({
+      filename: path.join(logDir, 'error.log'),
+      level: 'error',
+    }),
+    new winston.transports.File({
+      filename: path.join(logDir, 'combined.log'),
+    }),
   ],
 })
 
