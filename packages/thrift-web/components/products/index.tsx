@@ -6,7 +6,7 @@ import getProducts from '@/app/products/get-products' // Corrected import path a
 export const Products = async ({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) => {
   const page = Number((await searchParams).page ?? '1')
   const limit = Number((await searchParams).limit ?? '22')

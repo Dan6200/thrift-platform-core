@@ -39,7 +39,7 @@ export function ProductReviews({
             {/* Example rating */}
           </div>
           <p className="text-sm text-muted-foreground">
-            "Great product, highly recommend!"
+            &quot;Great product, highly recommend!&quot;
           </p>
         </div>
         {/* Add more review items here */}

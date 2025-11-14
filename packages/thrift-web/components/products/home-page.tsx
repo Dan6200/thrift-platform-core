@@ -19,7 +19,6 @@ export const ProductsHome = async () => {
       page,
       limit,
     }))
-    console.log('products', products)
   } catch (error) {
     console.error('Failed to fetch products:', error)
     // Handle error, maybe set an error state
