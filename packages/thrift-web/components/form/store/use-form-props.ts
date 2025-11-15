@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { storeFormSchema } from './schema'
+import { UseFormProps } from 'react-hook-form'
+import { StoreFormType } from './types'
 
-const useFormProps = {
-  resolver: zodResolver(storeFormSchema),
+const useFormProps: UseFormProps<StoreFormType> = {
+  resolver: zodResolver(storeFormSchema as any),
   defaultValues: {
     store_name: '',
     vendor_id: '',

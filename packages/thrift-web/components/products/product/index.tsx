@@ -119,7 +119,13 @@ export function Product({ product }: { product: ProductType }) {
                 className="text-base h-[3rem] font-bold w-full flex-1"
                 onClick={() => {
                   if (!selectedVariant) return
-                  const itemToAdd = { ...product, ...selectedVariant }
+                  const itemToAdd = {
+                    ...product,
+                    ...selectedVariant,
+                    list_price:
+                      selectedVariant?.list_price ?? product.list_price,
+                    net_price: selectedVariant?.net_price ?? product.net_price,
+                  }
                   shoppingCart
                     ? addItem(itemToAdd)
                     : setShoppingCart(new ShoppingCart(itemToAdd, null))

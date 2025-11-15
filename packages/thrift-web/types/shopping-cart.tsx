@@ -1,7 +1,7 @@
-import { Product } from '@/types/products'
+import { Product, ProductVariant } from '@/types/products'
 
 export type Item = {
-  product: Product
+  product: Product & Partial<ProductVariant>
   count: number
 }
 

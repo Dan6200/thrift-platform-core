@@ -71,17 +71,19 @@ export function ShoppingCart({
                           <Minus className="w-4" />
                         </Button>
                         <p className="mx-auto p-1">{count}</p>
-                        <Button
-                          onClick={() => {
-                            count <= product.quantity_available
-                              ? increaseItemCount(index)
-                              : null
-                          }}
-                          variant={'outline'}
-                          className="p-2 border-l border-y-0 border-r-0 bg-transparent h-7 rounded-none m-0"
-                        >
-                          <Plus className="w-4" />
-                        </Button>
+                        {product?.quantity_available && (
+                          <Button
+                            onClick={() => {
+                              count <= (product?.quantity_available ?? count)
+                                ? increaseItemCount(index)
+                                : null
+                            }}
+                            variant={'outline'}
+                            className="p-2 border-l border-y-0 border-r-0 bg-transparent h-7 rounded-none m-0"
+                          >
+                            <Plus className="w-4" />
+                          </Button>
+                        )}
                       </div>
                       <Button
                         variant="outline"

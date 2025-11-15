@@ -63,8 +63,8 @@ interface Page extends PageStyling {
   seoInfo: {
     keywords: string[]
     schemaMarkup: {
-      ' @context': string
-      ' @type': string
+      '@context': string
+      '@type': string
       name: string
       description: string
       url: string

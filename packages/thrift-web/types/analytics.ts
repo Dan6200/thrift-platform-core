@@ -38,7 +38,7 @@ export type SalesByCategory = z.infer<typeof SalesByCategorySchema>
 // Corresponds to SalesAnalyticsRecentOrdersResponseSchema and OrderResponseSchema
 export const RecentOrderSchema = z.object({
   order_id: z.number().int(),
-  customer_id: z.string().uuid(),
+  customer_id: z.uuid('v4'),
   store_id: z.number().int(),
   delivery_info_id: z.number().int().nullable(),
   order_date: z.string().datetime(),
@@ -88,7 +88,7 @@ export type CustomersByLocation = z.infer<typeof CustomersByLocationSchema>
 
 // Corresponds to CustomerCLVResponseSchema
 export const CustomerCLVSchema = z.object({
-  customerId: z.string().uuid(),
+  customerId: z.uuid('v4'),
   customerName: z.string(),
   clv: z.number(),
 })
@@ -110,3 +110,21 @@ export const ProductPerformanceSchema = z.object({
   views: z.number().int().nullable(),
 })
 export type ProductPerformance = z.infer<typeof ProductPerformanceSchema>
+
+export const LowStockProductsSchema = z.object({
+  productId: z.number().int(),
+  productTitle: z.string(),
+  quantityAvailable: z.number().int(),
+})
+export type LowStockProducts = z.infer<typeof LowStockProductsSchema>
+
+export const AnalyticsDataSchema = z.object({
+  kpis: DashboardKPISchema,
+  revenueTrend: z.array(RevenueTrendSchema),
+  salesByCategory: z.array(SalesByCategorySchema),
+  // salesByChannel: z.array(SalesByChannelSchema),
+  recentOrders: z.array(RecentOrderSchema),
+  customerData: CustomerDataSchema,
+  productPerformance: z.array(ProductPerformanceSchema),
+})
+export type AnalyticsData = z.infer<typeof AnalyticsDataSchema>

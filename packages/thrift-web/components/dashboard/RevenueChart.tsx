@@ -1,10 +1,24 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { RevenueData } from "@/app/vendor-analytics/services/mockApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
+import { RevenueTrend as RevenueData } from '@/types/analytics'
 
 interface RevenueChartProps {
-  data: RevenueData[];
-  isLoading?: boolean;
+  data: RevenueData[]
+  isLoading?: boolean
 }
 
 export function RevenueChart({ data, isLoading }: RevenueChartProps) {
@@ -21,7 +35,7 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   const formatCurrency = (value: number) => {
@@ -29,15 +43,15 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-    }).format(value);
-  };
+    }).format(value)
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric'
-    });
-  };
+      day: 'numeric',
+    })
+  }
 
   return (
     <Card>
@@ -50,36 +64,40 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="date" 
+              <XAxis
+                dataKey="date"
                 tickFormatter={formatDate}
                 tick={{ fontSize: 12 }}
               />
-              <YAxis 
-                tickFormatter={formatCurrency}
-                tick={{ fontSize: 12 }}
-              />
-              <Tooltip 
-                formatter={(value: number) => [formatCurrency(value), 'Revenue']}
+              <YAxis tickFormatter={formatCurrency} tick={{ fontSize: 12 }} />
+              <Tooltip
+                formatter={(value: number) => [
+                  formatCurrency(value),
+                  'Revenue',
+                ]}
                 labelFormatter={(label) => `Date: ${formatDate(label)}`}
                 contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',
-                  borderRadius: '6px'
+                  borderRadius: '6px',
                 }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="revenue" 
-                stroke="hsl(var(--primary))" 
+              <Line
+                type="monotone"
+                dataKey="revenue"
+                stroke="hsl(var(--primary))"
                 strokeWidth={2}
                 dot={{ fill: 'hsl(var(--primary))', strokeWidth: 0, r: 4 }}
-                activeDot={{ r: 6, stroke: 'hsl(var(--primary))', strokeWidth: 2 }}
+                activeDot={{
+                  r: 6,
+                  stroke: 'hsl(var(--primary))',
+                  strokeWidth: 2,
+                }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -13,7 +13,7 @@ import getProducts from '@/app/products/get-products'
 export const ProductsHome = async () => {
   const page = 1,
     limit = 22
-  let products: Product[]
+  let products: Product[] = []
   try {
     ;({ products } = await getProducts({
       page,
@@ -29,11 +29,7 @@ export const ProductsHome = async () => {
       <h4 className="w-full mx-auto my-4 text-xl md:text-3xl font-bold text-center">
         New Arrivals
       </h4>
-      <ProductsTiles
-        productsToDisplay={products}
-        currentPage={page}
-        totalPages={limit}
-      />
+      <ProductsTiles productsToDisplay={products} />
     </div>
   )
 }

@@ -1,10 +1,28 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { SalesData } from "@/app/vendor-analytics/services/mockApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  PieLabelRenderProps,
+} from 'recharts'
+import { SalesData, SalesByCategory } from '@/types/analytics'
 
 interface SalesBreakdownProps {
-  data: SalesData;
-  isLoading?: boolean;
+  data: SalesData
+  isLoading?: boolean
 }
 
 const COLORS = [
@@ -12,8 +30,8 @@ const COLORS = [
   'hsl(var(--secondary))',
   'hsl(var(--hero-primary))',
   'hsl(var(--hero-secondary))',
-  'hsl(var(--accent))'
-];
+  'hsl(var(--accent))',
+]
 
 export function SalesBreakdown({ data, isLoading }: SalesBreakdownProps) {
   if (isLoading) {
@@ -40,7 +58,7 @@ export function SalesBreakdown({ data, isLoading }: SalesBreakdownProps) {
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
   const formatCurrency = (value: number) => {
@@ -48,32 +66,47 @@ export function SalesBreakdown({ data, isLoading }: SalesBreakdownProps) {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-    }).format(value);
-  };
+    }).format(value)
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Sales by Category</CardTitle>
-          <CardDescription>Revenue breakdown by product category</CardDescription>
+          <CardDescription>
+            Revenue breakdown by product category
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={data.categorySales}
+                  data={data.byCategory}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ payload, percent }: PieLabelRenderProps) => {
+                    const category = payload as SalesByCategory
+                    const categoryName = category?.categoryName
+                    if (typeof percent !== 'number') {
+                      if (typeof percent === 'string') {
+                        percent = Number(percent)
+                      } else return null
+                    }
+                    const percentage = ((percent as number) * 100).toFixed(0)
+                    return `${categoryName} ${percentage}%`
+                  }}
                   outerRadius={80}
                   fill="#8884d8"
-                  dataKey="sales"
+                  dataKey="totalRevenue"
                 >
-                  {data.categorySales.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  {data.byCategory.map((entry, index) => (
+                    <Cell
+                      key={entry.categoryId}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value: number) => formatCurrency(value)} />
@@ -83,25 +116,25 @@ export function SalesBreakdown({ data, isLoading }: SalesBreakdownProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      {/*<Card>
         <CardHeader>
           <CardTitle>Sales Channel Performance</CardTitle>
           <CardDescription>Revenue by sales channel</CardDescription>
         </CardHeader>
-        <CardContent>
+				<CardContent>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.channelSales}>
+              <BarChart data={data.byChannel}>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="channelName"
                   tick={{ fontSize: 12 }}
                 />
-                <YAxis 
+                <YAxis
                   tickFormatter={formatCurrency}
                   tick={{ fontSize: 12 }}
                 />
-                <Tooltip 
+                <Tooltip
                   formatter={(value: number) => [formatCurrency(value), 'Revenue']}
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
@@ -109,8 +142,8 @@ export function SalesBreakdown({ data, isLoading }: SalesBreakdownProps) {
                     borderRadius: '6px'
                   }}
                 />
-                <Bar 
-                  dataKey="sales" 
+                <Bar
+                  dataKey="totalRevenue"
                   fill="hsl(var(--primary))"
                   radius={[4, 4, 0, 0]}
                 />
@@ -118,7 +151,7 @@ export function SalesBreakdown({ data, isLoading }: SalesBreakdownProps) {
             </ResponsiveContainer>
           </div>
         </CardContent>
-      </Card>
+      </Card>*/}
     </div>
-  );
+  )
 }

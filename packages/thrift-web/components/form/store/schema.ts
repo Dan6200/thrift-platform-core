@@ -19,7 +19,7 @@ export const storeFormSchema: z.ZodType<StoreFormType> = z.object({
       .min(1, { message: 'Zip/Postal code is required.' }),
     country: z.string().min(1, { message: 'Country is required.' }),
   }),
-  favicon: z.string().url({ message: 'Favicon must be a valid URL.' }),
+  favicon: z.url({ message: 'Favicon must be a valid URL.' }),
   default_page_styling: z
     .object({
       layout_template: z.enum(['default', 'minimal', 'grid']).optional(),
@@ -68,17 +68,13 @@ export const storeFormSchema: z.ZodType<StoreFormType> = z.object({
         metaDescription: z
           .string()
           .min(1, { message: 'Meta description is required.' }),
-        canonicalUrl: z
-          .string()
-          .url({ message: 'Canonical URL must be a valid URL.' }),
+        canonicalUrl: z.url({ message: 'Canonical URL must be a valid URL.' }),
         breadcrumbs: z.array(
           z.object({
             name: z
               .string()
               .min(1, { message: 'Breadcrumb name is required.' }),
-            url: z
-              .string()
-              .url({ message: 'Breadcrumb URL must be a valid URL.' }),
+            url: z.url({ message: 'Breadcrumb URL must be a valid URL.' }),
           }),
         ),
         heroSection: z
@@ -87,9 +83,7 @@ export const storeFormSchema: z.ZodType<StoreFormType> = z.object({
             subtitle: z
               .string()
               .min(1, { message: 'Hero subtitle is required.' }),
-            imageUrl: z
-              .string()
-              .url({ message: 'Hero image URL must be a valid URL.' }),
+            imageUrl: z.url({ message: 'Hero image URL must be a valid URL.' }),
             altText: z
               .string()
               .min(1, { message: 'Hero image alt text is required.' }),
@@ -97,9 +91,9 @@ export const storeFormSchema: z.ZodType<StoreFormType> = z.object({
               text: z
                 .string()
                 .min(1, { message: 'Call to action text is required.' }),
-              url: z
-                .string()
-                .url({ message: 'Call to action URL must be a valid URL.' }),
+              url: z.url({
+                message: 'Call to action URL must be a valid URL.',
+              }),
             }),
           })
           .optional(),
@@ -110,16 +104,16 @@ export const storeFormSchema: z.ZodType<StoreFormType> = z.object({
         seoInfo: z.object({
           keywords: z.array(z.string()),
           schemaMarkup: z.object({
-            ' @context': z.string(),
-            ' @type': z.string(),
+            '@context': z.string(),
+            '@type': z.string(),
             name: z.string(),
             description: z.string(),
-            url: z.string().url(),
+            url: z.url(),
           }),
           ogTitle: z.string().optional(),
           ogDescription: z.string().optional(),
-          ogImage: z.string().url().optional(),
-          ogUrl: z.string().url().optional(),
+          ogImage: z.url().optional(),
+          ogUrl: z.url().optional(),
           ogType: z.string().optional(),
           twitterCard: z
             .enum(['summary', 'summary_large_image', 'app', 'player'])
@@ -128,7 +122,7 @@ export const storeFormSchema: z.ZodType<StoreFormType> = z.object({
           twitterCreator: z.string().optional(),
           twitterTitle: z.string().optional(),
           twitterDescription: z.string().optional(),
-          twitterImage: z.string().url().optional(),
+          twitterImage: z.url().optional(),
         }),
       }),
     )
