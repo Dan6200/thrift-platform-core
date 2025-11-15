@@ -21,6 +21,7 @@ export default async function DashboardPage({
     initialOrders,
     initialCustomerData,
     initialProducts,
+    initialLowStockProducts,
   ] = await Promise.all([
     apiService.getKPIs(storeId, startDate, endDate),
     apiService.getRevenueData(storeId, startDate, endDate),
