@@ -35,7 +35,7 @@ const RegisterFormSchema = z
     dob: z.string().refine((val) => !isNaN(Date.parse(val)), {
       message: 'A valid date of birth is required',
     }),
-    is_vendor: z.boolean().default(false),
+    is_vendor: z.boolean(),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords don't match",
@@ -223,6 +223,7 @@ export function RegisterForm({
               src="/pexels-kowalievska-1040173.jpg"
               alt="A person happily shopping for clothes"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.3] dark:grayscale"
+              fill
             />
           </div>
         </CardContent>

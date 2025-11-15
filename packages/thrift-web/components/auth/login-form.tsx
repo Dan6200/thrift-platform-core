@@ -161,6 +161,7 @@ export function LoginForm({
               src="/pexels-shop.jpg"
               alt="A vibrant and bustling marketplace"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.3] dark:grayscale"
+              fill
             />
           </div>
         </CardContent>
