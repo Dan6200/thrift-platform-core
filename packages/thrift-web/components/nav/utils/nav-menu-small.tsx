@@ -61,7 +61,7 @@ export const NavMenuSmall = ({
 
   return (
     <div className={showSearchBox ? 'overflow-hidden' : ''}>
-      <div className="max-w-none flex flex-row items-center justify-between w-full m-20 px-4 py-2 rounded-xl shadow-lg border border-white/20 bg-accent/10">
+      <div className="max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-4 px-4 py-2 rounded-xl shadow-lg border border-white/20 bg-accent/10">
         <Link
           href="/"
           className={`${font?.className} text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-bold`}
@@ -71,7 +71,7 @@ export const NavMenuSmall = ({
         <div className="flex items-center space-x-4">
           <Button
             variant={'outline'}
-            className=""
+            className="bg-transparent"
             size="icon"
             onClick={() => setShowSearchBox(true)}
             ref={toggleSearchButton}
@@ -84,7 +84,11 @@ export const NavMenuSmall = ({
                 {totalItems}
               </span>
             )}
-            <Button variant="outline" size="icon" className="my-2 p-0 w-10">
+            <Button
+              variant="outline"
+              size="icon"
+              className="my-2 p-0 w-10 bg-transparent"
+            >
               <ShoppingCart className="w-5" />
             </Button>
           </Link>
@@ -104,7 +108,7 @@ export const NavMenuSmall = ({
           )}
           <Drawer direction="right">
             <DrawerTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" className="bg-transparent" size="icon">
                 <Menu />
               </Button>
             </DrawerTrigger>
@@ -113,7 +117,7 @@ export const NavMenuSmall = ({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="border-none relative"
+                  className="border-none relative bg-transparent"
                 >
                   <PanelRightClose />
                 </Button>
@@ -186,7 +190,7 @@ export const NavMenuSmall = ({
               </Accordion>
               {user && (
                 <Button
-                  className="w-full text-destructive text-md"
+                  className="w-full text-destructive text-md bg-transparent"
                   onClick={
                     user ? signOutWrapper.bind(null, setUser) : undefined
                   }
