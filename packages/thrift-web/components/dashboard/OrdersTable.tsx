@@ -1,11 +1,24 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Order } from "@/app/vendor-analytics/services/mockApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { RecentOrder as Order } from '@/types/analytics'
 
 interface OrdersTableProps {
-  orders: Order[];
-  isLoading?: boolean;
+  orders: Order[]
+  isLoading?: boolean
 }
 
 export function OrdersTable({ orders, isLoading }: OrdersTableProps) {
@@ -22,42 +35,44 @@ export function OrdersTable({ orders, isLoading }: OrdersTableProps) {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(value);
-  };
+    }).format(value)
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
-    });
-  };
+      year: 'numeric',
+    })
+  }
 
   const getStatusVariant = (status: Order['status']) => {
     switch (status) {
-      case 'completed':
-        return 'default';
+      case 'delivered':
+        return 'default'
       case 'pending':
-        return 'secondary';
+        return 'secondary'
       case 'cancelled':
-        return 'destructive';
+        return 'destructive'
       default:
-        return 'outline';
+        return 'outline'
     }
-  };
+  }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Recent Orders</CardTitle>
-        <CardDescription>Latest customer orders and their status</CardDescription>
+        <CardDescription>
+          Latest customer orders and their status
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
@@ -72,21 +87,23 @@ export function OrdersTable({ orders, isLoading }: OrdersTableProps) {
           </TableHeader>
           <TableBody>
             {orders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="font-medium">{order.id}</TableCell>
-                <TableCell>{order.customerName}</TableCell>
-                <TableCell>{formatCurrency(order.total)}</TableCell>
+              <TableRow key={order.order_id}>
+                <TableCell className="font-medium">{order.order_id}</TableCell>
+                <TableCell>{order.customer_id}</TableCell>{' '}
+                {/* Note: customerName is not in the new schema, using customer_id */}
+                <TableCell>{formatCurrency(order.total_amount)}</TableCell>
                 <TableCell>
                   <Badge variant={getStatusVariant(order.status)}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    {order.status.charAt(0).toUpperCase() +
+                      order.status.slice(1)}
                   </Badge>
                 </TableCell>
-                <TableCell>{formatDate(order.date)}</TableCell>
+                <TableCell>{formatDate(order.order_date)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </CardContent>
     </Card>
-  );
+  )
 }

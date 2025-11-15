@@ -1,10 +1,24 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { CustomerData } from "@/app/vendor-analytics/services/mockApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
+import { CustomerData } from '@/types/analytics'
 
 interface CustomerInsightsProps {
-  data: CustomerData;
-  isLoading?: boolean;
+  data: CustomerData
+  isLoading?: boolean
 }
 
 export function CustomerInsights({ data, isLoading }: CustomerInsightsProps) {
@@ -32,22 +46,22 @@ export function CustomerInsights({ data, isLoading }: CustomerInsightsProps) {
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric'
-    });
-  };
+      day: 'numeric',
+    })
+  }
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(value);
-  };
+    }).format(value)
+  }
 
   return (
     <div className="space-y-6">
@@ -62,27 +76,25 @@ export function CustomerInsights({ data, isLoading }: CustomerInsightsProps) {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data.acquisitionTrend}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis 
-                    dataKey="date" 
+                  <XAxis
+                    dataKey="date"
                     tickFormatter={formatDate}
                     tick={{ fontSize: 12 }}
                   />
-                  <YAxis 
-                    tick={{ fontSize: 12 }}
-                  />
-                  <Tooltip 
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip
                     formatter={(value: number) => [value, 'New Customers']}
                     labelFormatter={(label) => `Date: ${formatDate(label)}`}
                     contentStyle={{
                       backgroundColor: 'hsl(var(--card))',
                       border: '1px solid hsl(var(--border))',
-                      borderRadius: '6px'
+                      borderRadius: '6px',
                     }}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="newCustomers" 
-                    stroke="hsl(var(--hero-primary))" 
+                  <Area
+                    type="monotone"
+                    dataKey="newCustomers"
+                    stroke="hsl(var(--hero-primary))"
                     fill="hsl(var(--hero-primary))"
                     fillOpacity={0.3}
                   />
@@ -99,20 +111,31 @@ export function CustomerInsights({ data, isLoading }: CustomerInsightsProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {data.locationBreakdown.map((location, index) => (
-                <div key={location.country} className="flex items-center justify-between">
+              {data.byLocation.map((location, index) => (
+                <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-sm font-medium">{location.country}</span>
+                    <span className="text-sm font-medium">
+                      {location.location}
+                    </span>
                   </div>
-                  <span className="text-sm text-muted-foreground">{location.customers} customers</span>
+                  <span className="text-sm text-muted-foreground">
+                    {location.customerCount} customers
+                  </span>
                 </div>
               ))}
               <div className="pt-4 border-t">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Average Lifetime Value</span>
+                  <span className="text-sm font-medium">
+                    Average Lifetime Value
+                  </span>
                   <span className="text-lg font-bold text-hero-secondary">
-                    {formatCurrency(data.averageLifetimeValue)}
+                    {formatCurrency(
+                      data.clv.reduce(
+                        (acc, customer) => acc + customer.clv,
+                        0,
+                      ) / (data.clv.length || 1),
+                    )}
                   </span>
                 </div>
               </div>
@@ -121,5 +144,5 @@ export function CustomerInsights({ data, isLoading }: CustomerInsightsProps) {
         </Card>
       </div>
     </div>
-  );
+  )
 }
