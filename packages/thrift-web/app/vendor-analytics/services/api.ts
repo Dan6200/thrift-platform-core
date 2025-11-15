@@ -48,6 +48,12 @@ const apiService = {
     )
     return response.data
   },
+  async getLowStockProducts(storeId: string) {
+    const response = await axios.get(
+      `${API_BASE_URL}/v1/dashboard/${storeId}/low-stock-products`,
+    )
+    return response.data
+  },
 }
 
 export default apiService

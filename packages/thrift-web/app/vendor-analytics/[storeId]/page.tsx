@@ -28,6 +28,7 @@ export default async function DashboardPage({
     apiService.getRecentOrders(storeId),
     apiService.getCustomerData(storeId),
     apiService.getProductPerformance(storeId),
+    apiService.getLowStockProducts(storeId),
   ])
 
   return (
@@ -39,6 +40,7 @@ export default async function DashboardPage({
       initialOrders={initialOrders}
       initialCustomerData={initialCustomerData}
       initialProducts={initialProducts}
+      initialLowStockProducts={initialLowStockProducts}
     />
   )
 }

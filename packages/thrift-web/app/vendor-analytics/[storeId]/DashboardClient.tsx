@@ -9,6 +9,7 @@ import { OrdersTable } from '@/components/dashboard/OrdersTable'
 import { CustomerInsights } from '@/components/dashboard/CustomerInsights'
 import { ProductPerformance } from '@/components/dashboard/ProductPerformance'
 import apiService from '@/app/vendor-analytics/services/api'
+import { InventoryAlerts } from '@/components/dashboard/InventoryAlerts'
 import type {
   DashboardKPIs,
   RevenueTrend,
@@ -16,6 +17,7 @@ import type {
   RecentOrder,
   CustomerData,
   ProductPerformance as ProductPerformanceType,
+  LowStockProducts,
 } from '@/types/analytics'
 import {
   DollarSign,
@@ -34,6 +36,7 @@ interface DashboardClientProps {
   initialOrders: RecentOrder[]
   initialCustomerData: CustomerData | null
   initialProducts: ProductPerformanceType[]
+  initialLowStockProducts: LowStockProducts[]
 }
 
 export default function DashboardClient({
@@ -44,6 +47,7 @@ export default function DashboardClient({
   initialOrders,
   initialCustomerData,
   initialProducts,
+  initialLowStockProducts,
 }: DashboardClientProps) {
   const [activeSection, setActiveSection] = useState('overview')
   const [dateRange, setDateRange] = useState({
@@ -64,6 +68,9 @@ export default function DashboardClient({
   )
   const [products, setProducts] =
     useState<ProductPerformanceType[]>(initialProducts)
+  const [lowStockProducts, setLowStockProducts] = useState<LowStockProducts[]>(
+    initialLowStockProducts,
+  )
 
   // Loading states
   const [isLoadingKPIs, setIsLoadingKPIs] = useState(false)
@@ -72,6 +79,7 @@ export default function DashboardClient({
   const [isLoadingOrders, setIsLoadingOrders] = useState(false)
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(false)
   const [isLoadingProducts, setIsLoadingProducts] = useState(false)
+  const [isLoadingLowStock, setIsLoadingLowStock] = useState(false)
 
   // Load data on date range change
   useEffect(() => {
@@ -193,6 +201,10 @@ export default function DashboardClient({
   const renderProducts = () => (
     <div className="space-y-6">
       <ProductPerformance products={products} isLoading={isLoadingProducts} />
+      <InventoryAlerts
+        products={lowStockProducts}
+        isLoading={isLoadingLowStock}
+      />
     </div>
   )
 
