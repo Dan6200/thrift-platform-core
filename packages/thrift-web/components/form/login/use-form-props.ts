@@ -9,6 +9,6 @@ export default {
     // debug input schema
     //  console.log(data, context, options)
     //  console.log(await joiResolver(schema)(data, context, options))
-    return joiResolver(schema)(data, context, options)
+    return joiResolver(schema as any)(data, context, options)
   },
 } as UseFormProps<LoginFormState, any>
