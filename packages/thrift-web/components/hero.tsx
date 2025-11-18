@@ -18,6 +18,7 @@ export function Hero({
         playsInline
         className="absolute inset-0 h-full w-full object-cover"
         src="/laptop-unboxing-hd.mp4"
+        poster="/laptop-unboxing-hd.jpg"
       ></video>
       <div
         className={cn(
