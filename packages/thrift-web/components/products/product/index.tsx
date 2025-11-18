@@ -154,7 +154,7 @@ export function Product({ product }: { product: ProductType }) {
                 Add To Cart
               </Button>
               <BuyNow
-                imgData={displayImg}
+                imgData={displayImg ?? product.media[0]}
                 netPrice={selectedVariant?.net_price ?? product?.net_price}
                 listPrice={selectedVariant?.list_price ?? product?.list_price}
                 quantityAvailable={selectedVariant?.quantity_available ?? 0}

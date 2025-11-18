@@ -1,7 +1,7 @@
 // components/AnimatedText.tsx
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, Transition } from 'framer-motion'
 import React from 'react'
 
 interface AnimatedTextProps {
@@ -28,7 +28,7 @@ const wordVariants = {
       type: 'spring',
       damping: 12,
       stiffness: 100,
-    },
+    } as Transition,
   },
 }
 
