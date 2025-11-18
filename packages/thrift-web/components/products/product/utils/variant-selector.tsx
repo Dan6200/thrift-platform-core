@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { getColorClass } from './get-color-class'
+import { Sizes, sortSize } from './sort-size-options'
 
 interface VariantSelectorProps {
   variants: ProductVariant[]
@@ -45,50 +46,57 @@ export function VariantSelector({
 
   return (
     <div className="space-y-4 my-4">
-      {Object.entries(optionsMap).map(([name, values]) => (
-        <div key={name}>
-          <h4 className="font-semibold text-lg mb-2">{name}</h4>
-          <div className="flex flex-wrap gap-2">
-            {Array.from(values).map((value) => {
-              const isSelected = selectedOptions[name] === value
+      {Object.entries(optionsMap).map(([name, values]) => {
+        let sizeValues
+        if (name.toLowerCase() === 'size')
+          // Sort size options
+          sizeValues = sortSize(Array.from(values) as unknown as Sizes[])
+        return (
+          <div key={name}>
+            <h4 className="font-semibold text-lg mb-2">{name}</h4>
+            <div className="flex flex-wrap gap-2">
+              {Array.from(sizeValues ?? values).map((value) => {
+                const isSelected = selectedOptions[name] === value
+                console.log(name, values)
 
-              if (name.toLowerCase() === 'color') {
-                // Color Swatch
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => onOptionSelect(name, value)}
-                    className={cn(
-                      'w-8 h-8 rounded-full border-4 transition-transform transform hover:scale-110',
-                      isSelected ? 'border-primary' : 'border-white/20',
-                    )}
-                    title={value}
-                  >
-                    <div
+                if (name.toLowerCase() === 'color') {
+                  // Color Swatch
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => onOptionSelect(name, value)}
                       className={cn(
-                        'w-full h-full rounded-full',
-                        getColorClass(value),
+                        'w-8 h-8 rounded-full border-4 transition-transform transform hover:scale-110',
+                        isSelected ? 'border-primary' : 'border-white/20',
                       )}
-                    />
-                  </button>
-                )
-              } else {
-                // Text Swatch (for Size, etc.)
-                return (
-                  <Button
-                    key={value}
-                    variant={isSelected ? 'default' : 'outline'}
-                    onClick={() => onOptionSelect(name, value)}
-                  >
-                    {value}
-                  </Button>
-                )
-              }
-            })}
+                      title={value}
+                    >
+                      <div
+                        className={cn(
+                          'w-full h-full rounded-full',
+                          getColorClass(value),
+                        )}
+                      />
+                    </button>
+                  )
+                } else {
+                  // Text Swatch (for Size, etc.)
+                  return (
+                    <Button
+                      key={value}
+                      variant={isSelected ? 'default' : 'outline'}
+                      onClick={() => onOptionSelect(name, value)}
+                    >
+                      {value}
+                    </Button>
+                  )
+                }
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
