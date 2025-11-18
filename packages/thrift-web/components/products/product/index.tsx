@@ -9,7 +9,11 @@ import { Button } from '../../ui/button'
 import { Card, CardContent } from '../../ui/card'
 import { GoBackLink } from '../go-back-link'
 import { ProductImage } from '../image'
-import { Product as ProductType, ProductVariant } from '@/types/products'
+import {
+  ImgData,
+  Product as ProductType,
+  ProductVariant,
+} from '@/types/products'
 import { BuyNow } from '../utils/buy-now'
 import { Price } from './utils/price'
 import { VariantSelector } from './utils/variant-selector'
@@ -19,6 +23,22 @@ export function Product({ product }: { product: ProductType }) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     null,
   )
+
+  const [imageVariants, setImageVariants] = useState<Record<string, ImgData>>(
+    {},
+  )
+
+  useEffect(() => {
+    /* product.media is of type ImgData */
+    const variants = product.media.reduce(
+      (acc, img) => {
+        acc[img.variant_id.toString()] = img
+        return acc
+      },
+      {} as Record<string, ImgData>,
+    )
+    setImageVariants(variants)
+  }, [product.media])
 
   useEffect(() => {
     if (product.variants && product.variants.length > 0) {
@@ -50,14 +70,10 @@ export function Product({ product }: { product: ProductType }) {
     // If no matching variant is found, the selection state does not change.
   }
 
-  const displayImg = product.media.find(
-    (img) =>
-      (selectedVariant?.variant_id ?? product?.variants?.[0].variant_id) ===
-        img.variant_id && img.is_display_image,
-  )
+  const displayImg = selectedVariant
+    ? imageVariants[selectedVariant?.variant_id]
+    : null
 
-  if (!displayImg)
-    throw new Error('Cant find display image for product detail--Tag: 1')
   const [shoppingCart, setShoppingCart] = useAtom(shoppingCartAtom)
   const addItem = useSetAtom(addItemAtom)
   const totalItems = useAtomValue(getTotalCountAtom)
@@ -90,7 +106,7 @@ export function Product({ product }: { product: ProductType }) {
         >
           <div id="img-bg" className="rounded-lg overflow-clip w-full">
             <ProductImage
-              imgData={displayImg}
+              imgData={displayImg ?? product?.media[0]}
               className="object-contain h-full"
               width={640}
               height={512}
