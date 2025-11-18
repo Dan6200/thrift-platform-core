@@ -18,7 +18,7 @@ done
 echo "Waiting for Meilisearch to be populated..."
 sleep 3
 /opt/src/set_searchable_fields.sh
-/opt/src/run_test.sh "acer"
+/opt/src/run_test.sh "laptop"
 
 # Keep the container running
 exec "$@"
