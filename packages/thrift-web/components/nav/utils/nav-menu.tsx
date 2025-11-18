@@ -55,7 +55,7 @@ export function NavMenu({
   }
   return (
     <NavigationMenu
-      className={`max-w-none flex flex-row items-center justify-between w-[90vw] mx-auto px-4 py-2 rounded-xl shadow-lg border border-white/20 bg-accent/10 my-8`}
+      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 py-2 rounded-xl shadow-lg border border-white/20 bg-accent/10 my-8`}
     >
       <div className="justify-start flex items-center">
         <Link
@@ -125,7 +125,7 @@ export function NavMenu({
         </NavigationMenuList>
       </div>
       <Search
-        className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] border-white/20 flex flex-col z-1000 items-center mt-[.75rem] left-[50%] translate-x-[-50%]"
+        className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] border-white/20 flex flex-col z-100 items-center mt-[.75rem] left-[50%] translate-x-[-50%]"
         ref={searchRef}
         {...{ show, setShow }}
       />

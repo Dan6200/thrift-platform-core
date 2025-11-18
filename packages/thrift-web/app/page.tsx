@@ -11,9 +11,8 @@ export default async function Home() {
   return (
     <div className="w-full mx-auto space-y-8 md:space-y-16">
       <Hero
-        className={`${font?.className} text-background dark:text-foreground flex flex-col gap-8 md:gap-20 lg:gap-24 xl:gap-32`}
+        className={`${font?.className} text-background dark:text-foreground flex flex-col gap-8 md:gap-16`}
       >
-        Create lasting memories shopping with Thrift.
         <CTA />
       </Hero>
       <ProductsHome />
