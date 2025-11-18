@@ -29,11 +29,11 @@ export const BuyNow = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="h-[3rem] text-base sm:text-md md:text-xl text-primary-foreground hover:transition-colors font-bold w-full bg-secondary flex-1 bg-gradient-to-r hover:bg-gradient-to-l from-secondary to-primary gap-2 sm:gap-4">
+        <Button className="h-[3rem] text-base sm:text-md md:text-xl text-primary-foreground hover:transition-colors font-bold w-full bg-secondary flex-1 hover:bg-gradient-to-l hover:from-secondary hover:to-primary gap-2 sm:gap-4">
           Buy Now
           <span className="flex w-8 sm:w-16">
-            <ShoppingCart />
-            <Check />
+            <ShoppingCart className="w-8" />
+            <Check className="w-8" />
           </span>
         </Button>
       </DialogTrigger>

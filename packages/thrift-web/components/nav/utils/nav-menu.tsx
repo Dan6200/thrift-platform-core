@@ -55,7 +55,7 @@ export function NavMenu({
   }
   return (
     <NavigationMenu
-      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 py-2 rounded-xl shadow-lg border border-white/20 bg-accent/10 my-8`}
+      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/10`}
     >
       <div className="justify-start flex items-center">
         <Link

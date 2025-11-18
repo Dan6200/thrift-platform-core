@@ -61,10 +61,10 @@ export const NavMenuSmall = ({
 
   return (
     <div className={showSearchBox ? 'overflow-hidden' : ''}>
-      <div className="max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-4 px-4 py-2 rounded-xl shadow-lg border border-white/20 bg-accent/10">
+      <div className="max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/10">
         <Link
           href="/"
-          className={`${font?.className} text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-bold`}
+          className={`${font?.className} text-secondary text-2xl font-bold`}
         >
           Thrift
         </Link>
