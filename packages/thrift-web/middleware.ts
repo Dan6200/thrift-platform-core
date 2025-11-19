@@ -79,9 +79,9 @@ export async function middleware(request: NextRequest) {
   )
 
   // Redirect root path for authenticated/unauthenticated users
-  if (pathname === '/') {
+  if (pathname === '/create-store') {
     const url = request.nextUrl.clone()
-    url.pathname = sessionVerified ? '/admin/dashboard' : '/sign-in'
+    url.pathname = sessionVerified ? '/create-store' : '/auth/login'
     return NextResponse.redirect(url)
   }
 
