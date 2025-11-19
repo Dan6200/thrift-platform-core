@@ -1,15 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { DashboardNav } from '@/components/navigation/DashboardNav'
-import { DashboardFilters } from '@/components/dashboard/DashboardFilters'
-import { KPICard } from '@/components/dashboard/KPICard'
-import { RevenueChart } from '@/components/dashboard/RevenueChart'
-import { SalesBreakdown } from '@/components/dashboard/SalesBreakdown'
-import { OrdersTable } from '@/components/dashboard/OrdersTable'
-import { CustomerInsights } from '@/components/dashboard/CustomerInsights'
-import { ProductPerformance } from '@/components/dashboard/ProductPerformance'
+import { DashboardFilters } from '@/components/analytics/DashboardFilters'
+import { KPICard } from '@/components/analytics/KPICard'
+import { RevenueChart } from '@/components/analytics/RevenueChart'
+import { SalesBreakdown } from '@/components/analytics/SalesBreakdown'
+import { OrdersTable } from '@/components/analytics/OrdersTable'
+import { CustomerInsights } from '@/components/analytics/CustomerInsights'
+import { ProductPerformance } from '@/components/analytics/ProductPerformance'
 import apiService from '@/app/vendor-analytics/services/api'
-import { InventoryAlerts } from '@/components/dashboard/InventoryAlerts'
+import { InventoryAlerts } from '@/components/analytics/InventoryAlerts'
 import type {
   DashboardKPIs,
   RevenueTrend,
@@ -105,7 +105,7 @@ export default function DashboardClient({
 
         // Other data can be re-fetched here as well if they depend on the date range
       } catch (error) {
-        console.error('Error loading dashboard data:', error)
+        console.error('Error loading analytics data:', error)
       }
     }
 
