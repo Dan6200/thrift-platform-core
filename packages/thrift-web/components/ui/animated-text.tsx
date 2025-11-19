@@ -15,7 +15,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     // Stagger the children's start time by 0.05 seconds
-    transition: { staggerChildren: 0.15 },
+    transition: { staggerChildren: 0.5 },
   },
 }
 
