@@ -57,7 +57,6 @@ export function VariantSelector({
             <div className="flex flex-wrap gap-2">
               {Array.from(sizeValues ?? values).map((value) => {
                 const isSelected = selectedOptions[name] === value
-                console.log(name, values)
 
                 if (name.toLowerCase() === 'color') {
                   // Color Swatch
