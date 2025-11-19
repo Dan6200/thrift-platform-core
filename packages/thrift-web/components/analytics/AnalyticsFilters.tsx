@@ -17,7 +17,7 @@ import {
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 
-interface DashboardFiltersProps {
+interface AnalyticsFiltersProps {
   dateRange: {
     from: Date
     to: Date
@@ -44,14 +44,14 @@ const channels = [
   { value: 'social', label: 'Social Media' },
 ]
 
-export function DashboardFilters({
+export function AnalyticsFilters({
   dateRange,
   onDateRangeChange,
   selectedCategory,
   onCategoryChange,
   selectedChannel,
   onChannelChange,
-}: DashboardFiltersProps) {
+}: AnalyticsFiltersProps) {
   const quickRanges = [
     {
       label: 'Today',

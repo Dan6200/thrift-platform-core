@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { 
-  BarChart3, 
-  ShoppingCart, 
-  Users, 
-  Package, 
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import {
+  BarChart3,
+  ShoppingCart,
+  Users,
+  Package,
   TrendingUp,
   Store,
   Settings,
   Menu,
-  X
-} from "lucide-react";
+  X,
+} from 'lucide-react'
 
-interface DashboardNavProps {
-  activeSection: string;
-  onSectionChange: (section: string) => void;
+interface AnalyticsNavProps {
+  activeSection: string
+  onSectionChange: (section: string) => void
 }
 
 const navigationItems = [
@@ -25,10 +25,13 @@ const navigationItems = [
   { id: 'orders', label: 'Orders', icon: ShoppingCart },
   { id: 'customers', label: 'Customers', icon: Users },
   { id: 'products', label: 'Products', icon: Package },
-];
+]
 
-export function DashboardNav({ activeSection, onSectionChange }: DashboardNavProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+export function AnalyticsNav({
+  activeSection,
+  onSectionChange,
+}: AnalyticsNavProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <>
@@ -39,43 +42,53 @@ export function DashboardNav({ activeSection, onSectionChange }: DashboardNavPro
           size="sm"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          {isMobileMenuOpen ? (
+            <X className="h-4 w-4" />
+          ) : (
+            <Menu className="h-4 w-4" />
+          )}
         </Button>
       </div>
 
       {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
+      <div
+        className={cn(
+          'fixed inset-y-0 left-0 z-40 w-64 bg-card border-r transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
+          isMobileMenuOpen
+            ? 'translate-x-0'
+            : '-translate-x-full lg:translate-x-0',
+        )}
+      >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b">
             <div className="flex items-center space-x-2">
               <Store className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">E-Commerce Dashboard</h1>
+              <h1 className="text-xl font-bold">E-Commerce Analytics</h1>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Store Analytics</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Store Analytics
+            </p>
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 p-4">
             <div className="space-y-2">
               {navigationItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeSection === item.id;
-                
+                const Icon = item.icon
+                const isActive = activeSection === item.id
+
                 return (
                   <Button
                     key={item.id}
-                    variant={isActive ? "default" : "ghost"}
+                    variant={isActive ? 'default' : 'ghost'}
                     className={cn(
-                      "w-full justify-start h-10",
-                      isActive && "bg-primary text-primary-foreground"
+                      'w-full justify-start h-10',
+                      isActive && 'bg-primary text-primary-foreground',
                     )}
                     onClick={() => {
-                      onSectionChange(item.id);
-                      setIsMobileMenuOpen(false);
+                      onSectionChange(item.id)
+                      setIsMobileMenuOpen(false)
                     }}
                   >
                     <Icon className="h-4 w-4 mr-2" />
@@ -86,7 +99,7 @@ export function DashboardNav({ activeSection, onSectionChange }: DashboardNavPro
                       </Badge>
                     )}
                   </Button>
-                );
+                )
               })}
             </div>
           </nav>
@@ -103,11 +116,11 @@ export function DashboardNav({ activeSection, onSectionChange }: DashboardNavPro
 
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
     </>
-  );
+  )
 }
