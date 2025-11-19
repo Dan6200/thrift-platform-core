@@ -49,7 +49,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             {...{ isSmallScreen }}
             hitComponent={Hit as any}
             // @ts-ignore
-            className={`p-8 border relative z-1000 top-5 rounded-md w-[80vw] md:w-[50vw] h-[80vh] glass-effect overflow-y-scroll ${show ? '' : ' hidden'}`}
+            className={`p-8 border relative z-1000 top-5 rounded-md w-[80vw] md:w-[50vw] h-[80vh] bg-accent/60 backdrop-blur-md border-white/10 overflow-y-scroll ${show ? '' : ' hidden'}`}
           />
         </div>
       </InstantSearch>
