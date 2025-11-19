@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { DashboardNav } from '@/components/navigation/DashboardNav'
-import { DashboardFilters } from '@/components/analytics/DashboardFilters'
+import { AnalyticsNav } from '@/components/nav/analytics'
+import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters'
 import { KPICard } from '@/components/analytics/KPICard'
 import { RevenueChart } from '@/components/analytics/RevenueChart'
 import { SalesBreakdown } from '@/components/analytics/SalesBreakdown'
@@ -11,7 +11,7 @@ import { ProductPerformance } from '@/components/analytics/ProductPerformance'
 import apiService from '@/app/vendor-analytics/services/api'
 import { InventoryAlerts } from '@/components/analytics/InventoryAlerts'
 import type {
-  DashboardKPIs,
+  AnalyticsKPIs,
   RevenueTrend,
   SalesData,
   RecentOrder,
@@ -19,18 +19,11 @@ import type {
   ProductPerformance as ProductPerformanceType,
   LowStockProducts,
 } from '@/types/analytics'
-import {
-  DollarSign,
-  ShoppingCart,
-  Users,
-  TrendingUp,
-  UserPlus,
-  Repeat,
-} from 'lucide-react'
+import { ShoppingCart, Users, TrendingUp, UserPlus, Repeat } from 'lucide-react'
 
-interface DashboardClientProps {
+interface AnalyticsClientProps {
   storeId: string
-  initialKpiData: DashboardKPIs | null
+  initialKpiData: AnalyticsKPIs | null
   initialRevenueData: RevenueTrend[]
   initialSalesData: SalesData | null
   initialOrders: RecentOrder[]
@@ -39,7 +32,7 @@ interface DashboardClientProps {
   initialLowStockProducts: LowStockProducts[]
 }
 
-export default function DashboardClient({
+export default function AnalyticsClient({
   storeId,
   initialKpiData,
   initialRevenueData,
@@ -48,7 +41,7 @@ export default function DashboardClient({
   initialCustomerData,
   initialProducts,
   initialLowStockProducts,
-}: DashboardClientProps) {
+}: AnalyticsClientProps) {
   const [activeSection, setActiveSection] = useState('overview')
   const [dateRange, setDateRange] = useState({
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
@@ -58,7 +51,7 @@ export default function DashboardClient({
   const [selectedChannel, setSelectedChannel] = useState('all')
 
   // Data states
-  const [kpiData, setKpiData] = useState<DashboardKPIs | null>(initialKpiData)
+  const [kpiData, setKpiData] = useState<AnalyticsKPIs | null>(initialKpiData)
   const [revenueData, setRevenueData] =
     useState<RevenueTrend[]>(initialRevenueData)
   const [salesData, setSalesData] = useState<SalesData | null>(initialSalesData)
@@ -128,7 +121,11 @@ export default function DashboardClient({
           value={kpiData ? formatCurrency(kpiData.totalRevenue) : 'Loading...'}
           description="Total revenue for selected period"
           trend={{ value: 12.5, isPositive: true }}
-          icon={<DollarSign className="h-4 w-4" />}
+          {
+            ...{
+              /*icon={<DollarSign className="h-4 w-4" />*/
+            }
+          }
         />
         <KPICard
           title="Total Orders"
@@ -227,14 +224,14 @@ export default function DashboardClient({
 
   return (
     <div className="flex h-screen bg-background">
-      <DashboardNav
+      <AnalyticsNav
         activeSection={activeSection}
         onSectionChange={setActiveSection}
       />
       <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            <DashboardFilters
+            <AnalyticsFilters
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
               selectedCategory={selectedCategory}

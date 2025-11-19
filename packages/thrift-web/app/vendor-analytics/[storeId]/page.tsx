@@ -1,7 +1,7 @@
 import apiService from '@/app/vendor-analytics/services/api'
-import DashboardClient from './DashboardClient'
+import AnalyticsClient from './AnalyticsClient'
 
-export default async function DashboardPage({
+export default async function AnalyticsPage({
   params,
 }: {
   params: Promise<{ storeId: string }>
@@ -33,7 +33,7 @@ export default async function DashboardPage({
   ])
 
   return (
-    <DashboardClient
+    <AnalyticsClient
       storeId={storeId}
       initialKpiData={initialKpiData}
       initialRevenueData={initialRevenueData}
