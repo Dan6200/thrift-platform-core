@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-// Corresponds to DashboardKPIsResponseSchema
-export const DashboardKPISchema = z.object({
+// Corresponds to AnalyticsKPIsResponseSchema
+export const AnalyticsKPISchema = z.object({
   totalRevenue: z.number(),
   totalOrders: z.number().int(),
   averageOrderValue: z.number(),
@@ -9,7 +9,7 @@ export const DashboardKPISchema = z.object({
   returningCustomers: z.number().int(),
   conversionRate: z.number().nullable().optional(),
 })
-export type DashboardKPIs = z.infer<typeof DashboardKPISchema>
+export type AnalyticsKPIs = z.infer<typeof AnalyticsKPISchema>
 
 // Corresponds to RevenueTrendResponseSchema
 export const RevenueTrendSchema = z.object({
@@ -119,7 +119,7 @@ export const LowStockProductsSchema = z.object({
 export type LowStockProducts = z.infer<typeof LowStockProductsSchema>
 
 export const AnalyticsDataSchema = z.object({
-  kpis: DashboardKPISchema,
+  kpis: AnalyticsKPISchema,
   revenueTrend: z.array(RevenueTrendSchema),
   salesByCategory: z.array(SalesByCategorySchema),
   // salesByChannel: z.array(SalesByChannelSchema),
