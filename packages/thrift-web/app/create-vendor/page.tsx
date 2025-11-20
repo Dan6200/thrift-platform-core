@@ -5,11 +5,17 @@ import Image from 'next/image'
 import { createVendorAccount } from './utils'
 import { useAtomValue } from 'jotai'
 import { userAtom } from '@/atoms'
-import router from 'next/router'
+import { useRouter } from 'next/navigation' // Corrected import
 
 export default function CreateVendorPage() {
   const userAccount = useAtomValue(userAtom)
-  if (userAccount?.is_vendor) router.push('/list-product')
+  const router = useRouter() // Initialize useRouter
+
+  // Redirect if user is already a vendor
+  if (userAccount && userAccount.is_vendor) {
+    router.push('/list-product')
+    return null // Return null to prevent rendering the page content
+  }
   return (
     <div className="container flex overflow-hidden h-[80vh] mx-auto p-4 mt-20">
       <Card className="w-full h-fit rounded-lg space-y-4 sm:w-4/5 p-8 mx-auto shadow-lg shadow-primary">
@@ -25,17 +31,18 @@ export default function CreateVendorPage() {
             height={500}
           />
           <p>
-            &quot;Create a vendor account to list your products, reach more
-            customers, and track your sales with ease. Our platform gives you a
-            powerful dashboard to manage orders and view performance
-            insights—all in one place. Ready to expand your reach? Join today
-            and start selling!&quot;
+            &quot;Create a store to list your products, reach more customers,
+            and track your sales with ease. Our platform gives you a powerful
+            dashboard to manage orders and view performance insights—all in one
+            place. Ready to expand your reach? Join today and start
+            selling!&quot;
           </p>
         </CardContent>
         <CardFooter className="flex justify-end w-full">
           <Button className="" onClick={() => createVendorAccount()}>
-            Create A Vendor Account
+            Create A Store
           </Button>
+          <Button>Go Back</Button>
         </CardFooter>
       </Card>
       <section className="absolute top-0 right-10 mt-[30%] flex flex-col items-center h-fit overflow-y-hidden">
