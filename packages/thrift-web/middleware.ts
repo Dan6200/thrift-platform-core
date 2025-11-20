@@ -16,15 +16,20 @@ const PUBLIC_PATHS = [
   '/',
   '/products',
   '/stores',
+  '/shopping-cart',
 ]
 
 // Define paths that MUST be protected
 // Update these paths as needed for your application
 const PROTECTED_PATHS = [
-  '/admin/vendors',
+  '/vendor/dashboard',
+  '/vendor/admin/dashboard',
   '/profile',
   '/settings',
   '/dashboard',
+  '/create-store',
+  '/vendor-analytics',
+  '/orders',
 ]
 
 /**
@@ -32,39 +37,45 @@ const PROTECTED_PATHS = [
  * and protect routes.
  */
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
 
-  // Create a Supabase client for the middleware
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll()
         },
-        set(name: string, value: string, options: any) {
-          request.cookies.set({ name, value, ...options })
-        },
-        remove(name: string, options: any) {
-          request.cookies.set({ name, value: '', ...options })
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          )
+          supabaseResponse = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value }) =>
+            supabaseResponse.cookies.set(name, value),
+          )
         },
       },
     },
   )
 
-  // Refresh session if expired - this will update the cookies
-  // and redirect if necessary
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // IMPORTANT: Avoid writing any logic between createServerClient and
+  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
+  // issues with users being randomly logged out.
 
-  let sessionVerified = !!user // True if user object exists
+  // IMPORTANT: Don't remove getClaims()
+  const { data } = await supabase.auth.getUser() // Personal Note: I believe getUser can be used in place of getClaims.
 
-  // Check Redis deny-list if user is found, for proactive invalidation
-  if (sessionVerified && user?.id) {
+  let sessionVerified = !!data?.user
+
+  if (sessionVerified) {
     try {
-      const isStale = await redis.get(user.id) // Use user ID for deny-list check
+      const isStale = await redis.get(data?.user?.id) // Use user ID for deny-list check
       if (isStale) {
         sessionVerified = false // Mark session as stale if found in Redis
         await supabase.auth.signOut() // Force sign out from Supabase
@@ -78,24 +89,19 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  const pathname = request.nextUrl.pathname
+
   const isPublicPath = PUBLIC_PATHS.includes(pathname)
   const isProtectedPath = PROTECTED_PATHS.some((path) =>
     pathname.startsWith(path),
   )
-
-  // Redirect root path for authenticated/unauthenticated users
-  if (pathname === '/create-store') {
-    const url = request.nextUrl.clone()
-    url.pathname = sessionVerified ? '/create-store' : '/auth/login'
-    return NextResponse.redirect(url)
-  }
 
   // 1. User is trying to access a protected path (e.g., /admin)
   if (isProtectedPath) {
     if (!sessionVerified) {
       // Not authenticated -> Redirect to sign-in
       const url = request.nextUrl.clone()
-      url.pathname = '/sign-in'
+      url.pathname = '/auth/login'
       url.searchParams.set('redirect', pathname) // Add redirect param
       return NextResponse.redirect(url)
     }
@@ -103,20 +109,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // 2. User is authenticated and trying to access a public auth path (e.g., /sign-in)
   if (isPublicPath) {
-    if (sessionVerified) {
-      // Authenticated -> Redirect to dashboard
-      const url = request.nextUrl.clone()
-      url.pathname = '/admin/dashboard'
-      return NextResponse.redirect(url)
-    }
-    // Not authenticated -> Allow access to public path (e.g., sign-in page)
     return NextResponse.next()
   }
 
-  // Allow the request to proceed if no specific logic applies
-  return NextResponse.next()
+  return supabaseResponse
 }
 
 /**
