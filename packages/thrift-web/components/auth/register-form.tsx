@@ -35,6 +35,7 @@ const RegisterFormSchema = z
     dob: z.string().refine((val) => !isNaN(Date.parse(val)), {
       message: 'A valid date of birth is required',
     }),
+    country: z.string().min(1, 'Country is required'), // Added country field
     is_vendor: z.boolean(),
   })
   .refine((data) => data.password === data.confirm_password, {
@@ -181,6 +182,20 @@ export function RegisterForm({
                       <FormLabel>Date of Birth</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
