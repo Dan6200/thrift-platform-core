@@ -43,7 +43,10 @@ export function LoginForm({
 
   async function onSubmit(data: z.infer<typeof SignInFormSchema>) {
     try {
-      const response = await axios.post('/api/v1/auth/login', data)
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_SERVER + '/v1/auth/login',
+        data,
+      )
       if (response.status === 200) {
         toast({ title: 'Login Successful', variant: 'default' })
         router.push('/') // Navigate to the homepage
