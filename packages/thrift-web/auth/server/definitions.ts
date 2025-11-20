@@ -45,7 +45,7 @@ export async function verifySession() {
 
   // Check Redis deny-list for explicitly stale sessions (e.g., after logout)
   try {
-    const isStale = await redis.get(session.jti || session.user.id) // Using session JWT ID or user ID
+    const isStale = await redis.get(session.user.id) // Using session JWT ID or user ID
     if (isStale) {
       throw new Error('Stale session found in cache. Please log in again.')
     }
@@ -73,12 +73,7 @@ export async function deleteSessionCookie(): Promise<void> {
 
   if (session) {
     // Add current session to Redis deny-list for immediate invalidation
-    await redis.set(
-      session.jti || session.user.id,
-      'stale',
-      'EX',
-      STALE_COOKIE_TTL,
-    )
+    await redis.set(session.user.id, 'stale', 'EX', STALE_COOKIE_TTL)
   }
 
   await supabase.auth.signOut()
