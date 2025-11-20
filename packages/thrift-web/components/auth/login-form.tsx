@@ -49,7 +49,7 @@ export function LoginForm({
       )
       if (response.status === 200) {
         toast({ title: 'Login Successful', variant: 'default' })
-        router.push('/') // Navigate to the homepage
+        router.back() // Navigate to the previous page
       }
     } catch (error: any) {
       toast({
