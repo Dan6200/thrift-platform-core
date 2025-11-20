@@ -2,8 +2,8 @@ import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import { Product } from '@/types/products'
 import ShippingInfo from '@/types/shipping-info'
-import { User } from '@supabase/supabase-js'
 import { CardInfo } from '@/types/card-info'
+import { Profile } from '@/types/profile' // Import the Profile type
 export * from './shopping-cart'
 export * from './store'
 
@@ -13,7 +13,8 @@ export const productAtom = atom<Product | null>(null)
 export const isSmallScreenAtom = atom(true)
 export const pageNumAtom = atom(1)
 export const cardInfo = atom<CardInfo | null>(null)
-export const userAtom = atom<User | null | undefined>(undefined)
+// Update userAtom to hold the Profile type
+export const userAtom = atom<Profile | null>(null)
 export const shippingInfoAtom = atomWithStorage<ShippingInfo | null>(
   'shipping-info',
   null,
