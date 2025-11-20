@@ -64,7 +64,6 @@ todo*
 *built/
 *build/
 *bundle.js
-*.sh
 *.vim
 **/tmp/**
 server-log.txt
