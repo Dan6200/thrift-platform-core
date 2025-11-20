@@ -1,5 +1,5 @@
 import apiService from '@/app/vendor-analytics/services/api'
-import AnalyticsClient from './AnalyticsClient'
+import AnalyticsClient from './client-page'
 
 export default async function AnalyticsPage({
   params,
