@@ -20,7 +20,12 @@ const PUBLIC_PATHS = [
 
 // Define paths that MUST be protected
 // Update these paths as needed for your application
-const PROTECTED_PATHS = ['/admin', '/profile', '/settings', '/dashboard']
+const PROTECTED_PATHS = [
+  '/admin/vendors',
+  '/profile',
+  '/settings',
+  '/dashboard',
+]
 
 /**
  * Middleware to check for the presence of the Supabase session
