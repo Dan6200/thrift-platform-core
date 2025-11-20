@@ -6,21 +6,20 @@ import redis from '@/lib/redis' // Upstash Redis client
 const STALE_COOKIE_TTL = 60 * 5 // 5 minutes
 
 // Helper to create a Supabase server client
-const createSupabaseServerClient = () => {
-  const cookieStore = cookies()
+const createSupabaseServerClient = async () => {
+  const cookieStore = await cookies()
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!, // Use service role key for admin actions, or anon key for user-specific
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        getAll() {
+          return cookieStore.getAll()
         },
-        set(name: string, value: string, options: any) {
-          cookieStore.set({ name, value, ...options })
-        },
-        remove(name: string, options: any) {
-          cookieStore.set({ name, value: '', ...options })
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, ...options }) =>
+            cookieStore.set({ name, value, ...options }),
+          )
         },
       },
     },
@@ -33,7 +32,7 @@ const createSupabaseServerClient = () => {
  * @returns The Supabase user object for the authenticated user.
  */
 export async function verifySession() {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
 
   // Get session from Supabase, which automatically reads from cookies
   const {
@@ -66,7 +65,8 @@ export async function verifySession() {
  * and proactively adding the session ID to the Redis stale-session cache.
  */
 export async function deleteSessionCookie(): Promise<void> {
-  const supabase = createSupabaseServerClient()
+  const cookieStore = await cookies()
+  const supabase = await createSupabaseServerClient()
   const {
     data: { session },
   } = await supabase.auth.getSession()
@@ -81,18 +81,8 @@ export async function deleteSessionCookie(): Promise<void> {
     )
   }
 
-  // Sign out from Supabase, which clears their session cookies
   await supabase.auth.signOut()
 
-  // For good measure, delete the '__session' cookie from next/headers
-  // although supabase.auth.signOut() should handle most of it.
-  cookies().delete('sb-access-token')
-  cookies().delete('sb-refresh-token')
+  cookieStore.delete('sb-access-token')
+  cookieStore.delete('sb-refresh-token')
 }
-
-// NOTE: Firebase-specific admin functions (setCustomUserRole, setCustomUserProviderId, revokeAllSessions)
-// are removed. Equivalent Supabase user management should be handled via the
-// Supabase Auth Admin API (typically from your backend/thrift-api) or directly
-// in the Supabase Dashboard.
-// If custom claims/roles are needed, Supabase uses "auth.jwt.claims" or
-// database triggers on the `auth.users` table.
