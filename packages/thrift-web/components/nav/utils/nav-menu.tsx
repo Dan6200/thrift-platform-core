@@ -21,15 +21,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { UserAccount } from '@/components/user-account/types'
 import { getTotalCountAtom } from '@/atoms'
 import { ShoppingCartDrawerContent } from '@/components/shopping-cart/drawer'
 import { Drawer, DrawerTrigger } from '@/components/ui/drawer'
 import Search from '@/components/search'
 import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
+import { Profile } from '@/types/profile'
 
-type SetUser = ReturnType<typeof useSetAtom<UserAccount | null, any[], any>>
+type SetUser = ReturnType<typeof useSetAtom<Profile | null, any[], any>>
 
 const font = Montagu_Slab({ weight: '500', subsets: ['latin'] })
 
@@ -37,13 +37,12 @@ export function NavMenu({
   user,
   setUser,
 }: {
-  user: (UserAccount & { token: string }) | null
+  user: Profile | null
   setUser: SetUser
 }) {
   const totalItems = useAtomValue(getTotalCountAtom)
   const searchRef = useRef<null | HTMLDivElement>(null)
   const [show, setShow] = useState(false)
-  // const [parentBackDrop, setParentBackDrop] = useState(true)
   useEffect(() => {
     document.addEventListener('click', hide)
     return () => document.removeEventListener('click', hide)
@@ -55,7 +54,7 @@ export function NavMenu({
   }
   return (
     <NavigationMenu
-      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/10`}
+      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/60 dark:bg-accent/20`}
     >
       <div className="justify-start flex items-center">
         <Link
@@ -148,7 +147,7 @@ export function NavMenu({
           </DrawerTrigger>
           <ShoppingCartDrawerContent />
         </Drawer>
-        {user?.token ? (
+        {user ? (
           <Link href="/account" passHref>
             <Popover>
               <PopoverTrigger asChild>
@@ -157,7 +156,7 @@ export function NavMenu({
                   className="border-none bg-transparent hover:bg-white/20 focus:bg-white/20"
                 >
                   Hello
-                  {user && user.token && user.first_name && (
+                  {user && user.first_name && (
                     <span className="w-20 flex items-center justify-between">
                       , {user.first_name}
                       <UserCircle2 />

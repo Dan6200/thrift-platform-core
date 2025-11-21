@@ -18,14 +18,14 @@ import { PanelRightClose, UserCircle2 } from 'lucide-react'
 import { components } from './nav-components'
 import { ModeToggle } from '@/components/dark-mode-toggle'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { UserAccount } from '@/components/user-account/types'
 import { getTotalCountAtom } from '@/atoms'
 import SearchComp from '@/components/search'
 import { cn } from '@/lib/utils'
 import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
+import { Profile } from '@/types/profile'
 
-type SetUser = ReturnType<typeof useSetAtom<UserAccount | null, any[], any>>
+type SetUser = ReturnType<typeof useSetAtom<Profile | null, any[], any>>
 
 const font = Montagu_Slab({ weight: '500', subsets: ['latin'] })
 
@@ -33,7 +33,7 @@ export const NavMenuSmall = ({
   user,
   setUser,
 }: {
-  user: (UserAccount & { token: string }) | null
+  user: Profile | null
   setUser: SetUser
 }) => {
   const [showSearchBox, setShowSearchBox] = useState(false)
@@ -92,7 +92,7 @@ export const NavMenuSmall = ({
               <ShoppingCart className="w-5" />
             </Button>
           </Link>
-          {user?.token ? (
+          {user ? (
             <Link
               href="/account"
               className="active:bg-neutral-300 dark:active:bg-neutral-700"
@@ -125,7 +125,7 @@ export const NavMenuSmall = ({
               <Accordion type="single" collapsible className="my-8">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="hover:no-underline">
-                    Welcome{user?.token && `, ${user.first_name}`}
+                    Welcome{user && `, ${user.first_name}`}
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="flex flex-col space-y-3 p-4">
