@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
 import Link from 'next/link'
+import { useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -22,12 +22,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import Image from 'next/image'
+import { signup } from '@/auth/server/definitions'
+import { FieldSet } from '../ui/field'
 
 const RegisterFormSchema = z
   .object({
     first_name: z.string().min(1, 'First name is required'),
     last_name: z.string().min(1, 'Last name is required'),
-    email: z.string().email({ message: 'Please enter a valid email address.' }),
+    email: z.email({ message: 'Please enter a valid email address.' }),
     password: z
       .string()
       .min(8, { message: 'Password must be at least 8 characters.' }),
@@ -35,7 +37,7 @@ const RegisterFormSchema = z
     dob: z.string().refine((val) => !isNaN(Date.parse(val)), {
       message: 'A valid date of birth is required',
     }),
-    country: z.string().min(1, 'Country is required'), // Added country field
+    country: z.string().min(1, 'Country is required'),
     is_vendor: z.boolean(),
   })
   .refine((data) => data.password === data.confirm_password, {
@@ -48,6 +50,8 @@ export function RegisterForm({
   ...props
 }: React.ComponentProps<'div'>) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
@@ -57,32 +61,34 @@ export function RegisterForm({
       password: '',
       confirm_password: '',
       dob: '',
+      country: '',
       is_vendor: false,
     },
   })
 
   async function onSubmit(data: z.infer<typeof RegisterFormSchema>) {
-    try {
-      const { confirm_password, ...postData } = data
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_SERVER + '/v1/auth/register',
-        postData,
-      )
-      if (response.status === 201) {
+    startTransition(async () => {
+      const formData = new FormData()
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, String(value))
+      })
+
+      const result = await signup(formData)
+
+      if (result.error) {
+        toast({
+          title: 'Registration Failed',
+          description: result.error,
+          variant: 'destructive',
+        })
+      } else {
         toast({
           title: 'Registration Successful',
           description: 'Please check your email to verify your account.',
         })
         router.push('/auth/login')
       }
-    } catch (error: any) {
-      toast({
-        title: 'Registration Failed',
-        description:
-          error.response?.data?.message || 'An unexpected error occurred.',
-        variant: 'destructive',
-      })
-    }
+    })
   }
 
   return (
@@ -95,20 +101,106 @@ export function RegisterForm({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-4"
               >
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <h1 className="text-2xl font-bold">Create your account</h1>
-                  <p className="text-muted-foreground text-sm text-balance">
-                    Enter your details below to create your account
-                  </p>
-                </div>
+                <FieldSet disabled={isPending} className="flex flex-col gap-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <h1 className="text-2xl font-bold">Create your account</h1>
+                    <p className="text-muted-foreground text-sm text-balance">
+                      Enter your details below to create your account
+                    </p>
+                  </div>
 
-                <div className="flex gap-4">
+                  <div className="flex gap-4">
+                    <FormField
+                      control={form.control}
+                      name="first_name"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>First Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="last_name"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>Last Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
-                    name="first_name"
+                    name="email"
                     render={({ field }) => (
-                      <FormItem className="w-1/2">
-                        <FormLabel>First Name</FormLabel>
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex gap-4">
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="confirm_password"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>Confirm Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="dob"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -116,113 +208,29 @@ export function RegisterForm({
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
-                    name="last_name"
+                    name="is_vendor"
                     render={({ field }) => (
-                      <FormItem className="w-1/2">
-                        <FormLabel>Last Name</FormLabel>
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                         <FormControl>
-                          <Input {...field} />
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
                         </FormControl>
-                        <FormMessage />
+                        <FormLabel className="font-normal">
+                          I want to be a vendor
+                        </FormLabel>
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex gap-4">
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem className="w-1/2">
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="confirm_password"
-                    render={({ field }) => (
-                      <FormItem className="w-1/2">
-                        <FormLabel>Confirm Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="dob"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date of Birth</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Country</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="is_vendor"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        I want to be a vendor
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit" className="w-full">
-                  Create Account
-                </Button>
+                  <Button type="submit" className="w-full">
+                    {isPending ? 'Creating Account...' : 'Create Account'}
+                  </Button>
+                </FieldSet>
 
                 <div className="mt-4 text-center text-sm">
                   Already have an account?{' '}

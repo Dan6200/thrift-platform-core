@@ -20,8 +20,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Field, FieldSeparator } from '../ui/field'
+import { Field, FieldSeparator, FieldSet } from '../ui/field'
 import Image from 'next/image'
+import { login } from '@/auth/server/definitions'
+import { useTransition } from 'react'
 
 const SignInFormSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -33,6 +35,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<'div'>) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
@@ -42,23 +45,24 @@ export function LoginForm({
   })
 
   async function onSubmit(data: z.infer<typeof SignInFormSchema>) {
-    try {
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_SERVER + '/v1/auth/login',
-        data,
-      )
-      if (response.status === 200) {
+    startTransition(async () => {
+      const formData = new FormData()
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, String(value))
+      })
+
+      const result = await login(formData)
+      if (result.error) {
+        toast({
+          title: 'Failed to Login',
+          description: result.error || 'An unexpected error occurred.',
+          variant: 'destructive',
+        })
+      } else {
         toast({ title: 'Login Successful', variant: 'default' })
         router.back() // Navigate to the previous page
       }
-    } catch (error: any) {
-      toast({
-        title: 'Failed to Login',
-        description:
-          error.response?.data?.message || 'An unexpected error occurred.',
-        variant: 'destructive',
-      })
-    }
+    })
   }
 
   return (
@@ -71,53 +75,55 @@ export function LoginForm({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-6"
               >
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <h1 className="text-2xl font-bold">Welcome back</h1>
-                  <p className="text-muted-foreground text-balance">
-                    Login to your Thrift account
-                  </p>
-                </div>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="m@example.com"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel>Password</FormLabel>
-                        <Link
-                          href="#"
-                          className="ml-auto text-sm underline-offset-2 hover:underline"
-                        >
-                          Forgot your password?
-                        </Link>
-                      </div>
-                      <FormControl>
-                        <Input type="password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
+                <FieldSet disabled={isPending} className="flex flex-col gap-4">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <h1 className="text-2xl font-bold">Welcome back</h1>
+                    <p className="text-muted-foreground text-balance">
+                      Login to your Thrift account
+                    </p>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="m@example.com"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center">
+                          <FormLabel>Password</FormLabel>
+                          <Link
+                            href="#"
+                            className="ml-auto text-sm underline-offset-2 hover:underline"
+                          >
+                            Forgot your password?
+                          </Link>
+                        </div>
+                        <FormControl>
+                          <Input type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full">
+                    Login
+                  </Button>
+                </FieldSet>
                 <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                   Or continue with
                 </FieldSeparator>
