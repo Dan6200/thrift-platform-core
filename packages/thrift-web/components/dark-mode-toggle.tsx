@@ -81,7 +81,7 @@ const DropDown = ({ setTheme }: { setTheme: (theme: string) => void }) => (
         <span className="sr-only">Toggle theme</span>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="glass-effect">
+    <DropdownMenuContent align="end" className="thick-glass-effect">
       <DropdownMenuItem onClick={() => setTheme('light')}>
         Light
       </DropdownMenuItem>

@@ -37,7 +37,7 @@ export function ShoppingCart({
   removeItem?: RemoveItem
 }) {
   return (
-    <div className="flex flex-col justify-between container p-4 bg-transparent text-foreground">
+    <div className="flex flex-col justify-between container p-4">
       <h2 className="text-center p8 font-semibold text-2xl w-full my-8">
         Items in Cart
       </h2>
@@ -58,8 +58,8 @@ export function ShoppingCart({
                     width={128}
                     height={128}
                   />
-                  <div className="w-full flex sm:px-8 justify-between">
-                    <div className="flex justify-between sm:justify-normal items-center">
+                  <div className="w-full flex sm:px-8 justify-between gap-4">
+                    <div className="flex justify-between items-center">
                       <div className="flex h-fit mr-2 items-center border border-border bg-transparent w-28 justify-between p-0 rounded-md overflow-clip">
                         <Button
                           onClick={() => {
