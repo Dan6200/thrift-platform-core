@@ -60,157 +60,158 @@ export const NavMenuSmall = ({
   }
 
   return (
-    <div className={showSearchBox ? 'overflow-hidden' : ''}>
-      <div className="max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/10">
-        <Link
-          href="/"
-          className={`${font?.className} text-secondary text-2xl font-bold`}
+    <div
+      className={cn(
+        'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/10',
+        showSearchBox ? '' : 'relative',
+      )}
+    >
+      <Link
+        href="/"
+        className={`${font?.className} text-secondary text-2xl font-bold`}
+      >
+        Thrift
+      </Link>
+      <div className="flex items-center space-x-4">
+        <Button
+          variant={'outline'}
+          className="bg-transparent"
+          size="icon"
+          onClick={() => setShowSearchBox(true)}
+          ref={toggleSearchButton}
         >
-          Thrift
-        </Link>
-        <div className="flex items-center space-x-4">
+          <Search />
+        </Button>
+        <Link href="/shopping-cart" className="block relative h-12 w-12 p-0">
+          {!!totalItems && (
+            <span className="bg-primary text-primary-foreground w-6 text-center block absolute right-0 top-0 text-sm rounded-full">
+              {totalItems}
+            </span>
+          )}
           <Button
-            variant={'outline'}
-            className="bg-transparent"
+            variant="outline"
             size="icon"
-            onClick={() => setShowSearchBox(true)}
-            ref={toggleSearchButton}
+            className="my-2 p-0 w-10 bg-transparent"
           >
-            <Search />
+            <ShoppingCart className="w-5" />
           </Button>
-          <Link href="/shopping-cart" className="block relative h-12 w-12 p-0">
-            {!!totalItems && (
-              <span className="bg-primary text-primary-foreground w-6 text-center block absolute right-0 top-0 text-sm rounded-full">
-                {totalItems}
-              </span>
-            )}
-            <Button
-              variant="outline"
-              size="icon"
-              className="my-2 p-0 w-10 bg-transparent"
-            >
-              <ShoppingCart className="w-5" />
+        </Link>
+        {user ? (
+          <Link
+            href="/account"
+            className="active:bg-neutral-300 dark:active:bg-neutral-700"
+          >
+            <UserCircle2 />
+          </Link>
+        ) : (
+          <Link href="/auth/login">
+            <Button type="button" className="py-1 px-3 text-md h-8">
+              Sign In
             </Button>
           </Link>
-          {user ? (
-            <Link
-              href="/account"
-              className="active:bg-neutral-300 dark:active:bg-neutral-700"
-            >
-              <UserCircle2 />
-            </Link>
-          ) : (
-            <Link href="/auth/login">
-              <Button type="button" className="py-1 px-3 text-md h-8">
-                Sign In
+        )}
+        <Drawer direction="right">
+          <DrawerTrigger asChild>
+            <Button variant="outline" className="bg-transparent" size="icon">
+              <Menu />
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent className="h-full w-[70vw] sm:w-[50vw] p-4 thick-glass-effect">
+            <DrawerClose asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-none relative bg-transparent"
+              >
+                <PanelRightClose />
               </Button>
-            </Link>
-          )}
-          <Drawer direction="right">
-            <DrawerTrigger asChild>
-              <Button variant="outline" className="bg-transparent" size="icon">
-                <Menu />
+            </DrawerClose>
+            <Accordion type="single" collapsible className="my-8">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="hover:no-underline">
+                  Welcome{user && `, ${user.first_name}`}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col space-y-3 p-4">
+                    <Link
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/80 to-secondary/90 text-primary-foreground dark:from-primary/40 dark:to-secondary/50 p-6 no-underline outline-none focus:shadow-md"
+                      href="/"
+                    >
+                      <div className="mb-2 mt-4 text-lg font-medium">
+                        Thrift Commerce
+                      </div>
+                      <p className="text-sm leading-tight text-primary-foreground dark:text-primary-foreground/80">
+                        Shop new handpicked deals in categories such as
+                        electronics, computers & tablets, fashion & fashion
+                        accessories etc.
+                      </p>
+                    </Link>
+                    <Link
+                      href="/deals/new-arrivals"
+                      title="New Arrivals"
+                      className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                    >
+                      New Arrivals for fashion and fashion accessories.
+                    </Link>
+                    <Link
+                      href="/deals/electronics"
+                      title="Deals on Electronics"
+                      className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                    >
+                      Hot new deals on electronic items such as TVs, mobile
+                      phones and household electronics
+                    </Link>
+                    <Link
+                      href="/deals/computers"
+                      title="Computer Deals"
+                      className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                    >
+                      Hot new deals on computers and computer accessories.
+                    </Link>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger className="hover:no-underline">
+                  Browse Categories
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="flex flex-col space-y-3 p-4">
+                    {components.map((component) => (
+                      <Link
+                        key={component.title}
+                        title={component.title}
+                        href={component.href}
+                        className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                      >
+                        {component.description}
+                      </Link>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+              <ModeToggle />
+            </Accordion>
+            {user && (
+              <Button
+                className="w-full text-destructive text-md bg-transparent"
+                onClick={user ? signOutWrapper.bind(null, setUser) : undefined}
+              >
+                Sign out
               </Button>
-            </DrawerTrigger>
-            <DrawerContent className="h-full w-[70vw] sm:w-[50vw] p-4 glass-effect">
-              <DrawerClose asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="border-none relative bg-transparent"
-                >
-                  <PanelRightClose />
-                </Button>
-              </DrawerClose>
-              <Accordion type="single" collapsible className="my-8">
-                <AccordionItem value="item-1">
-                  <AccordionTrigger className="hover:no-underline">
-                    Welcome{user && `, ${user.first_name}`}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="flex flex-col space-y-3 p-4">
-                      <Link
-                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/80 to-secondary/90 text-primary-foreground dark:from-primary/40 dark:to-secondary/50 p-6 no-underline outline-none focus:shadow-md"
-                        href="/"
-                      >
-                        <div className="mb-2 mt-4 text-lg font-medium">
-                          Thrift Commerce
-                        </div>
-                        <p className="text-sm leading-tight text-primary-foreground dark:text-primary-foreground/80">
-                          Shop new handpicked deals in categories such as
-                          electronics, computers & tablets, fashion & fashion
-                          accessories etc.
-                        </p>
-                      </Link>
-                      <Link
-                        href="/deals/new-arrivals"
-                        title="New Arrivals"
-                        className="active:bg-neutral-300 dark:active:bg-neutral-700"
-                      >
-                        New Arrivals for fashion and fashion accessories.
-                      </Link>
-                      <Link
-                        href="/deals/electronics"
-                        title="Deals on Electronics"
-                        className="active:bg-neutral-300 dark:active:bg-neutral-700"
-                      >
-                        Hot new deals on electronic items such as TVs, mobile
-                        phones and household electronics
-                      </Link>
-                      <Link
-                        href="/deals/computers"
-                        title="Computer Deals"
-                        className="active:bg-neutral-300 dark:active:bg-neutral-700"
-                      >
-                        Hot new deals on computers and computer accessories.
-                      </Link>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                  <AccordionTrigger className="hover:no-underline">
-                    Browse Categories
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="flex flex-col space-y-3 p-4">
-                      {components.map((component) => (
-                        <Link
-                          key={component.title}
-                          title={component.title}
-                          href={component.href}
-                          className="active:bg-neutral-300 dark:active:bg-neutral-700"
-                        >
-                          {component.description}
-                        </Link>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-                <ModeToggle />
-              </Accordion>
-              {user && (
-                <Button
-                  className="w-full text-destructive text-md bg-transparent"
-                  onClick={
-                    user ? signOutWrapper.bind(null, setUser) : undefined
-                  }
-                >
-                  Sign out
-                </Button>
-              )}
-            </DrawerContent>
-          </Drawer>
-        </div>
+            )}
+          </DrawerContent>
+        </Drawer>
       </div>
       <div
         className={cn(
-          'absolute top-0 left-0 w-full h-[3200px] backdrop-blur-sm',
+          'absolute z-10 top-0 left-0 w-full h-[3200px] backdrop-blur-sm',
           showSearchBox ? '' : 'hidden',
         )}
         ref={searchOverLayRef}
       >
         <SearchComp
-          className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col z-1000 items-center  mt-[.75rem] left-[50%] translate-x-[-50%]"
+          className="absolute z-[100] top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col items-center  mt-[.75rem] left-[50%] translate-x-[-50%]"
           ref={searchRef}
           {...{ show, setShow }}
         />
