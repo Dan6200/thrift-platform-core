@@ -6,6 +6,7 @@ import React from 'react'
 
 interface AnimatedTextProps {
   text: string
+  delim?: string
   className?: string // Optional for styling the container
 }
 
@@ -32,9 +33,13 @@ const wordVariants = {
   },
 }
 
-export default function AnimatedText({ text, className }: AnimatedTextProps) {
+export default function AnimatedText({
+  text,
+  delim,
+  className,
+}: AnimatedTextProps) {
   // 1. Split the text into an array of words
-  const words = text.split(' ')
+  const words = text.split(delim ?? ' ')
 
   return (
     <motion.div
