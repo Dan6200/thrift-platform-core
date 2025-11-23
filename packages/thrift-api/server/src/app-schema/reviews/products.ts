@@ -39,6 +39,14 @@ export const DeleteProductReviewRequestSchema = Joi.object({
   query: Joi.object().optional(),
 })
 
+export const GetProductReviewsByProductIdRequestSchema = Joi.object({
+  params: Joi.object({
+    product_id: Joi.number().integer().positive().required(),
+  }).required(),
+  body: Joi.object().optional(),
+  query: Joi.object().optional(),
+})
+
 // Response Schemas
 export const ProductReviewResponseSchema = Joi.object({
   order_item_id: Joi.number().integer().positive().required(),
@@ -50,5 +58,12 @@ export const ProductReviewResponseSchema = Joi.object({
 })
 
 export const ProductReviewGETAllResponseSchema = Joi.array().items(
-  ProductReviewResponseSchema,
+  Joi.object({
+    order_item_id: Joi.number().integer().positive().required(),
+    rating: Joi.number().min(0.0).max(5.0).required(),
+    customer_remark: Joi.string().allow(null, ''),
+    created_at: Joi.date().iso().required(),
+    first_name: Joi.string().required(), // Added for join
+    last_name: Joi.string().required(), // Added for join
+  }),
 )
