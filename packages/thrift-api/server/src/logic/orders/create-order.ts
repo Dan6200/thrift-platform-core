@@ -10,9 +10,11 @@ export const createOrderLogic = async (
   _res: Response,
   next: NextFunction,
 ) => {
-  if (!req.userId || !req.validatedBody || !req.validatedQueryParams) {
+  if (!req.userId) {
     throw new UnauthenticatedError('Authentication required')
   }
+  if (!req.validatedBody || !req.validatedQueryParams)
+    throw new BadRequestError('Missing parameters')
 
   const { store_id, delivery_info_id } = req.validatedQueryParams
   const { items } = req.validatedBody
