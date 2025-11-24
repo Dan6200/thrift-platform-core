@@ -18,19 +18,19 @@ export const AddressLine2 = ({
   form: UseFormReturn<StoreFormType>
 }) => (
   <FormField
-      control={form.control as any}
+    control={form.control as any}
     name="store_address.address_line_2"
     render={({ field }) => (
-      <FormItem className="md:w-[45%]">
+      <FormItem>
         <FormLabel>Address Line 2</FormLabel>
         <FormControl>
           <Input
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              name={field.name}
-              value={field.value}
-              placeholder="Apartment, suite, unit, building, floor, etc."
-            />
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            name={field.name}
+            value={field.value}
+            placeholder="Apartment, suite, unit, building, floor, etc."
+          />
         </FormControl>
         <FormMessage />
       </FormItem>

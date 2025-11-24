@@ -18,19 +18,19 @@ export const ZipPostalCode = ({
   form: UseFormReturn<StoreFormType>
 }) => (
   <FormField
-      control={form.control as any}
+    control={form.control as any}
     name="store_address.zip_postal_code"
     render={({ field }) => (
-      <FormItem className="md:w-[45%]">
+      <FormItem>
         <FormLabel>Zip/Postal Code</FormLabel>
         <FormControl>
           <Input
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              name={field.name}
-              value={field.value}
-              placeholder="Zip or Postal Code"
-            />
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            name={field.name}
+            value={field.value}
+            placeholder="Zip or Postal Code"
+          />
         </FormControl>
         <FormMessage />
       </FormItem>

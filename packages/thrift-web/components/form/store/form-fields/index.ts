@@ -1,5 +1,4 @@
 export * from './store-name'
-export * from './vendor-id'
 export * from './custom-domain'
 export * from './address-line-1'
 export * from './address-line-2'

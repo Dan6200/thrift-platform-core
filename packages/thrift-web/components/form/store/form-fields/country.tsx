@@ -12,25 +12,21 @@ import {
 } from '../../../ui/form'
 import { StoreFormType } from '../types'
 
-export const Country = ({
-  form,
-}: {
-  form: UseFormReturn<StoreFormType>
-}) => (
+export const Country = ({ form }: { form: UseFormReturn<StoreFormType> }) => (
   <FormField
-      control={form.control as any}
+    control={form.control as any}
     name="store_address.country"
     render={({ field }) => (
-      <FormItem className="md:w-[45%]">
+      <FormItem>
         <FormLabel>Country</FormLabel>
         <FormControl>
           <Input
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              name={field.name}
-              value={field.value}
-              placeholder="Country"
-            />
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            name={field.name}
+            value={field.value}
+            placeholder="Country"
+          />
         </FormControl>
         <FormMessage />
       </FormItem>

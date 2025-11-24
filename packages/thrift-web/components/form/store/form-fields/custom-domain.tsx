@@ -18,19 +18,19 @@ export const CustomDomain = ({
   form: UseFormReturn<StoreFormType>
 }) => (
   <FormField
-      control={form.control as any}
+    control={form.control as any}
     name="custom_domain"
     render={({ field }) => (
-      <FormItem className="md:w-[45%]">
+      <FormItem>
         <FormLabel>Custom Domain</FormLabel>
         <FormControl>
           <Input
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              name={field.name}
-              value={field.value}
-              placeholder="yourstore.com"
-            />
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            name={field.name}
+            value={field.value}
+            placeholder="yourstore.com"
+          />
         </FormControl>
         <FormMessage />
       </FormItem>
