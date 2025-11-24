@@ -17,9 +17,11 @@ export default function CreateStore() {
 
   useEffect(() => {
     // If user is not logged in, redirect to sign-in
-    if (userAccount === null) {
-      router.push('/sign-in')
-    }
+    setTimeout(() => {
+      if (userAccount === null) {
+        router.push('/auth/login')
+      }
+    }, 2000)
   }, [userAccount, router])
 
   if (userAccount === null) {
@@ -29,7 +31,7 @@ export default function CreateStore() {
   // If user is logged in and is a vendor, show the store form
   if (userAccount.is_vendor) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <div className="flex flex-col items-center justify-center min-h-screen py-2 my-2">
         <h1 className="text-2xl font-semibold mb-6">Create New Store</h1>
         <StoreForm />
       </div>
