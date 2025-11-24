@@ -72,10 +72,10 @@ export const NavMenuSmall = ({
       >
         Thrift
       </Link>
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center justify-between space-x-2">
         <Button
           variant={'outline'}
-          className="bg-transparent"
+          className="bg-transparent self-center"
           size="icon"
           onClick={() => setShowSearchBox(true)}
           ref={toggleSearchButton}
@@ -193,25 +193,29 @@ export const NavMenuSmall = ({
               <ModeToggle />
             </Accordion>
             {user && (
-              <Button
-                className="w-full text-destructive text-md bg-transparent"
-                onClick={user ? signOutWrapper.bind(null, setUser) : undefined}
-              >
-                Sign out
-              </Button>
+              <Link href="/account">
+                <Button
+                  className="w-full text-destructive text-md bg-transparent"
+                  onClick={
+                    user ? signOutWrapper.bind(null, setUser) : undefined
+                  }
+                >
+                  Sign out
+                </Button>
+              </Link>
             )}
           </DrawerContent>
         </Drawer>
       </div>
       <div
         className={cn(
-          'absolute z-10 top-0 left-0 w-full h-[3200px] backdrop-blur-sm',
+          'absolute z-10 top-0 left-0 w-full h-screen backdrop-blur-md',
           showSearchBox ? '' : 'hidden',
         )}
         ref={searchOverLayRef}
       >
         <SearchComp
-          className="absolute z-[100] top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col items-center  mt-[.75rem] left-[50%] translate-x-[-50%]"
+          className="absolute z-10 top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col items-center  mt-[.75rem] left-[50%] translate-x-[-50%]"
           ref={searchRef}
           {...{ show, setShow }}
         />

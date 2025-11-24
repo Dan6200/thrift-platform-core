@@ -148,42 +148,40 @@ export function NavMenu({
           <ShoppingCartDrawerContent />
         </Drawer>
         {user ? (
-          <Link href="/account" passHref>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="border-none bg-transparent hover:bg-white/20 focus:bg-white/20"
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="border-none bg-transparent hover:bg-white/20 focus:bg-white/20"
+              >
+                Hello,
+                {user && user.first_name && (
+                  <span className="w-20 flex items-center justify-between">
+                    {user.first_name}
+                    <UserCircle2 />
+                  </span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="rounded-xl glass-effect">
+              <section className="flex flex-col space-y-2">
+                <Link
+                  href="/create-vendor"
+                  className="rounded-md p-2 hover:bg-white/20"
                 >
-                  Hello
-                  {user && user.first_name && (
-                    <span className="w-20 flex items-center justify-between">
-                      , {user.first_name}
-                      <UserCircle2 />
-                    </span>
-                  )}
+                  Create A Vendor Account
+                </Link>
+                <Button
+                  className="w-full text-destructive text-md bg-transparent hover:bg-destructive/20"
+                  onClick={
+                    user ? signOutWrapper.bind(null, setUser) : undefined
+                  }
+                >
+                  Sign out
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent className="rounded-xl glass-effect">
-                <section className="flex flex-col space-y-2">
-                  <Link
-                    href="/create-vendor"
-                    className="rounded-md p-2 hover:bg-white/20"
-                  >
-                    Create A Vendor Account
-                  </Link>
-                  <Button
-                    className="w-full text-destructive text-md bg-transparent hover:bg-destructive/20"
-                    onClick={
-                      user ? signOutWrapper.bind(null, setUser) : undefined
-                    }
-                  >
-                    Sign out
-                  </Button>
-                </section>
-              </PopoverContent>
-            </Popover>
-          </Link>
+              </section>
+            </PopoverContent>
+          </Popover>
         ) : (
           <Link href="/auth/login">
             <Button
