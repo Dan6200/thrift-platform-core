@@ -1,5 +1,5 @@
+import { supabase } from '@/auth/client/config'
 import { Session, User } from '@supabase/supabase-js'
-import { supabase } from './supabase'
 
 export async function createUserWithEmailAndPasswordWrapper(
   email: string,
