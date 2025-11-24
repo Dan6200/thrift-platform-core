@@ -32,6 +32,7 @@ export function ProductReviews({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [reviewFetchCount, setReviewFetchCount] = useState(0)
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -48,7 +49,11 @@ export function ProductReviews({
     }
 
     fetchReviews()
-  }, [product_id])
+  }, [product_id, reviewFetchCount])
+
+  const refetchReviews = () => {
+    setReviewFetchCount((count) => count + 1)
+  }
 
   return (
     <div className="mt-8 pt-8 border-t">
@@ -110,6 +115,7 @@ export function ProductReviews({
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         productId={product_id}
+        onReviewSubmitted={refetchReviews}
       />
     </div>
   )
