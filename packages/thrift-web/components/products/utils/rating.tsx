@@ -1,65 +1,74 @@
 'use client'
-import { Product } from '@/types/products'
+import { useState } from 'react'
 import { Star } from 'lucide-react'
 import React from 'react'
+import { cn } from '@/lib/utils'
+
+interface RatingsProps {
+  average_rating: number | null | undefined
+  review_count?: number
+  onRatingChange?: (rating: number) => void
+  isInteractive?: boolean
+}
 
 export function Ratings({
   average_rating,
-
   review_count,
-}: Pick<Product, 'average_rating' | 'review_count'>) {
+  onRatingChange,
+  isInteractive = false,
+}: RatingsProps) {
+  const [hoverRating, setHoverRating] = useState<number | null>(null)
   const stars = []
+  const rating = hoverRating ?? average_rating ?? 0
 
-  const rating = average_rating ?? 0
-
-  for (let i = 0; i < 5; i++) {
-    const diff = rating - i
-
-    if (diff >= 1) {
-      // Full star
-
-      stars.push(
-        <Star
-          key={`full-${i}`}
-          className="sm:w-6 w-4 text-secondary"
-          fill="hsl(358 88% 58%)"
-        />,
-      )
-    } else if (diff > 0) {
-      // Partial star
-
-      stars.push(
-        <div key={`partial-${i}`} className="relative sm:w-6 w-4 h-6">
-          {/* Background star */}
-          <Star
-            key={`partial-bg-${i}`}
-            className="absolute top-0 left-0 sm:w-6 w-4 text-muted-foreground/60"
-          />
-
-          {/* Foreground star */}
-          <Star
-            key={`partial-fg-${i}`}
-            className="absolute top-0 left-0 sm:w-6 w-4 text-secondary"
-            fill="hsl(358 88% 58%)"
-            style={{ clipPath: `inset(0 ${100 - diff * 100}% 0 0)` }}
-          />
-        </div>,
-      )
-    } else {
-      // Empty star
-
-      stars.push(
-        <Star
-          key={`empty-${i}`}
-          className="sm:w-6 w-4 text-muted-foreground/60"
-        />,
-      )
+  const handleClick = (index: number) => {
+    if (isInteractive && onRatingChange) {
+      onRatingChange(index + 1)
     }
   }
 
+  const handleMouseEnter = (index: number) => {
+    if (isInteractive) {
+      setHoverRating(index + 1)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (isInteractive) {
+      setHoverRating(null)
+    }
+  }
+
+  for (let i = 0; i < 5; i++) {
+    const isFilled = i < rating
+
+    stars.push(
+      <Star
+        key={`star-${i}`}
+        className={cn(
+          'sm:w-6 w-4',
+          isFilled ? 'text-secondary' : 'text-muted-foreground/60',
+          isInteractive
+            ? 'cursor-pointer transition-transform duration-200 hover:scale-125'
+            : '',
+        )}
+        fill={isFilled ? 'hsl(358 88% 58%)' : 'none'}
+        onClick={() => handleClick(i)}
+        onMouseEnter={() => handleMouseEnter(i)}
+      />,
+    )
+  }
+
   return (
-    <div className="flex w-4/5 justify-between">
-      <div className="flex items-center">{stars}</div>({review_count})
+    <div
+      className={cn(
+        'flex items-center',
+        isInteractive ? 'gap-x-1' : 'w-4/5 justify-between',
+      )}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="flex items-center">{stars}</div>
+      {!isInteractive && review_count !== undefined && `(${review_count})`}
     </div>
   )
 }

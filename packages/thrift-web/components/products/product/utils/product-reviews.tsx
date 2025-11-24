@@ -1,7 +1,12 @@
 'use client'
+import React, { useState, useEffect } from 'react'
 import { Product } from '@/types/products'
 import { Ratings } from '../../utils/rating'
 import { Button } from '@/components/ui/button'
+import { getProductReviewsByProductId } from '@/lib/api/reviews/products'
+import { ReviewCard } from './ReviewCard'
+import { WriteReviewModal } from './WriteReviewModal'
+import { Skeleton } from '@/components/ui/skeleton' // Import Skeleton
 
 interface ProductReviewsProps {
   product_id: Product['product_id']
@@ -9,13 +14,44 @@ interface ProductReviewsProps {
   review_count: Product['review_count']
 }
 
+interface Review {
+  order_item_id: number
+  rating: number
+  customer_remark: string | null
+  created_at: string
+  first_name: string
+  last_name: string
+}
+
 export function ProductReviews({
   product_id,
   average_rating,
   review_count,
 }: ProductReviewsProps) {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setIsLoading(true)
+        const data = await getProductReviewsByProductId(product_id)
+        setReviews(data)
+      } catch (err) {
+        console.error('Failed to fetch product reviews:', err)
+        setError('Failed to load reviews.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchReviews()
+  }, [product_id])
+
   return (
-    <div className="mt-8 pt-8">
+    <div className="mt-8 pt-8 border-t">
       <h3 className="w-full mx-auto text-xl lg:text-2xl mb-6 font-bold text-center">
         Customer Reviews
       </h3>
@@ -29,27 +65,52 @@ export function ProductReviews({
         Based on {review_count} reviews
       </p>
 
-      {/* Placeholder for actual reviews list */}
-      <div className="space-y-4">
-        {/* Example review item */}
-        <div className="border p-4 rounded-md glass-effect">
-          <div className="flex justify-between items-center mb-2">
-            <p className="font-semibold">John Doe</p>
-            <Ratings average_rating={4.5} review_count={1} />{' '}
-            {/* Example rating */}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            &quot;Great product, highly recommend!&quot;
-          </p>
+      {isLoading && (
+        <div className="space-y-4">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
         </div>
-        {/* Add more review items here */}
-      </div>
+      )}
+
+      {error && (
+        <p className="text-center text-destructive-foreground">{error}</p>
+      )}
+
+      {!isLoading && !error && reviews.length === 0 && (
+        <p className="text-center text-muted-foreground">
+          No reviews yet. Be the first to write one!
+        </p>
+      )}
+
+      {!isLoading && !error && reviews.length > 0 && (
+        <div className="space-y-4">
+          {reviews.map((review) => (
+            <ReviewCard
+              key={review.order_item_id} // Assuming order_item_id is unique per review
+              reviewerName={`${review.first_name} ${review.last_name[0]}.`}
+              rating={review.rating}
+              comment={review.customer_remark}
+              createdAt={review.created_at}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="mt-6 text-center">
-        <Button variant="outline" className="glass-effect">
+        <Button
+          variant="outline"
+          className="glass-effect"
+          onClick={() => setIsModalOpen(true)}
+        >
           Write a Review
         </Button>
       </div>
+
+      <WriteReviewModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        productId={product_id}
+      />
     </div>
   )
 }

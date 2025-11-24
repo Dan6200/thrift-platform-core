@@ -87,7 +87,7 @@ export function Product({ product }: { product: ProductType }) {
   }, [toast, showToast, totalItems])
   return (
     <div className="container mx-auto p-4 sm:px-8 my-20">
-      <GoBackLink className="cursor-pointer text-base md:text-lg text-blue-700 dark:text-blue-200 mb-4 block">
+      <GoBackLink className="w-fit cursor-pointer text-base md:text-lg text-blue-700 dark:text-blue-200 mb-4 block">
         <MoveLeft className="inline mr-4" />
         Go back
       </GoBackLink>
