@@ -177,6 +177,10 @@
   @apply bg-accent/10 backdrop-blur-md border border-white/10;
 }
 
+.thick-glass-effect {
+  @apply bg-accent/60 backdrop-blur-lg border border-white/10;
+}
+
 .disable-scrollbars {
   /* Chrome/Safari/Webkit */
   ::-webkit-scrollbar {
