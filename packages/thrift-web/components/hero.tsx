@@ -3,6 +3,16 @@ import { cn } from '@/lib/utils'
 import AnimatedText from './ui/animated-text'
 import { useAtomValue } from 'jotai'
 import { isSmallScreenAtom } from '@/atoms'
+import { getCldVideoUrl } from 'next-cloudinary'
+
+const dim = {
+  width: 1920,
+  height: 1080,
+}
+const videoSrc = getCldVideoUrl({
+  ...dim,
+  src: 'sellit-media/hero/laptop-unboxing-hd', // Public ID of your video
+})
 
 export function Hero({
   children,
@@ -19,13 +29,13 @@ export function Hero({
   return (
     <div className="h-screen">
       <video
-        width="1920"
-        height="1080"
-        src="/laptop-unboxing-hd.mp4" // Public ID of your video
-        playsInline={true}
-        loop={true}
-        muted={true}
+        src={videoSrc}
+        autoPlay
+        loop
+        muted
+        playsInline
         className="z-0 absolute inset-0 top-0 h-screen w-full object-cover"
+        poster="/laptop-unboxing-hd.jpg"
       />
       <div
         className={cn(
