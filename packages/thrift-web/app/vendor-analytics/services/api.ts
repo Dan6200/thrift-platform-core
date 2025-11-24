@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER || ''
+const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER || '/api'
 
 const apiService = {
   async getKPIs(storeId: string, startDate: string, endDate: string) {

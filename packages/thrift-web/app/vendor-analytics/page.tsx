@@ -1,7 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Store, BarChart3, TrendingUp } from "lucide-react";
-import Link from "next/link";
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Store, BarChart3, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 
 const Index = () => {
   return (
@@ -16,12 +22,13 @@ const Index = () => {
             </h1>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Comprehensive dashboard for multitenant e-commerce platforms. 
-            Monitor sales, analyze customer behavior, and optimize your business performance.
+            Comprehensive dashboard for multitenant e-commerce platforms.
+            Monitor sales, analyze customer behavior, and optimize your business
+            performance.
           </p>
           <Link href="/vendor-analytics/dashboard">
             <Button size="lg" className="bg-primary hover:bg-primary/90">
-              View Dashboard
+              View My Analytics
               <BarChart3 className="ml-2 h-5 w-5" />
             </Button>
           </Link>
@@ -38,7 +45,8 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Monitor your revenue, orders, and customer metrics in real-time with interactive charts and visualizations.
+                Monitor your revenue, orders, and customer metrics in real-time
+                with interactive charts and visualizations.
               </CardDescription>
             </CardContent>
           </Card>
@@ -52,7 +60,8 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Deep dive into sales performance by product, category, and channel to identify growth opportunities.
+                Deep dive into sales performance by product, category, and
+                channel to identify growth opportunities.
               </CardDescription>
             </CardContent>
           </Card>
@@ -66,14 +75,15 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Designed for multitenant platforms with store-specific analytics and customizable filtering options.
+                Designed for multitenant platforms with store-specific analytics
+                and customizable filtering options.
               </CardDescription>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Index;
+export default Index
