@@ -75,7 +75,7 @@ export async function logout(): Promise<void> {
 
   if (session) {
     // Add current session to Redis deny-list for immediate invalidation
-    await redis.set(session.user.id, 'stale', 'EX', STALE_COOKIE_TTL)
+    await redis.set(session.user.id, 'stale', { ex: STALE_COOKIE_TTL })
   }
 
   await supabase.auth.signOut()
@@ -220,11 +220,12 @@ export async function updateSession(
   // IMPORTANT: Don't remove getClaims()
   const { data } = await supabase.auth.getUser() // Personal Note: I believe getUser can be used in place of getClaims.
 
-  let sessionVerified = !!data?.user
+  let sessionVerified = !!data.user
 
-  if (sessionVerified) {
+  // Redundant (data.user check) but quells the compiler
+  if (sessionVerified && data.user) {
     try {
-      const isStale = await redis.get(data?.user?.id) // Use user ID for deny-list check
+      const isStale = await redis.get(data.user.id) // Use user ID for deny-list check
       if (isStale) {
         sessionVerified = false // Mark session as stale if found in Redis
         await supabase.auth.signOut() // Force sign out from Supabase
