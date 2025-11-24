@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 interface RatingsProps {
   average_rating: number | null | undefined
-  review_count?: number
+  review_count?: number | null
   onRatingChange?: (rating: number) => void
   isInteractive?: boolean
 }
