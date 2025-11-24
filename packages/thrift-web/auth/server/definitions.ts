@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import redis from '@/lib/redis' // Upstash Redis client
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 const STALE_COOKIE_TTL = 60 * 5 // 5 minutes
 
@@ -11,7 +12,7 @@ const createSupabaseServerClient = async () => {
   const cookieStore = await cookies()
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!, // Use service role key for admin actions, or anon key for user-specific
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     {
       cookies: {
         getAll() {
@@ -65,7 +66,7 @@ export async function verifySession() {
  * Deletes the user's session by signing out from Supabase
  * and proactively adding the session ID to the Redis stale-session cache.
  */
-export async function deleteSessionCookie(): Promise<void> {
+export async function logout(): Promise<void> {
   const cookieStore = await cookies()
   const supabase = await createSupabaseServerClient()
   const {
@@ -83,6 +84,103 @@ export async function deleteSessionCookie(): Promise<void> {
   cookieStore.delete('sb-refresh-token')
 }
 
+const SignUpSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
+  dob: z.string(),
+  country: z.string().min(1),
+  is_vendor: z.boolean(),
+})
+
+export async function signup(formData: FormData) {
+  const supabase = await createSupabaseServerClient()
+
+  const validatedFields = SignUpSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+    first_name: formData.get('first_name'),
+    last_name: formData.get('last_name'),
+    dob: formData.get('dob'),
+    country: formData.get('country'),
+    is_vendor: formData.get('is_vendor') === 'true',
+  })
+
+  if (!validatedFields.success) {
+    return {
+      error: 'Invalid fields!',
+      data: validatedFields.error.flatten().fieldErrors,
+    }
+  }
+
+  const { is_vendor, ...rest } = validatedFields.data
+
+  const { error } = await supabase.auth.signUp({
+    email: rest.email,
+    password: rest.password,
+    options: {
+      data: {
+        ...rest,
+        is_vendor: is_vendor || false,
+        is_customer: !is_vendor,
+      },
+    },
+  })
+
+  if (error) {
+    return {
+      error: 'Could not sign up user.',
+      data: null,
+    }
+  }
+
+  return {
+    error: null,
+    data: { message: 'Confirmation link sent.' },
+  }
+}
+
+const LoginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(1, 'Password is required.'),
+})
+
+export async function login(formData: FormData) {
+  const supabase = await createSupabaseServerClient()
+
+  const validatedFields = LoginSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  })
+
+  if (!validatedFields.success) {
+    return {
+      error: 'Invalid fields!',
+      data: validatedFields.error.flatten().fieldErrors,
+    }
+  }
+
+  const { email, password } = validatedFields.data
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (error) {
+    return {
+      error: 'Could not authenticate user.',
+      data: null,
+    }
+  }
+
+  return {
+    error: null,
+    data: { message: 'Logged in successfully.' },
+  }
+}
+
 export async function updateSession(
   request: NextRequest,
   PUBLIC_PATHS: string[],
@@ -94,7 +192,7 @@ export async function updateSession(
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     {
       cookies: {
         getAll() {
@@ -107,8 +205,8 @@ export async function updateSession(
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value }) =>
-            supabaseResponse.cookies.set(name, value),
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options),
           )
         },
       },
