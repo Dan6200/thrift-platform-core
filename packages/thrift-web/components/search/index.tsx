@@ -33,6 +33,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             <SearchBox
               onClick={() => setShow(true)}
               submitIconComponent={SearchIcon as any}
+              searchAsYouType
               resetIconComponent={X as any}
               classNames={{
                 root: 'w-full',
@@ -46,10 +47,10 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             />
           </span>
           <Hits
-            {...{ isSmallScreen }}
+            {...{ isSmallScreen, setShow }}
             hitComponent={Hit as any}
             // @ts-ignore
-            className={`p-8 border relative z-1000 top-5 rounded-md w-[80vw] md:w-[50vw] h-[80vh] thick-glass-effect overflow-y-scroll ${show ? '' : ' hidden'}`}
+            className={`p-8 border relative z-1000 top-5 rounded-md w-[90vw] md:w-[50vw] h-[80vh] ${isSmallScreen ? 'bg-transparent border-white/20' : 'thick-glass-effect'} overflow-y-scroll ${show ? '' : ' hidden'}`}
           />
         </div>
       </InstantSearch>
@@ -59,58 +60,37 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
 
 Search.displayName = 'Search'
 
-const Hit = ({ isSmallScreen, hit }: { isSmallScreen: boolean; hit: any }) => {
+const Hit = ({
+  isSmallScreen,
+  hit,
+  setShow,
+}: {
+  isSmallScreen: boolean
+  hit: any
+  setShow: Dispatch<SetStateAction<boolean>>
+}) => {
   const router = useRouter()
   return (
     <article
-      className="my-4 p-2 rounded-md hover:bg-foreground/10"
+      className="my-4 p-2 rounded-md text-primary-foreground/80 hover:bg-foreground/10"
       onClick={() => {
+        setShow(false)
         router.push(`/products/${hit.product_id}`)
       }}
       key={hit.product_id}
     >
       <h1 className="font-bold text-md sm:text-lg mb-2">
-        <TruncatedHighlight
+        <Highlight
           attribute="title"
           hit={hit}
-          maxLength={isSmallScreen ? 50 : 100}
+          classNames={{
+            root: 'bg-transparent',
+            highlighted: 'bg-transparent font-extrabold text-foreground',
+          }}
         />
       </h1>
-      <p>{hit.description.join('.  ').slice(0, 50)}...</p>
+      <p>{hit.description.join('.  ').slice(0, isSmallScreen ? 30 : 50)}...</p>
     </article>
-  )
-}
-
-const TruncatedHighlight = ({
-  attribute,
-  hit,
-  maxLength,
-}: {
-  attribute: string
-  hit: any
-  maxLength: number
-}) => {
-  const { value } = hit._highlightResult[attribute]
-  const truncatedHighlightText = truncateAndHighlight(value, maxLength)
-  return <span dangerouslySetInnerHTML={{ __html: truncatedHighlightText }} />
-}
-
-const truncateAndHighlight = (
-  text: string,
-  length: number,
-  highlightTag = 'mark',
-) => {
-  let truncatedText = text.substring(0, length)
-
-  if (text.length > length) {
-    truncatedText += '...'
-  }
-
-  return truncatedText.replace(
-    new RegExp(`<${highlightTag}>(.*?)<\/${highlightTag}>`, 'g'),
-    (_, p1) => {
-      return `<${highlightTag}>${p1}</${highlightTag}>`
-    },
   )
 }
 
