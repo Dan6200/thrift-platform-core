@@ -15,14 +15,3 @@ export const RegisterRequestSchema = joi.object({
   query: joi.object().optional(),
   params: joi.object().optional(),
 })
-
-export const LoginRequestSchema = joi.object({
-  body: joi
-    .object({
-      email: joi.string().email().required(),
-      password: joi.string().required(),
-    })
-    .required(),
-  query: joi.object().optional(),
-  params: joi.object().optional(),
-})

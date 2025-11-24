@@ -40,22 +40,3 @@ export const registerLogic = async (
 
   res.status(StatusCodes.CREATED).json(data)
 }
-
-export const loginLogic = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const { email, password } = req.body
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) {
-    throw new BadRequestError(error.message)
-  }
-
-  res.status(StatusCodes.OK).json(data)
-}
