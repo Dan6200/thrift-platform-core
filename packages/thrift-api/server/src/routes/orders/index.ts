@@ -1,4 +1,5 @@
 import express from 'express'
+import Joi from 'joi' // New import
 import { StatusCodes } from 'http-status-codes'
 import { validate } from '../../request-validation.js'
 import { validateDbResult } from '../../db-result-validation.js'
@@ -8,11 +9,13 @@ import {
   createOrderLogic,
   getAllOrdersLogic,
   getOrderLogic,
+  findReviewableItemLogic,
 } from '../../logic/orders/index.js'
 import {
   CreateOrderRequestSchema,
   GetAllOrdersRequestSchema,
   GetOrderRequestSchema,
+  FindReviewableItemRequestSchema,
   OrderResponseSchema,
   OrderGETAllResponseSchema,
 } from '../../app-schema/orders/index.js'
@@ -36,6 +39,18 @@ router
     validateDbResult(OrderGETAllResponseSchema),
     sendResponse(OK),
   )
+
+router.route('/reviewable-item').get(
+  authenticateUser,
+  validate(FindReviewableItemRequestSchema),
+  findReviewableItemLogic,
+  validateDbResult(
+    Joi.object({
+      order_item_id: Joi.number().integer().positive().required(),
+    }),
+  ),
+  sendResponse(OK),
+)
 
 router
   .route('/:order_id')
