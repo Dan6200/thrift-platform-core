@@ -1,18 +1,17 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { User } from '@supabase/supabase-js'
+import { useEffect, useState } from 'react'
 import { useSetAtom } from 'jotai'
 import { authEffectAtom } from '@/atoms/auth-effect'
 
-export const AuthProvider = () => {
+export const AuthInitializer = () => {
   const initializeAuth = useSetAtom(authEffectAtom)
-  const [, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     initializeAuth({})
-    setLoading(true)
+    setLoading(false)
   }, [initializeAuth])
 
-  return null
+  return loading
 }
