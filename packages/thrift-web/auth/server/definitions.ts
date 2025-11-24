@@ -8,7 +8,7 @@ import { z } from 'zod'
 const STALE_COOKIE_TTL = 60 * 5 // 5 minutes
 
 // Helper to create a Supabase server client
-const createSupabaseServerClient = async () => {
+export const createSupabaseServerClient = async () => {
   const cookieStore = await cookies()
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
