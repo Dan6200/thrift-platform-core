@@ -11,7 +11,7 @@ export default async function Home() {
   return (
     <div className="w-full mx-auto space-y-8 md:space-y-16">
       <Hero
-        className={`${font?.className} text-background dark:text-foreground flex flex-col gap-8 md:gap-16`}
+        className={`${font?.className} text-background dark:text-foreground flex flex-col gap-16 md:gap-32`}
       >
         <CTA />
       </Hero>
