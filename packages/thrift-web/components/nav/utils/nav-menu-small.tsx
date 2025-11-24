@@ -209,7 +209,7 @@ export const NavMenuSmall = ({
       </div>
       <div
         className={cn(
-          'absolute z-10 top-0 left-0 w-full h-screen backdrop-blur-md',
+          'absolute z-10 top-0 left-0 w-full h-screen bg-background/60 backdrop-blur-md',
           showSearchBox ? '' : 'hidden',
         )}
         ref={searchOverLayRef}
