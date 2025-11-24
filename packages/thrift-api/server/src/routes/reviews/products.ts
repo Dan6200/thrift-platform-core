@@ -9,18 +9,22 @@ import {
   getProductReviewLogic,
   updateProductReviewLogic,
   deleteProductReviewLogic,
+  getProductReviewsByProductIdLogic,
 } from '../../logic/reviews/products/index.js'
 import {
   CreateProductReviewRequestSchema,
   GetProductReviewRequestSchema,
   UpdateProductReviewRequestSchema,
   DeleteProductReviewRequestSchema,
+  GetProductReviewsByProductIdRequestSchema,
   ProductReviewResponseSchema,
+  ProductReviewGETAllResponseSchema,
 } from '../../app-schema/reviews/products.js'
 
 const router = express.Router()
 const { CREATED, OK, NO_CONTENT } = StatusCodes
 
+// Route for individual order_item_id related review operations
 router
   .route('/:order_item_id')
   .post(
@@ -50,5 +54,14 @@ router
     deleteProductReviewLogic,
     sendResponse(NO_CONTENT),
   )
+
+// New route for fetching all reviews by product_id
+router.route('/product/:product_id').get(
+  // No authentication needed to view reviews, typically public
+  validate(GetProductReviewsByProductIdRequestSchema),
+  getProductReviewsByProductIdLogic,
+  validateDbResult(ProductReviewGETAllResponseSchema),
+  sendResponse(OK),
+)
 
 export default router
