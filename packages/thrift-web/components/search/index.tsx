@@ -95,7 +95,7 @@ function CustomHits({
     return (
       <div className="my-2">
         <p className="capitalize animate-pulse">
-          Please Wait for Search Engine to come online...
+          Please Wait for Search to come online...
         </p>
         <div className="animate-pulse pt-6">
           {Array(10)
