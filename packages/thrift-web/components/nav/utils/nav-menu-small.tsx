@@ -69,7 +69,7 @@ export const NavMenuSmall = ({
   return (
     <div
       className={cn(
-        'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/10',
+        'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/60 dark:bg-accent/20',
         showSearchBox ? '' : 'relative',
       )}
     >
@@ -82,7 +82,7 @@ export const NavMenuSmall = ({
       <div className="flex items-center justify-between space-x-2">
         <Button
           variant={'outline'}
-          className="bg-transparent self-center"
+          className="bg-transparent self-center border-none"
           size="icon"
           onClick={() => setShowSearchBox(true)}
           ref={toggleSearchButton}
@@ -98,7 +98,7 @@ export const NavMenuSmall = ({
           <Button
             variant="outline"
             size="icon"
-            className="my-2 p-0 w-10 bg-transparent"
+            className="my-2 p-0 w-10 bg-transparent border-none"
           >
             <ShoppingCart className="w-5" />
           </Button>
@@ -119,7 +119,11 @@ export const NavMenuSmall = ({
         )}
         <Drawer direction="right">
           <DrawerTrigger asChild>
-            <Button variant="outline" className="bg-transparent" size="icon">
+            <Button
+              variant="outline"
+              className="bg-transparent border-none"
+              size="icon"
+            >
               <Menu />
             </Button>
           </DrawerTrigger>
