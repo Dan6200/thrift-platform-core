@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils'
 import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
 import { Profile } from '@/types/profile'
+import { usePathname } from 'next/navigation'
 
 type SetUser = ReturnType<typeof useSetAtom<Profile | null, any[], any>>
 
@@ -42,6 +43,12 @@ export const NavMenuSmall = ({
   const searchRef = useRef<null | HTMLDivElement>(null)
   const toggleSearchButton = useRef<null | HTMLButtonElement>(null)
   const [show, setShow] = useState(false)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setShow(false)
+    setShowSearchBox(false)
+  }, [pathname])
 
   useEffect(() => {
     document.addEventListener('click', hide)
@@ -217,7 +224,7 @@ export const NavMenuSmall = ({
         <SearchComp
           className="absolute z-10 top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col items-center  mt-[.75rem] left-[50%] translate-x-[-50%]"
           ref={searchRef}
-          {...{ show, setShow }}
+          {...{ show, setShow, setShowSearchBox }}
         />
       </div>
     </div>

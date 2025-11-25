@@ -28,6 +28,7 @@ import Search from '@/components/search'
 import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
 import { Profile } from '@/types/profile'
+import { usePathname } from 'next/navigation'
 
 type SetUser = ReturnType<typeof useSetAtom<Profile | null, any[], any>>
 
@@ -40,6 +41,7 @@ export function NavMenu({
   user: Profile | null
   setUser: SetUser
 }) {
+  const pathname = usePathname()
   const totalItems = useAtomValue(getTotalCountAtom)
   const searchRef = useRef<null | HTMLDivElement>(null)
   const [show, setShow] = useState(false)
@@ -52,6 +54,9 @@ export function NavMenu({
       setShow(false)
     }
   }
+  useEffect(() => {
+    setShow(false)
+  }, [pathname])
   return (
     <NavigationMenu
       className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 rounded-xl shadow-lg border border-white/20 bg-accent/60 dark:bg-accent/20`}
