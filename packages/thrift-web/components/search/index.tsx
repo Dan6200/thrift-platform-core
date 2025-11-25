@@ -46,12 +46,15 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
               }}
             />
           </span>
-          <Hits
-            {...{ isSmallScreen, setShow }}
-            hitComponent={Hit as any}
-            // @ts-ignore
+          <div
             className={`p-8 border relative z-1000 top-5 rounded-md w-[90vw] md:w-[50vw] h-[80vh] ${isSmallScreen ? 'bg-transparent border-white/20' : 'thick-glass-effect'} overflow-y-scroll ${show ? '' : ' hidden'}`}
-          />
+          >
+            <Hits {...{ isSmallScreen, setShow }} hitComponent={Hit as any} />
+            <X
+              className="w-fit absolute right-5 top-5 border rounded border-white/20 pointer"
+              onClick={() => setShow(false)}
+            />
+          </div>
         </div>
       </InstantSearch>
     )
@@ -60,21 +63,12 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
 
 Search.displayName = 'Search'
 
-const Hit = ({
-  isSmallScreen,
-  hit,
-  setShow,
-}: {
-  isSmallScreen: boolean
-  hit: any
-  setShow: Dispatch<SetStateAction<boolean>>
-}) => {
+const Hit = ({ hit }: { hit: any }) => {
   const router = useRouter()
   return (
     <article
-      className="my-4 p-2 rounded-md text-primary-foreground/80 hover:bg-foreground/10"
+      className="my-4 p-2 rounded-md text-foreground/70 dark:text-foreground/80 hover:bg-foreground/10"
       onClick={() => {
-        setShow(false)
         router.push(`/products/${hit.product_id}`)
       }}
       key={hit.product_id}
@@ -89,7 +83,7 @@ const Hit = ({
           }}
         />
       </h1>
-      <p>{hit.description.join('.  ').slice(0, isSmallScreen ? 30 : 50)}...</p>
+      <p>{hit.description.join('.  ').slice(0, 50)}...</p>
     </article>
   )
 }
