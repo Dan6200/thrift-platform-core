@@ -19,11 +19,12 @@ const { searchClient } = instantMeiliSearch(
 type SearchProps = {
   show: boolean
   setShow: Dispatch<SetStateAction<boolean>>
-  className: string
+  setShowSearchBox?: Dispatch<SetStateAction<boolean>>
+  className?: string
 }
 
 const Search = forwardRef<HTMLDivElement, SearchProps>(
-  ({ show, setShow, className }, searchRef) => {
+  ({ show, setShow, setShowSearchBox, className }, searchRef) => {
     const isSmallScreen = useAtomValue(isSmallScreenAtom)
     return (
       //@ts-ignore
@@ -49,10 +50,31 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
           <div
             className={`p-8 border relative z-1000 top-5 rounded-md w-[90vw] md:w-[50vw] h-[80vh] ${isSmallScreen ? 'bg-transparent border-white/20' : 'thick-glass-effect'} overflow-y-scroll ${show ? '' : ' hidden'}`}
           >
-            <Hits {...{ isSmallScreen, setShow }} hitComponent={Hit as any} />
+            {(
+              <Hits {...{ isSmallScreen, setShow }} hitComponent={Hit as any} />
+            ) || (
+              <div className="my-2">
+                <p className="capitalize animate-pulse">
+                  Please Wait for Search Engine to come online...
+                </p>
+                <div className="animate-pulse pt-6">
+                  {Array(10)
+                    .fill(0)
+                    .map((_, index) => (
+                      <div
+                        className="rounded-md h-8 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"
+                        key={index}
+                      ></div>
+                    ))}
+                </div>
+              </div>
+            )}
             <X
               className="w-fit absolute right-5 top-5 border rounded border-white/20 pointer"
-              onClick={() => setShow(false)}
+              onClick={() => {
+                setShow(false)
+                setShowSearchBox && setShowSearchBox(false)
+              }}
             />
           </div>
         </div>
