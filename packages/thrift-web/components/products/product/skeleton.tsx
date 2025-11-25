@@ -11,10 +11,8 @@ export function ProductSkeleton() {
         <MoveLeft className="inline mr-4" />
         Go back
       </a>
-      <div className="animate-pulse mb-16">
-        <div className="rounded h-4 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"></div>
-        <div className="rounded h-4 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"></div>
-        <div className="rounded h-4 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"></div>
+      <div className="animate-pulse mb-8">
+        <div className="rounded-md h-8 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"></div>
       </div>
       <Card
         className="flex px-4 py-6 sm:px-8 sm:py-10 flex-col gap-5 lg:gap-7 lg:flex-row items-center rounded-xl w-full lg:mx-auto"
@@ -51,11 +49,11 @@ export function ProductSkeleton() {
             About This Product
           </h3>
           <div className="animate-pulse pt-6">
-            {Array(30)
+            {Array(10)
               .fill(0)
               .map((_, index) => (
                 <div
-                  className="rounded h-4 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"
+                  className="rounded-md h-8 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"
                   key={index}
                 ></div>
               ))}
