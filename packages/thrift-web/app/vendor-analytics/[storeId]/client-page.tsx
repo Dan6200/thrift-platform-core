@@ -8,7 +8,7 @@ import { SalesBreakdown } from '@/components/analytics/SalesBreakdown'
 import { OrdersTable } from '@/components/analytics/OrdersTable'
 import { CustomerInsights } from '@/components/analytics/CustomerInsights'
 import { ProductPerformance } from '@/components/analytics/ProductPerformance'
-import apiService from '@/app/vendor-analytics/services/api'
+import { getKPIs, getRevenueData } from '@/lib/api/analytics'
 import { InventoryAlerts } from '@/components/analytics/InventoryAlerts'
 import type {
   AnalyticsKPIs,
@@ -83,16 +83,12 @@ export default function AnalyticsClient({
 
       try {
         setIsLoadingKPIs(true)
-        const kpis = await apiService.getKPIs(storeId, startDate, endDate)
+        const kpis = await getKPIs(storeId, startDate, endDate)
         setKpiData(kpis)
         setIsLoadingKPIs(false)
 
         setIsLoadingRevenue(true)
-        const revenue = await apiService.getRevenueData(
-          storeId,
-          startDate,
-          endDate,
-        )
+        const revenue = await getRevenueData(storeId, startDate, endDate)
         setRevenueData(revenue)
         setIsLoadingRevenue(false)
 

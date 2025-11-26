@@ -1,4 +1,12 @@
-import apiService from '@/app/vendor-analytics/services/api'
+import {
+  getKPIs,
+  getRevenueData,
+  getSalesData,
+  getRecentOrders,
+  getCustomerData,
+  getProductPerformance,
+  getLowStockProducts,
+} from '@/lib/api/analytics'
 import AnalyticsClient from './client-page'
 
 export default async function AnalyticsPage({
@@ -23,13 +31,13 @@ export default async function AnalyticsPage({
     initialProducts,
     initialLowStockProducts,
   ] = await Promise.all([
-    apiService.getKPIs(storeId, startDate, endDate),
-    apiService.getRevenueData(storeId, startDate, endDate),
-    apiService.getSalesData(storeId),
-    apiService.getRecentOrders(storeId),
-    apiService.getCustomerData(storeId),
-    apiService.getProductPerformance(storeId),
-    apiService.getLowStockProducts(storeId),
+    getKPIs(storeId, startDate, endDate),
+    getRevenueData(storeId, startDate, endDate),
+    getSalesData(storeId),
+    getRecentOrders(storeId),
+    getCustomerData(storeId),
+    getProductPerformance(storeId),
+    getLowStockProducts(storeId),
   ])
 
   return (
