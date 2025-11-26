@@ -33,7 +33,7 @@ export const SelectQuantity = ({
       <DialogTitle>Purchase Item</DialogTitle>
     </DialogHeader>
     <div className="flex flex-col md:flex-row items-center w-full">
-      <div className="rounded-md bg-white shadow-md border p-0 w-44 sm:w-72 md:w-[50%] flex items-center h-44">
+      <div className="rounded-md bg-white shadow-md p-0 w-44 sm:w-72 md:w-[50%] flex items-center h-44">
         <ProductImage
           className="object-contain sm:w-[80%] mx-auto max-h-40 object-center"
           imgData={imgData}

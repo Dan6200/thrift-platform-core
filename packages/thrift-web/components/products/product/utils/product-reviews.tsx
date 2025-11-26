@@ -56,7 +56,7 @@ export function ProductReviews({
   }
 
   return (
-    <div className="mt-8 pt-8 border-t">
+    <div className="mt-8 pt-8">
       <h3 className="w-full mx-auto text-xl lg:text-2xl mb-6 font-bold text-center">
         Customer Reviews
       </h3>
