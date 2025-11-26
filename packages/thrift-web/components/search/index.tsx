@@ -91,7 +91,7 @@ function CustomHits({
   const { results } = useInstantSearch()
 
   // Initial state before any search is performed
-  if (!results || results.query === '') {
+  if (!results) {
     return (
       <div className="my-2">
         <p className="capitalize animate-pulse">
@@ -138,6 +138,10 @@ function CustomHits({
   )
 }
 
+import { CldImage } from 'next-cloudinary'
+
+// ... (rest of the file remains the same until the Hit component)
+
 const Hit = ({
   hit,
   setShow,
@@ -149,9 +153,13 @@ const Hit = ({
   setShowSearchBox?: Dispatch<SetStateAction<boolean>>
 }) => {
   const router = useRouter()
+  // Find the display image or fall back to the first image
+  const displayImage =
+    hit.media?.find((m: any) => m.is_display_image) || hit.media?.[0]
+
   return (
     <article
-      className="my-4 p-2 rounded-md text-foreground/70 dark:text-foreground/80 hover:bg-foreground/10 cursor-pointer"
+      className="my-4 p-2 rounded-md text-foreground/70 dark:text-foreground/70 hover:bg-foreground/10 cursor-pointer flex items-center gap-4"
       onClick={() => {
         router.push(`/products/${hit.product_id}`)
         setShow(false) // Close search on navigation
@@ -159,17 +167,31 @@ const Hit = ({
       }}
       key={hit.product_id}
     >
-      <h1 className="font-bold text-md sm:text-lg mb-2">
-        <Highlight
-          attribute="title"
-          hit={hit}
-          classNames={{
-            root: 'bg-transparent',
-            highlighted: 'bg-transparent font-extrabold text-foreground',
-          }}
-        />
-      </h1>
-      <p>{hit.description.join('.  ').slice(0, 50)}...</p>
+      {displayImage && (
+        <div className="w-16 h-16 relative flex-shrink-0">
+          <CldImage
+            src={displayImage.filepath}
+            alt={hit.title}
+            fill
+            className="object-cover rounded-md"
+          />
+        </div>
+      )}
+      <div className="flex-grow">
+        <h1 className="font-bold sm:text-lg mb-1">
+          <Highlight
+            attribute="title"
+            hit={hit}
+            classNames={{
+              root: 'bg-transparent',
+              highlighted: 'bg-transparent font-extrabold text-foreground',
+            }}
+          />
+        </h1>
+        <p className="text-sm sm:text-base">
+          {hit.description.join('. ').slice(0, 70)}...
+        </p>
+      </div>
     </article>
   )
 }
