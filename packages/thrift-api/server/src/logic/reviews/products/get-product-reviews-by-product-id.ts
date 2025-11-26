@@ -19,7 +19,8 @@ export const getProductReviewsByProductIdLogic = async (
         'p.last_name',
       )
       .join('order_items as oi', 'pr.order_item_id', 'oi.order_item_id')
-      .join('products as prod', 'oi.product_id', 'prod.product_id') // Corrected join condition for product_id
+      .join('product_variants as pv', 'oi.variant_id', 'pv.variant_id')
+      .join('products as prod', 'pv.product_id', 'prod.product_id') // Corrected join condition for product_id
       .join('profiles as p', 'pr.customer_id', 'p.id')
       .where('prod.product_id', product_id)
       .orderBy('pr.created_at', 'desc')
