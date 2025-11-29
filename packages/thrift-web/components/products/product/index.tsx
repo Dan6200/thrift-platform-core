@@ -72,7 +72,7 @@ export function Product({ product }: { product: ProductType }) {
       {/* Main Product Card */}
       <Card className="flex flex-col lg:flex-row gap-8 rounded-xl w-full overflow-clip">
         {/* Left Side: Image */}
-        <CardContent className="w-fit p-0 bg-transparent border">
+        <CardContent className="w-fit p-0 bg-transparent">
           <ProductImage
             imgData={displayImg}
             className="object-contain h-full"
