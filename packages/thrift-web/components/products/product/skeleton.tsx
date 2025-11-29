@@ -13,7 +13,7 @@ export function ProductSkeleton() {
       {/* Main Product Card Skeleton */}
       <Card className="flex flex-col lg:flex-row gap-8 p-6 sm:p-8 rounded-xl w-full animate-pulse">
         {/* Left Side: Image Skeleton */}
-        <CardContent className="w-full lg:w-1/2 p-0">
+        <CardContent className="w-full lg:w-1/2 h-fit">
           <Skeleton className="w-full h-96 md:h-[32rem] rounded-lg" />
         </CardContent>
 
