@@ -3,13 +3,33 @@ import { ProductsHome } from '@/components/products/home-page'
 import { MoveRight } from 'lucide-react'
 import { Hero } from '@/components/hero'
 import { CTA } from '@/components/cta'
+import { Suspense } from 'react'
+import { HeroLoading } from '@/components/hero-loading'
+import { verifySession } from '@/auth/server/definitions'
 
 export default async function Home() {
+  let isAuthenticated = true
+  try {
+    await verifySession()
+  } catch (error) {
+    isAuthenticated = false
+  }
+
   return (
     <div className="w-full mx-auto space-y-8 md:space-y-16">
-      <Hero className="text-background dark:text-foreground flex flex-col gap-16 md:gap-32">
-        <CTA />
-      </Hero>
+      {!isAuthenticated && (
+        <Suspense
+          fallback={
+            <HeroLoading>
+              <CTA />
+            </HeroLoading>
+          }
+        >
+          <Hero className="text-background dark:text-foreground flex flex-col gap-16 md:gap-32">
+            <CTA />
+          </Hero>
+        </Suspense>
+      )}
       <ProductsHome />
       <Link
         href="/products"
