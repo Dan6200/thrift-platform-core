@@ -91,7 +91,7 @@ function CustomHits({
   const { results } = useInstantSearch()
 
   // Initial state before any search is performed
-  if (!results) {
+  if (!results && (results as any)?.query) {
     return (
       <div className="my-2">
         <p className="capitalize animate-pulse">

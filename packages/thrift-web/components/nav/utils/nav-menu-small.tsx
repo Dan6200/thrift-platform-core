@@ -69,7 +69,7 @@ export const NavMenuSmall = ({
   return (
     <div
       className={cn(
-        'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16 rounded-xl shadow-lg bg-accent/60 dark:bg-accent/20',
+        'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16',
         showSearchBox ? '' : 'relative',
       )}
     >

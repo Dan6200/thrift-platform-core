@@ -50,14 +50,9 @@ export default function AnimatedText({
     >
       {words.map((word, index) => (
         <React.Fragment key={index}>
-          <motion.span
-            className="inline-block mr-2" // Keep words on the same line with a small margin
-            variants={wordVariants}
-          >
+          <motion.span className="block w-full" variants={wordVariants}>
             {word}
           </motion.span>
-          {/* Add a non-breaking space after each word (except the last) */}
-          {index < words.length - 1 && '\u00A0'}
         </React.Fragment>
       ))}
     </motion.div>
