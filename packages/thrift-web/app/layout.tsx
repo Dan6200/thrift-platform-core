@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={font?.className + ' h-fit w-full'}>
+      <body className={font?.className}>
         <Providers>
           <Resizer>
             <Nav />

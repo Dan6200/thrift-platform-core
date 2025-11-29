@@ -4,6 +4,7 @@ import { Product } from '@/components/products/product'
 import getProductById from '../get-product-by-id'
 import getProducts from '../get-products'
 import { ProductData, ProductSchema } from '@/types/products'
+import { notFound } from 'next/navigation'
 
 export default async function ProductPage({
   params,
@@ -13,8 +14,7 @@ export default async function ProductPage({
   const { id } = await params
   let response = await getProductById(+id)
   if (response == undefined) {
-    // TODO: Add 404 page
-    throw new Error('Product not found')
+    throw notFound()
   }
   ProductSchema.parse(response)
   const product = response
