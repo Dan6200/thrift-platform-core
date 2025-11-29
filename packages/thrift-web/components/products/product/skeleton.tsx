@@ -1,65 +1,64 @@
 'use client'
 import { MoveLeft } from 'lucide-react'
-import { Button } from '../../ui/button'
 import { Card, CardContent } from '../../ui/card'
-import { Price } from './utils/price'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
 
 export function ProductSkeleton() {
   return (
-    <div className="container mx-auto p-5 my-20">
-      <a className="cursor-pointer text-sm text-blue-700 dark:text-blue-200 mb-8 block">
-        <MoveLeft className="inline mr-4" />
-        Go back
-      </a>
-      <div className="animate-pulse mb-8">
-        <div className="rounded-md h-8 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"></div>
-      </div>
-      <Card
-        className="flex px-4 py-6 sm:px-8 sm:py-10 flex-col gap-5 lg:gap-7 lg:flex-row items-center rounded-xl w-full lg:mx-auto"
-        id="product-card-skeleton"
-      >
-        <CardContent
-          id="product-content-skeleton"
-          className="flex flex-col p-0 w-full lg:w-[45%] lg:h-full items-center justify-between"
-        >
-          <div
-            className="animate-pulse bg-white h-96 sm:h-[44rem] rounded-lg mx-auto py-4 w-full"
-            id="img-skeleton"
-          ></div>
-          <div className="flex flex-col my-4 p-2 sm:p-4 w-full sm:w-96 justify-between sm:h-48">
-            <Price netPrice={0} listPrice={0} />
-            <div className="flex mb-4">
-              <p>
-                items left:{'\u00A0'.repeat(4)}
-                {0}
-              </p>
-            </div>
-            <div className="flex w-full mb-4 justify-between">
-              <Button className="w-28">Add To Cart</Button>
-              <Button className="w-28">Buy Now </Button>
-            </div>
-          </div>
+    <div className="container mx-auto p-4 sm:p-8 my-10 md:my-20 h-full">
+      {/* Go Back Link Skeleton */}
+      <Skeleton className="h-7 w-32 my-4 sm:my-8" />
+
+      {/* Main Product Card Skeleton */}
+      <Card className="flex flex-col lg:flex-row gap-8 p-6 sm:p-8 rounded-xl w-full animate-pulse">
+        {/* Left Side: Image Skeleton */}
+        <CardContent className="w-full lg:w-1/2 p-0">
+          <Skeleton className="w-full h-96 md:h-[32rem] rounded-lg" />
         </CardContent>
-        <div className="border-b-2 sm:border-l-2 sm:border-b-0 block w-[80%] sm:w-[.5pt] sm:h-80"></div>
-        <CardContent
-          className="p-0 px-2 w-full lg:w-[50%]"
-          id="product-description-skeleton"
-        >
-          <h3 className="w-full mx-auto my-8 text-xl sm:text-lg font-bold text-center">
-            About This Product
-          </h3>
-          <div className="animate-pulse pt-6">
-            {Array(10)
-              .fill(0)
-              .map((_, index) => (
-                <div
-                  className="rounded-md h-8 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"
-                  key={index}
-                ></div>
-              ))}
+
+        {/* Right Side: Details Skeleton */}
+        <CardContent className="w-full lg:w-1/2 p-0 flex flex-col justify-center">
+          <Skeleton className="h-10 w-3/4 mb-6" /> {/* Title */}
+          <Skeleton className="h-8 w-1/4 mb-4" /> {/* Price */}
+          <Skeleton className="h-6 w-1/3 mb-6" /> {/* Items left */}
+          <div className="space-y-4 mb-6">
+            <Skeleton className="h-10 w-full" /> {/* Variant Selector */}
+            <Skeleton className="h-10 w-full" /> {/* Variant Selector */}
+          </div>
+          <div className="flex items-center gap-4 mb-6">
+            <Skeleton className="h-12 w-32" /> {/* Quantity Selector */}
+          </div>
+          <div className="flex flex-col gap-4">
+            <Skeleton className="h-12 w-full" /> {/* Add to Cart Button */}
+            <Skeleton className="h-12 w-full" /> {/* Buy Now Button */}
           </div>
         </CardContent>
       </Card>
+
+      <div className="w-full lg:w-2/3 mx-auto mt-16 animate-pulse">
+        {/* Description Section Skeleton */}
+        <div>
+          <Skeleton className="h-10 w-1/3 mb-6" /> {/* About Title */}
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-5/6" />
+            <Skeleton className="h-5 w-3/4" />
+          </div>
+        </div>
+
+        <Separator className="my-16" />
+
+        {/* Reviews Section Skeleton */}
+        <div>
+          <Skeleton className="h-10 w-1/3 mb-6" /> {/* Reviews Title */}
+          <div className="space-y-4">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
