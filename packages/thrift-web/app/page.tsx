@@ -1,18 +1,13 @@
 import Link from 'next/link'
 import { ProductsHome } from '@/components/products/home-page'
 import { MoveRight } from 'lucide-react'
-import { Montagu_Slab } from 'next/font/google'
 import { Hero } from '@/components/hero'
 import { CTA } from '@/components/cta'
-
-const font = Montagu_Slab({ weight: '500', subsets: ['latin'] })
 
 export default async function Home() {
   return (
     <div className="w-full mx-auto space-y-8 md:space-y-16">
-      <Hero
-        className={`${font?.className} text-background dark:text-foreground flex flex-col gap-16 md:gap-32`}
-      >
+      <Hero className="text-background dark:text-foreground flex flex-col gap-16 md:gap-32">
         <CTA />
       </Hero>
       <ProductsHome />
