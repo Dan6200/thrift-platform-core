@@ -27,7 +27,7 @@ export function CTA({
         <Button
           type="button"
           variant="outline"
-          className="h-full text-base sm:text-lg w-full capitalize font-semibold text-secondary-foreground border-2 border-secondary hover:bg-secondary/50 hover:text-secondary-foreground transition-colors duration-1000 bg-secondary/20 rounded-md sm:rounded-xl"
+          className="h-full text-base sm:text-lg w-full capitalize font-semibold text-background hover:bg-foreground border-none hover:text-background transition-colors duration-1000 bg-foreground/80 rounded-md sm:rounded-xl"
         >
           Start selling
         </Button>
