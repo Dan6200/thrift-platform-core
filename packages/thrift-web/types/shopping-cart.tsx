@@ -26,7 +26,9 @@ export class ShoppingCart {
     const existingItem = this.cartItems.find(
       (item) =>
         item.product.product_id === product.product_id &&
-        item.product.variant_id === product.variant_id,
+        product.variants?.find(
+          (variant) => item.product.variant_id === variant.variant_id,
+        ),
     )
     if (existingItem) {
       existingItem.count += quantity
@@ -41,7 +43,9 @@ export class ShoppingCart {
       (item) =>
         !(
           item.product.product_id === product.product_id &&
-          item.product.variant_id === product.variant_id
+          product.variants?.find(
+            (variant) => item.product.variant_id === variant.variant_id,
+          )
         ),
     )
     return oldLength >= this.cartItems.length
