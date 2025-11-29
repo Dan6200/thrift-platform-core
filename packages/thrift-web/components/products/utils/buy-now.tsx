@@ -29,7 +29,7 @@ export const BuyNow = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="h-[3rem] text-base sm:text-md md:text-xl text-primary-foreground font-bold w-full bg-secondary hover:bg-secondary/80 flex-1 gap-2 sm:gap-4">
+        <Button className="h-[3rem] text-base sm:text-md md:text-xl font-bold w-full border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 flex-1 gap-2 sm:gap-4">
           Buy Now
           <span className="flex w-8 sm:w-16">
             <ShoppingCart className="w-8" />

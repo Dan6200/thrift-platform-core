@@ -7,7 +7,6 @@ export const Price = ({
 }) => (
   <div className="text-lg sm:text-xl md:text-2xl font-bold w-full flex justify-between">
     <p>
-      price:{'\u00A0'.repeat(4)}
       {netPrice.toLocaleString('en-NG', {
         currency: 'NGN',
         style: 'currency',
