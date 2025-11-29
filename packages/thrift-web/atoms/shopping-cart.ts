@@ -8,11 +8,15 @@ export const shoppingCartAtom = atomWithStorage<ShoppingCart | null>(
   null,
 )
 
-export const addItemAtom = atom(null, (get, set, newProduct: Product) => {
-  const shoppingCart = get(shoppingCartAtom)
-  const newShoppingCart = new ShoppingCart(null, shoppingCart)
-  newShoppingCart.addItem(newProduct) && set(shoppingCartAtom, newShoppingCart)
-})
+export const addItemAtom = atom(
+  null,
+  (get, set, { product, quantity }: { product: Product; quantity: number }) => {
+    const shoppingCart = get(shoppingCartAtom)
+    const newShoppingCart = new ShoppingCart(null, shoppingCart)
+    newShoppingCart.addItem(product, quantity)
+    set(shoppingCartAtom, newShoppingCart)
+  },
+)
 
 export const removeItemAtom = atom(null, (get, set, newProduct: Product) => {
   const shoppingCart = get(shoppingCartAtom)
