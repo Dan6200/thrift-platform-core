@@ -2,6 +2,8 @@
 import { ProductsTiles } from './tiles'
 import { Product } from '@/types/products'
 import getProducts from '@/app/products/get-products'
+import { Suspense } from 'react'
+import { ProductsTilesSkeleton } from './tiles-skeleton'
 
 /** Display products in a grid
  * for home page only
@@ -21,7 +23,8 @@ export const ProductsHome = async () => {
     }))
   } catch (error) {
     console.error('Failed to fetch products:', error)
-    // Handle error, maybe set an error state
+    // In a server component, re-throwing the error will be caught by the nearest error.js boundary
+    throw error
   }
 
   return (
@@ -29,7 +32,9 @@ export const ProductsHome = async () => {
       <h4 className="w-full mx-auto my-4 text-xl md:text-3xl font-bold text-center">
         New Arrivals
       </h4>
-      <ProductsTiles productsToDisplay={products} />
+      <Suspense fallback={<ProductsTilesSkeleton />}>
+        <ProductsTiles productsToDisplay={products} />
+      </Suspense>
     </div>
   )
 }
