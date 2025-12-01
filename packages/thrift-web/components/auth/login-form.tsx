@@ -62,7 +62,13 @@ export function LoginForm({
         })
       } else {
         toast({ title: 'Login Successful', variant: 'default' })
-        router.back() // Navigate to the previous page
+        router.refresh() // refresh
+        const referrer = document.referrer
+        if (isSameOrigin(referrer)) {
+          router.back()
+        } else {
+          router.push('/') // Navigate to the homepage
+        }
       }
     })
   }
