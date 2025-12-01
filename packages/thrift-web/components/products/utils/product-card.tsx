@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Suspense } from 'react'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { ProductImage } from '../image'
 import { Price } from './price'
@@ -7,7 +6,6 @@ import { Title } from './title'
 import { Ratings } from './rating'
 import { Discount } from './discount'
 import { Product } from '@/types/products'
-import ImageLoading from './image-loading'
 
 export default function ProductCard({ product }: { product: Product }) {
   const imageData = product?.media.find((img) => img.is_display_image)
@@ -20,14 +18,12 @@ export default function ProductCard({ product }: { product: Product }) {
         className="hover:bg-primary/20 relative"
       >
         <CardContent className="p-0">
-          <Suspense fallback={<ImageLoading />}>
-            <ProductImage
-              className="object-contain h-[10rem] sm:h-[12rem] md:h-[14rem] lg:h-[16rem]"
-              imgData={imageData}
-              width={256}
-              height={256}
-            />
-          </Suspense>
+          <ProductImage
+            className="object-contain h-[10rem] sm:h-[12rem] md:h-[14rem] lg:h-[16rem]"
+            imgData={imageData}
+            width={256}
+            height={256}
+          />
         </CardContent>
         <Discount
           listPrice={product?.list_price}
