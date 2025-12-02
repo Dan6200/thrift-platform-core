@@ -27,6 +27,7 @@ export default function ({
 }) {
   let token: string
   let product_id: string
+  let store_id: number // Capture store_id
   let userId: string
   const mediaIds: string[] = []
 
@@ -34,9 +35,9 @@ export default function ({
     userId = await createUserForTesting(userInfo)
     token = await signInForTesting(userInfo)
 
-    const {
-      body: { store_id },
-    } = await createStoreForTesting(token)
+    const storeResponse = await createStoreForTesting(token)
+    store_id = storeResponse.body.store_id // Capture store_id
+
     const productCreationPromises = []
     for await (const promise of createProductsForTesting(token, store_id, 1)) {
       productCreationPromises.push(promise)
@@ -56,6 +57,7 @@ export default function ({
         userInfo,
         {
           product_id,
+          store_id, // Pass store_id
         },
       )
       mediaIds.push(mediaId)
@@ -78,6 +80,7 @@ export default function ({
         `${productMediaRoute}/${mediaIds[index]}`,
         media[0],
         token,
+        store_id, // Pass store_id
       )
     }
   })
@@ -88,6 +91,7 @@ export default function ({
         server,
         `${productMediaRoute}/${mediaId}`,
         token,
+        store_id, // Pass store_id
       )
   })
 
@@ -95,6 +99,7 @@ export default function ({
     for (const media of productMedia) {
       await testCreateProductMedia(server, productMediaRoute, media, userInfo, {
         product_id,
+        store_id, // Pass store_id
       })
     }
   })

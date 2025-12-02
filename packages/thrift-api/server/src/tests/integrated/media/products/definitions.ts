@@ -22,7 +22,8 @@ export const testCreateProductMedia = async function (
     .request(server)
     .post(urlPath)
     .auth(token, { type: 'bearer' })
-    .query(queryParams)
+    .query({ store_id: queryParams.store_id }) // Added: store_id in query
+
   const mediaArray = Array.isArray(media) ? media : [media]
   await Promise.all(
     mediaArray.map(async (file) => {
@@ -57,6 +58,7 @@ export const testCreateProductMedia = async function (
     {},
   )
 
+  request.field('product_id', queryParams.product_id) // Added: product_id in body
   request.field('descriptions', JSON.stringify(descriptions))
   request.field('is_display_image', JSON.stringify(isDisplayImage))
   request.field('is_thumbnail_image', JSON.stringify(isThumbnailImage))
@@ -87,6 +89,7 @@ export const testUpdateProductMedia = async function (
   urlPath: string,
   media: ProductMediaUpload,
   token: string,
+  storeId: number,
 ): Promise<any> {
   const fieldName = 'product-media'
   const data = await readFile(media.path)
@@ -94,6 +97,7 @@ export const testUpdateProductMedia = async function (
     .request(server)
     .patch(urlPath)
     .auth(token, { type: 'bearer' })
+    .query({ store_id: storeId })
     .attach(fieldName, data, media.name)
     .field('description', media.description)
     .field('filetype', media.filetype)
@@ -105,11 +109,13 @@ export const testDeleteProductMedia = async function (
   server: string,
   urlPath: string,
   token: string,
+  storeId: number,
 ): Promise<any> {
   const response = await chai
     .request(server)
     .delete(urlPath)
     .auth(token, { type: 'bearer' })
+    .query({ store_id: storeId })
   response.should.have.status(NO_CONTENT)
   return response
 }
