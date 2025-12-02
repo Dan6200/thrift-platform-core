@@ -20,7 +20,7 @@ import {
   DashboardKPIsResponseSchema,
   RevenueTrendResponseSchema,
   SalesAnalyticsQuerySchema,
-  SalesAnalyticsByProductResponseSchema,
+  SalesAnalyticsResponseUnionSchema,
   CustomerAcquisitionTrendResponseSchema,
   CustomersByLocationResponseSchema,
   CustomerCLVResponseSchema,
@@ -66,7 +66,7 @@ router.get(
   validate(AnalyticsRequestSchema(SalesAnalyticsQuerySchema)),
   hasStoreAccess(['admin', 'editor', 'viewer']),
   getSalesAnalyticsLogic,
-  validateDbResult(SalesAnalyticsByProductResponseSchema),
+  validateDbResult(SalesAnalyticsResponseUnionSchema),
   sendResponse(OK),
 )
 

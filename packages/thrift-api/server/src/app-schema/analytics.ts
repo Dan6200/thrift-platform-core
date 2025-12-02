@@ -176,12 +176,13 @@ export const SalesAnalyticsRecentOrdersResponseSchema = joi.array().items(
   }),
 )
 
-// Example of a union schema if you prefer to validate all types in one go at the controller level
-// export const SalesAnalyticsResponseUnionSchema = joi.alternatives().try(
-//   joi.array().items(SalesAnalyticsByProductResponseSchema),
-//   joi.array().items(SalesAnalyticsByCategoryResponseSchema),
-//   joi.array().items(SalesAnalyticsRecentOrdersResponseSchema)
-// );
+export const SalesAnalyticsResponseUnionSchema = joi
+  .alternatives()
+  .try(
+    SalesAnalyticsByProductResponseSchema,
+    SalesAnalyticsByCategoryResponseSchema,
+    SalesAnalyticsRecentOrdersResponseSchema,
+  )
 
 export const CustomerAcquisitionTrendResponseSchema = joi.array().items(
   joi.object({
