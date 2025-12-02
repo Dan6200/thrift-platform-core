@@ -10,15 +10,19 @@ export const hasStoreAccess = (requiredRoles: string[]) => {
       throw new UnauthenticatedError('Authentication required for store access')
     }
 
-    if (!req.validatedParams.storeId && !req.validatedQueryParams.storeId) {
+    const storeIdParam =
+      req.validatedParams.storeId ??
+      req.validatedParams.store_id ??
+      req.validatedQueryParams.storeId ??
+      req.validatedQueryParams.store_id
+
+    if (!storeIdParam) {
       throw new BadRequestError(
         'Store ID is required in parameters for store access check',
       )
     }
 
-    const storeId = Number(
-      req.validatedParams.storeId ?? req.validatedQueryParams.storeId,
-    )
+    const storeId = Number(storeIdParam)
 
     const hasAccessResult = await knex.raw('select has_store_access(?, ?, ?)', [
       req.userId,
