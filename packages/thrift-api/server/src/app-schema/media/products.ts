@@ -1,21 +1,50 @@
 import Joi from 'joi'
 
-export const ProductMediaQuerySchema = Joi.object({
-  product_id: Joi.string().required(),
+export const GetProductMediaRequestSchema = Joi.object({
+  params: Joi.object({
+    mediaId: Joi.number().integer().positive().required(),
+  }).required(),
+  query: Joi.object().optional(),
+  body: Joi.object().optional(),
+})
+
+export const CreateProductMediaRequestSchema = Joi.object({
+  params: Joi.object().optional(),
+  body: Joi.object({
+    product_id: Joi.string().required(),
+    descriptions: Joi.string().required(),
+    is_display_image: Joi.string().required(),
+    is_thumbnail_image: Joi.string().required(),
+    filetypes: Joi.string().required(),
+  }).required(),
+  query: Joi.object({
+    store_id: Joi.number().required(),
+  }).required(),
 })
 
 export const UpdateProductMediaRequestSchema = Joi.object({
-  description: Joi.string(),
-  is_display_image: Joi.string(),
-  is_thumbnail_image: Joi.string(),
-  filetype: Joi.string(),
+  params: Joi.object({
+    mediaId: Joi.number().integer().positive().required(),
+  }).required(),
+  body: Joi.object({
+    description: Joi.string(),
+    is_display_image: Joi.string(),
+    is_thumbnail_image: Joi.string(),
+    filetype: Joi.string(),
+  }).required(),
+  query: Joi.object({
+    store_id: Joi.number().required(),
+  }).required(),
 })
 
-export const ProductMediaRequestSchema = Joi.object({
-  descriptions: Joi.string().required(),
-  is_display_image: Joi.string().required(),
-  is_thumbnail_image: Joi.string().required(),
-  filetypes: Joi.string().required(),
+export const DeleteProductMediaRequestSchema = Joi.object({
+  params: Joi.object({
+    mediaId: Joi.number().integer().positive().required(),
+  }).required(),
+  query: Joi.object({
+    store_id: Joi.number().required(),
+  }).required(),
+  body: Joi.object().optional(),
 })
 
 export const ProductMediaResponseSchema = Joi.object({

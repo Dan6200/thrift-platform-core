@@ -1,7 +1,11 @@
 import Joi from 'joi'
 
 export const AvatarRequestSchema = Joi.object({
-  description: Joi.string(),
+  params: Joi.object().optional(),
+  body: Joi.object({
+    description: Joi.string(),
+  }).required(),
+  query: Joi.object().optional(),
 })
 
 const MediaResponseSchema = Joi.object({
