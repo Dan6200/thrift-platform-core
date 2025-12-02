@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "NODE_ENV=production node built/server/src/server.js",
-    "test-server": "TZ=UTC NODE_ENV=testing node built/server/src/server.js",
+    "test-server": "PORT=1027 TZ=UTC NODE_ENV=testing node built/server/src/server.js",
     "test-server:watch": "PORT=1027 TZ=UTC NODE_ENV=testing tsx watch server/src/server.ts",
     "test-server:watch:debug": "PORT=1027 TZ=UTC DEBUG=1 NODE_ENV=testing tsx watch server/src/server.ts",
     "test-server:assistant": "PORT=1037 TZ=UTC NODE_ENV=testing nohup node built/server/src/server.js 2>&1 | cat -v > test-server.log &",
