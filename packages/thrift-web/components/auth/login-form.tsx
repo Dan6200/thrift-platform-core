@@ -26,6 +26,7 @@ import { useTransition } from 'react'
 import GoogleLoginButton from '../ui/google-login-button'
 import AppleLoginButton from '../ui/apple-login-button'
 import MetaLoginButton from '../ui/meta-login-button'
+import { isSameOrigin } from './utils'
 
 const SignInFormSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),

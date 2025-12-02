@@ -1,4 +1,4 @@
-const isSameOrigin = (referrerUrl: URL | string) => {
+export const isSameOrigin = (referrerUrl: URL | string) => {
   try {
     if (!referrerUrl) return false
     const referrerHostname = new URL(referrerUrl).hostname
