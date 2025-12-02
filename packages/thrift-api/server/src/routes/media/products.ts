@@ -12,10 +12,11 @@ import { validate } from '#src/request-validation.js'
 import { validateDbResult } from '#src/db-result-validation.js'
 import { sendResponse } from '#src/send-response.js'
 import {
-  ProductMediaQuerySchema,
-  ProductMediaRequestSchema,
+  CreateProductMediaRequestSchema,
+  GetProductMediaRequestSchema,
   ProductMediaResponseSchema,
   UpdateProductMediaRequestSchema,
+  DeleteProductMediaRequestSchema,
 } from '#src/app-schema/media/products.js'
 import { StatusCodes } from 'http-status-codes'
 import { hasStoreAccess } from '#src/authorization/has-store-access.js'
@@ -32,7 +33,7 @@ router
   .route('/')
   .post(
     upload.array('product-media', uploadLimit),
-    validate(ProductMediaRequestSchema),
+    validate(CreateProductMediaRequestSchema),
     hasStoreAccess(['admin', 'editor']),
     createProductMediaLogic,
     validateDbResult(Joi.array().items(ProductMediaResponseSchema)),
@@ -42,6 +43,7 @@ router
 router
   .route('/:mediaId')
   .get(
+    validate(GetProductMediaRequestSchema),
     getProductMediaLogic,
     validateDbResult(Joi.array().items(ProductMediaResponseSchema)),
     sendResponse(OK),
@@ -55,6 +57,7 @@ router
     sendResponse(OK),
   )
   .delete(
+    validate(DeleteProductMediaRequestSchema),
     hasStoreAccess(['admin']),
     deleteProductMediaLogic,
     sendResponse(NO_CONTENT),
