@@ -10,8 +10,14 @@ export const createProductMediaLogic = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { userId, query, body, files } = req
-  const { product_id } = query
+  const { userId, body, files } = req
+  const {
+    product_id,
+    descriptions,
+    is_display_image,
+    is_thumbnail_image,
+    filetypes,
+  } = body
   const uploader_id = userId
 
   if (!product_id) {
@@ -22,14 +28,23 @@ export const createProductMediaLogic = async (
     throw new BadRequestError('User not found')
   }
 
-  let { descriptions, is_display_image, is_thumbnail_image, filetypes } = body
+  let parsedDescriptions = descriptions
+  let parsedIsDisplayImage = is_display_image
+  let parsedIsThumbnailImage = is_thumbnail_image
+  let parsedFiletypes = filetypes
 
-  if (descriptions) descriptions = JSON.parse(descriptions)
-  else throw new BadRequestError('No descriptions provided')
-
-  if (is_display_image) is_display_image = JSON.parse(is_display_image)
-  if (is_thumbnail_image) is_thumbnail_image = JSON.parse(is_thumbnail_image)
-  if (filetypes) filetypes = JSON.parse(filetypes)
+  if (descriptions && typeof descriptions === 'string') {
+    parsedDescriptions = JSON.parse(descriptions)
+  }
+  if (is_display_image && typeof is_display_image === 'string') {
+    parsedIsDisplayImage = JSON.parse(is_display_image)
+  }
+  if (is_thumbnail_image && typeof is_thumbnail_image === 'string') {
+    parsedIsThumbnailImage = JSON.parse(is_thumbnail_image)
+  }
+  if (filetypes && typeof filetypes === 'string') {
+    parsedFiletypes = JSON.parse(filetypes)
+  }
 
   const filesArray = Array.isArray(files) ? files : [files]
 
@@ -55,16 +70,16 @@ export const createProductMediaLogic = async (
           uploader_id,
           filename,
           filepath,
-          description: descriptions[originalname],
-          filetype: filetypes[originalname],
+          description: parsedDescriptions[originalname],
+          filetype: parsedFiletypes[originalname],
         })
         .returning('*')
 
       await knex('product_media_links').insert({
         variant_id,
         media_id: media.media_id,
-        is_display_image: is_display_image[originalname],
-        is_thumbnail_image: is_thumbnail_image[originalname],
+        is_display_image: parsedIsDisplayImage[originalname],
+        is_thumbnail_image: parsedIsThumbnailImage[originalname],
       })
 
       return { variant_id, ...media }
