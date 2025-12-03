@@ -12,8 +12,11 @@ import {
   validateGetAllOrdersReq,
   validateOrderRes,
   validateGetAllOrdersRes,
+  validateFindReviewableItemReq, // Import the new request validator
+  validateFindReviewableItemRes, // Import the new response validator
 } from '#src/tests/integrated/helpers/test-validators/orders.js'
 import { OrderCreateRequestData, OrderResponseData } from '#src/types/orders.js'
+import { FindReviewableItemRequestSchema } from '#src/app-schema/orders/index.js' // Correct import from app-schema
 import chai from 'chai'
 import * as JDP from 'jsondiffpatch'
 import * as consoleFormatter from 'jsondiffpatch/formatters/console'
@@ -24,6 +27,7 @@ const { CREATED, OK, NO_CONTENT, NOT_FOUND } = StatusCodes
 
 const ordersPathBase = '/v1/orders'
 const buildOrderPath = (order_id: number) => `${ordersPathBase}/${order_id}`
+const reviewableItemPath = `${ordersPathBase}/reviewable-item`
 
 const compareOrderData = (actual: any, expected: any) => {
   const actualOrder = actual as OrderResponseData
@@ -115,6 +119,30 @@ export const testGetOrder = (args: {
     path,
     validateTestReqData: validateGetOrderReq,
     validateTestResData: validateOrderRes,
+  })(requestParams)
+}
+
+// New helper function for /reviewable-item
+export const testGetReviewableItem = (args: {
+  token: string
+  query: { product_id: string } // Updated to product_id only
+  expectedOrderItemId: number
+}) => {
+  const requestParams: RequestParams = {
+    token: args.token,
+    query: args.query,
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path: reviewableItemPath,
+    validateTestReqData: validateFindReviewableItemReq,
+    validateTestResData: validateFindReviewableItemRes, // Use the new response validator
+    expectedData: { order_item_id: args.expectedOrderItemId },
+    compareData: (actual: any, expected: any) => {
+      chai.expect(actual.order_item_id).to.equal(expected.order_item_id)
+      return true
+    },
   })(requestParams)
 }
 

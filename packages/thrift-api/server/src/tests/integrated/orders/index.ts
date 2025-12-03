@@ -10,6 +10,7 @@ import {
   testUpdateOrder,
   testDeleteOrder,
   testGetNonExistentOrder,
+  testGetReviewableItem,
 } from './definitions/index.js'
 import { createUserForTesting } from '#src/tests/integrated/helpers/create-user.js'
 import { deleteUserForTesting } from '#src/tests/integrated/helpers/delete-user.js'
@@ -31,7 +32,9 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   let vendorId: string
   let storeId: number
   let variantId: number
+  let product_id: string // Added to capture product ID
   let order_id: number
+  let order_item_id: number
   let variantPrice: number
 
   before(async () => {
@@ -58,6 +61,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     }
     const productResponses = await Promise.all(productCreationPromises)
     const productRes = productResponses[0]
+    product_id = productRes.body.product_id // Capture product_id
     variantId = productRes.body.variants[0].variant_id
     variantPrice = productRes.body.variants[0].net_price
   })
@@ -87,6 +91,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       },
     })
     order_id = response.order_id
+    order_item_id = response.items[0].order_item_id // Capture order_item_id
   })
 
   it('should allow a customer to get all their orders', async () => {
@@ -101,6 +106,14 @@ export default function (customer: { userInfo: ProfileRequestData }) {
       token: customerToken,
       params: { order_id },
       query: { store_id: storeId },
+    })
+  })
+
+  it('should allow a customer to find a reviewable item', async () => {
+    await testGetReviewableItem({
+      token: customerToken,
+      query: { product_id: product_id }, // Pass product_id only
+      expectedOrderItemId: order_item_id,
     })
   })
 
