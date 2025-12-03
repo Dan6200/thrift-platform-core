@@ -53,31 +53,40 @@ jobs:
         uses: supabase/setup-cli@v1
         with:
           version: latest
+        working-directory: packages/thrift-api
         # env:
         #   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
       - name: Start Supabase
         run: supabase start
+        working-directory: packages/thrift-api
 
       - name: Use Node.js 22
         uses: actions/setup-node@v2
         with:
           node-version: 22
+        working-directory: packages/thrift-api
 
       - run: npm install -g pnpm
+        working-directory: packages/thrift-api
 
       - run: pnpm install
+        working-directory: packages/thrift-api
 
       - run: pnpm build
+        working-directory: packages/thrift-api
 
       - name: Start server
         run: |
           pnpm test-server &> results.log &
           sleep 5
+        working-directory: packages/thrift-api
 
       - name: Run tests
         run: pnpm tests
+        working-directory: packages/thrift-api
 
       - name: View results
         if: failure()
         run: cat results.log
+        working-directory: packages/thrift-api

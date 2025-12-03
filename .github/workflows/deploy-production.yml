@@ -21,33 +21,42 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
+        working-directory: packages/thrift-api
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22' # Or your preferred Node.js version
+        working-directory: packages/thrift-api
 
       - name: Install pnpm
         run: npm install -g pnpm
+        working-directory: packages/thrift-api
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+        working-directory: packages/thrift-api
 
       - name: Install vercel
         run: npm install -g vercel
+        working-directory: packages/thrift-api
 
       - name: Pull Vercel Project Metadata
         # Fetches vercel.json overrides, root directory, etc.
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: packages/thrift-api
 
       - name: Pull Vercel Environment Variables
         # Crucial for build-time env vars. Writes to .env.production, adjust as needed.
         run: vercel env pull .env.production --yes --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: packages/thrift-api
 
       - name: Build Vercel Project
         # Uses the .env.production file for build-time environment variables
         run: vercel build --prod
+        working-directory: packages/thrift-api
 
       - name: Deploy to Vercel
         # Deploys the pre-built output from vercel build
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: packages/thrift-api

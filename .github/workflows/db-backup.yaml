@@ -43,22 +43,27 @@ jobs:
       - name: Link Supabase project
         if: env.BACKUP_ENABLED == 'true'
         run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+        working-directory: packages/thrift-api
 
       - name: Create timestamp folder
         if: env.BACKUP_ENABLED == 'true'
         run: mkdir -p db/backups
+        working-directory: packages/thrift-api
 
       - name: Backup roles
         if: env.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f db/backups/roles.sql --role-only
+        working-directory: packages/thrift-api
 
       - name: Backup schema
         if: env.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f db/backups/schema.sql
+        working-directory: packages/thrift-api
 
       - name: Backup data
         if: env.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f db/backups/data.sql --data-only --use-copy
+        working-directory: packages/thrift-api
 
       - name: Upload backups to Supabase Storage
         if: env.BACKUP_ENABLED == 'true'
@@ -67,6 +72,7 @@ jobs:
           supabase storage cp db/backups/roles.sql ss://object/backups/db/$TIMESTAMP/roles.sql --linked --experimental
           supabase storage cp db/backups/schema.sql ss://object/backups/db/$TIMESTAMP/schema.sql --linked --experimental
           supabase storage cp db/backups/data.sql ss://object/backups/db/$TIMESTAMP/data.sql --linked --experimental
+        working-directory: packages/thrift-api
 
       - name: Delete old backups from Supabase Storage (> 3 months)
         if: env.BACKUP_ENABLED == 'true'
@@ -99,3 +105,4 @@ jobs:
         env:
           # Pass Supabase access token for storage operations
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        working-directory: packages/thrift-api
