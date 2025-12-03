@@ -137,6 +137,27 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     })
   })
 
+  it('should allow anyone to get product reviews by product ID', async () => {
+    // Need to create a review first to ensure there's data to retrieve
+    const reviewData = {
+      rating: 4.0,
+      customer_remark: 'Decent product.',
+    }
+    await testCreateProductReview({
+      token: customerToken,
+      params: { order_item_id: orderItemId },
+      body: reviewData,
+    })
+
+    // Now test getting reviews by product ID
+    const reviews = await testGetProductReviewsByProductId({
+      product_id: productId,
+    })
+    reviews.length.should.be.greaterThan(0)
+    reviews[0].should.have.property('rating')
+    reviews[0].should.have.property('customer_remark')
+  })
+
   it('should allow a customer to update their product review', async () => {
     const updatedReviewData = {
       rating: 5.0,

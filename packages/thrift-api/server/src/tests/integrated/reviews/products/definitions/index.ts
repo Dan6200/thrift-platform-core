@@ -10,14 +10,18 @@ import {
   validateDeleteProductReviewReq,
   validateGetProductReviewReq,
   validateProductReviewRes,
+  validateGetAllProductReviewsRes,
 } from '../../../helpers/test-validators/reviews.js'
 import { ProductReviewRequestData } from '#src/types/reviews.js'
+import { GetProductReviewsByProductIdRequestSchema } from '#src/app-schema/reviews/products.js' // Import schema
 
 const { CREATED, OK, NO_CONTENT, NOT_FOUND, FORBIDDEN } = StatusCodes
 
 const reviewsPathBase = '/v1/reviews/products'
 const buildReviewPath = (order_item_id: number) =>
   `${reviewsPathBase}/${order_item_id}`
+const buildProductReviewsPath = (product_id: string) =>
+  `${reviewsPathBase}/product/${product_id}` // New helper to build product reviews path
 
 export const testCreateProductReview = (args: {
   token: string
@@ -54,6 +58,22 @@ export const testGetProductReview = (args: {
     path,
     validateTestReqData: validateGetProductReviewReq,
     validateTestResData: validateProductReviewRes,
+  })(requestParams)
+}
+
+export const testGetProductReviewsByProductId = (args: {
+  product_id: string // No token needed for unauthenticated route
+}) => {
+  const path = buildProductReviewsPath(args.product_id)
+  const requestParams: RequestParams = {
+    params: { product_id: args.product_id },
+  }
+  return (testRequest as TestRequest)({
+    verb: 'get',
+    statusCode: OK,
+    path,
+    validateTestReqData: GetProductReviewsByProductIdRequestSchema, // Use schema for request validation
+    validateTestResData: validateGetAllProductReviewsRes,
   })(requestParams)
 }
 
