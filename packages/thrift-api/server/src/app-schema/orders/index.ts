@@ -81,3 +81,7 @@ export const OrderResponseSchema = Joi.object({
 })
 
 export const OrderGETAllResponseSchema = Joi.array().items(OrderResponseSchema)
+
+export const FindReviewableItemResponseSchema = Joi.object({
+  order_item_id: Joi.number().integer().positive().required(),
+})
