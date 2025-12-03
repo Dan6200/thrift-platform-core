@@ -25,7 +25,8 @@ export const findReviewableItemLogic = async (
     // that does not already have a review.
     const reviewableItem = await knex('order_items as oi')
       .join('orders as o', 'oi.order_id', 'o.order_id')
-      .join('products as p', 'oi.product_id', 'p.product_id')
+      .join('product_variants as pv', 'oi.variant_id', 'pv.variant_id')
+      .join('products as p', 'pv.product_id', 'p.product_id')
       .leftJoin('product_reviews as pr', 'oi.order_item_id', 'pr.order_item_id')
       .where('o.customer_id', userId)
       .where('p.product_id', product_id)
