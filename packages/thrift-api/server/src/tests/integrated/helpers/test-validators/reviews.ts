@@ -3,6 +3,7 @@ import {
   UpdateProductReviewRequestSchema,
   DeleteProductReviewRequestSchema,
   GetProductReviewRequestSchema,
+  GetProductReviewsByProductIdRequestSchema, // Imported
   ProductReviewResponseSchema,
   ProductReviewGETAllResponseSchema,
 } from '#src/app-schema/reviews/products.js'
@@ -34,6 +35,13 @@ export const validateGetProductReviewReq = (data: unknown) =>
     GetProductReviewRequestSchema,
     data,
     'Get Product Review Request Validation Error',
+  )
+
+export const validateGetProductReviewByProductIDReq = (data: unknown) =>
+  validateTestData(
+    GetProductReviewsByProductIdRequestSchema,
+    data,
+    'Get Product Reviews By Product ID Request Validation Error',
   )
 
 export const validateProductReviewRes = (data: unknown) =>

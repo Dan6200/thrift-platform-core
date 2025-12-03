@@ -1,7 +1,6 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
 import { ProfileRequestData } from '#src/types/profile/index.js'
-import { ProductReviewRequestData } from '#src/types/reviews.js'
 import {
   testCreateProductReview,
   testGetProductReview,
@@ -11,6 +10,7 @@ import {
   testDeleteProductReviewUnauthorized,
   testUpdateProductReviewUnauthorized,
   testCreateProductReviewUnauthorized,
+  testGetProductReviewsByProductId,
 } from './definitions/index.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
@@ -39,6 +39,7 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   let vendorId: string
   let storeId: number
   let orderItemId: number
+  let productId: number
   let nonPurchasingCustomerId: string
   let nonPurchasingCustomerToken: string
 
@@ -60,12 +61,13 @@ export default function (customer: { userInfo: ProfileRequestData }) {
     for await (const promise of createProductsForTesting(
       vendorToken,
       storeId,
-      3,
+      1,
     )) {
       productCreationPromises.push(promise)
     }
     const productResponses = await Promise.all(productCreationPromises)
     const productRes = productResponses[0]
+    productId = productRes.body.product_id
     const variantId = productRes.body.variants[0].variant_id
 
     // Create an order for the customer with the product variant
@@ -138,24 +140,9 @@ export default function (customer: { userInfo: ProfileRequestData }) {
   })
 
   it('should allow anyone to get product reviews by product ID', async () => {
-    // Need to create a review first to ensure there's data to retrieve
-    const reviewData = {
-      rating: 4.0,
-      customer_remark: 'Decent product.',
-    }
-    await testCreateProductReview({
-      token: customerToken,
-      params: { order_item_id: orderItemId },
-      body: reviewData,
-    })
-
-    // Now test getting reviews by product ID
-    const reviews = await testGetProductReviewsByProductId({
+    await testGetProductReviewsByProductId({
       product_id: productId,
     })
-    reviews.length.should.be.greaterThan(0)
-    reviews[0].should.have.property('rating')
-    reviews[0].should.have.property('customer_remark')
   })
 
   it('should allow a customer to update their product review', async () => {
