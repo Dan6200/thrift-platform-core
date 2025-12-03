@@ -67,3 +67,35 @@ jobs:
           supabase storage cp db/backups/roles.sql ss://object/backups/db/$TIMESTAMP/roles.sql --linked --experimental
           supabase storage cp db/backups/schema.sql ss://object/backups/db/$TIMESTAMP/schema.sql --linked --experimental
           supabase storage cp db/backups/data.sql ss://object/backups/db/$TIMESTAMP/data.sql --linked --experimental
+
+      - name: Delete old backups from Supabase Storage (> 3 months)
+        if: env.BACKUP_ENABLED == 'true'
+        run: |
+          # Calculate timestamp for 3 months ago (approximately 90 days)
+          # Note: This is an approximation. A more precise calculation would account for varying days in months.
+          THREE_MONTHS_AGO=$(date -d "3 months ago" +%Y%m%d%H%M%S)
+
+          echo "Deleting backups older than: $THREE_MONTHS_AGO"
+
+          # List backup folders (which are timestamped)
+          # Assuming backup folders are directly under ss://object/backups/db/
+          # The grep -oP 'db/\K[^/]+(?=/)' extracts just the timestamp folder name
+          BACKUP_FOLDERS=$(supabase storage ls ss://object/backups/db/ --experimental | grep -oP 'db/\K[^/]+(?=/$)')
+
+          for FOLDER in $BACKUP_FOLDERS; do
+            if [[ "$FOLDER" < "$THREE_MONTHS_AGO" ]]; then
+              echo "Deleting old backup folder: $FOLDER"
+              # Supabase storage ls with the folder prefix will list all files inside
+              # Use awk to extract just the file name (after the folder prefix)
+              FILES_TO_DELETE=$(supabase storage ls "ss://object/backups/db/$FOLDER/" --experimental | awk -F'db/'$FOLDER'/'' {'print $2'}')
+              
+              for FILE in $FILES_TO_DELETE; do
+                echo "  Deleting file: ss://object/backups/db/$FOLDER/$FILE"
+                supabase storage rm "ss://object/backups/db/$FOLDER/$FILE" --experimental
+              done
+              echo "  All files deleted under prefix ss://object/backups/db/$FOLDER/"
+            fi
+          done
+        env:
+          # Pass Supabase access token for storage operations
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
