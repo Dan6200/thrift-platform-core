@@ -4,8 +4,10 @@ import {
   DeleteOrderRequestSchema,
   GetOrderRequestSchema,
   GetAllOrdersRequestSchema,
+  FindReviewableItemRequestSchema,
   OrderResponseSchema,
   OrderGETAllResponseSchema,
+  FindReviewableItemResponseSchema, // Import the new response schema
 } from '#src/app-schema/orders/index.js'
 import { validateTestData } from '../test-validators.js'
 
@@ -44,6 +46,13 @@ export const validateGetAllOrdersReq = (data: unknown) =>
     'Get All Orders Request Validation Error',
   )
 
+export const validateFindReviewableItemReq = (data: unknown) =>
+  validateTestData(
+    FindReviewableItemRequestSchema,
+    data,
+    'Find Reviewable Item Request Validation Error',
+  )
+
 export const validateOrderRes = (data: unknown) =>
   validateTestData(OrderResponseSchema, data, 'Order Response Validation Error')
 
@@ -52,4 +61,11 @@ export const validateGetAllOrdersRes = (data: unknown) =>
     OrderGETAllResponseSchema,
     data,
     'Get All Orders Response Validation Error',
+  )
+
+export const validateFindReviewableItemRes = (data: unknown) =>
+  validateTestData(
+    FindReviewableItemResponseSchema,
+    data,
+    'Find Reviewable Item Response Validation Error',
   )
