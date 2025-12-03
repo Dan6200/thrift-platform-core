@@ -7,7 +7,6 @@ import {
   testUpdateProductMedia,
   testDeleteProductMedia,
 } from './definitions.js'
-import { bulkDeleteImages } from '../../utils/bulk-delete.js'
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
@@ -45,7 +44,6 @@ export default function ({
     const productResponses = await Promise.all(productCreationPromises)
     const productRes = productResponses[0]
     product_id = productRes.body.product_id
-    await bulkDeleteImages('products')
   })
 
   it("it should upload a single product's media", async () => {
@@ -106,6 +104,5 @@ export default function ({
 
   after(async () => {
     await deleteUserForTesting(userId)
-    await bulkDeleteImages('products')
   })
 }

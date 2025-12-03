@@ -5,11 +5,13 @@ export async function bulkDeleteImages(slug: 'products' | 'avatars') {
     try {
       const { resources } = await cloudinary.api.resources({
         type: 'upload',
-        prefix: 'thrift-app-media-testing/' + slug,
+        prefix: 'sellit-media-testing/' + slug,
         max_results: 100,
       })
       const publicIds = resources.map((resource: any) => resource.public_id)
       if (publicIds.length > 0) {
+        process.env.DEBUG &&
+          console.log(`Deleting ${publicIds.length} asset(s).`)
         await cloudinary.api.delete_resources(publicIds)
       } else {
         process.env.DEBUG && console.log('No assets found in the folder')

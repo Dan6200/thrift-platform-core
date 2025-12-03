@@ -12,6 +12,7 @@ import testStoreStaff from './store_staff/index.js'
 import testCart from './cart/index.js'
 import testProductReviews from './reviews/products/index.js'
 import testOrders from './orders/index.js'
+import { bulkDeleteImages } from './utils/bulk-delete.js'
 
 const Ebuka = loadUserData(
   'server/src/tests/integrated/data/users/customers/user-ebuka',
@@ -90,18 +91,6 @@ export default function (): void {
       testProducts(vendor))
   }
 
-  /** Media related tests **/
-
-  // for (let user of users) {
-  //   describe(`Skipping Media File Upload Tests for ${user.userInfo.first_name}`, async () =>
-  //     it('should skip', (done) => done()))
-  // }
-
-  for (let user of users) {
-    describe(`Testing Media File Upload for ${user.userInfo.first_name}`, async () =>
-      testMedia(user as any))
-  }
-
   /** Dashboard related tests **/
 
   for (let vendor of vendors) {
@@ -139,6 +128,14 @@ export default function (): void {
       testProductReviews(customer as any))
   }
 
-  //
+  /** Media related tests **/
+
+  for (let user of users) {
+    describe(`Testing Media File Upload for ${user.userInfo.first_name}`, () =>
+      testMedia(user as any))
+  }
+
+  describe('Media Asset Cleanup', async () =>
+    Promise.all([bulkDeleteImages('avatars'), bulkDeleteImages('products')]))
   // end
 }
