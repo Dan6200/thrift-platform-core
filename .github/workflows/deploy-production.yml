@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   workflow_run:
-    workflows: ['Thrift-app Testing']
+    workflows: ["Thrift-api Testing"]
     types:
       - completed
 
@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # Or your preferred Node.js version
+          node-version: "22" # Or your preferred Node.js version
         working-directory: packages/thrift-api
 
       - name: Install pnpm
