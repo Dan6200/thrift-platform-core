@@ -21,13 +21,11 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-        working-directory: packages/thrift-api
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22" # Or your preferred Node.js version
-        working-directory: packages/thrift-api
 
       - name: Install pnpm
         run: npm install -g pnpm
