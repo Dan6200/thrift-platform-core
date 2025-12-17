@@ -7,7 +7,7 @@ on:
     branches: [main, dev]
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Runs every day at midnight
+    - cron: "0 0 * * *" # Runs every day at midnight
 
 env:
   BACKUP_ENABLED: true
@@ -69,9 +69,9 @@ jobs:
         if: env.BACKUP_ENABLED == 'true'
         run: |
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          supabase storage cp db/backups/roles.sql ss://object/backups/db/$TIMESTAMP/roles.sql --linked --experimental
-          supabase storage cp db/backups/schema.sql ss://object/backups/db/$TIMESTAMP/schema.sql --linked --experimental
-          supabase storage cp db/backups/data.sql ss://object/backups/db/$TIMESTAMP/data.sql --linked --experimental
+          supabase storage cp db/backups/roles.sql ss:///backups/db/$TIMESTAMP/roles.sql --linked --experimental
+          supabase storage cp db/backups/schema.sql ss:///backups/db/$TIMESTAMP/schema.sql --linked --experimental
+          supabase storage cp db/backups/data.sql ss:///backups/db/$TIMESTAMP/data.sql --linked --experimental
         working-directory: packages/thrift-api
 
       - name: Delete old backups from Supabase Storage (> 3 months)
@@ -84,22 +84,22 @@ jobs:
           echo "Deleting backups older than: $THREE_MONTHS_AGO"
 
           # List backup folders (which are timestamped)
-          # Assuming backup folders are directly under ss://object/backups/db/
+          # Assuming backup folders are directly under ss:///backups/db/
           # The grep -oP 'db/\K[^/]+(?=/)' extracts just the timestamp folder name
-          BACKUP_FOLDERS=$(supabase storage ls ss://object/backups/db/ --experimental | grep -oP 'db/\K[^/]+(?=/$)')
+          BACKUP_FOLDERS=$(supabase storage ls ss:///backups/db/ --experimental | grep -oP 'db/\K[^/]+(?=/$)')
 
           for FOLDER in $BACKUP_FOLDERS; do
-            if [[ "$FOLDER" < "$THREE_MONTHS_AGO" ]]; then
+            if [[ "$FOLDER" < "$THREE_MONTHS_AGO" ]]; then # Are these compared as strings are integers?
               echo "Deleting old backup folder: $FOLDER"
               # Supabase storage ls with the folder prefix will list all files inside
               # Use awk to extract just the file name (after the folder prefix)
-              FILES_TO_DELETE=$(supabase storage ls "ss://object/backups/db/$FOLDER/" --experimental | awk -F'db/'$FOLDER'/'' {'print $2'}')
+              FILES_TO_DELETE=$(supabase storage ls "ss:///backups/db/$FOLDER/" --experimental | awk -F'db/'$FOLDER'/'' {'print $2'}')
               
               for FILE in $FILES_TO_DELETE; do
-                echo "  Deleting file: ss://object/backups/db/$FOLDER/$FILE"
-                supabase storage rm "ss://object/backups/db/$FOLDER/$FILE" --experimental
+                echo "  Deleting file: ss:///backups/db/$FOLDER/$FILE"
+                supabase storage rm "ss:///backups/db/$FOLDER/$FILE" --experimental
               done
-              echo "  All files deleted under prefix ss://object/backups/db/$FOLDER/"
+              echo "  All files deleted under prefix ss:///backups/db/$FOLDER/"
             fi
           done
         env:
