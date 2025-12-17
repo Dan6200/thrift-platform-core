@@ -1,10 +1,3 @@
-// This file configures a Redis client for a standard Node.js environment.
-// It uses ioredis, which is suitable for connecting to Google Cloud Memorystore.
-// Ensure you have the following environment variables set:
-// REDIS_HOST
-// REDIS_PORT
-// REDIS_PASSWORD (if applicable)
-
 import { Redis } from '@upstash/redis'
 
 if (
