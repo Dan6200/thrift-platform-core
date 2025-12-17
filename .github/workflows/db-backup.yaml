@@ -86,7 +86,7 @@ jobs:
           # List backup folders (which are timestamped)
           # Assuming backup folders are directly under ss:///backups/db/
           # The grep -oP 'db/\K[^/]+(?=/)' extracts just the timestamp folder name
-          BACKUP_FOLDERS=$(supabase storage ls ss:///backups/db/ --experimental | grep -oP 'db/\K[^/]+(?=/$)')
+          BACKUP_FOLDERS=$(supabase storage ls ss:///backups/db/ --experimental | grep -oP '.+(?=/$)')
 
           for FOLDER in $BACKUP_FOLDERS; do
             if [[ "$FOLDER" < "$THREE_MONTHS_AGO" ]]; then # Are these compared as strings are integers?
