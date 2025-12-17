@@ -5,7 +5,7 @@ import logger from '#src/utils/logger.js'
 import NotFoundError from '#src/errors/not-found.js'
 
 export const validateDbResult = (
-  schema: Joi.ObjectSchema | Joi.ArraySchema,
+  schema: Joi.ObjectSchema | Joi.ArraySchema | Joi.AlternativesSchema,
 ) => {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.dbResult) {
