@@ -2,10 +2,8 @@
 import { userAtom } from '@/atoms'
 import { useAtomValue } from 'jotai'
 import Link from 'next/link'
-import { Slideshow } from './slideshow'
 import { Button } from './ui/button'
 import { Montagu_Slab } from 'next/font/google'
-import { Hero } from './hero'
 
 const font = Montagu_Slab({ weight: '500', subsets: ['latin'] })
 
