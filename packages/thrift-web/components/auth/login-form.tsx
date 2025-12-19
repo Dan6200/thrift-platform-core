@@ -27,6 +27,9 @@ import GoogleLoginButton from '../ui/google-login-button'
 import AppleLoginButton from '../ui/apple-login-button'
 import MetaLoginButton from '../ui/meta-login-button'
 import { isSameOrigin } from './utils'
+import { supabase } from '@/auth/client/config'
+import { useSetAtom } from 'jotai'
+import { userAtom } from '@/atoms'
 
 const SignInFormSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -39,6 +42,7 @@ export function LoginForm({
 }: React.ComponentProps<'div'>) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const setUser = useSetAtom(userAtom)
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
@@ -63,7 +67,7 @@ export function LoginForm({
         })
       } else {
         toast({ title: 'Login Successful', variant: 'default' })
-        router.refresh() // refresh
+        setUser((await supabase.auth.getUser()).data.user)
         const referrer = document.referrer
         if (isSameOrigin(referrer)) {
           router.back()
