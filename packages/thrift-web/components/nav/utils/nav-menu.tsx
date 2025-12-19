@@ -27,10 +27,11 @@ import { Drawer, DrawerTrigger } from '@/components/ui/drawer'
 import Search from '@/components/search'
 import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
-import { Profile } from '@/types/profile'
 import { usePathname } from 'next/navigation'
+import { User } from '@supabase/supabase-js'
+import { Profile } from '@/types/profile'
 
-type SetUser = ReturnType<typeof useSetAtom<Profile | null, any[], any>>
+type SetUser = ReturnType<typeof useSetAtom<User | Profile | null, any[], any>>
 
 const font = Montagu_Slab({ weight: '500', subsets: ['latin'] })
 
@@ -38,9 +39,10 @@ export function NavMenu({
   user,
   setUser,
 }: {
-  user: Profile | null
+  user: User | Profile | null
   setUser: SetUser
 }) {
+  console.log(user)
   const pathname = usePathname()
   const totalItems = useAtomValue(getTotalCountAtom)
   const searchRef = useRef<null | HTMLDivElement>(null)
@@ -158,9 +160,10 @@ export function NavMenu({
                 className="border-none bg-transparent hover:bg-white/20 focus:bg-white/20"
               >
                 Hello,
-                {user && user.first_name && (
+                {user && (
                   <span className="w-20 flex items-center justify-between">
-                    {user.first_name}
+                    {(user as Profile).first_name ??
+                      (user as User).user_metadata.first_name}
                     <UserCircle2 />
                   </span>
                 )}
