@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { StoreForm } from '@/components/form/store'
 import { createVendorAccount } from '@/lib/actions/profile' // Import the server action
+import { Profile } from '@/types/profile'
 
 export default function CreateStore() {
   const userAccount = useAtomValue(userAtom)
@@ -29,7 +30,7 @@ export default function CreateStore() {
   }
 
   // If user is logged in and is a vendor, show the store form
-  if (userAccount.is_vendor) {
+  if ((userAccount as Profile).is_vendor) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen py-2 my-2">
         <h1 className="text-2xl font-semibold mb-6">Create New Store</h1>

@@ -25,6 +25,7 @@ import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
 import { Profile } from '@/types/profile'
 import { usePathname } from 'next/navigation'
+import { User } from '@supabase/supabase-js'
 
 type SetUser = ReturnType<typeof useSetAtom<Profile | null, any[], any>>
 
@@ -34,7 +35,7 @@ export const NavMenuSmall = ({
   user,
   setUser,
 }: {
-  user: Profile | null
+  user: User | Profile | null
   setUser: SetUser
 }) => {
   const [showSearchBox, setShowSearchBox] = useState(false)
@@ -140,7 +141,9 @@ export const NavMenuSmall = ({
             <Accordion type="single" collapsible className="my-8">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="hover:no-underline">
-                  Welcome{user && `, ${user.first_name}`}
+                  Welcome
+                  {user &&
+                    `, ${(user as Profile).first_name ?? (user as User).user_metadata.first_name}`}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col space-y-3 p-4">

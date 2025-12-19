@@ -42,7 +42,6 @@ export function NavMenu({
   user: User | Profile | null
   setUser: SetUser
 }) {
-  console.log(user)
   const pathname = usePathname()
   const totalItems = useAtomValue(getTotalCountAtom)
   const searchRef = useRef<null | HTMLDivElement>(null)
