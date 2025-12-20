@@ -93,7 +93,6 @@ SELECT JSON_AGG(product_data) AS products,
 	(SELECT COUNT(*) FROM products) AS total_count FROM product_data;`
 
   const result = await knex.raw(dbQueryString, namedBindings)
-  console.log(result.rows[0][0])
   req.dbResult = result.rows[0]
   next()
 }
