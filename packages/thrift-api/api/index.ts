@@ -1,5 +1,4 @@
 // cspell:disable
-import cors from 'cors'
 import express, { Request, Response, Router } from 'express'
 import 'express-async-errors'
 import helmet from 'helmet'
@@ -26,7 +25,6 @@ import authRouter from '#src/routes/auth.js' // Import the new auth router
 
 // middlewares
 import errorHandlerMiddleware from '#src/error-handler.js'
-import authenticateUser from '#src/authentication.js'
 import notFound from '#src/not-found.js'
 import swaggerUi from 'swagger-ui-express'
 import yaml from 'js-yaml'
@@ -76,7 +74,6 @@ app.get('/api.json', (_req: Request, res: Response) =>
 )
 
 app.use(helmet())
-app.use(cors())
 app.use(requestLogger)
 // application routes
 const v1Router = Router()
