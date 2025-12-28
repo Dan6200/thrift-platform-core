@@ -11,6 +11,6 @@ if (process.env.NODE_ENV === 'testing') {
 dotenv.config({ path })
 
 const supabaseUrl = process.env.SUPABASE_URL as string
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY as string
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
