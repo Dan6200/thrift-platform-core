@@ -147,7 +147,7 @@ export function WriteReviewModal({
               <Ratings
                 average_rating={rating}
                 onRatingChange={setRating}
-                isInteractive={true}
+                isInteractive
               />
             </div>
             <div className="grid gap-2">

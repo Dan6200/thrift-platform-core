@@ -14,6 +14,7 @@ export const BuyNow = ({
   imgData,
   netPrice,
   quantityAvailable,
+  // isProductPage = false,
 }: {
   imgData: ImgData
   netPrice: string | number

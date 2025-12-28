@@ -109,7 +109,7 @@ export function ProductDetails({
           netPrice={selectedVariant?.net_price ?? product.net_price}
           listPrice={selectedVariant?.list_price ?? product.list_price}
           quantityAvailable={selectedVariant?.quantity_available ?? 0}
-          isProductPage={true}
+          isProductPage
         />
       </div>
     </div>

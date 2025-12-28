@@ -14,7 +14,7 @@ export function HeroLoading({
         src="/laptop-unboxing-hd.jpg" // Public ID of your video
         className="z-0 absolute inset-0 top-0 h-screen w-full object-cover"
         alt="unboxing laptop placeholder"
-        priority={true}
+        priority
       />
       <div
         className={
