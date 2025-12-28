@@ -4,13 +4,26 @@ import { StatusCodes } from 'http-status-codes'
 import authenticateUser from '#src/authentication.js'
 import { validate } from '#src/request-validation.js'
 import { sendResponse } from '#src/send-response.js'
-import { initializePaymentLogic } from '#src/logic/payments/index.js' // Logic will be implemented next
 import {
-  InitializePaymentRequestSchema, // Schema will be implemented next
-} from '#src/app-schema/payments.js' // Schema will be implemented next
+  initializePaymentLogic,
+  handlePaystackWebhookLogic, // Import the new webhook logic
+} from '#src/logic/payments/index.js'
+import {
+  InitializePaymentRequestSchema,
+  PaystackWebhookRequestSchema, // Schema for webhook validation
+} from '#src/app-schema/payments.js'
 
 const router = Router()
 const { OK } = StatusCodes
+
+router.post(
+  '/webhook',
+  // Webhooks do NOT use authenticateUser middleware, as the request comes from Paystack
+  // Use a schema validator for the webhook payload if needed (PaystackWebhookRequestSchema)
+  // Paystack webhook body structure is standard, so validation may be basic
+  handlePaystackWebhookLogic,
+  sendResponse(OK),
+)
 
 router.use(authenticateUser) // Payments usually require authentication
 
