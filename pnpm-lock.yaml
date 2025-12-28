@@ -11,6 +11,10 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      '@paystack/paystack-sdk':
+        specifier: ^1.0.1
+        version: 1.0.1
     devDependencies:
       husky:
         specifier: ^9.1.7
@@ -24,6 +28,9 @@ importers:
 
   packages/thrift-api:
     dependencies:
+      '@paystack/paystack-sdk':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@supabase/supabase-js':
         specifier: ^2.50.2
         version: 2.57.4
@@ -1252,6 +1259,9 @@ packages:
 
   '@paralleldrive/cuid2@2.2.2':
     resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
+
+  '@paystack/paystack-sdk@1.0.1':
+    resolution: {integrity: sha512-IZT3KI8O6yX+ZFLK2WYq/IjhYduxCWkqh0HesJcSD1TUcHYyoi8iREiM02Qg+nnVCiPaTKdAw7Ogfeg9eVp9wA==}
 
   '@radix-ui/number@1.1.1':
     resolution: {integrity: sha512-MkKCwxlXTgz6CFoJx3pCwn07GKp36+aZyu/u2Ln2VrA5DcdyCZkASEDBTd8x5whTQQL5CiYf4prXKLcgQdv29g==}
@@ -4559,6 +4569,7 @@ packages:
   next@15.5.7:
     resolution: {integrity: sha512-+t2/0jIJ48kUpGKkdlhgkv+zPTEOoXyr60qXe68eB/pl3CMJaLeIGjzp5D6Oqt25hCBiBTt8wEeeAzfJvUKnPQ==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -6514,6 +6525,8 @@ snapshots:
   '@paralleldrive/cuid2@2.2.2':
     dependencies:
       '@noble/hashes': 1.8.0
+
+  '@paystack/paystack-sdk@1.0.1': {}
 
   '@radix-ui/number@1.1.1': {}
 
