@@ -21,10 +21,12 @@ import analyticsRouter from '#src/routes/analytics.js'
 import productReviewsRouter from '#src/routes/reviews/products.js'
 import ordersRouter from '#src/routes/orders/index.js'
 import cmsRouter from '#src/routes/cms/index.js' // Import the new CMS router
-import authRouter from '#src/routes/auth.js' // Import the new auth router
+import authRouter from '#src/routes/auth.js' // Integrate the new auth router
+import paymentsRouter from '#src/routes/payments.js' // Integrate the new payments router
 
 // middlewares
 import errorHandlerMiddleware from '#src/error-handler.js'
+import authenticateUser from '#src/authentication.js'
 import notFound from '#src/not-found.js'
 import swaggerUi from 'swagger-ui-express'
 import yaml from 'js-yaml'
@@ -90,6 +92,7 @@ v1Router.use('/orders', ordersRouter)
 v1Router.use('/analytics', analyticsRouter)
 v1Router.use('/cms', cmsRouter) // Integrate the CMS router
 v1Router.use('/auth', authRouter) // Integrate the auth router
+v1Router.use('/payments', paymentsRouter) // Integrate the payments router
 
 app.use('/v1', v1Router)
 // helper middlewares
