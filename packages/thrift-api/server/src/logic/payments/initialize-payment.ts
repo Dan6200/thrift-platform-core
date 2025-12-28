@@ -5,7 +5,7 @@ import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
 import InternalServerError from '#src/errors/internal-server.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import { Paystack } from '@paystack/paystack-sdk' // Paystack SDK
+import Paystack from '@paystack/paystack-sdk' // Paystack SDK
 
 // Initialize Paystack with secret key from environment variables
 // This should ideally be done once at app startup
