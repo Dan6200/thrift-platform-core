@@ -60,12 +60,12 @@ export const initializePaymentLogic = async (
       email: profile.email,
       amount: Math.round(order.total_amount * 100), // Amount in kobo/cents
       reference: `THR-${order.order_id}-${Date.now()}`, // Unique reference
-      order_id: order.order_id, // Pass order_id as metadata for tracking
-      metadata: {
+      // Paystack metadata expects a JSON string
+      metadata: JSON.stringify({
         order_id: order.order_id,
         customer_id: userId,
         // Any other relevant data for your application
-      },
+      }),
       callback_url:
         callback_url ||
         process.env.PAYSTACK_CALLBACK_URL ||
