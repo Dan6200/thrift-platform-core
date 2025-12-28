@@ -5,6 +5,7 @@ import BadRequestError from '#src/errors/bad-request.js'
 import InternalServerError from '#src/errors/internal-server.js'
 import { Paystack } from '@paystack/paystack-sdk' // Paystack SDK
 import crypto from 'crypto'
+import NotFoundError from '#src/errors/not-found.js'
 
 const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY as string)
 
