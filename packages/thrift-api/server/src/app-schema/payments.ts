@@ -1,0 +1,25 @@
+// packages/thrift-api/server/src/app-schema/payments.ts
+import Joi from 'joi'
+
+// --- Request Schemas ---
+
+// Schema for initializing a payment
+export const InitializePaymentRequestSchema = Joi.object({
+  params: Joi.object().optional(), // No path params for /initialize
+  body: Joi.object({
+    order_id: Joi.number().integer().positive().required(),
+    // amount: Joi.number().positive().required(), // Amount will be derived from order_id for security
+    // email: Joi.string().email().required(), // Email will be derived from authenticated user for security
+    callback_url: Joi.string().uri().optional(), // Optional: Frontend can specify redirect URL
+  }).required(),
+  query: Joi.object().optional(), // No query params for /initialize
+})
+
+// --- Response Schemas ---
+
+// Schema for the response after initializing a payment with Paystack
+export const InitializePaymentResponseSchema = Joi.object({
+  authorization_url: Joi.string().uri().required(), // Paystack's redirect URL
+  access_code: Joi.string().optional(), // Paystack's access code for pop-up widgets
+  reference: Joi.string().required(), // Paystack's unique transaction reference
+})
