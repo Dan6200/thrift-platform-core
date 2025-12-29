@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { knex } from '#src/db/index.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import InternalServerError from '#src/errors/internal-server.js'
-import { Paystack } from '@paystack/paystack-sdk' // Paystack SDK
+import Paystack from '@paystack/paystack-sdk' // Paystack SDK
 import crypto from 'crypto'
 import NotFoundError from '#src/errors/not-found.js'
 
