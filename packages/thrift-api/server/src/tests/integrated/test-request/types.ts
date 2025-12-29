@@ -30,4 +30,5 @@ export type RequestParams = {
   query?: { [k: string]: any }
   body?: any | any[]
   token?: string
+  headers?: { [key: string]: string } // Added headers property
 }
