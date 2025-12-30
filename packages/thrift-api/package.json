@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@paystack/paystack-sdk": "^1.0.1",
-    "@supabase/supabase-js": "^2.50.2",
+    "@supabase/supabase-js": "^2.89.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/bluebird": "^3.5.42",
     "@types/cookie-parser": "^1.4.9",
