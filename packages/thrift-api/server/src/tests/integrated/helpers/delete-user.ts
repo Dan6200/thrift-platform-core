@@ -1,4 +1,4 @@
-import { supabase } from '#supabase-config'
+import { supabaseAdmin } from '#supabase-config'
 import { knex } from '#src/db/index.js'
 
 export const deleteUserForTesting = async (userId: string) => {
@@ -14,7 +14,7 @@ export const deleteUserForTesting = async (userId: string) => {
       )
 
     // Delete from Supabase auth.users
-    await supabase.auth.admin
+    await supabaseAdmin.auth.admin
       .deleteUser(userId)
       .catch((deleteError: Error) =>
         console.error(

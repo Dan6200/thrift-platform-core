@@ -1,4 +1,4 @@
-import { supabase } from '#supabase-config'
+import { supabaseAdmin } from '#supabase-config'
 
 export const createUserForTesting = async ({
   email,
@@ -11,7 +11,7 @@ export const createUserForTesting = async ({
       `\nDEBUG: Create User -> ` +
         JSON.stringify({ email, password, phone, user_metadata }), // Log phone as well
     )
-  const { data, error } = await supabase.auth.admin.createUser({
+  const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
     phone, // Pass phone as a top-level argument

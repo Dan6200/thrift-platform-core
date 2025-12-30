@@ -12,5 +12,7 @@ dotenv.config({ path })
 
 const supabaseUrl = process.env.SUPABASE_URL as string
 const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY as string
+const supabaseAdminKey = process.env.SUPABASE_SECRET_KEY as string
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabaseAdmin = createClient(supabaseUrl, supabaseAdminKey)

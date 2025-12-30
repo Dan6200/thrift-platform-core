@@ -19,18 +19,19 @@ export const registerLogic = async (
     is_vendor,
   } = req.body
 
-  const { data, error } = await supabase.auth.admin.createUser({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    email_confirm: true, // Automatically confirm the email for server-side creation
-    user_metadata: {
-      first_name,
-      last_name,
-      phone,
-      dob,
-      country, // Ensure country is passed to user_metadata for the trigger
-      is_vendor: is_vendor || false,
-      is_customer: !is_vendor,
+    options: {
+      data: {
+        first_name,
+        last_name,
+        phone,
+        dob,
+        country, // Ensure country is passed to user_metadata for the trigger
+        is_vendor: is_vendor || false,
+        is_customer: !is_vendor,
+      },
     },
   })
 
