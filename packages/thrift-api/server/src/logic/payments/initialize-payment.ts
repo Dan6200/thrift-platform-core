@@ -9,7 +9,6 @@ import Paystack from '@paystack/paystack-sdk' // Paystack SDK
 
 // Initialize Paystack with secret key from environment variables
 // This should ideally be done once at app startup
-console.log(Paystack)
 const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY as string)
 
 export const initializePaymentLogic = async (
