@@ -243,7 +243,7 @@ This project is a monorepo containing the following key packages:
     "public.products" {
     integer product_id
     varchar title
-    text\_\_ description
+    text__ description
     numeric_19_4* list*price
     numeric_19_4* net*price
     uuid vendor_id
