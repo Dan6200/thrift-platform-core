@@ -2,16 +2,21 @@
 import { expect } from 'chai'
 import { StatusCodes } from 'http-status-codes'
 import { v4 as uuidv4 } from 'uuid'
-import { createUserForTesting } from '../../helpers/create-user.js'
-import { deleteUserForTesting } from '../../helpers/delete-user.js'
-import { signInForTesting } from '../../helpers/signin-user.js'
-import { createStoreForTesting } from '../../helpers/create-store.js'
-import { loadUserData } from '../../helpers/load-data.js'
+import * as crypto from 'crypto' // Use standard import for crypto
+import { createUserForTesting } from '../helpers/create-user.js'
+import { deleteUserForTesting } from '../helpers/delete-user.js'
+import { signInForTesting } from '../helpers/signin-user.js'
+import { createStoreForTesting } from '../helpers/create-store.js'
+import { createOrderForTesting } from '../helpers/create-order.js' // Import existing helper
+import { loadUserData } from '../helpers/load-data.js'
 import { knex } from '#src/db/index.js'
 import {
   testInitializePayment,
   testPaystackWebhook,
 } from './definitions/index.js'
+
+// Use static import for Paystack SDK (default import)
+import Paystack from '@paystack/paystack-sdk'
 
 const {
   OK,
@@ -61,18 +66,19 @@ describe('Payments', () => {
     const storeRes = await createStoreForTesting(vendorToken)
     testStoreId = storeRes.body.store_id
 
-    // 4. Create Order manually in DB
-    // We assume store creation succeeded. If not, tests will fail here.
-    const [order] = await knex('orders')
-      .insert({
-        customer_id: customerUserId,
-        store_id: testStoreId,
-        // delivery_info_id: uuidv4(), // Optional, skipping for simplicity unless required constraint
-        total_amount: 1000,
-        status: 'pending',
-      })
-      .returning('order_id')
-    testOrderId = order.order_id
+    // 4. Create Order using helper
+    const createOrderPayload = {
+      items: [
+        { variant_id: 1, quantity: 1 }, // Assuming variant_id 1 exists or is created elsewhere
+      ],
+    }
+    const createOrderQuery = { store_id: testStoreId }
+    const orderRes = await createOrderForTesting(
+      customerToken,
+      createOrderQuery,
+      createOrderPayload,
+    )
+    testOrderId = orderRes.body.order_id
 
     // Store Paystack secret for webhook signature generation
     testPaystackSecret = process.env.PAYSTACK_SECRET_KEY || 'test_secret'
@@ -81,9 +87,10 @@ describe('Payments', () => {
   after(async () => {
     // Cleanup
     if (testOrderId) await knex('orders').where({ order_id: testOrderId }).del()
+    // Store cleanup: Assuming store creation helper returns something that allows deletion
+    // For now, if stores table has store_id as primary, direct delete is fine
+    await knex('stores').where({ store_id: testStoreId }).del()
 
-    // Deleting users should cascade delete stores/orders if foreign keys are set up that way,
-    // but explicit deleteUserForTesting handles auth.users and public.profiles cleanup.
     if (customerUserId) await deleteUserForTesting(customerUserId)
     if (vendorUserId) await deleteUserForTesting(vendorUserId)
   })
@@ -131,23 +138,29 @@ describe('Payments', () => {
 
     it('should return 400 if order is not in pending status', async () => {
       // Create a new order and set its status to something else
-      const [nonPendingOrder] = await knex('orders')
-        .insert({
-          customer_id: customerUserId,
-          store_id: testStoreId,
-          total_amount: 500,
-          status: 'completed',
-        })
-        .returning('order_id')
+      const createOrderPayload = {
+        items: [{ variant_id: 1, quantity: 1 }],
+      }
+      const createOrderQuery = { store_id: testStoreId }
+      const orderRes = await createOrderForTesting(
+        customerToken,
+        createOrderQuery,
+        createOrderPayload,
+      )
+      const nonPendingOrderId = orderRes.body.order_id
+
+      await knex('orders')
+        .where({ order_id: nonPendingOrderId })
+        .update({ status: 'completed' })
 
       const response = await testInitializePayment({
         token: customerToken,
-        body: { order_id: nonPendingOrder.order_id },
+        body: { order_id: nonPendingOrderId },
         expectedStatusCode: BAD_REQUEST,
       })
       expect(response.status).to.equal(BAD_REQUEST)
 
-      await knex('orders').where({ order_id: nonPendingOrder.order_id }).del()
+      await knex('orders').where({ order_id: nonPendingOrderId }).del()
     })
 
     it('should return 401 if user is unauthenticated', async () => {
@@ -160,11 +173,10 @@ describe('Payments', () => {
     })
 
     it('should return 404 (or 403) if order does not belong to authenticated user', async () => {
-      // Vendor tries to pay for Customer's order
       const response = await testInitializePayment({
         token: vendorToken,
         body: { order_id: testOrderId },
-        expectedStatusCode: NOT_FOUND, // Logic throws NotFoundError for security
+        expectedStatusCode: NOT_FOUND,
       })
       expect(response.status).to.equal(NOT_FOUND)
     })
@@ -178,30 +190,36 @@ describe('Payments', () => {
     })
 
     const generatePaystackSignature = (payload: any, secret: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const hmac = require('crypto').createHmac('sha512', secret)
+      const hmac = crypto.createHmac('sha512', secret)
       return hmac.update(JSON.stringify(payload)).digest('hex')
     }
 
     it('should update order status on successful charge webhook', async () => {
       // Create a fresh order
-      const [newOrder] = await knex('orders')
-        .insert({
-          customer_id: customerUserId,
-          store_id: testStoreId,
-          total_amount: 1200,
-          status: 'pending',
-          payment_reference: `TEST_REF_${uuidv4()}`,
-        })
-        .returning('order_id')
+      const createOrderPayload = {
+        items: [{ variant_id: 1, quantity: 1 }],
+      }
+      const createOrderQuery = { store_id: testStoreId }
+      const orderRes = await createOrderForTesting(
+        customerToken,
+        createOrderQuery,
+        createOrderPayload,
+      )
+      const newOrderId = orderRes.body.order_id
+
+      // Update the newly created order with a payment_reference to simulate initialization
+      const paymentRef = `TEST_REF_${uuidv4()}`
+      await knex('orders')
+        .where({ order_id: newOrderId })
+        .update({ payment_reference: paymentRef })
 
       const webhookPayload = {
         event: 'charge.success',
         data: {
-          reference: newOrder.payment_reference,
+          reference: paymentRef,
           status: 'success',
           amount: 1200 * 100,
-          metadata: { order_id: newOrder.order_id },
+          metadata: { order_id: newOrderId },
         },
       }
       const signature = generatePaystackSignature(
@@ -210,13 +228,12 @@ describe('Payments', () => {
       )
 
       // Mock Paystack verification
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const paystackSdk = require('@paystack/paystack-sdk')
-      const originalVerify = paystackSdk.Paystack.prototype.transaction.verify
-      paystackSdk.Paystack.prototype.transaction.verify = () =>
+      const originalVerify = Paystack.prototype.transaction.verify
+      Paystack.prototype.transaction.verify = () =>
         Promise.resolve({
           status: true,
           data: { status: 'success' },
+          message: 'Verification successful',
         })
 
       const response = await testPaystackWebhook({
@@ -234,12 +251,12 @@ describe('Payments', () => {
       )
 
       const updatedOrder = await knex('orders')
-        .where({ order_id: newOrder.order_id })
+        .where({ order_id: newOrderId })
         .first()
       expect(updatedOrder).to.have.property('status').that.equals('processing')
 
-      paystackSdk.Paystack.prototype.transaction.verify = originalVerify
-      await knex('orders').where({ order_id: newOrder.order_id }).del()
+      Paystack.prototype.transaction.verify = originalVerify
+      await knex('orders').where({ order_id: newOrderId }).del()
     })
 
     it('should return 400 for invalid Paystack signature', async () => {
@@ -265,19 +282,26 @@ describe('Payments', () => {
     })
 
     it('should return 200 but not update order for unhandled event type', async () => {
-      const [newOrder] = await knex('orders')
-        .insert({
-          customer_id: customerUserId,
-          store_id: testStoreId,
-          total_amount: 1000,
-          status: 'pending',
-          payment_reference: `TEST_REF_UNHANDLED_${uuidv4()}`,
-        })
-        .returning('order_id')
+      // Create a fresh order
+      const createOrderPayload = {
+        items: [{ variant_id: 1, quantity: 1 }],
+      }
+      const createOrderQuery = { store_id: testStoreId }
+      const orderRes = await createOrderForTesting(
+        customerToken,
+        createOrderQuery,
+        createOrderPayload,
+      )
+      const newOrderId = orderRes.body.order_id
+
+      const paymentRef = `TEST_REF_UNHANDLED_${uuidv4()}`
+      await knex('orders')
+        .where({ order_id: newOrderId })
+        .update({ payment_reference: paymentRef })
 
       const webhookPayload = {
         event: 'transfer.success', // Unhandled event
-        data: { reference: newOrder.payment_reference, status: 'success' },
+        data: { reference: newOrderId.payment_reference, status: 'success' },
       }
       const signature = generatePaystackSignature(
         webhookPayload,
@@ -299,31 +323,38 @@ describe('Payments', () => {
         .that.includes('not handled')
 
       const originalOrder = await knex('orders')
-        .where({ order_id: newOrder.order_id })
+        .where({ order_id: newOrderId })
         .first()
-      expect(originalOrder).to.have.property('status').that.equals('pending') // Status should not change
+      expect(originalOrder).to.have.property('status').that.equals('pending')
 
-      await knex('orders').where({ order_id: newOrder.order_id }).del()
+      await knex('orders').where({ order_id: newOrderId }).del()
     })
 
     it('should return 500 if Paystack verification fails', async () => {
-      const [newOrder] = await knex('orders')
-        .insert({
-          customer_id: customerUserId,
-          store_id: testStoreId,
-          total_amount: 1300,
-          status: 'pending',
-          payment_reference: `TEST_REF_FAIL_VERIFY_${uuidv4()}`,
-        })
-        .returning('order_id')
+      // Create a fresh order
+      const createOrderPayload = {
+        items: [{ variant_id: 1, quantity: 1 }],
+      }
+      const createOrderQuery = { store_id: testStoreId }
+      const orderRes = await createOrderForTesting(
+        customerToken,
+        createOrderQuery,
+        createOrderPayload,
+      )
+      const newOrderId = orderRes.body.order_id
+
+      const paymentRef = `TEST_REF_FAIL_VERIFY_${uuidv4()}`
+      await knex('orders')
+        .where({ order_id: newOrderId })
+        .update({ payment_reference: paymentRef })
 
       const webhookPayload = {
         event: 'charge.success',
         data: {
-          reference: newOrder.payment_reference,
+          reference: paymentRef,
           status: 'success',
           amount: 1300 * 100,
-          metadata: { order_id: newOrder.order_id },
+          metadata: { order_id: newOrderId },
         },
       }
       const signature = generatePaystackSignature(
@@ -332,13 +363,12 @@ describe('Payments', () => {
       )
 
       // Mock Paystack verification to fail
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const paystackSdk = require('@paystack/paystack-sdk')
-      const originalVerify = paystackSdk.Paystack.prototype.transaction.verify
-      paystackSdk.Paystack.prototype.transaction.verify = () =>
+      const originalVerify = Paystack.prototype.transaction.verify
+      Paystack.prototype.transaction.verify = () =>
         Promise.resolve({
-          status: false, // Simulate failed verification
+          status: false,
           data: { status: 'failed', gateway_response: 'Invalid transaction' },
+          message: 'Verification failed',
         })
 
       const response = await testPaystackWebhook({
@@ -354,14 +384,13 @@ describe('Payments', () => {
         .to.have.property('message')
         .that.includes('verification failed')
 
-      // Order status should not change from pending
       const originalOrder = await knex('orders')
-        .where({ order_id: newOrder.order_id })
+        .where({ order_id: newOrderId })
         .first()
       expect(originalOrder).to.have.property('status').that.equals('pending')
 
-      paystackSdk.Paystack.prototype.transaction.verify = originalVerify // Restore
-      await knex('orders').where({ order_id: newOrder.order_id }).del()
+      Paystack.prototype.transaction.verify = originalVerify // Restore
+      await knex('orders').where({ order_id: newOrderId }).del()
     })
   })
 })
