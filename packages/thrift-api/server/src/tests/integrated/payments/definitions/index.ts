@@ -10,6 +10,8 @@ import {
   validateInitializePaymentRes,
   validatePaystackWebhookReq,
 } from '../../helpers/test-validators/payments.js'
+import { validateTestData } from '../../helpers/test-validators.js'
+import Joi from 'joi'
 
 const { OK, BAD_REQUEST } = StatusCodes
 const paymentsPathBase = '/v1/payments'
@@ -31,7 +33,7 @@ export const testInitializePayment = (args: {
     path,
     validateTestReqData:
       args.expectedStatusCode === BAD_REQUEST
-        ? null
+        ? (data: unknown) => validateTestData(Joi.object(), data, null)
         : validateInitializePaymentReq,
     validateTestResData:
       args.expectedStatusCode === OK ? validateInitializePaymentRes : null,
