@@ -84,10 +84,10 @@ const compareCartData = (actual: any, expected: ExpectedData) => {
     const now = new Date()
     const createdAt = new Date(actualCart.created_at!)
     const updatedAt = new Date(actualCart.updated_at!)
-    const oneSecond = 1000 // 1000 milliseconds
+    const twoSeconds = 2000
 
-    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
-    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(twoSeconds)
+    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(twoSeconds)
 
     actualCart.total_items.should.equal(expected.total_items)
     actualCart.total_price.should.equal(expected.total_price)

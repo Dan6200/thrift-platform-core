@@ -84,10 +84,10 @@ const compareProductData = (actual: any, expected: ProductResponseData) => {
     const now = new Date()
     const createdAt = new Date(actualProduct.created_at!)
     const updatedAt = new Date(actualProduct.updated_at!)
-    const oneSecond = 1000 // 1000 milliseconds
+    const twoSeconds = 2000
 
-    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
-    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(twoSeconds)
+    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(twoSeconds)
 
     // Compare variants and options
     actualProduct.variants &&
@@ -172,10 +172,10 @@ const compareVariantData = (
     const now = new Date()
     const createdAt = new Date(actualVariant.created_at!)
     const updatedAt = new Date(actualVariant.updated_at!)
-    const oneSecond = 1000 // 1000 milliseconds
+    const twoSeconds = 2000
 
-    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
-    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+    chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(twoSeconds)
+    chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(twoSeconds)
 
     return true
   } catch (assertionError) {

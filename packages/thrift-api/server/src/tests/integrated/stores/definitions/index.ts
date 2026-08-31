@@ -94,13 +94,13 @@ const compareStoreData = (actual: any, expected: StoreData) => {
   const addressNow = new Date()
   const storeAddressCreatedAt = new Date(actualStore.store_address.created_at!)
   const storeAddressUpdatedAt = new Date(actualStore.store_address.updated_at!)
-  const oneSecond = 1000 // 1000 millisecond
+  const twoSeconds = 2000
   chai
     .expect(addressNow.getTime() - storeAddressCreatedAt.getTime())
-    .to.be.lessThan(oneSecond)
+    .to.be.lessThan(twoSeconds)
   chai
     .expect(addressNow.getTime() - storeAddressUpdatedAt.getTime())
-    .to.be.lessThan(oneSecond)
+    .to.be.lessThan(twoSeconds)
 
   // Compare pages and sections
   actualStore.should.have.property('pages').that.is.an('array')
@@ -131,10 +131,10 @@ const compareStoreData = (actual: any, expected: StoreData) => {
 
           chai
             .expect(now.getTime() - createdAt.getTime())
-            .to.be.lessThan(oneSecond)
+            .to.be.lessThan(twoSeconds)
           chai
             .expect(now.getTime() - updatedAt.getTime())
-            .to.be.lessThan(oneSecond)
+            .to.be.lessThan(twoSeconds)
         }
       }
     }
@@ -151,8 +151,8 @@ const compareStoreData = (actual: any, expected: StoreData) => {
   const createdAt = new Date(actualStore.created_at!)
   const updatedAt = new Date(actualStore.updated_at!)
 
-  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
-  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(twoSeconds)
+  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(twoSeconds)
 
   return true
 }

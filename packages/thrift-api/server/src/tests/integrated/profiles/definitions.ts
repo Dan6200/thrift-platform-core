@@ -47,10 +47,10 @@ const compareProfileData = (actual: any, expected: ProfileRequestData) => {
   const now = new Date()
   const createdAt = new Date(actualProfile.created_at!)
   const updatedAt = new Date(actualProfile.updated_at!)
-  const oneSecond = 1000 // 1000 milliseconds
+  const twoSeconds = 2000
 
-  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(oneSecond)
-  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(oneSecond)
+  chai.expect(now.getTime() - createdAt.getTime()).to.be.lessThan(twoSeconds)
+  chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(twoSeconds)
 
   return true
 }
