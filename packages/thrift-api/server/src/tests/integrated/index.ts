@@ -37,9 +37,9 @@ export default function (): void {
   for (let user of users) {
     const { userInfo } = user
     const { first_name: name } = userInfo
-    describe(`Testing retrieving user Profile for ${name}`, () =>
+    describe(`Testing retrieving user Profile for ${name} (All users)`, () =>
       testProfile(user as any))
-    describe(`Testing retrieving user Profile without Signing In`, () =>
+    describe(`Testing retrieving user Profile without Signing In (All users)`, () =>
       testProfileWithoutSignIn(user as any))
   }
 
@@ -48,7 +48,7 @@ export default function (): void {
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing the Delivery Information of ${name}'s account`, async () =>
+    describe(`Testing the Delivery Information of ${name}'s (Customer) account`, async () =>
       testDelivery(customer as any))
   }
 
@@ -57,7 +57,7 @@ export default function (): void {
   for (let vendor of vendors) {
     const { userInfo } = vendor
     const { first_name: name } = userInfo
-    describe(`Testing Stores owned by ${name}`, () =>
+    describe(`Testing Stores owned by ${name} (Vendor)`, () =>
       testStores({
         userInfo: vendor.userInfo,
         stores: vendor.listOfStores,
@@ -79,7 +79,8 @@ export default function (): void {
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing Cart for ${name}`, () => testCart(customer as any))
+    describe(`Testing Cart for ${name} (Customer)`, () =>
+      testCart(customer as any))
   }
 
   /** Product related tests **/
@@ -87,7 +88,7 @@ export default function (): void {
   for (let vendor of vendors) {
     const { userInfo } = vendor
     const { first_name: name } = userInfo
-    describe(`Testing Products listed by ${name}`, async () =>
+    describe(`Testing Products listed by ${name} (Vendor)`, async () =>
       testProducts(vendor))
   }
 
@@ -96,7 +97,7 @@ export default function (): void {
   for (let vendor of vendors) {
     const { userInfo } = vendor
     const { first_name: name } = userInfo
-    describe(`Testing Dashboard Analytics for ${name}`, () =>
+    describe(`Testing Dashboard Analytics for ${name} (Vendor)`, () =>
       testAnalytics(vendor as any))
   }
 
@@ -108,7 +109,7 @@ export default function (): void {
       const { userInfo: customerInfo } = customer
       const { first_name: vendorName } = vendorInfo
       const { first_name: customerName } = customerInfo
-      describe(`Testing Store Staff for ${vendorName} with staff ${customerName}`, () =>
+      describe(`Testing Store Staff for ${vendorName} (Vendor) with staff ${customerName} (Customer)`, () =>
         testStoreStaff({ vendorInfo, customerInfo }))
     }
   }
@@ -117,21 +118,22 @@ export default function (): void {
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing Orders for ${name}`, () => testOrders(customer as any))
+    describe(`Testing Orders for ${name} (Customer)`, () =>
+      testOrders(customer as any))
   }
 
   /** Product Reviews related tests **/
   for (let customer of customers) {
     const { userInfo } = customer
     const { first_name: name } = userInfo
-    describe(`Testing Product Reviews for ${name}`, () =>
+    describe(`Testing Product Reviews for ${name} (Customer)`, () =>
       testProductReviews(customer as any))
   }
 
   /** Media related tests **/
 
   for (let user of users) {
-    describe(`Testing Media File Upload for ${user.userInfo.first_name}`, () =>
+    describe(`Testing Media File Upload for ${user.userInfo.first_name} (All Users)`, () =>
       testMedia(user as any))
   }
 
