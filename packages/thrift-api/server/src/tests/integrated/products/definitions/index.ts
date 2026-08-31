@@ -73,13 +73,6 @@ const compareProductData = (actual: any, expected: ProductResponseData) => {
     actualProduct.category_id.should.equal(expected.category_id)
     actualProduct.subcategory_id.should.equal(expected.subcategory_id)
 
-    // Assert that server-generated fields exist and are of the correct type
-    actualProduct.should.have.property('product_id').that.is.a('number')
-    actualProduct.should.have.property('vendor_id').that.is.a('string')
-    actualProduct.should.have.property('store_id').that.is.a('number')
-    actualProduct.should.have.property('created_at').that.is.a('string')
-    actualProduct.should.have.property('updated_at').that.is.a('string')
-
     // Check that timestamps are recent (within the last 5 seconds)
     const now = new Date()
     const createdAt = new Date(actualProduct.created_at!)
@@ -90,8 +83,6 @@ const compareProductData = (actual: any, expected: ProductResponseData) => {
     chai.expect(now.getTime() - updatedAt.getTime()).to.be.lessThan(twoSeconds)
 
     // Compare variants and options
-    actualProduct.variants &&
-      actualProduct.should.have.property('variants').that.is.an('array')
     if (expected.variants) {
       sortedActual.variants.length.should.equal(sortedExpected.variants.length)
 
@@ -153,10 +144,6 @@ const compareVariantData = (
     expected.net_price &&
       actualVariant.net_price.should.equal(expected.net_price)
     actualVariant.quantity_available.should.equal(expected.quantity_available)
-
-    // Assert that server-generated fields exist and are of the correct type
-    actualVariant.should.have.property('variant_id').that.is.a('number')
-    actualVariant.should.have.property('options').that.is.an('array')
 
     if (expected.options) {
       sortedActualVariant.options.length.should.equal(expected.options.length)

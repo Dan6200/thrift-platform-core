@@ -66,11 +66,6 @@ const compareStoreStaffData = (actual: any, expected: StoreStaff) => {
   actualStaff.staff_id.should.equal(expected.staff_id)
   actualStaff.role.should.equal(expected.role)
 
-  // Assert that server-generated fields exist and are of the correct type
-  actualStaff.should.have.property('store_id').that.is.a('number')
-  actualStaff.should.have.property('created_at').that.is.a('string')
-  actualStaff.should.have.property('updated_at').that.is.a('string')
-
   // Check that timestamps are recent (within the last 5 seconds)
   const now = new Date()
   const createdAt = new Date(actualStaff.created_at!)

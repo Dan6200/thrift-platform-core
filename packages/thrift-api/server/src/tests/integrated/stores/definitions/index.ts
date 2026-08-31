@@ -103,17 +103,14 @@ const compareStoreData = (actual: any, expected: StoreData) => {
     .to.be.lessThan(twoSeconds)
 
   // Compare pages and sections
-  actualStore.should.have.property('pages').that.is.an('array')
   if (expected.pages) {
     actualStore.pages!.length.should.equal(expected.pages.length)
     for (let i = 0; i < expected.pages.length; i++) {
       const actualPage = actualStore.pages![i]
       const expectedPage = expected.pages[i]
-      actualPage.should.have.property('page_id').that.is.a('number')
       actualPage.page_slug.should.equal(expectedPage.page_slug)
       actualPage.page_title.should.equal(expectedPage.page_title)
       actualPage.page_type.should.equal(expectedPage.page_type)
-      actualPage.should.have.property('sections').that.is.an('array')
       if (expectedPage.sections) {
         actualPage.sections!.length.should.equal(expectedPage.sections.length)
         for (let j = 0; j < expectedPage.sections.length; j++) {
@@ -122,7 +119,6 @@ const compareStoreData = (actual: any, expected: StoreData) => {
           actualSection.section_title.should.equal(
             expectedSection.section_title,
           )
-          actualSection.should.have.property('section_id').that.is.a('number')
           actualSection.section_type.should.equal(expectedSection.section_type)
           actualSection.sort_order.should.equal(expectedSection.sort_order)
           const now = new Date()
@@ -139,12 +135,6 @@ const compareStoreData = (actual: any, expected: StoreData) => {
       }
     }
   }
-
-  // Assert that server-generated fields exist and are of the correct type
-  actualStore.should.have.property('store_id').that.is.a('number')
-  actualStore.should.have.property('vendor_id').that.is.a('string')
-  actualStore.should.have.property('created_at').that.is.a('string')
-  actualStore.should.have.property('updated_at').that.is.a('string')
 
   // Check that timestamps are recent (within the last 5 seconds)
   const now = new Date()

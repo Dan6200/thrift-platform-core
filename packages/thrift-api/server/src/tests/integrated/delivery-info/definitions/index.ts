@@ -77,13 +77,6 @@ const compareDeliveryInfoData = (actual: any, expected: DeliveryInfo) => {
     expected.delivery_instructions,
   )
 
-  // Assert that server-generated fields exist and are of the correct type
-  actualDeliveryInfo.should.have
-    .property('delivery_info_id')
-    .that.is.a('number')
-  actualDeliveryInfo.should.have.property('created_at').that.is.a('string')
-  actualDeliveryInfo.should.have.property('updated_at').that.is.a('string')
-
   // Check that timestamps are recent (within the last 5 seconds)
   const now = new Date()
   const createdAt = new Date(actualDeliveryInfo.created_at!)

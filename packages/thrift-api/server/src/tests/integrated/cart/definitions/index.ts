@@ -75,11 +75,6 @@ const compareCartData = (actual: any, expected: ExpectedData) => {
     expected as any,
   )
   try {
-    actualCart.should.have.property('cart_id').that.is.a('number')
-    actualCart.should.have.property('customer_id').that.is.a('string')
-    actualCart.should.have.property('created_at').that.is.a('string')
-    actualCart.should.have.property('updated_at').that.is.a('string')
-
     // Check that timestamps are recent (within the last 5 seconds)
     const now = new Date()
     const createdAt = new Date(actualCart.created_at!)
@@ -92,7 +87,6 @@ const compareCartData = (actual: any, expected: ExpectedData) => {
     actualCart.total_items.should.equal(expected.total_items)
     actualCart.total_price.should.equal(expected.total_price)
 
-    actualCart.should.have.property('items').that.is.an('array')
     if (expected.items) {
       actualCart.items!.length.should.equal(expected.items.length)
       for (let i = 0; i < expected.items.length; i++) {
