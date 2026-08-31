@@ -108,7 +108,7 @@ describe('Payments', () => {
         .first()
       expect(updatedOrder)
         .to.have.property('payment_reference')
-        .that.equals(response.body.reference)
+        .that.equals(response.reference)
     })
 
     it('should return 400 if order_id is missing', async () => {
@@ -232,8 +232,6 @@ describe('Payments', () => {
           'Content-Type': 'application/json',
         },
       })
-
-      console.log('Paystack Webhook Response', response)
 
       expect(response.status).to.equal(OK)
       expect(response.body).to.have.property(
