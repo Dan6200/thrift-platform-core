@@ -19,9 +19,13 @@ export const InitializePaymentRequestSchema = Joi.object({
 
 // Schema for Paystack webhook payload
 export const PaystackWebhookRequestSchema = Joi.object({
-  event: Joi.string().required(), // e.g., 'charge.success'
-  data: Joi.object().required(), // The actual transaction data
-}).unknown(true) // Allow unknown keys as webhook payloads can be extensive
+  query: Joi.optional(),
+  params: Joi.optional(),
+  body: Joi.object({
+    event: Joi.string().required(),
+    data: Joi.object().required(),
+  }).unknown(true), // Allow unknown keys as webhook payloads can be extensive
+})
 
 // --- Response Schemas ---
 
