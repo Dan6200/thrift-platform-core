@@ -2,30 +2,20 @@
 import { NextFunction, Request, Response } from 'express'
 import BadRequestError from '#src/errors/bad-request.js'
 import InternalServerError from '#src/errors/internal-server.js'
-import Paystack from '@paystack/paystack-sdk' // Paystack SDK
-import crypto from 'crypto'
 import logger from '#src/utils/logger.js'
 import { knex } from '#src/db/index.js'
-
-const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY as string)
+import { verifyPaystackSignature } from '#src/lib/paystack.js'
 
 export const handlePaystackWebhookLogic = async (
   req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
-  // 1. Verify Paystack Webhook Signature
-  const secret = process.env.PAYSTACK_SECRET_KEY
-  if (!secret) {
-    throw new InternalServerError('Paystack secret key not configured.')
-  }
+  // 1. Verify Paystack Webhook Signature using raw body buffer/string
+  const signature = req.headers['x-paystack-signature'] as string
+  const rawBody = (req as any).rawBody || JSON.stringify(req.body)
 
-  const hash = crypto
-    .createHmac('sha512', secret)
-    .update(JSON.stringify(req.body))
-    .digest('hex')
-
-  if (hash !== req.headers['x-paystack-signature']) {
+  if (!signature || !verifyPaystackSignature(rawBody, signature)) {
     throw new BadRequestError('Invalid Paystack webhook signature.')
   }
 
@@ -38,16 +28,16 @@ export const handlePaystackWebhookLogic = async (
     throw new BadRequestError('Webhook missing event identifier.')
   }
 
-  // 2.1 Replay Protection: Check if event already processed
+  // 2.1 Replay Protection: Atomic check via processed_webhooks audit table
   try {
     await knex('processed_webhooks').insert({
       event_id: eventId,
       provider: 'paystack',
-      payload: event, // Optional: Store for audit trail
+      payload: event,
     })
   } catch (error: any) {
     if (error.code === '23505') {
-      // Postgres unique violation (duplicate key)
+      // Postgres unique constraint violation
       logger.info(`Webhook: Event ${eventId} already processed. Skipping.`)
       req.dbResult = { message: 'Event already processed.' }
       return next()
@@ -58,10 +48,9 @@ export const handlePaystackWebhookLogic = async (
 
   if (event.event === 'charge.success') {
     const paystackReference = event.data.reference
-    const orderId = event.data.metadata?.order_id // Retrieve order_id from metadata
+    const orderId = event.data.metadata?.order_id
 
     if (!orderId) {
-      // This could be a webhook for an unrelated transaction or missing metadata
       logger.warn(
         'Paystack webhook received with missing order_id metadata.',
         event,
@@ -73,40 +62,39 @@ export const handlePaystackWebhookLogic = async (
     }
 
     try {
-      // 3. Verify Transaction with Paystack API (to prevent spoofing)
-      const verification = await paystack.transaction.verify({
-        reference: paystackReference,
-      })
+      // 3. Atomic State Transition (Prevents race conditions with Callback)
+      const updatedCount = await knex('orders')
+        .where({ order_id: orderId, status: 'pending' })
+        .update({
+          status: 'processing',
+          payment_reference: paystackReference,
+          updated_at: knex.fn.now(),
+        })
 
-      if (!verification.status || verification.data.status !== 'success') {
-        // Transaction is not truly successful according to Paystack's API
-        throw new BadRequestError(
-          `Paystack transaction verification failed for reference ${paystackReference}.`,
+      if (updatedCount === 0) {
+        logger.info(
+          `Order ${orderId} already settled or not pending. Skipping fulfillment.`,
         )
+        req.dbResult = { message: 'Order already processed.' }
+        return next()
       }
 
-      // 4. Set Event Payload for the publishEvent middleware
+      // 4. Set Event Payload for downstream processing/publishing
       req.eventPayload = event.data
 
-      logger.info(
-        `Webhook: Payment success received for order ${orderId}. Preparing to queue job...`,
-      )
+      logger.info(`Webhook: Payment success confirmed for order ${orderId}.`)
       req.dbResult = {
         message: 'Payment success received and processing initiated.',
       }
     } catch (error: any) {
-      logger.error(
-        'Error processing Paystack webhook:',
-        error.response?.data || error.message,
-      )
+      logger.error('Error updating order state from webhook:', error.message)
       throw new InternalServerError(
-        `Webhook processing failed: ${error.response?.data?.message || error.message}`,
+        `Webhook processing failed: ${error.message}`,
       )
     }
   } else {
-    // Handle other Paystack events (e.g., 'charge.failed', 'transfer.success', etc.)
     logger.info(
-      `Received Paystack event: ${event.event}. Not handling this event type currently.`,
+      `Received Paystack event: ${event.event}. Unhandled event type.`,
     )
     req.dbResult = { message: `Event ${event.event} not handled.` }
   }
