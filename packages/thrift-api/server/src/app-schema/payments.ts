@@ -25,6 +25,9 @@ export const PaystackWebhookRequestSchema = Joi.object({
     event: Joi.string().required(),
     data: Joi.object().required(),
   }).unknown(true), // Allow unknown keys as webhook payloads can be extensive
+  headers: Joi.object({
+    'x-paystack-signature': Joi.string().required(),
+  }),
 })
 
 // --- Response Schemas ---
