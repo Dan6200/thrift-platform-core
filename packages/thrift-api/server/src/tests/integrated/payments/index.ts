@@ -14,9 +14,7 @@ import {
   testInitializePayment,
   testPaystackWebhook,
 } from './definitions/index.js'
-
-// Use static import for Paystack SDK (default import)
-import Paystack from '@paystack/paystack-sdk'
+import { paystack } from '#src/lib/paystack.js'
 
 const {
   OK,
@@ -217,8 +215,8 @@ describe('Payments', () => {
       )
 
       // Mock Paystack verification
-      const originalVerify = Paystack.prototype.transaction.verify
-      Paystack.prototype.transaction.verify = () =>
+      const originalVerify = paystack.transaction.verify
+      paystack.transaction.verify = () =>
         Promise.resolve({
           status: true,
           data: { status: 'success' },
@@ -244,7 +242,7 @@ describe('Payments', () => {
         .first()
       expect(updatedOrder).to.have.property('status').that.equals('processing')
 
-      Paystack.prototype.transaction.verify = originalVerify
+      paystack.transaction.verify = originalVerify
       await knex('orders').where({ order_id: newOrderId }).del()
     })
 
@@ -352,8 +350,8 @@ describe('Payments', () => {
       )
 
       // Mock Paystack verification to fail
-      const originalVerify = Paystack.prototype.transaction.verify
-      Paystack.prototype.transaction.verify = () =>
+      const originalVerify = paystack.transaction.verify
+      paystack.transaction.verify = () =>
         Promise.resolve({
           status: false,
           data: { status: 'failed', gateway_response: 'Invalid transaction' },
@@ -378,7 +376,7 @@ describe('Payments', () => {
         .first()
       expect(originalOrder).to.have.property('status').that.equals('pending')
 
-      Paystack.prototype.transaction.verify = originalVerify // Restore
+      paystack.transaction.verify = originalVerify // Restore
       await knex('orders').where({ order_id: newOrderId }).del()
     })
   })
