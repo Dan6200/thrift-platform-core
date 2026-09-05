@@ -1,15 +1,11 @@
-// packages/thrift-api/server/src/logic/payments/initialize-payment.ts
+// server/src/logic/payments/initialize-payment.ts
 import { NextFunction, Request, Response } from 'express'
 import { knex } from '#src/db/index.js'
 import BadRequestError from '#src/errors/bad-request.js'
 import NotFoundError from '#src/errors/not-found.js'
 import InternalServerError from '#src/errors/internal-server.js'
 import UnauthenticatedError from '#src/errors/unauthenticated.js'
-import Paystack from '@paystack/paystack-sdk' // Paystack SDK
-
-// Initialize Paystack with secret key from environment variables
-// This should ideally be done once at app startup
-const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY as string)
+import { paystack } from '#src/lib/paystack.js'
 
 export const initializePaymentLogic = async (
   req: Request,
