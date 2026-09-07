@@ -90,7 +90,7 @@ $$ language plpgsql security definer;
 **************************************************************************************************************************************************************************/
 
 create table if not exists profiles (
-  id 		 uuid                    primary    key, -- Get from Firebase
+  id 		 uuid                    primary    key, -- Get from Supabase
   first_name   varchar(30)               not        null,
 	check				 (first_name ~* '^[a-zA-Z]+$'),
   last_name    varchar(30)               not        null,
