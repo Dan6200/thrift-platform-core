@@ -11,7 +11,6 @@
   - Run both the debug server and tests when something isn't working
 - For difficult to fix bugs, look at the supabase container logs with docker to get more clues:
 - Query the database directly:
-
   - <example>
 
   bash```
@@ -21,6 +20,7 @@
   c0d0bc82a1c6 public.ecr.aws/supabase/gotrue:v2.177.0 "auth" 4 hours ago Up 4 hours (healthy) 9999/tcp supabase_auth_thrift-api
   261e175ca32b public.ecr.aws/supabase/kong:2.8.1 "sh -c 'cat <<'EOF' …" 4 hours ago Up 4 hours (healthy) 8001/tcp, 8088/tcp, 8443-8444/tcp, 0.0.0.0:54321->8000/tcp, [::]:54321->8000/tcp supabase_kong_thrift-api
   69a7d6d358ab ghcr.io/open-webui/open-webui:main "bash start.sh" 2 months ago Up 4 hours (healthy) 0.0.0.0:6600->8080/tcp, [::]:6600->8080/tcp open-webui
+
   $ docker exec -it ee bash -c "PAGER='' psql -U postgres -c 'select id from profiles'"
   id
 
@@ -46,6 +46,7 @@
 ### Relevant files
 
 - DB schema: `supabase/migrations/20250702000000_initial_schema.sql`
+- Seed data: `supabase/seed.sql`
 - All API routes: `api/index.ts`
 - Direcotries of Routes And their controllers:
   - `server/src/routes/delivery-info`, `server/src/controllers/delivery-info`
@@ -54,7 +55,6 @@
   - `server/src/routes/products`, `server/src/controllers/products`
   - `server/src/routes/media`, `server/src/controllers/media`
 - Types:
-
   - `server/src/types/delivery-info.ts`
   - `server/src/types/products.ts`
   - `server/src/types/process-routes.ts`
@@ -62,13 +62,27 @@
   - `server/src/types/profile/index.ts`
   - `server/src/types/store-data.ts`
   - `server/src/types/response.ts`
+  - `server/src/types/process-routes.ts
+  - `server/src/types/products/index.ts
+  - `server/src/types/profile/index.ts
+  - `server/src/types/delivery-info.ts
+  - `server/src/types/store_staff.ts
+  - `server/src/types/store-data.ts
+  - `server/src/types/response.ts
+  - `server/src/types/variants.ts
+  - `server/src/types/reviews.ts
+  - `server/src/types/request.ts
+  - `server/src/types/orders.ts
+  - `server/src/types/products/
+  - `server/src/types/profile/
+  - `server/src/types/media.ts
+  - `server/src/types/cart.ts
 
 - Central Function To process all routes: `server/src/controllers/process-routes.ts`
 - Central Response Validator: `server/src/controllers/utils/response-validation.ts`
 - Central Request Validator: `server/src/controllers/utils/request-validation.ts`
 - Package.json: `package.json`
 - Integrated Tests:
-
   - Main file: `server/src/tests/integrated/index.ts`
   - Test `/profiles`: `pnpm tests --grep "Profile"`
   - Test `/delivery-info`: `pnpm tests --grep "Delivery"`
