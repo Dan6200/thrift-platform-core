@@ -14,8 +14,9 @@ create extension if not exists "uuid-ossp";
 
 create type featured_product_type_enum as enum ('carousel', 'grid');
 create type gateway_provider_enum as enum ('stripe', 'paystack', 'flutterwave');
-create type ledger_event as enum ('ORDER_SETTLEMENT', 'PARTIAL_REFUND', 'REFUND', 'VENDOR_PAYOUT', 'PLATFORM_FEE_ADJUSTMENT');
-create type financial_account_type as enum ('ASSET', 'LIABILITY', 'REVENUE', 'EXPENSE');
+create type ledger_event as enum ('order_settlement', 'partial_refund', 'refund', 'vendor_payout', 'platform_fee_adjustment');
+create type financial_account_type as enum ('asset', 'liability', 'revenue', 'expense');
+create type modifier_type as enum ('absolute', 'percentage');
 
 /**************************************************************************************************************************************************************************
 ////////////////////////////////////////////////////////////////////--FUNCTIONS--//////////////////////////////////////////////////////////////////////////////////////////
