@@ -268,15 +268,15 @@ create table if not exists app_config (
 );
 
 create table if not exists media (
-  media_id     serial primary key,
-  filename     varchar not null unique,
-  filepath     varchar not null,
-  filetype     varchar(50) not null,
-  description  text,
-  uploader_id  uuid not null references profiles(id) on delete cascade,
-  created_at   timestamptz not null default now(),
-  updated_at   timestamptz not null default now(),
-  check (filetype in ('image/jpeg', 'image/jpg', 'image/png', 'video/mp4', 'video/webp', 'image/webp', 'video/mkv'))
+  media_id       serial primary key,
+  filename       varchar not null unique,
+  filepath       varchar not null,
+  filetype       varchar(50) not null,
+  description    text,
+  uploader_id    uuid not null references profiles(id) on delete cascade,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  constraint     valid_filetype check (filetype in ('image/jpeg', 'image/jpg', 'image/png', 'video/mp4', 'video/webp', 'image/webp', 'video/mkv'))
 );
 
 create table if not exists profile_media (
