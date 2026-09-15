@@ -357,8 +357,6 @@ create table if not exists products (
   product_id      serial primary key,
   title           varchar(255) not null,
   description     text[] not null,
-  list_price      numeric(10, 2),
-  net_price       numeric(10, 2),
   vendor_id       uuid not null references profiles(id) on delete cascade,
   store_id        int not null references stores(store_id) on delete cascade,
   category_id     int not null references categories(category_id) on delete cascade,
@@ -367,59 +365,55 @@ create table if not exists products (
   updated_at      timestamptz not null default now()
 );
 
-create table if not exists product_availability (
-  availability_id  serial primary key,
-  product_id       int not null references products(product_id) on delete cascade,
-  available_from   timestamptz not null,
-  available_until  timestamptz not null,
-  notes            text,
-  created_at       timestamptz not null default now()
+create table if not exists product_variants (
+  variant_id     serial primary key,
+  product_id     int not null references products(product_id) on delete cascade,
+  sku            varchar(100) unique not null,
+  base_price     bigint not null check (base_price >= 0),
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
 );
 
 create table if not exists product_options (
   option_id    serial primary key,
   product_id   int not null references products(product_id) on delete cascade,
   option_name  varchar(50) not null,
-  unique (product_id, option_name),
+  unique       (product_id, option_name),
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
 
 create table if not exists product_option_values (
-  value_id    serial primary key,
-  option_id   int not null references product_options(option_id) on delete cascade,
-  value       varchar(50) not null,
-  unique (option_id, value),
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
-);
-
-create table if not exists product_variants (
-  variant_id  serial primary key,
-  product_id  int not null references products(product_id) on delete cascade,
-  sku         varchar(100) unique not null,
-  list_price  numeric(10, 2) not null,
-  net_price   numeric(10, 2) not null,
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
-);
-
-create table if not exists inventory (
-  inventory_id     serial primary key,
-  variant_id       int not null references product_variants(variant_id) on delete cascade,
-  location_id      int references locations(location_id) on delete cascade,
-  quantity_change  int not null,
-  reason           varchar not null,
-  notes            text,
-  created_at       timestamptz not null default now()
+  option_value_id           serial primary key,
+  option_id                 int not null references product_options(option_id) on delete cascade,
+  value                     varchar(50) not null,
+  default_price_modifier    bigint not null default 0,
+  default_modifier_type     modifier_type not null default 'absolute',
+  unique                    (option_id, value),
+  created_at                timestamptz not null default now(),
+  updated_at                timestamptz not null default now()
 );
 
 create table if not exists variant_to_option_values (
-  variant_id  int not null references product_variants(variant_id) on delete cascade,
-  value_id    int not null references product_option_values(value_id) on delete cascade,
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now(),
-  primary key (variant_id, value_id)
+  variant_id           int not null references product_variants(variant_id) on delete cascade,
+  variant_value_id     int not null references product_option_values(option_value_id) on delete cascade,
+  price_modifier       bigint not null default 0,
+  modifier_type        modifier_type not null default 'absolute',
+  created_at           timestamptz not null default now(),
+  updated_at           timestamptz not null default now(),
+  primary key          (variant_id, value_id)
+);
+
+-- Promotional overrides table
+create table if not exists variant_price_overrides (
+  override_id     bigserial primary key,
+  variant_id      int not null references product_variants(variant_id) on delete cascade,
+  absolute_price  bigint not null check (absolute_price >= 0),
+  start_date      timestamptz not null default now(),
+  end_date        timestamptz,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  constraint      chk_override_dates check (end_date is null or end_date > start_date)
 );
 
 create table if not exists product_store_category_links (
@@ -427,7 +421,7 @@ create table if not exists product_store_category_links (
   store_category_id  int not null references store_categories(store_category_id) on delete cascade,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  primary key (product_id, store_category_id)
+  primary key        (product_id, store_category_id)
 );
 
 create table if not exists featured_products (
@@ -457,6 +451,25 @@ create table if not exists product_media_links (
   is_display_image    boolean default true,
   is_thumbnail_image  boolean default true,
   primary key (variant_id, media_id)
+);
+
+create table if not exists product_availability (
+  availability_id  serial primary key,
+  product_id       int not null references products(product_id) on delete cascade,
+  available_from   timestamptz not null,
+  available_until  timestamptz not null,
+  notes            text,
+  created_at       timestamptz not null default now()
+);
+
+create table if not exists inventory (
+  inventory_id     serial primary key,
+  variant_id       int not null references product_variants(variant_id) on delete cascade,
+  location_id      int references locations(location_id) on delete cascade,
+  quantity_change  int not null,
+  reason           varchar not null,
+  notes            text,
+  created_at       timestamptz not null default now()
 );
 
 create table if not exists orders (
