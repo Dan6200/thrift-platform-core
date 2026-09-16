@@ -16,9 +16,8 @@ import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'
 import assert from 'assert'
-import { CartItemRequestData, CartResponseData } from '#src/types/cart.js'
+import { CartItemRequestData } from '#src/types/cart.js'
 
-type ExpectedData = Omit<CartResponseData, 'customer_id' | 'cart_id'>
 export default function (customer: { userInfo: ProfileRequestData }) {
   let token: string
   let userId: string
