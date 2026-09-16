@@ -606,6 +606,50 @@ group by
   variant_id,
   location_id;
 
+create or replace view user_wallet_balance as
+select
+  a.user_id,
+  sum(l.amount) as balance_in_cents
+from
+  ledger_lines l
+join
+  accounts a on a.id = l.account_id
+where
+  a.user_id = 'usr_vendor_123'
+group by
+  a.user_id;
+
+create or replace view product_variant_effective_price as
+with active_overrides as (
+  select distinct on (variant_id)
+    variant_id,
+    absolute_price as override_price
+  from variant_price_overrides
+  where start_date <= now()
+    and (end_date is null or end_date > now())
+  order by variant_id, start_date desc
+),
+option_modifiers as (
+  select
+    variant_id,
+    coalesce(sum(price_modifier) filter (where modifier_type = 'absolute'), 0) as total_absolute_modifier
+  from variant_to_option_values
+  group by variant_id
+)
+select
+  pv.variant_id,
+  pv.product_id,
+  pv.sku,
+  pv.base_price,
+  ao.override_price,
+  case
+    when ao.override_price is not null then ao.override_price
+    else greatest(0, pv.base_price + coalesce(om.total_absolute_modifier, 0))
+  end as effective_price
+from product_variants pv
+left join active_overrides ao on pv.variant_id = ao.variant_id
+left join option_modifiers om on pv.variant_id = om.variant_id;
+
 /**************************************************************************************************************************************************************************
 ////////////////////////////////////////////////////////////////////--INDEXES--////////////////////////////////////////////////////////////////////////////////////////////
 **************************************************************************************************************************************************************************/
@@ -616,6 +660,7 @@ create index if not exists idx_processed_webhooks_created_at on public.processed
 create index if not exists idx_ledger_lines_account_created on public.ledger_lines(account_id, created_at desc);
 create index if not exists idx_ledger_lines_entry on public.ledger_lines(entry_id);
 create index if not exists idx_ledger_entries_transactions on public.ledger_entries(transaction_id);
+create index if not exists idx_variant_price_overrides_lookup on variant_price_overrides (variant_id, start_date, end_date);
 
 /**************************************************************************************************************************************************************************
 ////////////////////////////////////////////////////////////////////--TRIGGERS--///////////////////////////////////////////////////////////////////////////////////////////
