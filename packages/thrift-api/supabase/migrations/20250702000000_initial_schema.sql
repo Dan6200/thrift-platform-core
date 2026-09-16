@@ -480,7 +480,6 @@ create table if not exists orders (
   order_date         timestamptz default now(),
   total_amount       bigint not null,
   status             text not null default 'pending',
-  payment_reference  varchar(255) unique,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );
