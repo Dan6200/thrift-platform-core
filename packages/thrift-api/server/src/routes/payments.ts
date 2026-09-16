@@ -17,7 +17,7 @@ import {
 } from '#src/app-schema/payments.js'
 import { validateDbResult } from '#src/db-result-validation.js'
 import { publishEvent } from '#src/events/publish.js'
-import { PaymentSuccessEvent } from '#src/events/payment-success.js'
+import { PaymentSuccessEvent } from '#src/events/payment-success.event.js'
 
 const router = Router()
 const { OK } = StatusCodes
