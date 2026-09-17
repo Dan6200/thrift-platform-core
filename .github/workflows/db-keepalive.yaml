@@ -1,0 +1,19 @@
+name: keep-db-alive
+
+on:
+  schedule:
+    # Runs every 3 days at 04:00 AM UTC
+    - cron: "0 4 */3 * *"
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  keep_alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping PostgreSQL database
+        run: |
+          # Use psql client to execute a simple lightweight query
+          psql "$SUPABASE_DB_URL" -c "SELECT 1;" > /dev.null
+          echo "Database ping successful at $(date -u)"
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
