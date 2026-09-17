@@ -401,7 +401,7 @@ create table if not exists variant_to_option_values (
   modifier_type        modifier_type not null default 'absolute',
   created_at           timestamptz not null default now(),
   updated_at           timestamptz not null default now(),
-  primary key          (variant_id, option_value_id)
+  primary key          (variant_id, variant_value_id)
 );
 
 -- Promotional overrides table
@@ -608,16 +608,16 @@ group by
 
 create or replace view user_wallet_balance as
 select
-  a.user_id,
+  fa.user_id,
   sum(l.amount) as balance_in_cents
 from
   ledger_lines l
 join
-  accounts a on a.id = l.account_id
+  financial_accounts fa on fa.account_id = l.account_id
 where
-  a.user_id = 'usr_vendor_123'
+  fa.user_id = 'usr_vendor_123'
 group by
-  a.user_id;
+  fa.user_id;
 
 create or replace view product_variant_effective_price as
 with active_overrides as (
