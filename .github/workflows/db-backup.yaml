@@ -89,7 +89,7 @@ jobs:
           BACKUP_FOLDERS=$(supabase storage ls ss:///backups/db/ --experimental | grep -oP '.+(?=/$)')
 
           for FOLDER in $BACKUP_FOLDERS; do
-            if [[ "$FOLDER" < "$THREE_MONTHS_AGO" ]]; then # Are these compared as strings are integers?
+            if [[ "$FOLDER" < "$THREE_MONTHS_AGO" ]]; then # String/Integer comparisons in YYYYMMDDHHMMSS format are interchangeable.
               echo "Deleting old backup folder: $FOLDER"
               # Supabase storage ls with the folder prefix will list all files inside
               # Use awk to extract just the file name (after the folder prefix)
