@@ -401,7 +401,7 @@ create table if not exists variant_to_option_values (
   modifier_type        modifier_type not null default 'absolute',
   created_at           timestamptz not null default now(),
   updated_at           timestamptz not null default now(),
-  primary key          (variant_id, value_id)
+  primary key          (variant_id, option_value_id)
 );
 
 -- Promotional overrides table
