@@ -614,8 +614,6 @@ from
   ledger_lines l
 join
   financial_accounts fa on fa.account_id = l.account_id
-where
-  fa.user_id = 'usr_vendor_123'
 group by
   fa.user_id;
 
