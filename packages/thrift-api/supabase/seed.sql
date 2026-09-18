@@ -304,12 +304,11 @@ insert into public.page_sections (page_id, section_type, section_title, section_
 
 -- Product Variants Seed Data
 -- Seed product_variants with a default variant for each product
-insert into public.product_variants (product_id, sku, list_price, net_price)
+insert into public.product_variants (product_id, sku, base_price)
 select
   p.product_id,
   'SKU-' || p.product_id,
-  p.list_price,
-  p.net_price
+  100000
 from
   public.products p
 where
@@ -450,17 +449,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -487,17 +485,16 @@ BEGIN
     FOR speed_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_speed
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || speed_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || speed_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 15, 'initial_stock');
 
         -- Link to speed value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_speed AND value = speed_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_speed AND value = speed_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -524,17 +521,16 @@ BEGIN
     FOR resolution_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_resolution
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || resolution_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || resolution_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to resolution value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_resolution AND value = resolution_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_resolution AND value = resolution_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -561,17 +557,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -614,12 +609,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to refresh_rate value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_refresh_rate AND value = refresh_rate_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_refresh_rate AND value = refresh_rate_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -647,17 +642,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -684,17 +678,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -721,17 +714,16 @@ BEGIN
     FOR weight_range_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_weight_range
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || weight_range_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || weight_range_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
 
         -- Link to weight_range value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_weight_range AND value = weight_range_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_weight_range AND value = weight_range_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -774,12 +766,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to capacity value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -807,17 +799,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 25, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -844,17 +835,16 @@ BEGIN
     FOR volume_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_volume
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || volume_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || volume_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 30, 'initial_stock');
 
         -- Link to volume value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -881,17 +871,16 @@ BEGIN
     FOR scent_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_scent
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || scent_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || scent_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 40, 'initial_stock');
 
         -- Link to scent value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_scent AND value = scent_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_scent AND value = scent_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -918,17 +907,16 @@ BEGIN
     FOR count_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_count
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || count_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || count_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 30, 'initial_stock');
 
         -- Link to count value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_count AND value = count_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_count AND value = count_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -955,17 +943,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 25, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -992,17 +979,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1029,17 +1015,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 50, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1066,17 +1051,16 @@ BEGIN
     FOR capacity_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_capacity
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || capacity_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || capacity_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 25, 'initial_stock');
 
         -- Link to capacity value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1103,17 +1087,16 @@ BEGIN
     FOR capacity_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_capacity
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || capacity_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || capacity_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to capacity value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1140,17 +1123,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 15, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1193,12 +1175,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to megapixels value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_megapixels AND value = megapixels_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_megapixels AND value = megapixels_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1226,17 +1208,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 40, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1263,17 +1244,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 30, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1316,12 +1296,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 8, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to resolution value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_resolution AND value = resolution_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_resolution AND value = resolution_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1365,12 +1345,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1414,12 +1394,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 15, 'initial_stock');
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to thickness value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_thickness AND value = thickness_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_thickness AND value = thickness_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1447,17 +1427,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1500,12 +1479,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 5, 'initial_stock');
 
             -- Link to RAM value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_ram AND value = ram_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_ram AND value = ram_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to storage value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1533,17 +1512,16 @@ BEGIN
     FOR volume_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_volume
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || volume_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || volume_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
         -- Link to volume value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1586,12 +1564,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 15, 'initial_stock');
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to storage value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1635,12 +1613,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 10, 'initial_stock');
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to storage value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1684,12 +1662,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 25, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1717,17 +1695,16 @@ BEGIN
     FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
     LOOP
         -- Insert variant
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, list_price, net_price
-        FROM public.products WHERE product_id = v_product_id
+        INSERT INTO public.product_variants (product_id, sku, base_price)
+        SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value, 100000
         RETURNING variant_id INTO v_variant_id;
 
         -- Seed inventory
         INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 50, 'initial_stock');
 
         -- Link to color value
-        SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+        SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
     END LOOP;
 END $$;
 
@@ -1770,12 +1747,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 30, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1819,12 +1796,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 40, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1868,12 +1845,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 20, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1917,12 +1894,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 15, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1966,12 +1943,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 35, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -2015,12 +1992,12 @@ BEGIN
             INSERT INTO public.inventory (variant_id, quantity_change, reason) VALUES (v_variant_id, 50, 'initial_stock');
 
             -- Link to size value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
 
             -- Link to color value
-            SELECT value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, value_id) VALUES (v_variant_id, v_value_id);
+            SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
+            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -2047,7 +2024,7 @@ BEGIN
             (
                 SELECT STRING_AGG(pov.value, '_' ORDER BY po.option_name)
                 FROM public.variant_to_option_values vtov
-                JOIN public.product_option_values pov ON vtov.value_id = pov.value_id
+                JOIN public.product_option_values pov ON vtov.variant_value_id = pov.option_value_id
                 JOIN public.product_options po ON pov.option_id = po.option_id
                 WHERE vtov.variant_id = pv.variant_id
             ) as options
@@ -2138,7 +2115,7 @@ WITH media_descriptions AS (
     LEFT JOIN
         variant_to_option_values vtov ON pv.variant_id = vtov.variant_id
     LEFT JOIN
-        product_option_values pov ON vtov.value_id = pov.value_id
+        product_option_values pov ON vtov.variant_value_id = pov.option_value_id
     LEFT JOIN
         product_options po ON pov.option_id = po.option_id
     GROUP BY
@@ -2161,17 +2138,16 @@ DECLARE
     v_new_variant_id INT;
 BEGIN
     FOR p_record IN
-        SELECT p.product_id, p.title, p.list_price, p.net_price FROM public.products p
+        SELECT p.product_id, p.title FROM public.products p
         LEFT JOIN public.product_variants pv ON p.product_id = pv.product_id
         WHERE pv.variant_id IS NULL
     LOOP
         -- Insert the new variant without the quantity
-        INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
+        INSERT INTO public.product_variants (product_id, sku, base_price)
         VALUES (
             p_record.product_id,
             regexp_replace(p_record.title, '[^a-zA-Z0-9_]+', '', 'g') || '_DEFAULT_SKU',
-            p_record.list_price,
-            p_record.net_price
+            100000
         )
         ON CONFLICT (sku) DO NOTHING
         RETURNING variant_id INTO v_new_variant_id;
@@ -2206,7 +2182,7 @@ BEGIN
             (
                 SELECT STRING_AGG(pov.value, '_' ORDER BY po.option_name)
                 FROM public.variant_to_option_values vtov
-                JOIN public.product_option_values pov ON vtov.value_id = pov.value_id
+                JOIN public.product_option_values pov ON vtov.variant_value_id = pov.option_value_id
                 JOIN public.product_options po ON pov.option_id = po.option_id
                 WHERE vtov.variant_id = pv.variant_id
             ) as options
