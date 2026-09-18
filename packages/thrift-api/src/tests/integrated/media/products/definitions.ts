@@ -1,5 +1,5 @@
 import chai from 'chai'
-import { ProductMediaUpload } from '#src/types/products/index.js'
+import { ProductMediaUpload } from '#src/types/products.js'
 import { readFile } from 'node:fs/promises'
 import { ProfileRequestData } from '#src/types/profile/index.js'
 import { signInForTesting } from '../../helpers/signin-user.js'

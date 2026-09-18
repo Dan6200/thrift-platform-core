@@ -76,7 +76,7 @@ export type UpdateProductRequestData = {
   variants?: UpdateRequestVariant[]
 }
 
-import { MediaType } from '../media.js'
+import { MediaType } from './media.js'
 
 export type ProductMediaUpload = {
   name: string

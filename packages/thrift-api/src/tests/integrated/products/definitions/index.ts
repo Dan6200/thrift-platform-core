@@ -22,7 +22,7 @@ import {
   ProductVariant,
   RequestVariant,
   UpdateRequestVariant,
-} from '#src/types/products/index.js'
+} from '#src/types/products.js'
 import * as JDP from 'jsondiffpatch'
 import * as consoleFormatter from 'jsondiffpatch/formatters/console'
 

@@ -1,5 +1,5 @@
 import { knex } from '#src/db/index.js'
-import { ProductRequestData } from '#src/types/products/index.js'
+import { ProductRequestData } from '#src/types/products.js'
 import { Request, Response, NextFunction } from 'express'
 
 export const updateProductLogic = async (

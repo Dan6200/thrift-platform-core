@@ -4,7 +4,7 @@ import {
   ProductRequestData,
   ProductResponseData,
   UpdateProductRequestData,
-} from '../../../types/products/index.js'
+} from '../../../types/products.js'
 import {
   testCreateProduct,
   testGetAllProducts,

@@ -22,7 +22,7 @@ import { knex } from '#src/db/index.js'
 import { faker } from '@faker-js/faker'
 import { loadUserData } from '../helpers/load-data.js'
 import { updateVariantForTesting } from '../helpers/product-variants.js'
-import { ProductVariant } from '#src/types/products/index.js'
+import { ProductVariant } from '#src/types/products.js'
 
 const Ebuka = loadUserData(
   'server/src/tests/integrated/data/users/customers/user-ebuka',

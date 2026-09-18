@@ -1,6 +1,6 @@
 //cspell:ignore cloudinary
 import { ProfileRequestData } from '#src/types/profile/index.js'
-import { ProductMediaUpload } from '#src/types/products/index.js'
+import { ProductMediaUpload } from '#src/types/products.js'
 import {
   testCreateProductMedia,
   testGetProductMedia,
