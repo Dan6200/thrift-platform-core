@@ -600,8 +600,8 @@ BEGIN
         FOR refresh_rate_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_refresh_rate
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || refresh_rate_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || refresh_rate_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -757,8 +757,8 @@ BEGIN
         FOR capacity_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_capacity
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || capacity_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || capacity_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1166,8 +1166,8 @@ BEGIN
         FOR megapixels_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_megapixels
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || megapixels_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || megapixels_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1287,8 +1287,8 @@ BEGIN
         FOR resolution_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_resolution
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || resolution_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || resolution_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1336,8 +1336,8 @@ BEGIN
         FOR size_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_size
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || size_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || size_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1385,8 +1385,8 @@ BEGIN
         FOR thickness_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_thickness
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || thickness_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || thickness_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1470,8 +1470,8 @@ BEGIN
         FOR storage_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_storage
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || ram_value || '-' || storage_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || ram_value || '-' || storage_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1555,8 +1555,8 @@ BEGIN
         FOR storage_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_storage
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || storage_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || storage_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1604,8 +1604,8 @@ BEGIN
         FOR storage_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_storage
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || storage_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || color_value || '-' || storage_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1653,8 +1653,8 @@ BEGIN
         FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1738,8 +1738,8 @@ BEGIN
         FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1787,8 +1787,8 @@ BEGIN
         FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1836,8 +1836,8 @@ BEGIN
         FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1885,8 +1885,8 @@ BEGIN
         FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1934,8 +1934,8 @@ BEGIN
         FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
@@ -1983,8 +1983,8 @@ BEGIN
         FOR color_value IN SELECT value FROM public.product_option_values WHERE option_id = v_option_id_color
         LOOP
             -- Insert variant
-            INSERT INTO public.product_variants (product_id, sku, list_price, net_price)
-            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, list_price, net_price
+            INSERT INTO public.product_variants (product_id, sku, base_price)
+            SELECT v_product_id, 'SKU-' || v_product_id || '-' || size_value || '-' || color_value, 100000
             FROM public.products WHERE product_id = v_product_id
             RETURNING variant_id INTO v_variant_id;
 
