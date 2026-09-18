@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "#src/*": ["server/src/*"],
+      "#src/*": ["src/*"],
       "#supabase-config": ["supabase/supabase.ts"]
     },
     "rootDir": ".",
