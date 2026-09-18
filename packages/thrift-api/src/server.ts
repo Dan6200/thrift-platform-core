@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'url'
-import app from '../../api/index.js'
 import dotenv from 'dotenv'
+import app from './index.js'
 
 let path = `.env.${process.env.VERCEL_ENV ? process.env.NODE_ENV : process.env.VERCEL_ENV}`
 

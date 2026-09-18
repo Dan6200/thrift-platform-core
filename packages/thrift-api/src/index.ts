@@ -5,7 +5,7 @@ import helmet from 'helmet'
 import { requestLogger } from '#src/logging.js'
 
 // if (process.env.NODE_ENV === 'production') apiDocsPath = './api-docs/dist.yaml'
-// else apiDocsPath = './server/api-docs/dist.yaml'
+// else apiDocsPath = './api-docs/dist.yaml'
 import rateLimiter from 'express-rate-limit'
 import cookieParser from 'cookie-parser'
 // routers
@@ -34,9 +34,9 @@ import { readFile } from 'fs/promises'
 import path from 'path'
 
 // if (process.env.NODE_ENV === 'production') apiDocsPath = './api-docs/dist.yaml'
-// else apiDocsPath = './server/api-docs/dist.yaml'
+// else apiDocsPath = './api-docs/dist.yaml'
 const swaggerDocument = await readFile(
-  path.resolve('./server/api-docs/dist.yaml'),
+  path.resolve('./api-docs/dist.yaml'),
   'utf8',
 ).then((doc) => yaml.load(doc))
 
