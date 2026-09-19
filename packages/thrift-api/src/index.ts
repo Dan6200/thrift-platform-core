@@ -1,11 +1,8 @@
-// cspell:disable
 import express, { Request, Response, Router } from 'express'
 import 'express-async-errors'
 import helmet from 'helmet'
 import { requestLogger } from '#src/logging.js'
 
-// if (process.env.NODE_ENV === 'production') apiDocsPath = './api-docs/dist.yaml'
-// else apiDocsPath = './api-docs/dist.yaml'
 import rateLimiter from 'express-rate-limit'
 import cookieParser from 'cookie-parser'
 // routers
@@ -26,15 +23,12 @@ import paymentsRouter from '#src/routes/payments.js' // Integrate the new paymen
 
 // middlewares
 import errorHandlerMiddleware from '#src/error-handler.js'
-import authenticateUser from '#src/authentication.js'
 import notFound from '#src/not-found.js'
 import swaggerUi from 'swagger-ui-express'
 import yaml from 'js-yaml'
 import { readFile } from 'fs/promises'
 import path from 'path'
 
-// if (process.env.NODE_ENV === 'production') apiDocsPath = './api-docs/dist.yaml'
-// else apiDocsPath = './api-docs/dist.yaml'
 const swaggerDocument = await readFile(
   path.resolve('./api-docs/dist.yaml'),
   'utf8',
