@@ -4,16 +4,15 @@ on:
   schedule:
     # Runs every 3 days at 04:00 AM UTC
     - cron: "0 4 */3 * *"
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   keep_alive:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping PostgreSQL database
+      - name: Ping Supabase REST API
         run: |
-          # Use psql client to execute a simple lightweight query
-          psql "$SUPABASE_DB_URL" -c "SELECT 1;" > /dev.null
+          curl -s -f -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/products?select=product_id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" > /dev/null
           echo "Database ping successful at $(date -u)"
-        env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
