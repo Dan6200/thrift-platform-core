@@ -8,7 +8,7 @@ import { Product } from '@/types/products'
 
 function minVariantPrice(product: Product): number | null {
   const prices = (product.variants ?? [])
-    .map((v) => v.base_price)
+    .map((v) => v.effective_price ?? v.base_price)
     .filter((p): p is number => typeof p === 'number' && !Number.isNaN(p))
   if (prices.length === 0) return null
   return Math.min(...prices)

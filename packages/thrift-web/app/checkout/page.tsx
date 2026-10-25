@@ -278,7 +278,10 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                   <p className="whitespace-nowrap">
-                    {formatNaira(item.product.base_price * item.count)}
+                    {formatNaira(
+                      (item.product.effective_price ??
+                        item.product.base_price) * item.count,
+                    )}
                   </p>
                 </div>
               ))}

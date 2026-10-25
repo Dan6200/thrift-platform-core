@@ -110,7 +110,9 @@ export function ShoppingCart({
                       </Button>
                     </div>
                     <p className="p-1">
-                      {formatNaira(product.base_price * count)}
+                      {formatNaira(
+                        (product.effective_price ?? product.base_price) * count,
+                      )}
                     </p>
                   </div>
                 </CardContent>

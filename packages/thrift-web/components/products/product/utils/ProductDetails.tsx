@@ -59,7 +59,8 @@ export function ProductDetails({
     router.push('/checkout')
   }
 
-  const price = selectedVariant?.base_price ?? null
+  const price =
+    selectedVariant?.effective_price ?? selectedVariant?.base_price ?? null
 
   return (
     <div className="flex flex-col w-full h-full justify-center">

@@ -43,10 +43,8 @@ export const removeItemAtom = atom(
 export const getTotalAtom = atom((get) => {
   const shoppingCart = get(shoppingCartAtom)
   return shoppingCart?.cartItems.reduce<number>((res, { product, count }) => {
-    const price =
-      typeof product.base_price === 'string'
-        ? parseFloat(product.base_price)
-        : product.base_price
+    const rawPrice = product.effective_price ?? product.base_price
+    const price = typeof rawPrice === 'string' ? parseFloat(rawPrice) : rawPrice
     return res + (Number.isFinite(price) ? price * count : 0)
   }, 0)
 })

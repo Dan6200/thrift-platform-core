@@ -32,6 +32,7 @@ export const ProductVariantSchema = z.object({
   variant_id: z.coerce.number(),
   sku: z.string(),
   base_price: z.coerce.number().nonnegative(),
+  effective_price: z.coerce.number().nonnegative().optional(),
   quantity_available: z.coerce.number().nonnegative(),
   options: z.array(VariantOptionSchema),
   created_at: z.string(),
