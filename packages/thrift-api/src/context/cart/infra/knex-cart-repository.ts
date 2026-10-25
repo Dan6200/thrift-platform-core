@@ -24,6 +24,11 @@ export const knexCartRepository: CartRepository = {
         )
       })
       .leftJoin('media as m', 'pml.media_id', 'm.media_id')
+      .leftJoin(
+        'product_variant_effective_price as epe',
+        'pv.variant_id',
+        'epe.variant_id',
+      )
       .where('sci.cart_id', cart.cart_id)
       .select(
         'sci.item_id',
@@ -32,7 +37,7 @@ export const knexCartRepository: CartRepository = {
         'sci.created_at',
         'sci.updated_at',
         'p.title as product_title',
-        'pv.base_price as price',
+        'epe.effective_price as price',
         'm.filepath as image_url',
       )
 

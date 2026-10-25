@@ -148,6 +148,7 @@ export const knexProductRepository: ProductRepository = {
                 pv.variant_id,
                 pv.sku,
                 pv.base_price,
+                epe.effective_price,
                 pv.created_at,
                 pv.updated_at,
                 pvi.quantity_available::int,
@@ -167,6 +168,7 @@ export const knexProductRepository: ProductRepository = {
                 ) AS options
               FROM product_variants pv
               LEFT JOIN product_variant_inventory pvi ON pv.variant_id = pvi.variant_id
+              LEFT JOIN product_variant_effective_price epe ON pv.variant_id = epe.variant_id
               WHERE pv.product_id = p.product_id
             ) AS variant_data
           ) AS variants,
@@ -230,6 +232,7 @@ export const knexProductRepository: ProductRepository = {
               pv.variant_id,
               pv.sku,
               pv.base_price,
+              epe.effective_price,
               pv.created_at,
               pv.updated_at,
               pvi.quantity_available,
@@ -249,6 +252,7 @@ export const knexProductRepository: ProductRepository = {
               ) AS options
             FROM product_variants pv
             LEFT JOIN product_variant_inventory pvi ON pv.variant_id = pvi.variant_id
+            LEFT JOIN product_variant_effective_price epe ON pv.variant_id = epe.variant_id
             WHERE pv.product_id = p.product_id
           ) AS variant_data
         ) AS variants,

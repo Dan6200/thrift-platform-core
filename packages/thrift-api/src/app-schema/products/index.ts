@@ -10,6 +10,7 @@ export const ProductVariantResponseSchema = joi.object({
   variant_id: joi.number().required(),
   sku: joi.string().required(),
   base_price: joi.number().integer().min(0).required(),
+  effective_price: joi.number().integer().min(0).required(),
   quantity_available: joi.number().required(),
   options: joi.array().items(VariantOptionSchema).required(),
   created_at: joi.date().required(),

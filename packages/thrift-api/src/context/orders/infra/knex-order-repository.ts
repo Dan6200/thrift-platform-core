@@ -40,10 +40,12 @@ export const knexOrderRepository: OrderRepository = {
   },
 
   async getVariantPrices(variantIds) {
-    const rows = await knex('product_variants')
+    const rows = await knex('product_variant_effective_price')
       .whereIn('variant_id', variantIds)
-      .select('variant_id', 'base_price')
-    return new Map(rows.map((row) => [row.variant_id, Number(row.base_price)]))
+      .select('variant_id', 'effective_price')
+    return new Map(
+      rows.map((row) => [row.variant_id, Number(row.effective_price)]),
+    )
   },
 
   async getAvailableStock(variantIds) {
