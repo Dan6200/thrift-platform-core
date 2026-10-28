@@ -10,6 +10,8 @@ export interface CartItem {
   product_title: string
   price: number
   image_url: string | null
+  store_id: number
+  sku: string
 }
 
 export interface Cart {

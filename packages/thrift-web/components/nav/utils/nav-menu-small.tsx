@@ -17,8 +17,8 @@ import {
 import { PanelRightClose, UserCircle2 } from 'lucide-react'
 import { components } from './nav-components'
 import { ModeToggle } from '@/components/dark-mode-toggle'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { getTotalCountAtom } from '@/atoms'
+import { useSetAtom } from 'jotai'
+import { useCart } from '@/lib/cart/use-cart'
 import SearchComp from '@/components/search'
 import { cn } from '@/lib/utils'
 import { signOutWrapper } from '@/app/auth'
@@ -39,7 +39,8 @@ export const NavMenuSmall = ({
   setUser: SetUser
 }) => {
   const [showSearchBox, setShowSearchBox] = useState(false)
-  const totalItems = useAtomValue(getTotalCountAtom)
+  const { data: cart } = useCart()
+  const totalItems = cart?.total_items ?? 0
   const searchOverLayRef = useRef<null | HTMLDivElement>(null)
   const searchRef = useRef<null | HTMLDivElement>(null)
   const toggleSearchButton = useRef<null | HTMLButtonElement>(null)

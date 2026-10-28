@@ -11,14 +11,18 @@ export function ProductImage({
   imgData,
   width,
   height,
+  src: srcProp,
+  alt: altProp,
 }: {
   className: string
   width: number
   height: number
-  imgData: ImgData | undefined
+  imgData?: ImgData | undefined
+  src?: string | null
+  alt?: string
 }) {
   const [errored, setErrored] = useState(false)
-  const src = imgData?.filepath
+  const src = srcProp ?? imgData?.filepath
 
   if (!src || errored) {
     return (
@@ -33,7 +37,8 @@ export function ProductImage({
     )
   }
 
-  const alt = imgData?.description ?? imgData?.filename ?? 'Product image'
+  const alt =
+    altProp ?? imgData?.description ?? imgData?.filename ?? 'Product image'
   const style = {
     objectFit: 'cover' as const,
     objectPosition: 'center' as const,

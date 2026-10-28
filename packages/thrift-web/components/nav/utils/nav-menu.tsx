@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ModeToggle } from '../../dark-mode-toggle'
 import { Button } from '../../ui/button'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { getTotalCountAtom } from '@/atoms'
+import { useCart } from '@/lib/cart/use-cart'
 import { ShoppingCartDrawerContent } from '@/components/shopping-cart/drawer'
 import { Drawer, DrawerTrigger } from '@/components/ui/drawer'
 import Search from '@/components/search'
@@ -43,7 +43,8 @@ export function NavMenu({
   setUser: SetUser
 }) {
   const pathname = usePathname()
-  const totalItems = useAtomValue(getTotalCountAtom)
+  const { data: cart } = useCart()
+  const totalItems = cart?.total_items ?? 0
   const searchRef = useRef<null | HTMLDivElement>(null)
   const [show, setShow] = useState(false)
   useEffect(() => {

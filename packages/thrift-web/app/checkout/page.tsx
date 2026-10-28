@@ -1,21 +1,19 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAtomValue } from 'jotai'
-import { getItemsAtom, getTotalAtom } from '@/atoms'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
 import { formatNaira } from '@/lib/money'
 import { createDeliveryInfo } from '@/lib/api/delivery-info'
 import { createOrder } from '@/lib/api/orders'
 import { initializePayment } from '@/lib/api/payments'
-import { Item } from '@/types/shopping-cart'
-import { Spinner } from '@/components/ui/spinner'
-import Link from 'next/link'
+import { CartItem, removeCartItem } from '@/lib/api/cart'
+import { useCart } from '@/lib/cart/use-cart'
 
 interface DeliveryFormState {
   recipient_full_name: string
@@ -41,26 +39,25 @@ const emptyDelivery: DeliveryFormState = {
   delivery_instructions: '',
 }
 
-function groupItemsByStore(items: Item[]) {
-  const byStore = new Map<number, Item[]>()
+function groupItemsByStore(items: CartItem[]) {
+  const byStore = new Map<number, CartItem[]>()
   for (const item of items) {
-    const storeId = item.product.store_id
-    const existing = byStore.get(storeId) ?? []
+    const existing = byStore.get(item.store_id) ?? []
     existing.push(item)
-    byStore.set(storeId, existing)
+    byStore.set(item.store_id, existing)
   }
   return byStore
 }
 
 export default function CheckoutPage() {
-  const router = useRouter()
-  const items = useAtomValue(getItemsAtom)
-  const total = useAtomValue(getTotalAtom)
+  const { data, isLoading } = useCart()
 
   const [delivery, setDelivery] = useState<DeliveryFormState>(emptyDelivery)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const items = data?.items ?? []
+  const total = data?.total_price ?? 0
   const grouped = useMemo(() => groupItemsByStore(items), [items])
 
   const setField = (field: keyof DeliveryFormState, value: string) =>
@@ -97,8 +94,8 @@ export default function CheckoutPage() {
           store_id: storeId,
           delivery_info_id: deliveryInfo.delivery_info_id,
           items: storeItems.map((item) => ({
-            variant_id: item.product.variant_id,
-            quantity: item.count,
+            variant_id: item.variant_id,
+            quantity: item.quantity,
           })),
         })
         orderIds.push(order.order_id)
@@ -108,12 +105,17 @@ export default function CheckoutPage() {
         throw new Error('No orders were created.')
       }
 
-      // 3. Initialize Paystack payment for the first order
+      // 3. Clear the server cart (orders are now pending payment)
+      await Promise.allSettled(
+        items.map((item) => removeCartItem(item.item_id)),
+      )
+
+      // 4. Initialize Paystack payment for the first order
       const origin = typeof window !== 'undefined' ? window.location.origin : ''
       const callbackUrl = `${origin}/checkout/success?orders=${orderIds.join(',')}`
       const payment = await initializePayment(orderIds[0], callbackUrl)
 
-      // 4. Redirect to Paystack
+      // 5. Redirect to Paystack
       window.location.assign(payment.authorization_url)
     } catch (err) {
       console.error('Checkout failed:', err)
@@ -124,6 +126,14 @@ export default function CheckoutPage() {
       setError(message)
       setIsSubmitting(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-8 flex justify-center">
+        <Spinner />
+      </div>
+    )
   }
 
   if (items.length === 0) {
@@ -266,22 +276,19 @@ export default function CheckoutPage() {
             <CardContent className="p-4 space-y-3">
               {items.map((item) => (
                 <div
-                  key={`${item.product.product_id}-${item.product.variant_id}`}
+                  key={item.item_id}
                   className="flex justify-between gap-2 text-sm"
                 >
                   <div className="flex-1">
                     <p className="font-medium break-words">
-                      {item.product.title}
+                      {item.product_title}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {item.product.sku} × {item.count}
+                      {item.sku} × {item.quantity}
                     </p>
                   </div>
                   <p className="whitespace-nowrap">
-                    {formatNaira(
-                      (item.product.effective_price ??
-                        item.product.base_price) * item.count,
-                    )}
+                    {formatNaira(item.price * item.quantity)}
                   </p>
                 </div>
               ))}

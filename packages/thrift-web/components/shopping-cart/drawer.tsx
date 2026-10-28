@@ -1,13 +1,7 @@
 'use client'
-import { useAtomValue, useSetAtom } from 'jotai'
-import {
-  decreaseItemCountAtom,
-  getItemsAtom,
-  getTotalAtom,
-  increaseItemCountAtom,
-  removeItemAtom,
-  shippingInfoAtom,
-} from '@/atoms'
+import Link from 'next/link'
+import { useAtomValue } from 'jotai'
+import { userAtom } from '@/atoms'
 import { ShoppingCart } from '.'
 import {
   DrawerContent,
@@ -16,18 +10,22 @@ import {
   DrawerDescription,
 } from '@/components/ui/drawer'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  useCart,
+  useRemoveCartItem,
+  useUpdateCartItem,
+} from '@/lib/cart/use-cart'
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 
 /**
- * This component renders the content that appears inside the shopping cart drawer.
- * It is responsible for fetching cart data and passing it to the ShoppingCart component.
+ * Renders the contents of the shopping cart drawer from the server cart.
  */
 export function ShoppingCartDrawerContent() {
-  const items = useAtomValue(getItemsAtom)
-  const increaseItemCount = useSetAtom(increaseItemCountAtom)
-  const decreaseItemCount = useSetAtom(decreaseItemCountAtom)
-  const total = useAtomValue(getTotalAtom)
-  const shippingInfo = useAtomValue(shippingInfoAtom)
-  const removeItem = useSetAtom(removeItemAtom)
+  const user = useAtomValue(userAtom)
+  const { data, isLoading } = useCart()
+  const updateItem = useUpdateCartItem()
+  const removeItem = useRemoveCartItem()
 
   return (
     <DrawerContent className="thick-glass-effect">
@@ -38,14 +36,36 @@ export function ShoppingCartDrawerContent() {
         </DrawerDescription>
       </DrawerHeader>
       <ScrollArea className="h-full overflow-y-auto px-4">
-        <ShoppingCart
-          items={items}
-          increaseItemCount={increaseItemCount}
-          decreaseItemCount={decreaseItemCount}
-          total={total}
-          shippingInfo={shippingInfo}
-          removeItem={removeItem}
-        />
+        {!user ? (
+          <div className="p-6 text-center">
+            <p className="mb-4">Sign in to view your cart.</p>
+            <Link href="/auth/login?redirect=/shopping-cart">
+              <Button>Sign in</Button>
+            </Link>
+          </div>
+        ) : isLoading ? (
+          <div className="p-6 flex justify-center">
+            <Spinner />
+          </div>
+        ) : (
+          <ShoppingCart
+            items={data?.items ?? []}
+            total={data?.total_price ?? 0}
+            onIncrease={(item) =>
+              updateItem.mutate({
+                itemId: item.item_id,
+                quantity: item.quantity + 1,
+              })
+            }
+            onDecrease={(item) =>
+              updateItem.mutate({
+                itemId: item.item_id,
+                quantity: item.quantity - 1,
+              })
+            }
+            onRemove={(item) => removeItem.mutate(item.item_id)}
+          />
+        )}
       </ScrollArea>
     </DrawerContent>
   )

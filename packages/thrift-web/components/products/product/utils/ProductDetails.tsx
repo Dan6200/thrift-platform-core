@@ -1,17 +1,17 @@
 // components/products/product/utils/ProductDetails.tsx
 'use client'
-import { addItemAtom, getTotalCountAtom } from '@/atoms'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import { useSetAtom, useAtomValue } from 'jotai'
+import { useAtomValue } from 'jotai'
+import { userAtom } from '@/atoms'
 import { Product as ProductType, ProductVariant } from '@/types/products'
-import { CartProduct } from '@/types/shopping-cart'
 import { Price } from './price'
 import { VariantSelector } from './variant-selector'
 import { ShoppingCartIcon, Plus, Zap } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { QuantitySelector } from '@/components/ui/quantity-selector'
 import { useRouter } from 'next/navigation'
+import { useAddToCart } from '@/lib/cart/use-cart'
 
 interface ProductDetailsProps {
   product: ProductType
@@ -24,43 +24,41 @@ export function ProductDetails({
   selectedVariant,
   onOptionSelect,
 }: ProductDetailsProps) {
-  const addItem = useSetAtom(addItemAtom)
-  const totalItems = useAtomValue(getTotalCountAtom)
+  const user = useAtomValue(userAtom)
+  const addToCart = useAddToCart()
   const { toast } = useToast()
   const router = useRouter()
-  const [showToast, setShowToast] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
-  useEffect(() => {
-    if (showToast) {
-      toast({
-        title: `${totalItems} Item(s) Added To Cart.`,
-      })
-      setShowToast(false)
+  const handleAdd = (goToCheckout = false) => {
+    if (!selectedVariant) return
+
+    if (!user) {
+      toast({ title: 'Please sign in to add items to your cart.' })
+      router.push(`/auth/login?redirect=/products/${product.product_id}`)
+      return
     }
-  }, [showToast, totalItems, toast])
 
-  const buildCartProduct = (): CartProduct | null => {
-    if (!selectedVariant) return null
-    return { ...product, ...selectedVariant } as CartProduct
-  }
-
-  const handleAddToCart = () => {
-    const itemToAdd = buildCartProduct()
-    if (!itemToAdd) return
-    addItem({ product: itemToAdd, quantity })
-    setShowToast(true)
-  }
-
-  const handleBuyNow = () => {
-    const itemToAdd = buildCartProduct()
-    if (!itemToAdd) return
-    addItem({ product: itemToAdd, quantity })
-    router.push('/checkout')
+    addToCart.mutate(
+      { variant_id: selectedVariant.variant_id, quantity },
+      {
+        onSuccess: () => {
+          toast({ title: `${quantity} item(s) added to cart.` })
+          if (goToCheckout) router.push('/checkout')
+        },
+        onError: () => {
+          toast({ title: 'Could not add to cart. Please try again.' })
+        },
+      },
+    )
   }
 
   const price =
     selectedVariant?.effective_price ?? selectedVariant?.base_price ?? null
+  const disabled =
+    !selectedVariant ||
+    selectedVariant.quantity_available === 0 ||
+    addToCart.isPending
 
   return (
     <div className="flex flex-col w-full h-full justify-center">
@@ -98,10 +96,8 @@ export function ProductDetails({
       <div className="flex flex-col w-full my-4 gap-4 justify-between">
         <Button
           className="text-base h-12 font-bold w-full"
-          onClick={handleAddToCart}
-          disabled={
-            !selectedVariant || selectedVariant.quantity_available === 0
-          }
+          onClick={() => handleAdd(false)}
+          disabled={disabled}
         >
           Add To Cart
           <span className="flex ml-2">
@@ -112,10 +108,8 @@ export function ProductDetails({
         <Button
           variant="outline"
           className="text-base h-12 font-bold w-full"
-          onClick={handleBuyNow}
-          disabled={
-            !selectedVariant || selectedVariant.quantity_available === 0
-          }
+          onClick={() => handleAdd(true)}
+          disabled={disabled}
         >
           Buy Now
           <Zap className="w-6 ml-2" />
