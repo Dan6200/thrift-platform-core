@@ -2458,7 +2458,16 @@ BEGIN
             updated_at,
             phone,
             phone_confirmed_at,
-            is_super_admin
+            is_super_admin,
+            -- GoTrue scans these token columns into strings; NULL breaks sign-in.
+            confirmation_token,
+            recovery_token,
+            email_change_token_new,
+            email_change,
+            email_change_token_current,
+            phone_change,
+            phone_change_token,
+            reauthentication_token
         )
         VALUES (
             '00000000-0000-0000-0000-000000000000', -- Standard Supabase UUID
@@ -2482,10 +2491,38 @@ BEGIN
             now(),
             r.phone,
             now(), -- Mark phone as confirmed
-            false
+            false,
+            '', -- confirmation_token
+            '', -- recovery_token
+            '', -- email_change_token_new
+            '', -- email_change
+            '', -- email_change_token_current
+            '', -- phone_change
+            '', -- phone_change_token
+            ''  -- reauthentication_token
         );
 
         RAISE NOTICE 'Created auth user for % (ID: %)', r.email, r.id;
     END LOOP;
 END $$;
+
+-- Repair existing seed users. GoTrue scans these token columns into strings and
+-- fails sign-in ("converting NULL to string is unsupported") when they are NULL.
+UPDATE auth.users
+SET confirmation_token = COALESCE(confirmation_token, ''),
+    recovery_token = COALESCE(recovery_token, ''),
+    email_change_token_new = COALESCE(email_change_token_new, ''),
+    email_change = COALESCE(email_change, ''),
+    email_change_token_current = COALESCE(email_change_token_current, ''),
+    phone_change = COALESCE(phone_change, ''),
+    phone_change_token = COALESCE(phone_change_token, ''),
+    reauthentication_token = COALESCE(reauthentication_token, '')
+WHERE confirmation_token IS NULL
+   OR recovery_token IS NULL
+   OR email_change_token_new IS NULL
+   OR email_change IS NULL
+   OR email_change_token_current IS NULL
+   OR phone_change IS NULL
+   OR phone_change_token IS NULL
+   OR reauthentication_token IS NULL;
 
