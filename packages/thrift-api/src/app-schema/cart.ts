@@ -51,7 +51,10 @@ export const cartItemResponseSchema = Joi.object({
 const cartItemSchema = Joi.object({
   product_title: Joi.string().required(),
   price: Joi.number().min(0).required(),
-  image_url: Joi.string().uri().allow(null),
+  // DAM filepath (e.g. `sellit-media/products/x.jpg`), not necessarily a URI.
+  image_url: Joi.string().allow(null),
+  store_id: Joi.number().integer().positive().required(),
+  sku: Joi.string().required(),
 }).concat(cartItemResponseSchema)
 
 export const cartResponseSchema = Joi.object({

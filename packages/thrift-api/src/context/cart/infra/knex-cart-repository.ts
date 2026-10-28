@@ -18,7 +18,7 @@ export const knexCartRepository: CartRepository = {
       .join('products as p', 'pv.product_id', 'p.product_id')
       .leftJoin('product_media_links as pml', function () {
         this.on('pv.variant_id', '=', 'pml.variant_id').andOn(
-          'pml.is_thumbnail_image',
+          'pml.is_display_image',
           '=',
           knex.raw('true'),
         )
@@ -37,6 +37,8 @@ export const knexCartRepository: CartRepository = {
         'sci.created_at',
         'sci.updated_at',
         'p.title as product_title',
+        'p.store_id',
+        'pv.sku',
         'epe.effective_price as price',
         'm.filepath as image_url',
       )
