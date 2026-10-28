@@ -18,7 +18,7 @@ export function HeroLoading({
       />
       <div
         className={
-          'text-black-500 dark:text-foreground flex flex-col gap-16 md:gap-32 text-3xl sm:text-8xl capitalize p-8 md:p-16 bg-foreground/60 dark:bg-background/60 inset-0 top-0 absolute font-extrabold z-5 h-full text-left items-start justify-end'
+          'text-white flex flex-col gap-16 md:gap-32 text-3xl sm:text-8xl capitalize p-8 md:p-16 bg-black/50 inset-0 top-0 absolute font-extrabold z-5 h-full text-left items-start justify-end'
         }
       >
         {children}
