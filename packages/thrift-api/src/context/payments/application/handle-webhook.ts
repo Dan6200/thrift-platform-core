@@ -1,6 +1,7 @@
 import { Result, ok, err } from '#src/shared/result.js'
 import { DomainError, domainError } from '#src/shared/domain-error.js'
 import { EventPublisher } from '#src/shared/event.js'
+import logger from '#src/utils/logger.js'
 import { PaymentGateway } from '../ports/payment-gateway.js'
 import { PaymentRepository } from '../ports/payment-repository.js'
 
@@ -61,10 +62,19 @@ export const handleWebhookUseCase =
       return ok({ message: 'Order already processed.' })
     }
 
-    await publisher.publish({
-      eventType: 'charge.success',
-      data: event.data,
-    })
+    try {
+      await publisher.publish({
+        eventType: 'charge.success',
+        data: event.data,
+      })
+    } catch (error: any) {
+      // The order is already transitioned; a failed async enqueue must not
+      // fail the webhook (QStash will not retry a 200, so this is logged for
+      // an outbox/retry follow-up).
+      logger.error(
+        `Failed to enqueue charge.success for order ${orderId}: ${error.message}`,
+      )
+    }
 
     return ok({
       message: 'Payment success received and processing initiated.',
