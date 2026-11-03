@@ -87,7 +87,6 @@ the running local Supabase database. Regenerate it with `pnpm docs:schema` (see
 | public.enforce_single_special_image           | trigger    |                                                    | FUNCTION |
 | public.prevent_accounting_ledger_modification | trigger    |                                                    | FUNCTION |
 | public.verify_ledger_entry_balance            | trigger    |                                                    | FUNCTION |
-| public.set_variant_to_option_value_option_id  | trigger    |                                                    | FUNCTION |
 
 #### Enums
 
@@ -130,7 +129,7 @@ erDiagram
 "public.product_option_values" }o--|| "public.product_options" : "FOREIGN KEY (option_id) REFERENCES product_options(option_id) ON DELETE CASCADE"
 "public.variant_to_option_values" }o--|| "public.product_variants" : "FOREIGN KEY (variant_id) REFERENCES product_variants(variant_id) ON DELETE CASCADE"
 "public.variant_to_option_values" }o--|| "public.product_options" : "FOREIGN KEY (option_id) REFERENCES product_options(option_id) ON DELETE CASCADE"
-"public.variant_to_option_values" }o--|| "public.product_option_values" : "FOREIGN KEY (variant_value_id) REFERENCES product_option_values(option_value_id) ON DELETE CASCADE"
+"public.variant_to_option_values" }o--|| "public.product_option_values" : "FOREIGN KEY (option_id, option_value_id) REFERENCES product_option_values(option_id, option_value_id) ON DELETE CASCADE"
 "public.variant_price_overrides" }o--|| "public.product_variants" : "FOREIGN KEY (variant_id) REFERENCES product_variants(variant_id) ON DELETE CASCADE"
 "public.product_store_category_links" }o--|| "public.store_categories" : "FOREIGN KEY (store_category_id) REFERENCES store_categories(store_category_id) ON DELETE CASCADE"
 "public.product_store_category_links" }o--|| "public.products" : "FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE"
@@ -349,8 +348,8 @@ erDiagram
 }
 "public.variant_to_option_values" {
   integer variant_id FK
-  integer variant_value_id FK
   integer option_id FK
+  integer option_value_id FK
   bigint price_modifier
   modifier_type modifier_type
   timestamp_with_time_zone created_at

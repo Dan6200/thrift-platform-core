@@ -23,9 +23,9 @@ products (product_id)
 
 product_variants (variant_id)
   ├─< variant_to_option_values
-  │     (variant_id, variant_value_id, price_modifier, modifier_type)
-  │     PK = (variant_id, variant_value_id)
-  │     variant_value_id → product_option_values.option_value_id
+  │     (variant_id, option_id, option_value_id, price_modifier, modifier_type)
+  │     PK = (variant_id, option_id)
+  │     (option_id, option_value_id) → product_option_values(option_id, option_value_id)
   ├─< variant_price_overrides
   │     (override_id, variant_id, absolute_price, start_date, end_date)
   ├─< inventory (inventory_id, variant_id, location_id, quantity_change, reason, notes)
@@ -61,20 +61,16 @@ variant FIT-CHG5-BLK
         (FIT-CHG5-BLK, BAND=S/L)      ← two rows, two different options
 ```
 
-### Why the PK is `(variant_id, variant_value_id)`
+### Why the PK is `(variant_id, option_id)`
 
-- It is the natural key of the link row: one row per (variant, option value).
-- It prevents linking the **same** value twice to a variant.
+- It is the natural key: **one row per (variant, option)**.
+- It _is_ the invariant "one value per option per variant" — no separate unique
+  constraint or trigger is needed.
+- `option_value_id` is the chosen value; the composite FK
+  `(option_id, option_value_id) → product_option_values(option_id, option_value_id)`
+  guarantees the value belongs to that option.
 - `variant_id` alone would collapse a variant to a **single** option value and
   break every multi-option product.
-
-### One value per option per variant (enforced)
-
-A variant may have **n option values**, but only **one value per option**.
-`variant_to_option_values` carries an `option_id` (kept in sync from the chosen
-`option_value_id` by the `set_variant_to_option_value_option_id` trigger) and has
-`UNIQUE (variant_id, option_id)`, so inserting `COLOR=BLACK` **and** `COLOR=WHITE`
-for the same variant is rejected at the database level.
 
 ---
 

@@ -46,7 +46,7 @@ Every context has the same shape. For each, check:
 
 - **`domain/`** — no `express`/`knex` imports; invariants live in a smart constructor returning `Result`.
 - **`ports/`** — a plain interface of functions (the seam for tests + DB swap).
-- **`infra/`** — the knex adapter; maps camelCase → snake_case; _faithful_ to the old SQL.
+- **`infra/`** — the knex adapter; maps camelCase → snake*case; \_faithful* to the old SQL.
 - **`application/`** — a curried factory `(deps) => (command) => Promise<Result<...>>`; orchestrates domain + ports, no I/O details.
 - **`http/`** — thin: extracts `req`, maps snake→camel, calls the use case, maps `Result` → `req.dbResult` (or throws via `toHttpError`).
 - **`routes/`** — only the wiring changed; middleware order is unchanged.
@@ -65,7 +65,7 @@ routes/products/index.ts → createProductHandler (http)
 Key things to confirm in this one trace:
 
 - `base_price` is integer **kobo** throughout (schema + logic + response).
-- `option_value_id` / `variant_value_id` replaced the old `value_id`.
+- `option_value_id` replaced the old `value_id`.
 - `products` no longer carries a price (it moved to `product_variants`).
 - The Joi schema still lives at the boundary (`app-schema/products`), not in the domain.
 
@@ -122,7 +122,7 @@ These are intentional; don't flag them as bugs without reason:
 
 - [ ] `Result`/`DomainError` shape matches `shared/*`.
 - [ ] One context (`catalog`) reads top-to-bottom without importing `express`/`knex` in `domain/` or `application/`.
-- [ ] `base_price` (kobo) and `option_value_id`/`variant_value_id` are used consistently in catalog + orders + cart.
+- [ ] `base_price` (kobo) and `option_value_id` are used consistently in catalog + orders + cart.
 - [ ] No route behavior changed (middleware order preserved).
 - [ ] Payments `initialize` path is faithful (6/6 tests green).
 - [ ] `docs/architecture.md` matches the actual `src/context/` layout.
