@@ -186,6 +186,18 @@ begin
 end;
 $$ language plpgsql;
 
+-- Keep variant_to_option_values.option_id in sync with the chosen option value,
+-- so a variant cannot hold two values for the same option.
+create or replace function set_variant_to_option_value_option_id()
+returns trigger as $$
+begin
+  select option_id into new.option_id
+  from public.product_option_values
+  where option_value_id = new.variant_value_id;
+  return new;
+end;
+$$ language plpgsql;
+
 /**************************************************************************************************************************************************************************
 ////////////////////////////////////////////////////////////////////--PLATFORM-WIDE TABLES--///////////////////////////////////////////////////////////////////////////////
 **************************************************************************************************************************************************************************/
@@ -406,11 +418,13 @@ create table if not exists product_option_values (
 create table if not exists variant_to_option_values (
   variant_id           int not null references product_variants(variant_id) on delete cascade,
   variant_value_id     int not null references product_option_values(option_value_id) on delete cascade,
+  option_id            int not null references product_options(option_id) on delete cascade,
   price_modifier       bigint,
   modifier_type        modifier_type,
   created_at           timestamptz not null default now(),
   updated_at           timestamptz not null default now(),
-  primary key          (variant_id, variant_value_id)
+  primary key          (variant_id, variant_value_id),
+  unique               (variant_id, option_id)
 );
 
 -- Promotional overrides table
@@ -744,6 +758,11 @@ for each row execute function check_product_media_links_filetype();
 create trigger trigger_enforce_single_special_image
 after insert or update on public.product_media_links
 for each row execute function enforce_single_special_image();
+
+-- Variant option-value integrity
+create trigger trg_set_vtov_option_id
+before insert or update of variant_value_id on public.variant_to_option_values
+for each row execute function set_variant_to_option_value_option_id();
 
 -- Ledger immutability and balance verification triggers
 create trigger trg_protect_ledger_lines

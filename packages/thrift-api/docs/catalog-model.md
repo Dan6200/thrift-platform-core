@@ -68,13 +68,13 @@ variant FIT-CHG5-BLK
 - `variant_id` alone would collapse a variant to a **single** option value and
   break every multi-option product.
 
-### Known gap (not yet enforced)
+### One value per option per variant (enforced)
 
-The composite PK does **not** prevent a variant from holding two values for the
-**same option** (`COLOR=BLACK` _and_ `COLOR=WHITE`). The missing invariant is
-**one value per option per variant**. The fix is `UNIQUE (variant_id, option_id)`,
-which requires `option_id` on `variant_to_option_values` (or a trigger, since
-`option_id` is derivable from `product_option_values`).
+A variant may have **n option values**, but only **one value per option**.
+`variant_to_option_values` carries an `option_id` (kept in sync from the chosen
+`option_value_id` by the `set_variant_to_option_value_option_id` trigger) and has
+`UNIQUE (variant_id, option_id)`, so inserting `COLOR=BLACK` **and** `COLOR=WHITE`
+for the same variant is rejected at the database level.
 
 ---
 
