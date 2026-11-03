@@ -8,7 +8,7 @@ new, used, and antique items.
 
 ## Stack
 
-- **Node 20** (the tests use `Array.prototype.toSpliced`; Node 18 will fail)
+- **Node 20+** (the tests use `Array.prototype.toSpliced`; CI runs Node 22)
 - TypeScript + Express
 - Knex + PostgreSQL (Supabase)
 - Supabase Auth (registration/sign-in)
@@ -65,8 +65,13 @@ pnpm dlx @upstash/qstash-cli dev   # :8080
 
 ```bash
 pnpm build          # tsc -> built/
-pnpm test:agent     # full suite (expects the API on localhost:1037)
+pnpm test-server    # API on localhost:1027 (foreground)
+pnpm test           # full suite (expects the API on localhost:1027)
 ```
+
+Agents/automation use the `:agent` variants instead (`pnpm test-server:agent`
+on port 1037, then `pnpm test:agent`); they are not the recommended path for
+humans.
 
 The suite mixes:
 
@@ -78,8 +83,8 @@ For the QStash-dependent payment tests:
 
 ```bash
 pnpm dlx @upstash/qstash-cli dev   # :8080; prints the signing keys
-pnpm test-server:agent             # sets QSTASH_URL/APP_URL, server on :1037
-pnpm test:agent
+pnpm test-server                   # sets QSTASH_URL/APP_URL, server on :1027
+pnpm test
 ```
 
 The API verifies QStash job signatures, so `QSTASH_CURRENT_SIGNING_KEY` /

@@ -98,29 +98,50 @@ run under Node 20+ (the suite uses `Array.prototype.toSpliced`).
 cd packages/thrift-api
 supabase start
 
-# 2. Start the test server (port 1037, background)
-pnpm test-server:agent
+# 2. Start the test server (port 1027, foreground; Ctrl+C to stop)
+pnpm test-server
 
-# 3. Run the full suite (unit + integration)
-pnpm test:agent
-
-# 4. Stop the test server
-pnpm kill-server
+# 3. In another terminal, run the full suite (unit + integration)
+pnpm test
 ```
 
 Useful variants:
 
-| Command                        | Purpose                                                    |
-| ------------------------------ | ---------------------------------------------------------- |
-| `pnpm test:agent:debug`        | Full suite with debug logging                              |
-| `pnpm test-server:watch:agent` | Rebuild test server on source changes (tsx watch)          |
-| `pnpm test --grep "Catalog"`   | Filter by suite name (server on port 1027)                 |
-| `pnpm coverage:agent`          | Unit-test coverage for `shared/` and `context/*/domain/`   |
-| `pnpm typecheck:agent`         | Type-check without emitting                                |
-| `pnpm build`                   | Compile to `built/` (run before trusting a green test run) |
+| Command                      | Purpose                                                    |
+| ---------------------------- | ---------------------------------------------------------- |
+| `pnpm test:debug`            | Full suite with debug logging                              |
+| `pnpm test-server:watch`     | Rebuild the test server on source changes (tsx watch)      |
+| `pnpm test --grep "Catalog"` | Filter by suite name                                       |
+| `pnpm coverage:agent`        | Unit-test coverage for `shared/` and `context/*/domain/`   |
+| `pnpm typecheck`             | Type-check without emitting                                |
+| `pnpm build`                 | Compile to `built/` (run before trusting a green test run) |
+
+Agents/automation use the `:agent` variants: `pnpm test-server:agent` (port
+1037, background) then `pnpm test:agent`; `pnpm kill-server` stops it. The
+`:agent` scripts are not the recommended path for humans. (`coverage` currently
+exists only as `coverage:agent`.)
 
 The unit suite is also reachable inside the full run via
-`pnpm test:agent --grep "Testing isolated utility functions"`.
+`pnpm test --grep "Testing isolated utility functions"`.
+
+### CI
+
+GitHub Actions workflows live in `.github/workflows/`:
+
+- **`run-tests.yml` ("Thrift-api Testing")** — on pushes and PRs to
+  `main`/`dev`: starts Supabase, installs with pnpm, builds and typechecks
+  `thrift-api`, runs the unit coverage gate (lines 65 / functions 70 / branches
+  75 / statements 65), starts the QStash dev server and the API on `:1027`, then
+  runs `pnpm test:ci` (full suite, one retry). Node 22, pnpm 10.
+- **`deploy-api-to-prod.yml`** — deploys `thrift-api` to Vercel production when
+  "Thrift-api Testing" succeeds (or on manual dispatch).
+- **`deploy-web-to-prod.yml`** — deploys `thrift-web` to Vercel on pushes to
+  `main`.
+- **`db-backup.yaml`** / **`db-keepalive.yaml`** — nightly Supabase backup and a
+  periodic keep-alive ping.
+
+See [§7 of the testing strategy](packages/thrift-api/docs/testing-strategy.md#7-ci-pipeline)
+for the full step list.
 
 Conventions: import through the `#src/...` alias, use snake_case at the HTTP/DB
 boundary and camelCase inside the domain, and keep each test independent by
