@@ -6,6 +6,13 @@
 
 - Commit and push (if you can before making any changes)
 - Commit after every change, in small focused commits. Never batch many changes into one all-or-nothing commit.
+- **Do not cut corners to make a check pass.** Never weaken tests, skip tests, add no-ops, swallow errors, or mock a real dependency just to get green — fix the cause or report it as a finding.
+- **Ask before reducing fidelity** (mocking, skipping, loosening assertions) or changing test/external-service wiring. If green requires less fidelity, stop and ask.
+- **Rebuild before testing.** `built/` can be stale (`noEmitOnError: true`); after any `src/` change run `pnpm build` and confirm the compiled artefact contains the change before trusting a green run.
+- **Run the full, unfiltered suite** and report the real totals; never filter failures out of the output or claim success from a subset.
+- **Prove "pre-existing".** If you call a failure pre-existing, show evidence (run on the base commit or `git stash` your change); otherwise treat it as yours.
+- **Verify the side effect, not just the status.** If a feature publishes, writes, or calls an external service, confirm it actually happened (logs, DB row, received request) — not just that the endpoint returned 200.
+- **Use the canonical scripts** (`pnpm test-server:agent`, `pnpm test:agent`) and read `package.json`/`.env.*` before inventing a command that omits required env.
 - Run tests, Tests you should run are postfixed with `:agent` in `package.json`.
 - When something doesn't work, try logging, to see what is happing.
 - `For every command in development and testing, they have a debug mode, post-fixed with `:debug`
