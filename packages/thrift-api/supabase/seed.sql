@@ -458,7 +458,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -494,7 +494,7 @@ BEGIN
 
         -- Link to speed value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_speed AND value = speed_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -530,7 +530,7 @@ BEGIN
 
         -- Link to resolution value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_resolution AND value = resolution_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -566,7 +566,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -610,11 +610,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to refresh_rate value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_refresh_rate AND value = refresh_rate_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -651,7 +651,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -687,7 +687,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -723,7 +723,7 @@ BEGIN
 
         -- Link to weight_range value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_weight_range AND value = weight_range_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -767,11 +767,11 @@ BEGIN
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to capacity value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -808,7 +808,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -844,7 +844,7 @@ BEGIN
 
         -- Link to volume value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -880,7 +880,7 @@ BEGIN
 
         -- Link to scent value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_scent AND value = scent_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -916,7 +916,7 @@ BEGIN
 
         -- Link to count value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_count AND value = count_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -952,7 +952,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -988,7 +988,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1024,7 +1024,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1060,7 +1060,7 @@ BEGIN
 
         -- Link to capacity value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1096,7 +1096,7 @@ BEGIN
 
         -- Link to capacity value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_capacity AND value = capacity_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1132,7 +1132,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1176,11 +1176,11 @@ BEGIN
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to megapixels value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_megapixels AND value = megapixels_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1217,7 +1217,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1253,7 +1253,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1297,11 +1297,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to resolution value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_resolution AND value = resolution_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1346,11 +1346,11 @@ BEGIN
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1395,11 +1395,11 @@ BEGIN
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to thickness value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_thickness AND value = thickness_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1436,7 +1436,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1480,11 +1480,11 @@ BEGIN
 
             -- Link to RAM value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_ram AND value = ram_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to storage value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1521,7 +1521,7 @@ BEGIN
 
         -- Link to volume value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_volume AND value = volume_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1565,11 +1565,11 @@ BEGIN
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to storage value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1614,11 +1614,11 @@ BEGIN
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to storage value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_storage AND value = storage_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1663,11 +1663,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1704,7 +1704,7 @@ BEGIN
 
         -- Link to color value
         SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-        INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+        INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
     END LOOP;
 END $$;
 
@@ -1748,11 +1748,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1797,11 +1797,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1846,11 +1846,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1895,11 +1895,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1944,11 +1944,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -1993,11 +1993,11 @@ BEGIN
 
             -- Link to size value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_size AND value = size_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
 
             -- Link to color value
             SELECT option_value_id INTO v_value_id FROM public.product_option_values WHERE option_id = v_option_id_color AND value = color_value;
-            INSERT INTO public.variant_to_option_values (variant_id, variant_value_id) VALUES (v_variant_id, v_value_id);
+            INSERT INTO public.variant_to_option_values (variant_id, option_id, option_value_id) VALUES (v_variant_id, (SELECT option_id FROM public.product_option_values WHERE option_value_id = v_value_id), v_value_id);
         END LOOP;
     END LOOP;
 END $$;
@@ -2024,7 +2024,7 @@ BEGIN
             (
                 SELECT STRING_AGG(pov.value, '_' ORDER BY po.option_name)
                 FROM public.variant_to_option_values vtov
-                JOIN public.product_option_values pov ON vtov.variant_value_id = pov.option_value_id
+                JOIN public.product_option_values pov ON vtov.option_value_id = pov.option_value_id
                 JOIN public.product_options po ON pov.option_id = po.option_id
                 WHERE vtov.variant_id = pv.variant_id
             ) as options
@@ -2115,7 +2115,7 @@ WITH media_descriptions AS (
     LEFT JOIN
         variant_to_option_values vtov ON pv.variant_id = vtov.variant_id
     LEFT JOIN
-        product_option_values pov ON vtov.variant_value_id = pov.option_value_id
+        product_option_values pov ON vtov.option_value_id = pov.option_value_id
     LEFT JOIN
         product_options po ON pov.option_id = po.option_id
     GROUP BY
@@ -2182,7 +2182,7 @@ BEGIN
             (
                 SELECT STRING_AGG(pov.value, '_' ORDER BY po.option_name)
                 FROM public.variant_to_option_values vtov
-                JOIN public.product_option_values pov ON vtov.variant_value_id = pov.option_value_id
+                JOIN public.product_option_values pov ON vtov.option_value_id = pov.option_value_id
                 JOIN public.product_options po ON pov.option_id = po.option_id
                 WHERE vtov.variant_id = pv.variant_id
             ) as options
@@ -2376,7 +2376,7 @@ UPDATE public.variant_to_option_values vtov
 SET price_modifier = pov.default_price_modifier,
     modifier_type = 'absolute'
 FROM public.product_option_values pov
-WHERE vtov.variant_value_id = pov.option_value_id;
+WHERE vtov.option_value_id = pov.option_value_id;
 
 -- 3. "Single out" a special variant by giving it its own base_price, outside
 --    the bulk default (e.g. a clearance unit).

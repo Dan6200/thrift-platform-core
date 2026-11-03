@@ -23,7 +23,6 @@ export const knexProductRepository: ProductRepository = {
 
       const createdVariants: PersistedVariant[] = []
       for (const variant of product.variants) {
-        const valueIds = new Map<string, number>()
         const createdOptions = []
 
         for (const option of variant.options) {
@@ -55,7 +54,6 @@ export const knexProductRepository: ProductRepository = {
               .returning('option_value_id')
           }
 
-          valueIds.set(option.value, option_value_id)
           createdOptions.push({
             option_id,
             option_value_id,
@@ -86,9 +84,10 @@ export const knexProductRepository: ProductRepository = {
           })
         }
 
-        const links = Array.from(valueIds.values()).map((option_value_id) => ({
+        const links = createdOptions.map((option) => ({
           variant_id: newVariant.variant_id,
-          variant_value_id: option_value_id,
+          option_id: option.option_id,
+          option_value_id: option.option_value_id,
         }))
         await trx('variant_to_option_values').insert(links)
 
@@ -161,7 +160,7 @@ export const knexProductRepository: ProductRepository = {
                       pov.option_value_id,
                       pov.value
                     FROM variant_to_option_values vtov
-                    JOIN product_option_values pov ON vtov.variant_value_id = pov.option_value_id
+                    JOIN product_option_values pov ON vtov.option_value_id = pov.option_value_id
                     JOIN product_options po ON pov.option_id = po.option_id
                     WHERE vtov.variant_id = pv.variant_id
                   ) AS option_data
@@ -245,7 +244,7 @@ export const knexProductRepository: ProductRepository = {
                     pov.option_value_id,
                     pov.value
                   FROM variant_to_option_values vtov
-                  JOIN product_option_values pov ON vtov.variant_value_id = pov.option_value_id
+                  JOIN product_option_values pov ON vtov.option_value_id = pov.option_value_id
                   JOIN product_options po ON pov.option_id = po.option_id
                   WHERE vtov.variant_id = pv.variant_id
                 ) AS option_data
@@ -318,7 +317,7 @@ export const knexProductRepository: ProductRepository = {
     const newVariant = await knex.transaction(async (trx) => {
       const valueMap = new Map<
         string,
-        { value: string; option_value_id: number }
+        { option_id: number; option_value_id: number; value: string }
       >()
 
       for (const option of variant.options) {
@@ -364,7 +363,8 @@ export const knexProductRepository: ProductRepository = {
 
       const links = variant.options.map((option) => ({
         variant_id: createdVariant.variant_id,
-        variant_value_id: valueMap.get(option.value).option_value_id,
+        option_id: valueMap.get(option.value).option_id,
+        option_value_id: valueMap.get(option.value).option_value_id,
       }))
       await trx('variant_to_option_values').insert(links)
 
@@ -450,7 +450,7 @@ export const knexProductRepository: ProductRepository = {
       const options = await trx('variant_to_option_values as vtov')
         .join(
           'product_option_values as pov',
-          'vtov.variant_value_id',
+          'vtov.option_value_id',
           'pov.option_value_id',
         )
         .join('product_options as po', 'pov.option_id', 'po.option_id')
