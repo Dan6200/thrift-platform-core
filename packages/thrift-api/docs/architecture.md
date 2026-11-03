@@ -98,12 +98,11 @@ plain fake, and only the thin adapter touches the real service.
 
 ### 2.2 Schema
 
-There are **no Supabase migration files** — the schema is applied directly to
-the database, which is the source of truth during development.
-`supabase/seed.sql` seeds reference/test data, and `docs/catalog-model.md`
-documents the catalogue/pricing tables. Note: `pnpm reset-db`
-(`supabase db reset`) no longer recreates the schema, since there are no
-migrations to replay; apply the schema directly or restore a dump.
+The schema lives in a **single consolidated migration**,
+`supabase/migrations/20250702000000_initial_schema.sql`; new changes are folded
+into it rather than added as separate migrations. `pnpm reset-db`
+(`supabase db reset`) replays it and then runs `supabase/seed.sql`.
+`docs/catalog-model.md` documents the catalogue/pricing tables.
 
 ---
 
@@ -446,7 +445,7 @@ the legacy middleware has been removed.
 | `payments`                 | ✅ initialize + webhook + callback + QStash job                |
 | `shared/`                  | ✅ `result`, `domain-error`, `money`, `to-http-error`, `event` |
 | `logic/`, `events/`, `cms` | 🗑 removed                                                     |
-| `supabase/migrations/`     | 🗑 removed (schema applied directly)                           |
+| `supabase/migrations/`     | 1 consolidated baseline (schema)                               |
 | `app-schema/`, `types/`    | Joi boundary schemas + legacy types (still present)            |
 
 Docs:

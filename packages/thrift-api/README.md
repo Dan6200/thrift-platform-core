@@ -93,10 +93,11 @@ guide.
 
 ## Database schema
 
-There are no Supabase migration files: the schema is applied directly to the
-database (the DB is the source of truth during development).
-[`supabase/seed.sql`](./supabase/seed.sql) seeds reference/test data.
-`pnpm reset-db` (`supabase db reset`) no longer recreates the schema.
+The schema is a **single consolidated migration**:
+[`supabase/migrations/20250702000000_initial_schema.sql`](./supabase/migrations/20250702000000_initial_schema.sql).
+New changes are folded into it rather than added as separate migrations.
+`pnpm reset-db` (`supabase db reset`) replays it and then runs
+[`supabase/seed.sql`](./supabase/seed.sql).
 
 See [`docs/catalog-model.md`](./docs/catalog-model.md) for the catalogue model
 and [`docs/pricing-model.md`](./docs/pricing-model.md) for the pricing pipeline.
