@@ -88,6 +88,9 @@ External services are hidden behind ports, so unit tests use plain fakes: no
 Paystack, no Cloudinary, no network. Integration tests run against the local
 Supabase instance and the test server.
 
+The current suite is **434 tests**: 150 unit and 284 integrated, of which 101 are
+adversarial contract tests.
+
 ### Running the tests
 
 The suite uses Mocha + Chai and lives in `packages/thrift-api/src/tests/`. Tests

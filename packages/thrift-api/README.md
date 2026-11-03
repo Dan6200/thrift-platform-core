@@ -79,6 +79,8 @@ The suite mixes:
 - **Integration / adversarial** tests — real HTTP + Postgres, covering the
   contract, authorization, ownership, uniqueness, pagination and state machines.
 
+Current size: **434 tests** — 150 unit and 284 integrated (101 adversarial).
+
 For the QStash-dependent payment tests:
 
 ```bash

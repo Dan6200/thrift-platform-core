@@ -251,6 +251,22 @@ A blind agent adding integration coverage should:
 
 ## 6. Current coverage & gaps
 
+The last full run (Node 22) had **434 tests, all passing**, across 151 suites in
+about 4m15s:
+
+| Group                  | Tests |
+| ---------------------- | ----- |
+| Unit                   | 150   |
+| Integrated             | 284   |
+| — of which adversarial | 101   |
+| **Total**              | 434   |
+
+Unit by area: catalog 44, shared 29, orders 28, payments 17, cart 16, reviews 10,
+media 6. Integrated by area: adversarial 101, reviews 30, store staff 24,
+delivery info 21, media 21, cart 18, orders 18, stores 13, analytics 11,
+profiles 8, products 7, payments 12 (2 callback + 10 module-scope tests in
+`integrated/payments/index.ts`).
+
 The unit suite (`src/tests/unit/`) now covers:
 
 - **Shared**: `result`, `money`, `domain-error`, `to-http-error`.
@@ -284,6 +300,10 @@ Remaining gaps:
 5. **Runtime / flake policy** — the e2e portion is the slow part and is not
    sharded. `test:ci` retries once (`--retries 1`), but there is no flake
    quarantine.
+6. **Payment test registration** — `integrated/payments/index.ts` calls
+   `describe('Payments')` at module scope, so Mocha's recursive loader runs its
+   10 tests outside the main `Testing typical user actions` wrapper. Move them
+   into the suite's `describe` for coherent grouping and teardown.
 
 New endpoints covered by the integration surface: `PATCH /v1/orders/:order_id`
 (amend), `POST /v1/orders/:order_id/cancel`, and `GET /v1/payments/callback`.
