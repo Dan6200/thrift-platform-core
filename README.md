@@ -50,7 +50,7 @@ the running local Supabase database. Regenerate it with `pnpm docs:schema` (see
 | public.product_variants                | 6       |         | BASE TABLE |
 | public.product_options                 | 5       |         | BASE TABLE |
 | public.product_option_values           | 7       |         | BASE TABLE |
-| public.variant_to_option_values        | 6       |         | BASE TABLE |
+| public.variant_to_option_values        | 7       |         | BASE TABLE |
 | public.variant_price_overrides         | 7       |         | BASE TABLE |
 | public.product_store_category_links    | 4       |         | BASE TABLE |
 | public.featured_products               | 8       |         | BASE TABLE |
@@ -87,6 +87,7 @@ the running local Supabase database. Regenerate it with `pnpm docs:schema` (see
 | public.enforce_single_special_image           | trigger    |                                                    | FUNCTION |
 | public.prevent_accounting_ledger_modification | trigger    |                                                    | FUNCTION |
 | public.verify_ledger_entry_balance            | trigger    |                                                    | FUNCTION |
+| public.set_variant_to_option_value_option_id  | trigger    |                                                    | FUNCTION |
 
 #### Enums
 
@@ -128,6 +129,7 @@ erDiagram
 "public.product_options" }o--|| "public.products" : "FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE"
 "public.product_option_values" }o--|| "public.product_options" : "FOREIGN KEY (option_id) REFERENCES product_options(option_id) ON DELETE CASCADE"
 "public.variant_to_option_values" }o--|| "public.product_variants" : "FOREIGN KEY (variant_id) REFERENCES product_variants(variant_id) ON DELETE CASCADE"
+"public.variant_to_option_values" }o--|| "public.product_options" : "FOREIGN KEY (option_id) REFERENCES product_options(option_id) ON DELETE CASCADE"
 "public.variant_to_option_values" }o--|| "public.product_option_values" : "FOREIGN KEY (variant_value_id) REFERENCES product_option_values(option_value_id) ON DELETE CASCADE"
 "public.variant_price_overrides" }o--|| "public.product_variants" : "FOREIGN KEY (variant_id) REFERENCES product_variants(variant_id) ON DELETE CASCADE"
 "public.product_store_category_links" }o--|| "public.store_categories" : "FOREIGN KEY (store_category_id) REFERENCES store_categories(store_category_id) ON DELETE CASCADE"
@@ -348,6 +350,7 @@ erDiagram
 "public.variant_to_option_values" {
   integer variant_id FK
   integer variant_value_id FK
+  integer option_id FK
   bigint price_modifier
   modifier_type modifier_type
   timestamp_with_time_zone created_at
@@ -416,9 +419,9 @@ erDiagram
   timestamp_with_time_zone order_date
   bigint total_amount
   order_status status
+  text payment_reference
   timestamp_with_time_zone created_at
   timestamp_with_time_zone updated_at
-  text payment_reference
 }
 "public.order_items" {
   integer order_item_id
