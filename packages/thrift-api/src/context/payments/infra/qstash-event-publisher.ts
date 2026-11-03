@@ -7,9 +7,6 @@ const destinations: Record<string, string> = {
 
 export const qstashEventPublisher: EventPublisher = {
   async publish(event: DomainEvent) {
-    // External QStash is not part of the test surface; keep tests hermetic.
-    if (process.env.NODE_ENV === 'testing') return
-
     const destination = destinations[event.eventType]
     if (!destination) {
       throw new Error(
