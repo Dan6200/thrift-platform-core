@@ -6,7 +6,7 @@
     "install:all": "pnpm install",
     "build:all": "pnpm -r build",
     "test:all": "pnpm -r test",
-    "docs:schema": "tbls doc \"${SUPABASE_DB_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres?sslmode=disable}\" doc/schema --er-format mermaid --force && node scripts/sync-readme-schema.mjs && pnpm exec prettier --write README.md",
+    "docs:schema": "tbls doc \"${SUPABASE_DB_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres?sslmode=disable}\" doc/schema --er-format mermaid --force && node scripts/sync-schema-doc.mjs && pnpm exec prettier --write packages/thrift-api/docs/schema.md",
     "prepare": "husky",
     "lint-staged": "lint-staged"
   },

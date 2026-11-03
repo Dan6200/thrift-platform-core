@@ -99,14 +99,17 @@ New changes are folded into it rather than added as separate migrations.
 `pnpm reset-db` (`supabase db reset`) replays it and then runs
 [`supabase/seed.sql`](./supabase/seed.sql).
 
-See [`docs/catalog-model.md`](./docs/catalog-model.md) for the catalogue model
-and [`docs/pricing-model.md`](./docs/pricing-model.md) for the pricing pipeline.
+See [`docs/schema.md`](./docs/schema.md) for the generated table, function, enum,
+and ER-diagram reference, [`docs/catalog-model.md`](./docs/catalog-model.md) for
+the catalogue model, and [`docs/pricing-model.md`](./docs/pricing-model.md) for
+the pricing pipeline.
 
 ## Docs
 
 | Doc                                                        | Contents                             |
 | ---------------------------------------------------------- | ------------------------------------ |
 | [`docs/architecture.md`](./docs/architecture.md)           | Layers, patterns, contexts, status   |
+| [`docs/schema.md`](./docs/schema.md)                       | Generated tables, functions, ER      |
 | [`docs/catalog-model.md`](./docs/catalog-model.md)         | Products, variants, options, pricing |
 | [`docs/pricing-model.md`](./docs/pricing-model.md)         | base price → modifiers → overrides   |
 | [`docs/testing-strategy.md`](./docs/testing-strategy.md)   | Test pyramid + contracts             |
