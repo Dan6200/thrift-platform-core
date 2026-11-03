@@ -129,7 +129,7 @@ Rules:
 5. Introduce ports + adapters per context; test domain modules with stubs first
    (`tests/unit` exists), then swap routes to call use cases.
 6. Delete the old `logic/xxx` middleware only after integrated tests pass
-   (`pnpm test:assistant`).
+   (`pnpm test`).
 
 ---
 
@@ -204,7 +204,7 @@ not the reverse. Exceptions are reviewed case-by-case in §6.4.
    `effective price` read helper on top of the existing view.
 2. **Payments/orders** (D8, D9, D10) — align `orders` + `transactions` +
    `payment_info`.
-3. **Scripts & tests** (D15, D16) — re-sync fixtures so `pnpm test:assistant`
+3. **Scripts & tests** (D15, D16) — re-sync fixtures so `pnpm test`
    is green again.
 4. Then begin DDD extraction context-by-context (strangler fig).
 
@@ -238,7 +238,7 @@ not the reverse. Exceptions are reviewed case-by-case in §6.4.
 | P0    | Shared primitives (`result.ts`, `domain-error.ts`, `event-bus.ts`)   | Compiles, existing tests unaffected          |
 | P1    | Catalog drift fix (D1–D7) + `Money` VO                               | Product/variant endpoints green on new model |
 | P2    | Payments/orders drift fix (D8–D10)                                   | Order + payment flow green                   |
-| P3    | Scripts + tests re-sync (D15–D16)                                    | `pnpm test:assistant` green                  |
+| P3    | Scripts + tests re-sync (D15–D16)                                    | `pnpm test` green                            |
 | P4    | Extract `catalog` context (domain/application/ports/infra/http)      | Catalog routes served from new modules       |
 | P5    | Extract `sales/orders` + `payments` context; introduce domain events | Order→payment decoupled                      |
 | P6    | Extract `identity`, `store-management`, `fulfillment`, `analytics`   | All routes on contexts; delete old `logic/`  |

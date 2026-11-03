@@ -234,8 +234,11 @@ A blind agent adding integration coverage should:
 
 ## 5. Conventions
 
-- **Run**: `pnpm test:assistant` from `packages/thrift-api`, under **Node 20**
-  (tests use `Array.prototype.toSpliced`).
+- **Run**: `pnpm test` from `packages/thrift-api`, under **Node 20+** (the suite
+  uses `Array.prototype.toSpliced`; CI runs Node 22). Start the server first
+  with `pnpm test-server` (port 1027, foreground). Agents/automation use the
+  `:agent` variants instead: `pnpm test-server:agent` (port 1037, background)
+  then `pnpm test:agent`.
 - **Imports**: use the `#src/...` alias; snake_case in HTTP payloads/DB,
   camelCase in domain/application.
 - **Fakes**: plain objects implementing the port; no mocking framework.
@@ -248,30 +251,73 @@ A blind agent adding integration coverage should:
 
 ## 6. Current coverage & gaps
 
-Covered (unit): `createProduct` (domain + use case), `createOrder` (domain +
-use case), `handleSortQuery`.
+The unit suite (`src/tests/unit/`) now covers:
 
-**Primary gaps** (add unit tests here first):
+- **Shared**: `result`, `money`, `domain-error`, `to-http-error`.
+- **Catalog**: `createProduct`, `createVariant`, `validateVariantUpdate`,
+  `handleSortQuery`, and the create/update-variant use cases.
+- **Orders**: `createOrder`, `buildOrderItems`, edge cases, amend, and cancel.
+- **Cart**: `validateQuantity` plus the add/update/remove use cases.
+- **Reviews**: create/update/delete use cases (ownership + duplicate).
+- **Payments**: callback, webhook, and process-order job use cases against fake
+  `PaymentGateway` / `PaymentRepository` ports.
+- **Media**: the four media use cases against fake `MediaStorage` /
+  `MediaRepository` ports.
 
-1. `variant.ts` — `createVariant` and `validateVariantUpdate`
-   (especially the "quantity change requires reason" rule).
-2. `cart.ts` — `validateQuantity`.
-3. `order.ts` — edge cases beyond the current few (multi-item arithmetic,
-   per-item stock, unknown variant); `buildOrderItems`.
-4. `createVariantUseCase`, `updateVariantUseCase`, `updateVariant` mapping.
-5. `createReviewUseCase` / `updateReviewUseCase` / `deleteReviewUseCase`
-   (ownership + duplicate).
-6. Cart `addItemUseCase` / `updateItemUseCase` / `removeItemUseCase`.
-7. `toHttpError` code→status/class mapping.
-8. `shared/result.ts`, `shared/money.ts` guards (cheap to pin).
-9. Orders state machine — `amendOrderUseCase` / `cancelOrderUseCase`
-   (pending-only guard → `CONFLICT`, ownership → `NOT_FOUND`, effective-stock
-   amendment).
-10. Payments — `handleCallbackUseCase` (and the webhook/job use cases) against a
-    fake `PaymentGateway` + `PaymentRepository` (mocks Paystack, no HMAC).
-11. Media — the four media use cases against a fake `MediaStorage` +
-    `MediaRepository` (mocks Cloudinary).
+The unit coverage gate (`pnpm coverage:agent` — currently the only coverage
+script — also run in CI) enforces
+**lines 65 / functions 70 / branches 75 / statements 65** over `src/shared/**`
+and `src/context/*/domain/**`.
 
-New endpoints (integration surface, verified against the running server):
-`PATCH /v1/orders/:order_id` (amend), `POST /v1/orders/:order_id/cancel`,
-`GET /v1/payments/callback`.
+Remaining gaps:
+
+1. **Integration isolation** — the legacy `integrated/cart/index.ts` still
+   mutates a shared `cartItems` array across `it` blocks. A failure mid-suite
+   can leave a stale server-side cart; the adversarial suite's self-contained
+   seeding is the pattern to follow.
+2. **Contract testing** — no consumer-driven contract tests (Pact). Response
+   shapes are validated by Joi, but consumers are not part of the contract.
+3. **Property-based testing** — `fast-check` would fit the money/stock
+   invariants; it is not used yet.
+4. **Mutation testing** — no Stryker run, so the suite's bug-catching power is
+   unmeasured.
+5. **Runtime / flake policy** — the e2e portion is the slow part and is not
+   sharded. `test:ci` retries once (`--retries 1`), but there is no flake
+   quarantine.
+
+New endpoints covered by the integration surface: `PATCH /v1/orders/:order_id`
+(amend), `POST /v1/orders/:order_id/cancel`, and `GET /v1/payments/callback`.
+
+---
+
+## 7. CI pipeline
+
+Workflows live in `.github/workflows/`.
+
+### `run-tests.yml` — "Thrift-api Testing"
+
+Runs on every push and pull request targeting `main` or `dev`:
+
+1. Start Supabase (`supabase/setup-cli`, pinned to `2.120.0`).
+2. Install workspace dependencies (`pnpm install --frozen-lockfile`, pnpm 10).
+3. `pnpm --filter thrift-api build` and `typecheck`.
+4. Coverage gate: `pnpm --filter thrift-api coverage:agent`.
+5. Start the QStash dev server (`2.40.12`) on `:8080`.
+6. Start the API on `:1027` with `test-server`.
+7. Run `pnpm --filter thrift-api test:ci` (full suite, `--retries 1`).
+8. On failure, print `results.log`.
+
+CI runs **Node 22**. Integration tests use the local Supabase instance; Cloudinary
+and Paystack are the real services (repository secrets), while QStash is the
+local dev server (`QSTASH_URL=http://localhost:8080`, `APP_URL=http://localhost:1027`).
+
+### `deploy-api-to-prod.yml`
+
+Runs when "Thrift-api Testing" completes successfully (or via manual dispatch)
+and deploys `packages/thrift-api` to Vercel production.
+
+### Other workflows
+
+- `deploy-web-to-prod.yml` — deploys `packages/thrift-web` to Vercel on pushes to `main`.
+- `db-backup.yaml` — Supabase backup (push/PR to `main`/`dev`, manual, and nightly).
+- `db-keepalive.yaml` — pings the Supabase REST API every 3 days.

@@ -73,7 +73,7 @@ Key things to confirm in this one trace:
 
 ## 5. Verification status
 
-Green (verified via `pnpm test:assistant`, Node 20 — note `.node-version` says 18 but tests use `toSpliced`, so run under Node 20):
+Green (verified via `pnpm test`, Node 22 — the suite uses `toSpliced`, so Node 20+ is required):
 
 | Area                              | Result                                                |
 | --------------------------------- | ----------------------------------------------------- |
