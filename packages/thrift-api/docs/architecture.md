@@ -23,7 +23,8 @@ middleware that also ran SQL. That caused drift: the pricing model changed in
 the database schema, but the middleware kept using old columns (`list_price` /
 `net_price`) and old column names (`value_id`). The rules had no single home.
 
-The refactor separates concerns so that:
+The refactor is **complete**: every domain now lives in a bounded context with
+the same layering. It separates concerns so that:
 
 - **Domain rules live in one place** (pure, testable, no I/O).
 - **Data access lives behind an interface** (swap-able, mock-able).
@@ -75,6 +76,34 @@ Rules:
 - `infra/` implements `ports/`; it is the only layer that touches the database.
 - `http/` imports `application/` and maps HTTP ⇄ domain.
 - `shared/` is dependency-free except for the HTTP status code mapping.
+
+### 2.1 Contexts at a glance
+
+| Context            | Pure domain                                                                       | Ports → adapters                                                                   |
+| ------------------ | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `catalog`          | `Product` aggregate, `createProduct`; `createVariant`, `validateVariantUpdate`    | `ProductRepository` → knex                                                         |
+| `orders`           | `Order` aggregate + `OrderStatus` state machine; `buildOrderItems`, `createOrder` | `OrderRepository` → knex                                                           |
+| `cart`             | `validateQuantity`                                                                | `CartRepository` → knex                                                            |
+| `identity`         | — (profile read; sign-up is an external call)                                     | `ProfileRepository` → knex; `AuthGateway` → Supabase Auth                          |
+| `fulfillment`      | —                                                                                 | `DeliveryInfoRepository` → knex                                                    |
+| `store-management` | —                                                                                 | `StoreRepository`, `StaffRepository` → knex                                        |
+| `reviews`          | — (ownership/duplicate rules live in the use cases)                               | `ReviewRepository` → knex                                                          |
+| `analytics`        | — (read models only)                                                              | `AnalyticsRepository` → knex/pg                                                    |
+| `media`            | —                                                                                 | `MediaRepository` → knex; `MediaStorage` → Cloudinary                              |
+| `payments`         | — (state transitions live in the use cases)                                       | `PaymentRepository` → knex; `PaymentGateway` → Paystack; `EventPublisher` → QStash |
+
+The **external-service ports** (`AuthGateway`, `MediaStorage`, `PaymentGateway`,
+`EventPublisher`) are the seams that keep tests hermetic: a unit test injects a
+plain fake, and only the thin adapter touches the real service.
+
+### 2.2 Schema
+
+There are **no Supabase migration files** — the schema is applied directly to
+the database, which is the source of truth during development.
+`supabase/seed.sql` seeds reference/test data, and `docs/catalog-model.md`
+documents the catalogue/pricing tables. Note: `pnpm reset-db`
+(`supabase db reset`) no longer recreates the schema, since there are no
+migrations to replay; apply the schema directly or restore a dump.
 
 ---
 
@@ -245,6 +274,19 @@ response shape and status code, so handlers stay minimal.
 The mapping happens at the two boundaries (http and infra), so the core keeps a
 consistent language independent of the schema/API.
 
+### 4.10 External-service ports
+
+Four ports wrap services outside the database; the core depends on the port and
+the adapter is swappable:
+
+- `identity/ports/auth-gateway.ts` — `AuthGateway.signUp` → Supabase Auth.
+- `media/ports/media-storage.ts` — `MediaStorage.upload(file, folder)` → Cloudinary.
+- `payments/ports/payment-gateway.ts` — `PaymentGateway.initializeTransaction` /
+  `verifySignature` / `verifyTransaction` → Paystack.
+- `shared/event.ts` — `EventPublisher.publish(event)` → QStash.
+
+Tests inject a fake for each (see `docs/testing-strategy.md`).
+
 ---
 
 ## 5. Deep dive: the Product aggregate
@@ -288,7 +330,40 @@ including the rule that a quantity change requires an `inventoryChangeReason`).
 
 ---
 
-## 6. Deep dive: the repository adapter
+## 6. Deep dive: the Order aggregate & state machine
+
+`domain/order.ts` carries the order state machine and the shared item builder:
+
+```ts
+export type OrderStatus =
+  | 'pending' | 'processing' | 'failed' | 'cancelled'
+  | 'shipped' | 'delivered' | 'refunded'
+
+export const buildOrderItems = (items, priceOf, stockOf): Result<BuiltOrderItems, DomainError>
+export const createOrder = (draft, priceOf, stockOf): Result<Order, DomainError>
+```
+
+`buildOrderItems` is the single source of the order invariants (≥1 item,
+positive integer quantity, variant exists, sufficient stock, price snapshot)
+and is reused by **creation and amendment**, so the two paths cannot drift.
+
+State transitions are guarded in the use cases:
+
+- `createOrder` → `pending`.
+- `amendOrderUseCase` / `cancelOrderUseCase` → only when `status === 'pending'`
+  (otherwise `CONFLICT`); ownership is checked via `getOrderForMutation`.
+- Payments drive `pending → processing` (webhook, callback, QStash job) and
+  `pending → failed`; `shipped` / `delivered` / `refunded` are reserved for the
+  not-yet-built fulfillment/refund flows.
+
+Amendment reuses the shared builder with **effective stock = available + this
+order's own held quantity**, then the adapter reconciles inventory (restore old
+`+qty`, deduct new `-qty`) in the same transaction. Cancellation restores the
+held stock.
+
+---
+
+## 7. Deep dive: the repository adapter
 
 `infra/knex-product-repository.ts` is the only place that talks to the database.
 Each method:
@@ -312,7 +387,7 @@ the old middleware) and return the aggregated read model.
 
 ---
 
-## 7. Full request lifecycle (create-product example)
+## 8. Full request lifecycle (create-product example)
 
 ```
 POST /v1/products
@@ -323,7 +398,7 @@ POST /v1/products
         maps body → CreateProductCommand (camelCase)
         const result = await useCase(command)
         result.kind === 'err'
-          ? throw new BadRequestError(result.error.message)
+          ? throw toHttpError(result.error)
           : req.dbResult = result.value
   → validateDbResult(ProductResponseSchema) (Joi: response shape)
   → sendResponse(CREATED)
@@ -333,7 +408,7 @@ The domain/application layers are completely oblivious to all of this.
 
 ---
 
-## 8. Conventions to preserve
+## 9. Conventions to preserve
 
 - **Errors**: expected failures are `DomainError` values returned in a `Result`;
   unexpected failures throw and are caught by the global error handler.
@@ -352,30 +427,34 @@ The domain/application layers are completely oblivious to all of this.
 
 ---
 
-## 9. Status
+## 10. Status & docs
 
-All ten bounded contexts are extracted and wired. The legacy middleware has been
-removed.
+The refactor is complete: all ten bounded contexts are extracted and wired, and
+the legacy middleware has been removed.
 
-| Context                              | Status                                                         |
-| ------------------------------------ | -------------------------------------------------------------- |
-| `catalog` (products/variants)        | ✅ extracted                                                   |
-| `orders` (create + reads)            | ✅ extracted                                                   |
-| `cart`                               | ✅ extracted                                                   |
-| `identity` (profile + auth register) | ✅ extracted                                                   |
-| `fulfillment` (delivery-info)        | ✅ extracted                                                   |
-| `store-management` (stores + staff)  | ✅ extracted                                                   |
-| `reviews`                            | ✅ extracted                                                   |
-| `analytics` (read models)            | ✅ extracted                                                   |
-| `media` (avatar + product media)     | ✅ extracted                                                   |
-| `payments` (Paystack/QStash/events)  | ✅ extracted                                                   |
-| `shared/`                            | ✅ `result`, `domain-error`, `money`, `to-http-error`, `event` |
-| `logic/`, `events/`                  | 🗑 removed (dead code)                                         |
-| `cms` routes                         | 🗑 removed (no longer used)                                    |
-| `scripts/`                           | obsolete generators removed; media/image tooling retained      |
-| `app-schema/`, `types/`              | boundary Joi schemas + legacy types (still present)            |
+| Area                       | Status                                                         |
+| -------------------------- | -------------------------------------------------------------- |
+| `catalog`                  | ✅ products/variants, duplicate-SKU guard                      |
+| `orders`                   | ✅ create + reads + amend/cancel (state machine)               |
+| `cart`                     | ✅ get/add/update/remove                                       |
+| `identity`                 | ✅ profile + Supabase Auth register gateway                    |
+| `fulfillment`              | ✅ delivery-info CRUD                                          |
+| `store-management`         | ✅ stores + staff                                              |
+| `reviews`                  | ✅ product reviews (ownership + duplicate guard)               |
+| `analytics`                | ✅ read models                                                 |
+| `media`                    | ✅ avatar + product media (Cloudinary via `MediaStorage`)      |
+| `payments`                 | ✅ initialize + webhook + callback + QStash job                |
+| `shared/`                  | ✅ `result`, `domain-error`, `money`, `to-http-error`, `event` |
+| `logic/`, `events/`, `cms` | 🗑 removed                                                     |
+| `supabase/migrations/`     | 🗑 removed (schema applied directly)                           |
+| `app-schema/`, `types/`    | Joi boundary schemas + legacy types (still present)            |
 
-Supporting docs: `ddd_refactor_plan.md` (plan + drift register),
-`docs/review-guide.md` (how to review the change), `docs/testing-strategy.md`
-(test pyramid + blind-agent contract), `docs/test-style-review.md` (adversarial
-suite style review).
+Docs:
+
+- `ddd_refactor_plan.md` — plan + schema/logic drift register.
+- `docs/architecture.md` — this document.
+- `docs/catalog-model.md` — catalogue relationships, variant/option model.
+- `docs/pricing-model.md` — base price → modifiers → overrides.
+- `docs/testing-strategy.md` — test pyramid + blind-agent contract.
+- `docs/review-guide.md` — how to review the refactor.
+- `docs/test-style-review.md` — adversarial suite style review.
