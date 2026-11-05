@@ -6,6 +6,7 @@
 
 - Commit and push (if you can before making any changes)
 - Commit after every change, in small focused commits. Never batch many changes into one all-or-nothing commit.
+- **Write tests first.** Before changing or refactoring code, add or extend tests that encode the expected behaviour, confirm they fail for the right reason, then implement the change. (If a test genuinely cannot be written first — e.g. you are still locating a root cause — say so, then add the test before the fix.)
 - **Do not cut corners to make a check pass.** Never weaken tests, skip tests, add no-ops, swallow errors, or mock a real dependency just to get green — fix the cause or report it as a finding.
 - **Ask before reducing fidelity** (mocking, skipping, loosening assertions) or changing test/external-service wiring. If green requires less fidelity, stop and ask.
 - **Rebuild before testing.** `built/` can be stale (`noEmitOnError: true`); after any `src/` change run `pnpm build` and confirm the compiled artefact contains the change before trusting a green run.
