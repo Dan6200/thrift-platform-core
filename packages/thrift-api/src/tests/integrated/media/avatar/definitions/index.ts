@@ -2,7 +2,7 @@ import chai from 'chai'
 import chaiHttp from 'chai-http'
 import { readFile } from 'node:fs/promises'
 import { StatusCodes } from 'http-status-codes'
-import { MediaUpload } from '#src/types/media.js'
+import { MediaUpload } from '../../../../types/media.js'
 
 chai.use(chaiHttp).should()
 

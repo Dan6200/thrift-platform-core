@@ -4,7 +4,7 @@ import {
   ProductRequestData,
   ProductResponseData,
   UpdateProductRequestData,
-} from '../../../types/products.js'
+} from '../../types/products.js'
 import {
   testCreateProduct,
   testGetAllProducts,
@@ -16,7 +16,7 @@ import {
   testUpdateVariant,
   testDeleteVariant,
 } from './definitions/index.js'
-import { ProfileRequestData } from '../../../types/profile/index.js'
+import { ProfileRequestData } from '../../types/profile/index.js'
 import assert from 'assert'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'

@@ -14,7 +14,7 @@ import {
 } from '#src/app-schema/stores.js'
 import { validateTestData } from '../../helpers/test-validators.js'
 import { assertRecentIsoTimestamp } from '../../helpers/assert-timestamp.js'
-import StoreData from '#src/types/store-data.js'
+import StoreData from '../../../types/store-data.js'
 import * as JDP from 'jsondiffpatch'
 const jdp = JDP.create()
 

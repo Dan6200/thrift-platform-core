@@ -1,6 +1,6 @@
 //cspell:ignore cloudinary
-import { ProfileRequestData } from '#src/types/profile/index.js'
-import { ProductMediaUpload } from '#src/types/products.js'
+import { ProfileRequestData } from '../../types/profile/index.js'
+import { ProductMediaUpload } from '../../types/products.js'
 import testProductMedia from './products/index.js'
 import testAvatar from './avatar/index.js' // Import testCreateAvatar from new location
 

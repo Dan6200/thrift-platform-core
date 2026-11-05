@@ -11,7 +11,7 @@ import {
 } from '#src/app-schema/store_staff.js'
 import { validateTestData } from '../../helpers/test-validators.js'
 import { assertRecentIsoTimestamp } from '../../helpers/assert-timestamp.js'
-import { StoreStaff } from '#src/types/store_staff.js'
+import { StoreStaff } from '../../../types/store_staff.js'
 import chai from 'chai'
 
 const { CREATED, OK, NO_CONTENT, FORBIDDEN } = StatusCodes

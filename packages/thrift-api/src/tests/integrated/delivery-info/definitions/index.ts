@@ -12,7 +12,7 @@ import {
 } from '#src/app-schema/delivery-info.js'
 import { validateTestData } from '../../helpers/test-validators.js'
 import { assertRecentIsoTimestamp } from '../../helpers/assert-timestamp.js'
-import { DeliveryInfo } from '#src/types/delivery-info.js'
+import { DeliveryInfo } from '../../../types/delivery-info.js'
 
 const { CREATED, OK, NOT_FOUND, NO_CONTENT } = StatusCodes
 

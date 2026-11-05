@@ -1,6 +1,6 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
-import { ProfileRequestData } from '#src/types/profile/index.js'
+import { ProfileRequestData } from '../../../types/profile/index.js'
 import {
   testCreateProductReview,
   testGetProductReview,

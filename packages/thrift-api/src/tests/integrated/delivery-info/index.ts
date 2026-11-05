@@ -7,12 +7,12 @@ import {
   testGetNonExistentDelivery,
 } from '../delivery-info/definitions/index.js'
 import assert from 'assert'
-import { ProfileRequestData } from '../../../types/profile/index.js'
+import { ProfileRequestData } from '../../types/profile/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'
 import { testHasCustomerAccount } from '../profiles/definitions.js'
-import { DeliveryInfo } from '#src/types/delivery-info.js'
+import { DeliveryInfo } from '../../types/delivery-info.js'
 
 export default function ({
   userInfo,

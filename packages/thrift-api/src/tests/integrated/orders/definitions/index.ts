@@ -16,7 +16,10 @@ import {
   validateFindReviewableItemReq, // Import the new request validator
   validateFindReviewableItemRes, // Import the new response validator
 } from '#src/tests/integrated/helpers/test-validators/orders.js'
-import { OrderCreateRequestData, OrderResponseData } from '#src/types/orders.js'
+import {
+  OrderCreateRequestData,
+  OrderResponseData,
+} from '../../../types/orders.js'
 import { FindReviewableItemRequestSchema } from '#src/app-schema/orders/index.js' // Correct import from app-schema
 import chai from 'chai'
 import * as JDP from 'jsondiffpatch'

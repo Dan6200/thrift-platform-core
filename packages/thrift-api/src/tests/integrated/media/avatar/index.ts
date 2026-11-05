@@ -1,5 +1,5 @@
 //cspell:ignore cloudinary
-import { ProfileRequestData } from '#src/types/profile/index.js'
+import { ProfileRequestData } from '../../../types/profile/index.js'
 import {
   testCreateAvatar,
   testGetAvatar,

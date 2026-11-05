@@ -1,4 +1,4 @@
-import { ProfileData } from '#src/types/profile/index.js'
+import { ProfileData } from '../../types/profile/index.js'
 
 export type ProfileRequestData = ProfileData &
   ({ email: string } | { phone: string })

@@ -1,4 +1,4 @@
-import StoreData from '#src/types/store-data.js'
+import StoreData from '../../types/store-data.js'
 import {
   testCreateStore,
   testGetStore,
@@ -8,7 +8,7 @@ import {
   testGetNonExistentStore,
 } from '../stores/definitions/index.js'
 import assert from 'assert'
-import { ProfileRequestData } from '../../../types/profile/index.js'
+import { ProfileRequestData } from '../../types/profile/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'

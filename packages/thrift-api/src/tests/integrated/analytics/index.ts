@@ -1,6 +1,6 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
-import { ProfileRequestData } from '#src/types/profile/index.js'
+import { ProfileRequestData } from '../../types/profile/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
 import { createUserForTesting } from '../helpers/create-user.js'
 import { signInForTesting } from '../helpers/signin-user.js'
@@ -22,7 +22,7 @@ import { knex } from '#src/db/index.js'
 import { faker } from '@faker-js/faker'
 import { userFactory } from '../factories/index.js'
 import { updateVariantForTesting } from '../helpers/product-variants.js'
-import { ProductVariant } from '#src/types/products.js'
+import { ProductVariant } from '../../types/products.js'
 
 const Ebuka = userFactory({ isCustomer: true })
 const Aisha = userFactory({ isCustomer: true })

@@ -22,7 +22,7 @@ import {
   ProductVariant,
   RequestVariant,
   UpdateRequestVariant,
-} from '#src/types/products.js'
+} from '../../../types/products.js'
 import * as JDP from 'jsondiffpatch'
 import * as consoleFormatter from 'jsondiffpatch/formatters/console'
 import { assertRecentIsoTimestamp } from '../../helpers/assert-timestamp.js'

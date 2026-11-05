@@ -1,5 +1,5 @@
 import chai from 'chai'
-import { RequestVariant, UpdateRequestVariant } from '#src/types/products.js'
+import { RequestVariant, UpdateRequestVariant } from '../../types/products.js'
 
 export async function createVariantForTesting(
   token: string,

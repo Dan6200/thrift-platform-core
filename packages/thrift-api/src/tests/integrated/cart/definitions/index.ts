@@ -13,7 +13,7 @@ import {
   CartResponseData,
   CartItem,
   CartItemRequestData,
-} from '#src/types/cart.js'
+} from '../../../types/cart.js'
 import chai from 'chai'
 import * as JDP from 'jsondiffpatch'
 import * as consoleFormatter from 'jsondiffpatch/formatters/console'

@@ -13,7 +13,7 @@ import {
   validateGetAllProductReviewsRes,
   validateGetProductReviewByProductIDReq, // Imported
 } from '../../../helpers/test-validators/reviews.js'
-import { ProductReviewRequestData } from '#src/types/reviews.js'
+import { ProductReviewRequestData } from '../../../../types/reviews.js'
 
 const { CREATED, OK, NO_CONTENT, NOT_FOUND, FORBIDDEN } = StatusCodes
 

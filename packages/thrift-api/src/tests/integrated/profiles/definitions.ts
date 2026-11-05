@@ -6,7 +6,7 @@ import testRequest from '../test-request/index.js'
 import { ProfileResponseSchema } from '#src/app-schema/profiles.js'
 import { validateTestData } from '../helpers/test-validators.js'
 import { assertRecentIsoTimestamp } from '../helpers/assert-timestamp.js'
-import { ProfileData, ProfileRequestData } from '#src/types/profile/index.js'
+import { ProfileData, ProfileRequestData } from '../../types/profile/index.js'
 
 chai.use(chaiHttp).should()
 
