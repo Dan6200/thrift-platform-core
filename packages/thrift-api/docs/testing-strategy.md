@@ -132,9 +132,10 @@ storeId, changes: VariantUpdate }`. **The payload field is `changes`** (not
   then `repo.updateVariant({ ...input, changes })`.
 - `createOrderUseCase(repo)(command)` — `command = { customerId, storeId,
 deliveryInfoId?, items: { variantId, quantity }[] }`. `repo.storeExists` →
-  `NOT_FOUND`; `repo.deliveryInfoBelongsTo` → `INVALID_INPUT`; then `createOrder`
-  with prices/stock from `repo.getVariantPrices` / `repo.getAvailableStock`;
-  then `repo.create`.
+  `NOT_FOUND`; `repo.deliveryInfoBelongsTo` → `INVALID_INPUT`; every variant must
+  belong to `storeId` (`repo.getVariantStoreIds` → `INVALID_INPUT` on mismatch);
+  then `createOrder` with prices/stock from `repo.getVariantPrices` /
+  `repo.getAvailableStock`; then `repo.create`.
 - `createReviewUseCase(repo)(command)` — `command = { orderItemId, customerId,
 rating, customerRemark? }`. `repo.getOrderItemOwner(orderItemId)` →
   `NOT_FOUND` / `UNAUTHORIZED`; `repo.getById(orderItemId)` (existing) →

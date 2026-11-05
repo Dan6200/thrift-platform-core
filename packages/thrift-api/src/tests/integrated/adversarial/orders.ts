@@ -23,11 +23,13 @@ const ebuka = userFactory({ isCustomer: true })
 export default function () {
   describe('Adversarial: Orders', () => {
     let catalog: Awaited<ReturnType<typeof seedVendorCatalog>>
+    let catalog2: Awaited<ReturnType<typeof seedVendorCatalog>>
     let customer: { id: string; token: string }
     let secondCustomer: { id: string; token: string }
 
     before(async () => {
       catalog = await seedVendorCatalog()
+      catalog2 = await seedVendorCatalog()
       customer = await seedUser(uniqueUser(aisha.userInfo))
       secondCustomer = await seedUser(uniqueUser(ebuka.userInfo))
     })
@@ -36,6 +38,7 @@ export default function () {
       await deleteUserForTesting(customer.id)
       await deleteUserForTesting(secondCustomer.id)
       await deleteUserForTesting(catalog.vendor.id)
+      await deleteUserForTesting(catalog2.vendor.id)
     })
 
     const createOrder = (body: unknown, token = customer.token) =>
@@ -152,6 +155,19 @@ export default function () {
           query: { store_id: catalog.storeId },
         })
         expectRejected(cross, [FORBIDDEN, NOT_FOUND], 'cross-user order read')
+      })
+    })
+
+    describe('cross-store isolation', () => {
+      it('rejects a variant that belongs to another store', async () => {
+        const res = await request('post', '/v1/orders', {
+          token: customer.token,
+          query: { store_id: catalog2.storeId },
+          body: {
+            items: [{ variant_id: catalog.variantId, quantity: 1 }],
+          },
+        })
+        expectRejected(res, [BAD_REQUEST], 'cross-store variant')
       })
     })
 

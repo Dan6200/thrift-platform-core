@@ -30,10 +30,23 @@ export const createOrderUseCase =
     }
 
     const variantIds = command.items.map((item) => item.variantId)
-    const [prices, stock] = await Promise.all([
+    const [prices, stock, variantStores] = await Promise.all([
       repository.getVariantPrices(variantIds),
       repository.getAvailableStock(variantIds),
+      repository.getVariantStoreIds(variantIds),
     ])
+
+    for (const variantId of variantIds) {
+      const variantStoreId = variantStores.get(variantId)
+      if (variantStoreId !== undefined && variantStoreId !== command.storeId) {
+        return err(
+          domainError(
+            'INVALID_INPUT',
+            `Variant ${variantId} does not belong to store ${command.storeId}.`,
+          ),
+        )
+      }
+    }
 
     const orderResult = createOrder(
       {

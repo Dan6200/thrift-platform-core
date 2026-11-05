@@ -36,6 +36,9 @@ const fakeRepository: OrderRepository = {
   async getAvailableStock() {
     return new Map([[1, 10]])
   },
+  async getVariantStoreIds() {
+    return new Map([[1, 1]])
+  },
   async create({ order }): Promise<PersistedOrder> {
     return {
       order_id: 1,
@@ -161,6 +164,28 @@ export default () => {
       if (result.kind === 'err') {
         result.error.code.should.equal('INVALID_INPUT')
       }
+    })
+
+    it('rejects a variant that belongs to a different store', async () => {
+      let created = false
+      const repository: OrderRepository = {
+        ...fakeRepository,
+        getVariantStoreIds: async () => new Map([[1, 2]]),
+        create: async (input) => {
+          created = true
+          return fakeRepository.create(input)
+        },
+      }
+      const result = await createOrderUseCase(repository)({
+        customerId: 'c1',
+        storeId: 1,
+        items: [{ variantId: 1, quantity: 1 }],
+      })
+      result.kind.should.equal('err')
+      if (result.kind === 'err') {
+        result.error.code.should.equal('INVALID_INPUT')
+      }
+      created.should.equal(false)
     })
   })
 }

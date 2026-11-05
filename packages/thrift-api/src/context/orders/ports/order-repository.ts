@@ -56,6 +56,7 @@ export type OrderRepository = {
   ): Promise<boolean>
   getVariantPrices(variantIds: number[]): Promise<Map<number, number>>
   getAvailableStock(variantIds: number[]): Promise<Map<number, number>>
+  getVariantStoreIds(variantIds: number[]): Promise<Map<number, number>>
   create(input: CreateOrderInput): Promise<PersistedOrder>
   getProfile(userId: string): Promise<{ is_vendor: boolean } | null>
   hasStoreAccess(

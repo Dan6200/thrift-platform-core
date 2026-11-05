@@ -57,6 +57,14 @@ export const knexOrderRepository: OrderRepository = {
     )
   },
 
+  async getVariantStoreIds(variantIds) {
+    const rows = await knex('product_variants as pv')
+      .join('products as p', 'pv.product_id', 'p.product_id')
+      .whereIn('pv.variant_id', variantIds)
+      .select('pv.variant_id', 'p.store_id')
+    return new Map(rows.map((row) => [row.variant_id, row.store_id]))
+  },
+
   async create({ order }) {
     const created = await knex.transaction(async (trx) => {
       const [orderRow] = await trx('orders')

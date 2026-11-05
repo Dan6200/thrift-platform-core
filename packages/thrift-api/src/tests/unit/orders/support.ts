@@ -24,6 +24,9 @@ export const makeOrderRepo = (
   async getAvailableStock(): Promise<Map<number, number>> {
     return new Map()
   },
+  async getVariantStoreIds(): Promise<Map<number, number>> {
+    return new Map()
+  },
   async create(): Promise<any> {
     return notImplemented()
   },
