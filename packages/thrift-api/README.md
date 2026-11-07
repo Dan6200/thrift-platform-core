@@ -116,6 +116,7 @@ the pricing pipeline.
 | Doc                                                        | Contents                             |
 | ---------------------------------------------------------- | ------------------------------------ |
 | [`docs/architecture.md`](./docs/architecture.md)           | Layers, patterns, contexts, status   |
+| [`docs/result.md`](./docs/result.md)                       | `Result<T, E>`: errors as values     |
 | [`docs/schema.md`](./docs/schema.md)                       | Generated tables, functions, ER      |
 | [`docs/catalog-model.md`](./docs/catalog-model.md)         | Products, variants, options, pricing |
 | [`docs/pricing-model.md`](./docs/pricing-model.md)         | base price → modifiers → overrides   |

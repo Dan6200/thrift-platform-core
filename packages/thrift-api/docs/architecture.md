@@ -452,6 +452,7 @@ Docs:
 
 - `ddd_refactor_plan.md` — plan + schema/logic drift register.
 - `docs/architecture.md` — this document.
+- `docs/result.md` — `Result<T, E>`: errors as values + combinators.
 - `docs/catalog-model.md` — catalogue relationships, variant/option model.
 - `docs/pricing-model.md` — base price → modifiers → overrides.
 - `docs/testing-strategy.md` — test pyramid + blind-agent contract.
