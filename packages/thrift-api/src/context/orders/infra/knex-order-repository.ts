@@ -152,6 +152,7 @@ export const knexOrderRepository: OrderRepository = {
       .leftJoin('product_reviews as pr', 'oi.order_item_id', 'pr.order_item_id')
       .where('o.customer_id', customerId)
       .where('p.product_id', productId)
+      .whereNotIn('o.status', ['cancelled', 'failed', 'refunded'])
       .whereNull('pr.order_item_id')
       .select('oi.order_item_id')
       .first()

@@ -5,6 +5,7 @@ import { validate } from '../../request-validation.js'
 import { validateDbResult } from '../../db-result-validation.js'
 import { sendResponse } from '../../send-response.js'
 import authenticateUser from '../../authentication.js'
+import { customerAuthorization } from '#src/authorization/customer-authorization.js'
 import { createOrderHandler } from '#src/context/orders/http/create-order.js'
 import { getAllOrdersHandler } from '#src/context/orders/http/get-all-orders.js'
 import { getOrderHandler } from '#src/context/orders/http/get-order.js'
@@ -29,6 +30,7 @@ router
   .route('/')
   .post(
     authenticateUser,
+    customerAuthorization,
     validate(CreateOrderRequestSchema),
     createOrderHandler,
     validateDbResult(OrderResponseSchema),

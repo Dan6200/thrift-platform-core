@@ -57,9 +57,7 @@ export const buildOrderItems = (
     )
   }
 
-  let totalAmount = 0
-  const built: OrderItem[] = []
-
+  const merged = new Map<number, number>()
   for (const item of items) {
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
       return err(
@@ -69,33 +67,35 @@ export const buildOrderItems = (
         ),
       )
     }
+    merged.set(
+      item.variantId,
+      (merged.get(item.variantId) ?? 0) + item.quantity,
+    )
+  }
 
-    const price = priceOf(item.variantId)
+  let totalAmount = 0
+  const built: OrderItem[] = []
+
+  for (const [variantId, quantity] of merged) {
+    const price = priceOf(variantId)
     if (price === undefined) {
       return err(
-        domainError(
-          'INVALID_INPUT',
-          `Variant ${item.variantId} does not exist.`,
-        ),
+        domainError('INVALID_INPUT', `Variant ${variantId} does not exist.`),
       )
     }
 
-    const stock = stockOf(item.variantId)
-    if (stock < item.quantity) {
+    const stock = stockOf(variantId)
+    if (stock < quantity) {
       return err(
         domainError(
           'INVALID_INPUT',
-          `Not enough stock for variant ${item.variantId}.`,
+          `Not enough stock for variant ${variantId}.`,
         ),
       )
     }
 
-    built.push({
-      variantId: item.variantId,
-      quantity: item.quantity,
-      priceAtPurchase: price,
-    })
-    totalAmount += price * item.quantity
+    built.push({ variantId, quantity, priceAtPurchase: price })
+    totalAmount += price * quantity
   }
 
   return ok({ items: built, totalAmount })

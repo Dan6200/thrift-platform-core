@@ -22,7 +22,7 @@ export const getOrderUseCase =
         const hasAccess = await repository.hasStoreAccess(
           command.userId,
           command.storeId,
-          ['admin', 'editor'],
+          ['admin', 'editor', 'viewer'],
         )
         if (!hasAccess) {
           return err(

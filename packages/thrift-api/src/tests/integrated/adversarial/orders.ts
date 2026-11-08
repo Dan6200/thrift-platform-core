@@ -8,6 +8,7 @@ import {
   uniqueUser,
   seedUser,
   seedVendorCatalog,
+  seedProduct,
 } from './helpers.js'
 import { userFactory, vendorFactory } from '../factories/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
@@ -26,17 +27,31 @@ export default function () {
     let catalog2: Awaited<ReturnType<typeof seedVendorCatalog>>
     let customer: { id: string; token: string }
     let secondCustomer: { id: string; token: string }
+    let viewer: { id: string; token: string }
 
     before(async () => {
       catalog = await seedVendorCatalog()
       catalog2 = await seedVendorCatalog()
       customer = await seedUser(uniqueUser(aisha.userInfo))
       secondCustomer = await seedUser(uniqueUser(ebuka.userInfo))
+      viewer = await seedUser(
+        uniqueUser(userFactory({ isVendor: true }).userInfo),
+      )
+      const staff = await request(
+        'post',
+        `/v1/stores/${catalog.storeId}/staff`,
+        {
+          token: catalog.vendor.token,
+          body: { staff_id: viewer.id, role: 'viewer' },
+        },
+      )
+      staff.should.have.status(CREATED)
     })
 
     after(async () => {
       await deleteUserForTesting(customer.id)
       await deleteUserForTesting(secondCustomer.id)
+      await deleteUserForTesting(viewer.id)
       await deleteUserForTesting(catalog.vendor.id)
       await deleteUserForTesting(catalog2.vendor.id)
     })
@@ -168,6 +183,72 @@ export default function () {
           },
         })
         expectRejected(res, [BAD_REQUEST], 'cross-store variant')
+      })
+    })
+
+    describe('duplicate line handling', () => {
+      it('merges duplicate variant lines and deducts stock once', async () => {
+        const res = await request('post', '/v1/orders', {
+          token: customer.token,
+          query: { store_id: catalog2.storeId },
+          body: {
+            items: [
+              { variant_id: catalog2.variantId, quantity: 2 },
+              { variant_id: catalog2.variantId, quantity: 3 },
+            ],
+          },
+        })
+        res.should.have.status(CREATED)
+        chai.expect(res.body.items.length).to.equal(1)
+        chai.expect(res.body.items[0].quantity).to.equal(5)
+      })
+    })
+
+    describe('authorization', () => {
+      it('rejects order creation by a vendor (customer-only)', async () => {
+        const res = await request('post', '/v1/orders', {
+          token: catalog.vendor.token,
+          query: { store_id: catalog.storeId },
+          body: { items: [{ variant_id: catalog.variantId, quantity: 1 }] },
+        })
+        expectRejected(res, [FORBIDDEN], 'vendor create order')
+      })
+
+      it('allows a viewer staff member to list store orders', async () => {
+        const res = await request('get', '/v1/orders', {
+          token: viewer.token,
+          query: { store_id: catalog.storeId },
+        })
+        res.should.have.status(OK)
+      })
+    })
+
+    describe('reviewable items', () => {
+      it('does not treat items from a cancelled order as reviewable', async () => {
+        const fresh = await seedProduct(catalog.vendor.token, catalog.storeId)
+        const freshVariant = fresh.variants[0]
+
+        const created = await request('post', '/v1/orders', {
+          token: customer.token,
+          query: { store_id: catalog.storeId },
+          body: {
+            items: [{ variant_id: freshVariant.variant_id, quantity: 1 }],
+          },
+        })
+        created.should.have.status(CREATED)
+
+        const cancelled = await request(
+          'post',
+          `/v1/orders/${created.body.order_id}/cancel`,
+          { token: customer.token },
+        )
+        cancelled.should.have.status(OK)
+
+        const res = await request('get', '/v1/orders/reviewable-item', {
+          token: customer.token,
+          query: { product_id: String(fresh.product_id) },
+        })
+        res.should.have.status(NOT_FOUND)
       })
     })
 

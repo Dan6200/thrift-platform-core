@@ -345,6 +345,8 @@ export const createOrder = (draft, priceOf, stockOf): Result<Order, DomainError>
 `buildOrderItems` is the single source of the order invariants (≥1 item,
 positive integer quantity, variant exists, sufficient stock, price snapshot)
 and is reused by **creation and amendment**, so the two paths cannot drift.
+Duplicate variant lines are merged (quantities summed) before the stock check,
+so stock is deducted once.
 
 State transitions are guarded in the use cases:
 

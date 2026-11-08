@@ -91,5 +91,35 @@ export default () => {
       )
       r.kind.should.equal('ok')
     })
+
+    it('merges duplicate variant lines and sums their quantities', () => {
+      const r = buildOrderItems(
+        [
+          { variantId: 1, quantity: 2 },
+          { variantId: 1, quantity: 3 },
+        ],
+        priceOf,
+        stockOf,
+      )
+      r.kind.should.equal('ok')
+      if (r.kind === 'ok') {
+        r.value.items.length.should.equal(1)
+        r.value.items[0].quantity.should.equal(5)
+        r.value.totalAmount.should.equal(1000 * 5)
+      }
+    })
+
+    it('validates stock against the merged quantity', () => {
+      const r = buildOrderItems(
+        [
+          { variantId: 2, quantity: 3 },
+          { variantId: 2, quantity: 3 },
+        ],
+        priceOf,
+        stockOf,
+      )
+      r.kind.should.equal('err')
+      if (r.kind === 'err') r.error.code.should.equal('INVALID_INPUT')
+    })
   })
 }
