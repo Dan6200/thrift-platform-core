@@ -362,6 +362,13 @@ order's own held quantity**, then the adapter reconciles inventory (restore old
 `+qty`, deduct new `-qty`) in the same transaction. Cancellation restores the
 held stock.
 
+Stock is authoritative **inside the order transaction**: `create` and
+`amendOrder` lock the affected `product_variants` rows (`SELECT … FOR UPDATE`
+in variant-id order, so multi-variant orders cannot deadlock), re-read the
+`inventory` ledger sum, and only then write the sale rows. A racing order waits
+on the lock, re-checks, and is rejected with `INVALID_INPUT` if the unit is
+gone — concurrent orders cannot drive available stock below zero.
+
 ---
 
 ## 7. Deep dive: the repository adapter

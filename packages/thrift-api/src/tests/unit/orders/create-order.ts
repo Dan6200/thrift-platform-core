@@ -6,10 +6,7 @@ import {
   AvailableStock,
 } from '#src/context/orders/domain/order.js'
 import { createOrderUseCase } from '#src/context/orders/application/create-order.js'
-import {
-  OrderRepository,
-  PersistedOrder,
-} from '#src/context/orders/ports/order-repository.js'
+import { OrderRepository } from '#src/context/orders/ports/order-repository.js'
 
 chai.should()
 
@@ -39,23 +36,26 @@ const fakeRepository: OrderRepository = {
   async getVariantStoreIds() {
     return new Map([[1, 1]])
   },
-  async create({ order }): Promise<PersistedOrder> {
+  async create({ order }) {
     return {
-      order_id: 1,
-      customer_id: order.customerId,
-      store_id: order.storeId,
-      delivery_info_id: order.deliveryInfoId ?? null,
-      order_date: '2026-01-01T00:00:00.000Z',
-      total_amount: order.totalAmount,
-      status: order.status,
-      created_at: '2026-01-01T00:00:00.000Z',
-      updated_at: '2026-01-01T00:00:00.000Z',
-      items: order.items.map((item, index) => ({
-        order_item_id: index + 1,
-        variant_id: item.variantId,
-        quantity: item.quantity,
-        price_at_purchase: item.priceAtPurchase,
-      })),
+      kind: 'created' as const,
+      order: {
+        order_id: 1,
+        customer_id: order.customerId,
+        store_id: order.storeId,
+        delivery_info_id: order.deliveryInfoId ?? null,
+        order_date: '2026-01-01T00:00:00.000Z',
+        total_amount: order.totalAmount,
+        status: order.status,
+        created_at: '2026-01-01T00:00:00.000Z',
+        updated_at: '2026-01-01T00:00:00.000Z',
+        items: order.items.map((item, index) => ({
+          order_item_id: index + 1,
+          variant_id: item.variantId,
+          quantity: item.quantity,
+          price_at_purchase: item.priceAtPurchase,
+        })),
+      },
     }
   },
   async getProfile() {
@@ -186,6 +186,22 @@ export default () => {
         result.error.code.should.equal('INVALID_INPUT')
       }
       created.should.equal(false)
+    })
+
+    it('returns INVALID_INPUT when the repository reports insufficient stock at commit time', async () => {
+      const repository: OrderRepository = {
+        ...fakeRepository,
+        create: async () => ({ kind: 'insufficient_stock', variantId: 1 }),
+      }
+      const result = await createOrderUseCase(repository)({
+        customerId: 'c1',
+        storeId: 1,
+        items: [{ variantId: 1, quantity: 1 }],
+      })
+      result.kind.should.equal('err')
+      if (result.kind === 'err') {
+        result.error.code.should.equal('INVALID_INPUT')
+      }
     })
   })
 }

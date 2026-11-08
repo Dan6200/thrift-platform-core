@@ -135,7 +135,8 @@ deliveryInfoId?, items: { variantId, quantity }[] }`. `repo.storeExists` →
   `NOT_FOUND`; `repo.deliveryInfoBelongsTo` → `INVALID_INPUT`; every variant must
   belong to `storeId` (`repo.getVariantStoreIds` → `INVALID_INPUT` on mismatch);
   then `createOrder` with prices/stock from `repo.getVariantPrices` /
-  `repo.getAvailableStock`; then `repo.create`.
+  `repo.getAvailableStock`; then `repo.create`, whose in-transaction re-check
+  may return `{ kind: 'insufficient_stock', variantId }` → `INVALID_INPUT`.
 - `createReviewUseCase(repo)(command)` — `command = { orderItemId, customerId,
 rating, customerRemark? }`. `repo.getOrderItemOwner(orderItemId)` →
   `NOT_FOUND` / `UNAUTHORIZED`; `repo.getById(orderItemId)` (existing) →
@@ -160,7 +161,8 @@ items: { variantId, quantity }[] }`. `repo.getOrderForMutation(orderId,
 customerId)` → `NOT_FOUND`; `status !== 'pending'` → `CONFLICT`; then
     `buildOrderItems` with **effective stock = available + this order's held
     quantity** (so a customer isn't blocked by their own reservation); then
-    `repo.amendOrder`.
+    `repo.amendOrder`, whose in-transaction re-check may return
+    `{ kind: 'insufficient_stock', variantId }` → `INVALID_INPUT`.
   - `cancelOrderUseCase(repo)(command)` — `command = { customerId, orderId }`.
     `getOrderForMutation` → `NOT_FOUND`; `status !== 'pending'` → `CONFLICT`;
     then `repo.cancelOrder`.
@@ -228,6 +230,9 @@ A blind agent adding integration coverage should:
   legitimately flexible (see `adversarial/helpers.ts` `expectRejected`).
 - Verify **money is integer kobo** and **arithmetic** (`total_amount`,
   `total_price`) exactly.
+- Exercise **races** against the real database (e.g. two concurrent orders for
+  the last unit) and verify the side effect: exactly one succeeds and the
+  inventory ledger sum ends at `0`, never negative.
 - Not re-seed data that the main fixtures already create — prefer self-contained
   seeding (see `adversarial/helpers.ts`).
 
@@ -252,18 +257,18 @@ A blind agent adding integration coverage should:
 
 ## 6. Current coverage & gaps
 
-The last full run (Node 22) had **434 tests, all passing**, across 151 suites in
-about 4m15s:
+The last full run (Node 20) had **445 tests, all passing**, across 156 suites in
+about 6m21s:
 
 | Group                  | Tests |
 | ---------------------- | ----- |
-| Unit                   | 150   |
-| Integrated             | 284   |
-| — of which adversarial | 101   |
-| **Total**              | 434   |
+| Unit                   | 155   |
+| Integrated             | 290   |
+| — of which adversarial | 107   |
+| **Total**              | 445   |
 
-Unit by area: catalog 44, shared 29, orders 28, payments 17, cart 16, reviews 10,
-media 6. Integrated by area: adversarial 101, reviews 30, store staff 24,
+Unit by area: catalog 44, shared 29, orders 33, payments 17, cart 16, reviews 10,
+media 6. Integrated by area: adversarial 107, reviews 30, store staff 24,
 delivery info 21, media 21, cart 18, orders 18, stores 13, analytics 11,
 profiles 8, products 7, payments 12 (2 callback + 10 module-scope tests in
 `integrated/payments/index.ts`).
@@ -273,7 +278,8 @@ The unit suite (`src/tests/unit/`) now covers:
 - **Shared**: `result`, `money`, `domain-error`, `to-http-error`.
 - **Catalog**: `createProduct`, `createVariant`, `validateVariantUpdate`,
   `handleSortQuery`, and the create/update-variant use cases.
-- **Orders**: `createOrder`, `buildOrderItems`, edge cases, amend, and cancel.
+- **Orders**: `createOrder`, `buildOrderItems`, edge cases, amend, cancel, and
+  the adapters' commit-time `insufficient_stock` mapping.
 - **Cart**: `validateQuantity` plus the add/update/remove use cases.
 - **Reviews**: create/update/delete use cases (ownership + duplicate).
 - **Payments**: callback, webhook, and process-order job use cases against fake

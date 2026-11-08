@@ -24,6 +24,10 @@ export type CreateOrderInput = {
   order: Order
 }
 
+export type CreateOrderOutcome =
+  | { kind: 'created'; order: PersistedOrder }
+  | { kind: 'insufficient_stock'; variantId: number }
+
 export type OrderFilter = {
   customer_id?: string
   store_id?: number
@@ -48,6 +52,10 @@ export type AmendOrderInput = {
   totalAmount: number
 }
 
+export type AmendOrderOutcome =
+  | { kind: 'amended'; order: PersistedOrder }
+  | { kind: 'insufficient_stock'; variantId: number }
+
 export type OrderRepository = {
   storeExists(storeId: number): Promise<boolean>
   deliveryInfoBelongsTo(
@@ -57,7 +65,7 @@ export type OrderRepository = {
   getVariantPrices(variantIds: number[]): Promise<Map<number, number>>
   getAvailableStock(variantIds: number[]): Promise<Map<number, number>>
   getVariantStoreIds(variantIds: number[]): Promise<Map<number, number>>
-  create(input: CreateOrderInput): Promise<PersistedOrder>
+  create(input: CreateOrderInput): Promise<CreateOrderOutcome>
   getProfile(userId: string): Promise<{ is_vendor: boolean } | null>
   hasStoreAccess(
     userId: string,
@@ -71,6 +79,6 @@ export type OrderRepository = {
     orderId: number,
     customerId: string,
   ): Promise<OrderForMutation | null>
-  amendOrder(input: AmendOrderInput): Promise<PersistedOrder | null>
+  amendOrder(input: AmendOrderInput): Promise<AmendOrderOutcome | null>
   cancelOrder(orderId: number): Promise<PersistedOrder | null>
 }

@@ -63,6 +63,16 @@ export const createOrderUseCase =
       return orderResult
     }
 
-    const persisted = await repository.create({ order: orderResult.value })
-    return ok(persisted)
+    const outcome = await repository.create({ order: orderResult.value })
+
+    if (outcome.kind === 'insufficient_stock') {
+      return err(
+        domainError(
+          'INVALID_INPUT',
+          `Not enough stock for variant ${outcome.variantId}.`,
+        ),
+      )
+    }
+
+    return ok(outcome.order)
   }

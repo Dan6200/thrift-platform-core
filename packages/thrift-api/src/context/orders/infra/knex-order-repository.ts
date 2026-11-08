@@ -1,10 +1,50 @@
 import { knex } from '#src/db/index.js'
+import { Knex } from 'knex'
 import {
   OrderRepository,
   OrderFilter,
   OrderByIdFilter,
   PersistedOrder,
 } from '../ports/order-repository.js'
+
+class InsufficientStockError extends Error {
+  constructor(readonly variantId: number) {
+    super(`Not enough stock for variant ${variantId}.`)
+  }
+}
+
+const sortedUnique = (ids: number[]): number[] =>
+  [...new Set(ids)].sort((a, b) => a - b)
+
+/**
+ * Serialise concurrent orders that touch the same variants by locking the
+ * variant rows in a deterministic order. The lock is taken before stock is
+ * re-read, so a racing transaction waits and then observes the committed sale.
+ */
+const lockVariants = async (
+  trx: Knex.Transaction,
+  variantIds: number[],
+): Promise<void> => {
+  if (!variantIds.length) return
+  await trx('product_variants')
+    .whereIn('variant_id', variantIds)
+    .orderBy('variant_id')
+    .forUpdate()
+    .select('variant_id')
+}
+
+const stockInTransaction = async (
+  trx: Knex.Transaction,
+  variantIds: number[],
+): Promise<Map<number, number>> => {
+  if (!variantIds.length) return new Map()
+  const rows = await trx('inventory')
+    .whereIn('variant_id', variantIds)
+    .select('variant_id')
+    .sum({ available: 'quantity_change' })
+    .groupBy('variant_id')
+  return new Map(rows.map((row) => [row.variant_id, Number(row.available)]))
+}
 
 const assembleOrderItems = async (orderIds: number[]) => {
   if (!orderIds.length) return new Map<number, unknown[]>()
@@ -66,47 +106,69 @@ export const knexOrderRepository: OrderRepository = {
   },
 
   async create({ order }) {
-    const created = await knex.transaction(async (trx) => {
-      const [orderRow] = await trx('orders')
-        .insert({
-          customer_id: order.customerId,
-          store_id: order.storeId,
-          delivery_info_id: order.deliveryInfoId ?? null,
-          total_amount: order.totalAmount,
-          status: order.status,
-        })
-        .returning('*')
+    try {
+      const created = await knex.transaction(async (trx) => {
+        const variantIds = sortedUnique(
+          order.items.map((item) => item.variantId),
+        )
+        await lockVariants(trx, variantIds)
 
-      const persistedItems = []
-      for (const item of order.items) {
-        const [orderItem] = await trx('order_items')
+        const stock = await stockInTransaction(trx, variantIds)
+        for (const item of order.items) {
+          if ((stock.get(item.variantId) ?? 0) < item.quantity) {
+            throw new InsufficientStockError(item.variantId)
+          }
+        }
+
+        const [orderRow] = await trx('orders')
           .insert({
-            order_id: orderRow.order_id,
-            variant_id: item.variantId,
-            quantity: item.quantity,
-            price_at_purchase: item.priceAtPurchase,
+            customer_id: order.customerId,
+            store_id: order.storeId,
+            delivery_info_id: order.deliveryInfoId ?? null,
+            total_amount: order.totalAmount,
+            status: order.status,
           })
           .returning('*')
 
-        persistedItems.push({
-          order_item_id: orderItem.order_item_id,
-          variant_id: orderItem.variant_id,
-          quantity: orderItem.quantity,
-          price_at_purchase: orderItem.price_at_purchase,
-        })
+        const persistedItems = []
+        for (const item of order.items) {
+          const [orderItem] = await trx('order_items')
+            .insert({
+              order_id: orderRow.order_id,
+              variant_id: item.variantId,
+              quantity: item.quantity,
+              price_at_purchase: item.priceAtPurchase,
+            })
+            .returning('*')
 
-        await trx('inventory').insert({
-          variant_id: item.variantId,
-          quantity_change: -item.quantity,
-          reason: 'sale',
-          notes: `Order ${orderRow.order_id}`,
-        })
+          persistedItems.push({
+            order_item_id: orderItem.order_item_id,
+            variant_id: orderItem.variant_id,
+            quantity: orderItem.quantity,
+            price_at_purchase: orderItem.price_at_purchase,
+          })
+
+          await trx('inventory').insert({
+            variant_id: item.variantId,
+            quantity_change: -item.quantity,
+            reason: 'sale',
+            notes: `Order ${orderRow.order_id}`,
+          })
+        }
+
+        return { ...orderRow, items: persistedItems }
+      })
+
+      return { kind: 'created' as const, order: created as PersistedOrder }
+    } catch (error) {
+      if (error instanceof InsufficientStockError) {
+        return {
+          kind: 'insufficient_stock' as const,
+          variantId: error.variantId,
+        }
       }
-
-      return { ...orderRow, items: persistedItems }
-    })
-
-    return created as PersistedOrder
+      throw error
+    }
   },
 
   async getProfile(userId) {
@@ -174,57 +236,96 @@ export const knexOrderRepository: OrderRepository = {
   },
 
   async amendOrder({ orderId, items, totalAmount }) {
-    return knex.transaction(async (trx) => {
-      const [orderRow] = await trx('orders')
-        .where({ order_id: orderId, status: 'pending' })
-        .update({ total_amount: totalAmount, updated_at: knex.fn.now() })
-        .returning('*')
-
-      if (!orderRow) return null
-
-      const oldItems = await trx('order_items')
-        .where({ order_id: orderId })
-        .select('variant_id', 'quantity')
-
-      for (const item of oldItems) {
-        await trx('inventory').insert({
-          variant_id: item.variant_id,
-          quantity_change: item.quantity,
-          reason: 'order_amended',
-          notes: `Order ${orderId}`,
-        })
-      }
-
-      await trx('order_items').where({ order_id: orderId }).del()
-
-      const newItems = []
-      for (const item of items) {
-        const [row] = await trx('order_items')
-          .insert({
-            order_id: orderId,
-            variant_id: item.variantId,
-            quantity: item.quantity,
-            price_at_purchase: item.priceAtPurchase,
-          })
+    try {
+      const amended = await knex.transaction(async (trx) => {
+        const [orderRow] = await trx('orders')
+          .where({ order_id: orderId, status: 'pending' })
+          .update({ total_amount: totalAmount, updated_at: knex.fn.now() })
           .returning('*')
 
-        newItems.push({
-          order_item_id: row.order_item_id,
-          variant_id: row.variant_id,
-          quantity: row.quantity,
-          price_at_purchase: row.price_at_purchase,
-        })
+        if (!orderRow) return null
 
-        await trx('inventory').insert({
-          variant_id: item.variantId,
-          quantity_change: -item.quantity,
-          reason: 'sale',
-          notes: `Order ${orderId} (amended)`,
-        })
+        const oldItems = await trx('order_items')
+          .where({ order_id: orderId })
+          .select('variant_id', 'quantity')
+
+        const held = new Map<number, number>()
+        for (const item of oldItems) {
+          held.set(
+            item.variant_id,
+            (held.get(item.variant_id) ?? 0) + item.quantity,
+          )
+        }
+
+        await lockVariants(
+          trx,
+          sortedUnique([
+            ...oldItems.map((item) => item.variant_id),
+            ...items.map((item) => item.variantId),
+          ]),
+        )
+
+        const newVariantIds = sortedUnique(items.map((item) => item.variantId))
+        const stock = await stockInTransaction(trx, newVariantIds)
+        for (const item of items) {
+          const effective =
+            (stock.get(item.variantId) ?? 0) + (held.get(item.variantId) ?? 0)
+          if (effective < item.quantity) {
+            throw new InsufficientStockError(item.variantId)
+          }
+        }
+
+        for (const item of oldItems) {
+          await trx('inventory').insert({
+            variant_id: item.variant_id,
+            quantity_change: item.quantity,
+            reason: 'order_amended',
+            notes: `Order ${orderId}`,
+          })
+        }
+
+        await trx('order_items').where({ order_id: orderId }).del()
+
+        const newItems = []
+        for (const item of items) {
+          const [row] = await trx('order_items')
+            .insert({
+              order_id: orderId,
+              variant_id: item.variantId,
+              quantity: item.quantity,
+              price_at_purchase: item.priceAtPurchase,
+            })
+            .returning('*')
+
+          newItems.push({
+            order_item_id: row.order_item_id,
+            variant_id: row.variant_id,
+            quantity: row.quantity,
+            price_at_purchase: row.price_at_purchase,
+          })
+
+          await trx('inventory').insert({
+            variant_id: item.variantId,
+            quantity_change: -item.quantity,
+            reason: 'sale',
+            notes: `Order ${orderId} (amended)`,
+          })
+        }
+
+        return { ...orderRow, items: newItems }
+      })
+
+      if (!amended) return null
+      return { kind: 'amended' as const, order: amended as PersistedOrder }
+    } catch (error) {
+      if (error instanceof InsufficientStockError) {
+        return {
+          kind: 'insufficient_stock' as const,
+          variantId: error.variantId,
+        }
       }
-
-      return { ...orderRow, items: newItems }
-    })
+      throw error
+    }
   },
 
   async cancelOrder(orderId) {

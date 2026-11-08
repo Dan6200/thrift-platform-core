@@ -1,5 +1,6 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
+import { randomUUID } from 'node:crypto'
 import { StatusCodes } from 'http-status-codes'
 import {
   request,
@@ -249,6 +250,46 @@ export default function () {
           query: { product_id: String(fresh.product_id) },
         })
         res.should.have.status(NOT_FOUND)
+      })
+    })
+
+    describe('oversell race', () => {
+      it('allows exactly one of two concurrent orders for the last unit', async () => {
+        const lastUnit = await seedProduct(
+          catalog.vendor.token,
+          catalog.storeId,
+          {
+            variants: [
+              {
+                sku: `ADV-${randomUUID().slice(0, 8)}`,
+                base_price: 1000,
+                quantity_available: 1,
+                options: [{ option_name: 'COLOR', value: 'BLACK' }],
+              },
+            ],
+          },
+        )
+        const variantId = lastUnit.variants[0].variant_id
+
+        const place = (token: string) =>
+          request('post', '/v1/orders', {
+            token,
+            query: { store_id: catalog.storeId },
+            body: { items: [{ variant_id: variantId, quantity: 1 }] },
+          })
+
+        const [first, second] = await Promise.all([
+          place(customer.token),
+          place(secondCustomer.token),
+        ])
+
+        const created = [first, second].filter((r) => r.status === CREATED)
+        created.length.should.equal(1)
+
+        const [stock] = await knex('inventory')
+          .where({ variant_id: variantId })
+          .sum({ available: 'quantity_change' })
+        Number(stock.available).should.equal(0)
       })
     })
 

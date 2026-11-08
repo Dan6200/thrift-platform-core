@@ -38,7 +38,7 @@ export default () => {
         getOrderForMutation: async () => null,
         amendOrder: async () => {
           amendCalled = true
-          return persistedOrder
+          return { kind: 'amended' as const, order: persistedOrder }
         },
       })
       const result = await amendOrderUseCase(repo)({
@@ -60,7 +60,7 @@ export default () => {
         }),
         amendOrder: async () => {
           amendCalled = true
-          return persistedOrder
+          return { kind: 'amended' as const, order: persistedOrder }
         },
       })
       const result = await amendOrderUseCase(repo)({
@@ -81,7 +81,7 @@ export default () => {
         getAvailableStock: async () => new Map([[1, 10]]),
         amendOrder: async () => {
           amendCalled = true
-          return persistedOrder
+          return { kind: 'amended' as const, order: persistedOrder }
         },
       })
       const result = await amendOrderUseCase(repo)({
@@ -102,7 +102,7 @@ export default () => {
         getAvailableStock: async () => new Map([[1, 2]]),
         amendOrder: async (input) => {
           amended = input
-          return persistedOrder
+          return { kind: 'amended' as const, order: persistedOrder }
         },
       })
       const result = await amendOrderUseCase(repo)({
@@ -121,7 +121,10 @@ export default () => {
         getOrderForMutation: async () => pendingOrder,
         getVariantPrices: async () => new Map([[1, 1000]]),
         getAvailableStock: async () => new Map([[1, 2]]),
-        amendOrder: async () => persistedOrder,
+        amendOrder: async () => ({
+          kind: 'amended' as const,
+          order: persistedOrder,
+        }),
       })
       const allowed = await amendOrderUseCase(repo)({
         customerId: 'c1',
@@ -138,6 +141,22 @@ export default () => {
       tooMany.kind.should.equal('err')
       if (tooMany.kind === 'err')
         tooMany.error.code.should.equal('INVALID_INPUT')
+    })
+
+    it('returns INVALID_INPUT when the repository detects insufficient stock at commit time', async () => {
+      const repo = makeOrderRepo({
+        getOrderForMutation: async () => pendingOrder,
+        getVariantPrices: async () => new Map([[1, 1000]]),
+        getAvailableStock: async () => new Map([[1, 10]]),
+        amendOrder: async () => ({ kind: 'insufficient_stock', variantId: 1 }),
+      })
+      const result = await amendOrderUseCase(repo)({
+        customerId: 'c1',
+        orderId: 1,
+        items: [{ variantId: 1, quantity: 1 }],
+      })
+      result.kind.should.equal('err')
+      if (result.kind === 'err') result.error.code.should.equal('INVALID_INPUT')
     })
   })
 }

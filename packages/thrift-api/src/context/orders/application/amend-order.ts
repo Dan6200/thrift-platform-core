@@ -57,17 +57,26 @@ export const amendOrderUseCase =
       return built
     }
 
-    const persisted = await repository.amendOrder({
+    const outcome = await repository.amendOrder({
       orderId: command.orderId,
       items: built.value.items,
       totalAmount: built.value.totalAmount,
     })
 
-    if (!persisted) {
+    if (!outcome) {
       return err(
         domainError('CONFLICT', 'Order changed and can no longer be amended.'),
       )
     }
 
-    return ok(persisted)
+    if (outcome.kind === 'insufficient_stock') {
+      return err(
+        domainError(
+          'INVALID_INPUT',
+          `Not enough stock for variant ${outcome.variantId}.`,
+        ),
+      )
+    }
+
+    return ok(outcome.order)
   }
