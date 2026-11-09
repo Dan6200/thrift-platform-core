@@ -51,7 +51,7 @@ export const cartItemResponseSchema = Joi.object({
 const cartItemSchema = Joi.object({
   product_title: Joi.string().required(),
   price: Joi.number().min(0).required(),
-  // DAM filepath (e.g. `sellit-media/products/x.jpg`), not necessarily a URI.
+  // Media delivery URL derived from the stored filename (nullable).
   image_url: Joi.string().allow(null),
   store_id: Joi.number().integer().positive().required(),
   sku: Joi.string().required(),

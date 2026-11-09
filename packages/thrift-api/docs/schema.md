@@ -222,7 +222,6 @@ erDiagram
 "public.media" {
   integer media_id
   varchar filename
-  varchar filepath
   varchar_50_ filetype
   text description
   uuid uploader_id FK

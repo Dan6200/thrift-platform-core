@@ -1,5 +1,6 @@
 import { knex } from '#src/db/index.js'
 import { stockForVariant } from '#src/db/inventory.js'
+import { cloudinaryMediaUrl } from '#src/context/media/infra/cloudinary-url.js'
 import { CartRepository } from '../ports/cart-repository.js'
 
 export const knexCartRepository: CartRepository = {
@@ -41,11 +42,21 @@ export const knexCartRepository: CartRepository = {
         'p.store_id',
         'pv.sku',
         'epe.effective_price as price',
-        'm.filepath as image_url',
+        'm.filename as image_filename',
+        'm.filetype as image_filetype',
       )
 
-    const total_items = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-    const total_price = cartItems.reduce(
+    const items = cartItems.map(
+      ({ image_filename, image_filetype, ...item }) => ({
+        ...item,
+        image_url: image_filename
+          ? cloudinaryMediaUrl.url(image_filename, image_filetype)
+          : null,
+      }),
+    )
+
+    const total_items = items.reduce((sum, item) => sum + item.quantity, 0)
+    const total_price = items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0,
     )
@@ -53,7 +64,7 @@ export const knexCartRepository: CartRepository = {
     return {
       cart_id: cart.cart_id,
       customer_id: cart.customer_id,
-      items: cartItems,
+      items,
       created_at: cart.created_at,
       updated_at: cart.updated_at,
       total_items,

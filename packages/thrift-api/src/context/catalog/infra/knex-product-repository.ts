@@ -1,5 +1,6 @@
 import { knex } from '#src/db/index.js'
 import { stockForVariant } from '#src/db/inventory.js'
+import { cloudinaryMediaUrl } from '#src/context/media/infra/cloudinary-url.js'
 import NotFoundError from '#src/errors/not-found.js'
 import { handleSortQuery } from './sort.js'
 import {
@@ -7,6 +8,17 @@ import {
   PersistedProduct,
   PersistedVariant,
 } from '../ports/product-repository.js'
+
+const withMediaFilepaths = (row: any): any => {
+  if (!row || !Array.isArray(row.media)) return row
+  return {
+    ...row,
+    media: row.media.map((media: any) => ({
+      ...media,
+      filepath: cloudinaryMediaUrl.url(media.filename, media.filetype),
+    })),
+  }
+}
 
 export const knexProductRepository: ProductRepository = {
   async create({ product, vendorId, storeId }) {
@@ -199,7 +211,14 @@ export const knexProductRepository: ProductRepository = {
     `
 
     const result = await knex.raw(dbQueryString, namedBindings)
-    return result.rows[0]
+    const row = result.rows[0]
+    if (!row) return row
+    return {
+      ...row,
+      products: Array.isArray(row.products)
+        ? row.products.map(withMediaFilepaths)
+        : row.products,
+    }
   },
 
   async getById({ productId, vendorId, storeId }) {
@@ -286,7 +305,7 @@ export const knexProductRepository: ProductRepository = {
       storeId,
       vendorId,
     })
-    return result.rows[0] ?? null
+    return result.rows[0] ? withMediaFilepaths(result.rows[0]) : null
   },
 
   async update({ productId, storeId, vendorId, data }) {

@@ -19,7 +19,6 @@ async function importProducts(filePath: string) {
       mediaToInsert.push({
         product_id: record.product_id,
         filename: record.filename,
-        filepath: record.filepath,
         description: record.description,
         is_display_image:
           record.is_display_image === 'true' || record.is_display_image === 't',

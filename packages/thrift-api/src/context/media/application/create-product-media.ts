@@ -1,8 +1,10 @@
 import { MediaRepository } from '../ports/media-repository.js'
 import { MediaStorage, RawUpload } from '../ports/media-storage.js'
+import { MediaUrl } from '../ports/media-url.js'
+import { withMediaUrl } from './with-media-url.js'
 
 export const createProductMediaUseCase =
-  (storage: MediaStorage, repository: MediaRepository) =>
+  (storage: MediaStorage, mediaUrl: MediaUrl, repository: MediaRepository) =>
   async (input: {
     userId: string
     productId: number
@@ -18,12 +20,11 @@ export const createProductMediaUseCase =
 
     const mediaFiles = storedFiles.map((stored, index) => ({
       filename: stored.filename,
-      filepath: stored.filepath,
       filetype: stored.filetype,
       originalname: input.files[index].originalname,
     }))
 
-    return repository.createProductMedia({
+    const media = await repository.createProductMedia({
       userId: input.userId,
       productId: input.productId,
       files: mediaFiles,
@@ -32,4 +33,5 @@ export const createProductMediaUseCase =
       isThumbnailImage: input.isThumbnailImage,
       filetypes: input.filetypes,
     })
+    return withMediaUrl(media, mediaUrl)
   }

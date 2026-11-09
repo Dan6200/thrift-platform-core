@@ -1,6 +1,7 @@
 import chai from 'chai'
 import { createAvatarUseCase } from '#src/context/media/application/create-avatar.js'
 import { updateAvatarUseCase } from '#src/context/media/application/update-avatar.js'
+import { getAvatarUseCase } from '#src/context/media/application/get-avatar.js'
 import { createProductMediaUseCase } from '#src/context/media/application/create-product-media.js'
 import { updateProductMediaUseCase } from '#src/context/media/application/update-product-media.js'
 import { MediaRepository } from '#src/context/media/ports/media-repository.js'
@@ -19,8 +20,11 @@ const rawFile: RawUpload = {
 
 const stored = {
   filename: 'fake-id',
-  filepath: 'https://fake/fake.jpg',
   filetype: 'image/jpeg',
+}
+
+const mediaUrl = {
+  url: (filename: string) => `https://cdn.test/${filename}`,
 }
 
 const makeStorage = (overrides: Partial<MediaStorage> = {}): MediaStorage => ({
@@ -81,6 +85,7 @@ export default () => {
 
         await createAvatarUseCase(
           storage,
+          mediaUrl,
           repo,
         )({
           userId: 'u1',
@@ -114,6 +119,7 @@ export default () => {
 
         await updateAvatarUseCase(
           storage,
+          mediaUrl,
           repo,
         )({
           userId: 'u1',
@@ -142,6 +148,7 @@ export default () => {
 
         await updateAvatarUseCase(
           storage,
+          mediaUrl,
           repo,
         )({
           userId: 'u1',
@@ -173,6 +180,7 @@ export default () => {
 
         await createProductMediaUseCase(
           storage,
+          mediaUrl,
           repo,
         )({
           userId: 'u1',
@@ -211,6 +219,7 @@ export default () => {
 
         await updateProductMediaUseCase(
           storage,
+          mediaUrl,
           repo,
         )({
           mediaId: 1,
@@ -241,6 +250,7 @@ export default () => {
 
         await updateProductMediaUseCase(
           storage,
+          mediaUrl,
           repo,
         )({
           mediaId: 1,
@@ -250,6 +260,26 @@ export default () => {
         uploadCalled.should.equal(false)
         received.should.not.equal(null)
         chai.expect(received.file).to.equal(undefined)
+      })
+    })
+
+    describe('getAvatarUseCase', () => {
+      it('derives the filepath from the stored filename', async () => {
+        const repo = makeRepo({
+          getAvatar: async () => ({
+            media_id: 1,
+            filename: 'fake-id',
+            filetype: 'image/jpeg',
+            description: null,
+            created_at: '2026-01-01T00:00:00.000Z',
+            updated_at: '2026-01-01T00:00:00.000Z',
+            profile_id: 'u1',
+          }),
+        })
+
+        const result: any = await getAvatarUseCase(mediaUrl, repo)('u1')
+
+        result.filepath.should.equal('https://cdn.test/fake-id')
       })
     })
   })

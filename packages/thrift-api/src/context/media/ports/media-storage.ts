@@ -6,7 +6,6 @@ export type RawUpload = {
 
 export type StoredMedia = {
   filename: string
-  filepath: string
   filetype: string
 }
 

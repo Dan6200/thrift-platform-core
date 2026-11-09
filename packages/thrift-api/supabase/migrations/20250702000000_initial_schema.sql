@@ -279,7 +279,6 @@ create table if not exists app_config (
 create table if not exists media (
   media_id       serial primary key,
   filename       varchar not null unique,
-  filepath       varchar not null,
   filetype       varchar(50) not null,
   description    text,
   uploader_id    uuid not null references profiles(id) on delete cascade,

@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from 'express'
 import { updateProductMediaUseCase } from '../application/update-product-media.js'
 import { knexMediaRepository } from '../infra/knex-media-repository.js'
 import { cloudinaryMediaStorage } from '../infra/cloudinary-storage.js'
+import { cloudinaryMediaUrl } from '../infra/cloudinary-url.js'
 
 const useCase = updateProductMediaUseCase(
   cloudinaryMediaStorage,
+  cloudinaryMediaUrl,
   knexMediaRepository,
 )
 

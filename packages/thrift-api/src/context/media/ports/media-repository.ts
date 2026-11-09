@@ -1,6 +1,5 @@
 export type MediaFile = {
   filename: string
-  filepath: string
   filetype?: string
   originalname?: string
 }

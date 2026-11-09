@@ -3,8 +3,13 @@ import BadRequestError from '#src/errors/bad-request.js'
 import { createAvatarUseCase } from '../application/create-avatar.js'
 import { knexMediaRepository } from '../infra/knex-media-repository.js'
 import { cloudinaryMediaStorage } from '../infra/cloudinary-storage.js'
+import { cloudinaryMediaUrl } from '../infra/cloudinary-url.js'
 
-const useCase = createAvatarUseCase(cloudinaryMediaStorage, knexMediaRepository)
+const useCase = createAvatarUseCase(
+  cloudinaryMediaStorage,
+  cloudinaryMediaUrl,
+  knexMediaRepository,
+)
 
 export const createAvatarHandler = async (
   req: Request,

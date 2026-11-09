@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import { getProductMediaUseCase } from '../application/get-product-media.js'
 import { knexMediaRepository } from '../infra/knex-media-repository.js'
+import { cloudinaryMediaUrl } from '../infra/cloudinary-url.js'
 
-const useCase = getProductMediaUseCase(knexMediaRepository)
+const useCase = getProductMediaUseCase(cloudinaryMediaUrl, knexMediaRepository)
 
 export const getProductMediaHandler = async (
   req: Request,

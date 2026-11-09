@@ -1,4 +1,5 @@
 //cspell:ignore cloudinary
+import chai from 'chai'
 import { ProfileRequestData } from '../../../types/profile/index.js'
 import {
   testCreateAvatar,
@@ -9,6 +10,8 @@ import {
 import { deleteUserForTesting } from '../../helpers/delete-user.js'
 import { createUserForTesting } from '../../helpers/create-user.js'
 import { signInForTesting } from '../../helpers/signin-user.js'
+
+chai.should()
 
 const avatarMediaRoute = '/v1/media/avatar'
 const server: string = process.env.SERVER!
@@ -44,6 +47,13 @@ export default function ({ userInfo }: { userInfo: ProfileRequestData }) {
     withUser(async (token) => {
       await upload(token)
       await testGetAvatar(server, avatarMediaRoute, token)
+    }))
+
+  it('derives the avatar filepath from its filename', () =>
+    withUser(async (token) => {
+      await upload(token)
+      const avatar = await testGetAvatar(server, avatarMediaRoute, token)
+      avatar.filepath.should.equal(`https://test.invalid/${avatar.filename}`)
     }))
 
   it("it should update the user's avatar", () =>

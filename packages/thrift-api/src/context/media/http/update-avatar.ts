@@ -2,8 +2,13 @@ import { NextFunction, Request, Response } from 'express'
 import { updateAvatarUseCase } from '../application/update-avatar.js'
 import { knexMediaRepository } from '../infra/knex-media-repository.js'
 import { cloudinaryMediaStorage } from '../infra/cloudinary-storage.js'
+import { cloudinaryMediaUrl } from '../infra/cloudinary-url.js'
 
-const useCase = updateAvatarUseCase(cloudinaryMediaStorage, knexMediaRepository)
+const useCase = updateAvatarUseCase(
+  cloudinaryMediaStorage,
+  cloudinaryMediaUrl,
+  knexMediaRepository,
+)
 
 export const updateAvatarHandler = async (
   req: Request,

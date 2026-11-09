@@ -8,7 +8,6 @@ export const knexMediaRepository: MediaRepository = {
       .insert({
         uploader_id: userId,
         filename: file.filename,
-        filepath: file.filepath,
         filetype: file.filetype,
         description,
       })
@@ -31,7 +30,6 @@ export const knexMediaRepository: MediaRepository = {
         'profile_media.media_id',
         'filename',
         'filetype',
-        'filepath',
         'description',
         'created_at',
         'updated_at',
@@ -47,7 +45,6 @@ export const knexMediaRepository: MediaRepository = {
     const updateData: Record<string, unknown> = {}
     if (description !== undefined) updateData.description = description
     if (file?.filename !== undefined) updateData.filename = file.filename
-    if (file?.filepath !== undefined) updateData.filepath = file.filepath
     if (file?.filetype !== undefined) updateData.filetype = file.filetype
 
     const [updatedMedia] = await knex('media')
@@ -94,7 +91,6 @@ export const knexMediaRepository: MediaRepository = {
           .insert({
             uploader_id: userId,
             filename: file.filename,
-            filepath: file.filepath,
             description: descriptions[originalname],
             filetype: filetypes[originalname],
           })
@@ -125,7 +121,6 @@ export const knexMediaRepository: MediaRepository = {
     const updateData: Record<string, unknown> = {}
     if (description !== undefined) updateData.description = description
     if (file?.filename !== undefined) updateData.filename = file.filename
-    if (file?.filepath !== undefined) updateData.filepath = file.filepath
     if (filetype !== undefined) updateData.filetype = filetype
 
     const [updatedMedia] = await knex('media')

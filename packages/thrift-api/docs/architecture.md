@@ -89,12 +89,13 @@ Rules:
 | `store-management` | —                                                                                 | `StoreRepository`, `StaffRepository` → knex                                        |
 | `reviews`          | — (ownership/duplicate rules live in the use cases)                               | `ReviewRepository` → knex                                                          |
 | `analytics`        | — (read models only)                                                              | `AnalyticsRepository` → knex/pg                                                    |
-| `media`            | —                                                                                 | `MediaRepository` → knex; `MediaStorage` → Cloudinary                              |
+| `media`            | —                                                                                 | `MediaRepository` → knex; `MediaStorage` → Cloudinary; `MediaUrl` → derived URL    |
 | `payments`         | — (state transitions live in the use cases)                                       | `PaymentRepository` → knex; `PaymentGateway` → Paystack; `EventPublisher` → QStash |
 
-The **external-service ports** (`AuthGateway`, `MediaStorage`, `PaymentGateway`,
-`EventPublisher`) are the seams that keep tests hermetic: a unit test injects a
-plain fake, and only the thin adapter touches the real service.
+The **external-service ports** (`AuthGateway`, `MediaStorage`, `MediaUrl`,
+`PaymentGateway`, `EventPublisher`) are the seams that keep tests hermetic: a
+unit test injects a plain fake, and only the thin adapter touches the real
+service.
 
 ### 2.2 Schema
 
@@ -275,11 +276,14 @@ consistent language independent of the schema/API.
 
 ### 4.10 External-service ports
 
-Four ports wrap services outside the database; the core depends on the port and
+Five ports wrap services outside the database; the core depends on the port and
 the adapter is swappable:
 
 - `identity/ports/auth-gateway.ts` — `AuthGateway.signUp` → Supabase Auth.
 - `media/ports/media-storage.ts` — `MediaStorage.upload(file, folder)` → Cloudinary.
+- `media/ports/media-url.ts` — `MediaUrl.url(filename, filetype)` builds the
+  delivery URL from the stored `public_id` (Cloudinary SDK in prod, a
+  deterministic `test.invalid` URL in tests). The DB stores no URL.
 - `payments/ports/payment-gateway.ts` — `PaymentGateway.initializeTransaction` /
   `verifySignature` / `verifyTransaction` → Paystack.
 - `shared/event.ts` — `EventPublisher.publish(event)` → QStash.

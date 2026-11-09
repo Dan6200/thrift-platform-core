@@ -2008,14 +2008,9 @@ DECLARE
     v_variant_record RECORD;
     v_media_id INT;
     v_filename TEXT;
-    v_filepath TEXT;
     v_options_string TEXT;
     v_desc_string TEXT;
-    v_dam_folder_prefix TEXT;
 BEGIN
-    -- Get the DAM folder prefix from the app_config table
-    SELECT config_value INTO v_dam_folder_prefix FROM public.app_config WHERE config_key = 'dam_folder_prefix';
-
     FOR v_variant_record IN
         SELECT
             pv.variant_id,
@@ -2044,11 +2039,10 @@ BEGIN
         v_desc_string := v_variant_record.title || ' ' || COALESCE(regexp_replace(v_variant_record.options, '_', ' ', 'g'), '');
 
         v_filename := v_filename || v_options_string || '.jpg';
-        v_filepath := v_dam_folder_prefix || 'products/' || v_filename;
 
         -- Insert into media table
-        INSERT INTO public.media (filename, filepath, filetype, description, uploader_id)
-        VALUES (v_filename, v_filepath, 'image/jpeg', v_desc_string, v_variant_record.vendor_id)
+        INSERT INTO public.media (filename, filetype, description, uploader_id)
+        VALUES (v_filename, 'image/jpeg', v_desc_string, v_variant_record.vendor_id)
         ON CONFLICT (filename) DO UPDATE SET updated_at = NOW()
         RETURNING media_id INTO v_media_id;
 
@@ -2166,14 +2160,9 @@ DECLARE
     v_variant_record RECORD;
     v_media_id INT;
     v_filename TEXT;
-    v_filepath TEXT;
     v_options_string TEXT;
     v_desc_string TEXT;
-    v_dam_folder_prefix TEXT;
 BEGIN
-    -- Get the DAM folder prefix from the app_config table
-    SELECT config_value INTO v_dam_folder_prefix FROM public.app_config WHERE config_key = 'dam_folder_prefix';
-
     FOR v_variant_record IN
         SELECT
             pv.variant_id,
@@ -2205,11 +2194,10 @@ BEGIN
         v_desc_string := v_variant_record.title || ' ' || COALESCE(regexp_replace(v_variant_record.options, '_', ' ', 'g'), '');
 
         v_filename := v_filename || v_options_string || '.jpg';
-        v_filepath := v_dam_folder_prefix || 'products/' || v_filename;
 
         -- Insert into media table
-        INSERT INTO public.media (filename, filepath, filetype, description, uploader_id)
-        VALUES (v_filename, v_filepath, 'image/jpeg', v_desc_string, v_variant_record.vendor_id)
+        INSERT INTO public.media (filename, filetype, description, uploader_id)
+        VALUES (v_filename, 'image/jpeg', v_desc_string, v_variant_record.vendor_id)
         ON CONFLICT (filename) DO UPDATE SET updated_at = NOW()
         RETURNING media_id INTO v_media_id;
 
@@ -2262,20 +2250,29 @@ SET base_price = (
 -- Cloudinary uploads (the uploads drop apostrophes and keep hyphens), and fall
 -- back to the product's base image for variant combinations that were never
 -- uploaded. Without this, ProductImage shows the missing-image placeholder.
-UPDATE public.media SET filepath = 'sellit-media/products/Childrens_Story_Book.jpg'
-  WHERE filepath = 'sellit-media/products/Children_s_Story_Book.jpg';
-UPDATE public.media SET filepath = 'sellit-media/products/Antivirus_Software_1-Year.jpg'
-  WHERE filepath = 'sellit-media/products/Antivirus_Software_1_Year.jpg';
-UPDATE public.media SET filepath = 'sellit-media/products/Sci-Fi_Paperback_Novel.jpg'
-  WHERE filepath = 'sellit-media/products/Sci_Fi_Paperback_Novel.jpg';
-UPDATE public.media SET filepath = 'sellit-media/products/Mens_Polo_Shirt.jpg'
-  WHERE filepath = 'sellit-media/products/Men_s_Polo_Shirt_NAVY_XL.jpg';
-UPDATE public.media SET filepath = 'sellit-media/products/Running_Shoes_Mens.jpg'
-  WHERE filepath = 'sellit-media/products/Running_Shoes_Men_s_WHITE_9.jpg';
-UPDATE public.media SET filepath = 'sellit-media/products/Womens_Denim_Jeans.jpg'
-  WHERE filepath = 'sellit-media/products/Women_s_Denim_Jeans_BLACK_28.jpg';
-UPDATE public.media SET filepath = 'sellit-media/products/4K_Smart_TV_55.jpg'
-  WHERE filepath = 'sellit-media/products/4K_Smart_TV_55__4K_UHD_55_.jpg';
+-- `filename` is the Cloudinary public_id and is unique, so skip an update when
+-- the corrected name already exists.
+UPDATE public.media m SET filename = 'Childrens_Story_Book.jpg'
+  WHERE m.filename = 'Children_s_Story_Book.jpg'
+    AND NOT EXISTS (SELECT 1 FROM public.media e WHERE e.filename = 'Childrens_Story_Book.jpg');
+UPDATE public.media m SET filename = 'Antivirus_Software_1-Year.jpg'
+  WHERE m.filename = 'Antivirus_Software_1_Year.jpg'
+    AND NOT EXISTS (SELECT 1 FROM public.media e WHERE e.filename = 'Antivirus_Software_1-Year.jpg');
+UPDATE public.media m SET filename = 'Sci-Fi_Paperback_Novel.jpg'
+  WHERE m.filename = 'Sci_Fi_Paperback_Novel.jpg'
+    AND NOT EXISTS (SELECT 1 FROM public.media e WHERE e.filename = 'Sci-Fi_Paperback_Novel.jpg');
+UPDATE public.media m SET filename = 'Mens_Polo_Shirt.jpg'
+  WHERE m.filename = 'Men_s_Polo_Shirt_NAVY_XL.jpg'
+    AND NOT EXISTS (SELECT 1 FROM public.media e WHERE e.filename = 'Mens_Polo_Shirt.jpg');
+UPDATE public.media m SET filename = 'Running_Shoes_Mens.jpg'
+  WHERE m.filename = 'Running_Shoes_Men_s_WHITE_9.jpg'
+    AND NOT EXISTS (SELECT 1 FROM public.media e WHERE e.filename = 'Running_Shoes_Mens.jpg');
+UPDATE public.media m SET filename = 'Womens_Denim_Jeans.jpg'
+  WHERE m.filename = 'Women_s_Denim_Jeans_BLACK_28.jpg'
+    AND NOT EXISTS (SELECT 1 FROM public.media e WHERE e.filename = 'Womens_Denim_Jeans.jpg');
+UPDATE public.media m SET filename = '4K_Smart_TV_55.jpg'
+  WHERE m.filename = '4K_Smart_TV_55__4K_UHD_55_.jpg'
+    AND NOT EXISTS (SELECT 1 FROM public.media e WHERE e.filename = '4K_Smart_TV_55.jpg');
 
 -- ---------------------------------------------------------------------------
 -- Pricing model (see docs/pricing-model.md)

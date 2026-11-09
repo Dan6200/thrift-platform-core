@@ -3,9 +3,11 @@ import BadRequestError from '#src/errors/bad-request.js'
 import { createProductMediaUseCase } from '../application/create-product-media.js'
 import { knexMediaRepository } from '../infra/knex-media-repository.js'
 import { cloudinaryMediaStorage } from '../infra/cloudinary-storage.js'
+import { cloudinaryMediaUrl } from '../infra/cloudinary-url.js'
 
 const useCase = createProductMediaUseCase(
   cloudinaryMediaStorage,
+  cloudinaryMediaUrl,
   knexMediaRepository,
 )
 

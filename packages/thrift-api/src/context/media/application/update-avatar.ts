@@ -1,22 +1,24 @@
 import { MediaRepository } from '../ports/media-repository.js'
 import { MediaStorage, RawUpload } from '../ports/media-storage.js'
+import { MediaUrl } from '../ports/media-url.js'
+import { withMediaUrl } from './with-media-url.js'
 
 export const updateAvatarUseCase =
-  (storage: MediaStorage, repository: MediaRepository) =>
+  (storage: MediaStorage, mediaUrl: MediaUrl, repository: MediaRepository) =>
   async (input: { userId: string; file?: RawUpload; description?: string }) => {
     let stored
     if (input.file) {
       stored = await storage.upload(input.file, 'avatars')
     }
-    return repository.updateAvatar({
+    const media = await repository.updateAvatar({
       userId: input.userId,
       file: stored
         ? {
             filename: stored.filename,
-            filepath: stored.filepath,
             filetype: stored.filetype,
           }
         : undefined,
       description: input.description,
     })
+    return withMediaUrl(media, mediaUrl)
   }
