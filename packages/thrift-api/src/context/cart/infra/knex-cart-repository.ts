@@ -1,4 +1,5 @@
 import { knex } from '#src/db/index.js'
+import { stockForVariant } from '#src/db/inventory.js'
 import { CartRepository } from '../ports/cart-repository.js'
 
 export const knexCartRepository: CartRepository = {
@@ -61,10 +62,7 @@ export const knexCartRepository: CartRepository = {
   },
 
   async getStock(variantId) {
-    const inventory = await knex('product_variant_inventory')
-      .where({ variant_id: variantId })
-      .first()
-    return Number(inventory?.quantity_available ?? 0)
+    return stockForVariant(variantId)
   },
 
   async getCartId(customerId) {

@@ -1,4 +1,5 @@
 import { knex } from '#src/db/index.js'
+import { stockForVariant } from '#src/db/inventory.js'
 import NotFoundError from '#src/errors/not-found.js'
 import { handleSortQuery } from './sort.js'
 import {
@@ -166,7 +167,13 @@ export const knexProductRepository: ProductRepository = {
                   ) AS option_data
                 ) AS options
               FROM product_variants pv
-              LEFT JOIN product_variant_inventory pvi ON pv.variant_id = pvi.variant_id
+              LEFT JOIN (
+                SELECT
+                  variant_id,
+                  SUM(quantity_change)::int AS quantity_available
+                FROM inventory
+                GROUP BY variant_id
+              ) pvi ON pv.variant_id = pvi.variant_id
               LEFT JOIN product_variant_effective_price epe ON pv.variant_id = epe.variant_id
               WHERE pv.product_id = p.product_id
             ) AS variant_data
@@ -250,7 +257,13 @@ export const knexProductRepository: ProductRepository = {
                 ) AS option_data
               ) AS options
             FROM product_variants pv
-            LEFT JOIN product_variant_inventory pvi ON pv.variant_id = pvi.variant_id
+            LEFT JOIN (
+              SELECT
+                variant_id,
+                SUM(quantity_change)::int AS quantity_available
+              FROM inventory
+              GROUP BY variant_id
+            ) pvi ON pv.variant_id = pvi.variant_id
             LEFT JOIN product_variant_effective_price epe ON pv.variant_id = epe.variant_id
             WHERE pv.product_id = p.product_id
           ) AS variant_data
@@ -368,9 +381,10 @@ export const knexProductRepository: ProductRepository = {
       }))
       await trx('variant_to_option_values').insert(links)
 
-      const { quantity_available } = await trx('product_variant_inventory')
-        .where({ variant_id: createdVariant.variant_id })
-        .first('quantity_available')
+      const quantity_available = await stockForVariant(
+        createdVariant.variant_id,
+        trx,
+      )
 
       return {
         ...createdVariant,
@@ -441,10 +455,7 @@ export const knexProductRepository: ProductRepository = {
         }
         finalQuantity = currentQuantity + quantityChange
       } else {
-        const { quantity_available } = await trx('product_variant_inventory')
-          .where({ variant_id: variantId })
-          .first('quantity_available')
-        finalQuantity = quantity_available
+        finalQuantity = await stockForVariant(variantId, trx)
       }
 
       const options = await trx('variant_to_option_values as vtov')

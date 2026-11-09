@@ -233,6 +233,9 @@ A blind agent adding integration coverage should:
 - Exercise **races** against the real database (e.g. two concurrent orders for
   the last unit) and verify the side effect: exactly one succeeds and the
   inventory ledger sum ends at `0`, never negative.
+- Seed stock at **multiple locations** and assert reads aggregate it: the
+  product lists one variant with the summed quantity, and cart/order accept the
+  combined amount (`src/db/inventory.ts`).
 - Not re-seed data that the main fixtures already create — prefer self-contained
   seeding (see `adversarial/helpers.ts`).
 
@@ -257,18 +260,18 @@ A blind agent adding integration coverage should:
 
 ## 6. Current coverage & gaps
 
-The last full run (Node 20) had **447 tests, all passing**, across 157 suites in
-about 4m:
+The last full run (Node 20) had **450 tests, all passing**, across 160 suites in
+about 3m:
 
 | Group                  | Tests |
 | ---------------------- | ----- |
 | Unit                   | 155   |
-| Integrated             | 292   |
-| — of which adversarial | 109   |
-| **Total**              | 447   |
+| Integrated             | 295   |
+| — of which adversarial | 112   |
+| **Total**              | 450   |
 
 Unit by area: catalog 44, shared 29, orders 33, payments 17, cart 16, reviews 10,
-media 6. Integrated by area: adversarial 109, reviews 30, store staff 24,
+media 6. Integrated by area: adversarial 112, reviews 30, store staff 24,
 delivery info 21, media 21, cart 18, orders 18, stores 13, analytics 11,
 profiles 8, products 7, payments 12 (2 callback + 10 module-scope tests in
 `integrated/payments/index.ts`).

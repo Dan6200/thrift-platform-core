@@ -9,14 +9,16 @@ import {
   seedUser,
   seedStore,
   seedVendorCatalog,
+  seedProduct,
   productPayload,
 } from './helpers.js'
 import { userFactory, vendorFactory } from '../factories/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
+import { knex } from '#src/db/index.js'
 
 chai.use(chaiHttp).should()
 
-const { BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, CONFLICT } =
+const { BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, CONFLICT, OK } =
   StatusCodes
 
 const customerFixture = userFactory({ isCustomer: true })
@@ -360,6 +362,36 @@ export default function () {
         } finally {
           await deleteUserForTesting(catalog.vendor.id)
         }
+      })
+    })
+
+    describe('multi-location stock', () => {
+      it('sums stock across locations and does not duplicate variants', async () => {
+        const product = await seedProduct(vendor.token, storeId, {
+          variants: [
+            {
+              ...productPayload().variants[0],
+              quantity_available: 1,
+            },
+          ],
+        })
+        const [location] = await knex('locations')
+          .insert({ store_id: storeId, location_name: 'Warehouse' })
+          .returning('*')
+        await knex('inventory').insert({
+          variant_id: product.variants[0].variant_id,
+          location_id: location.location_id,
+          quantity_change: 4,
+          reason: 'restock',
+        })
+
+        const res = await request('get', `/v1/products/${product.product_id}`, {
+          query: { storeId },
+        })
+
+        res.should.have.status(OK)
+        res.body.variants.length.should.equal(1)
+        res.body.variants[0].quantity_available.should.equal(5)
       })
     })
   })

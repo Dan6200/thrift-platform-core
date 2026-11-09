@@ -1,5 +1,6 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
+import { randomUUID } from 'node:crypto'
 import { StatusCodes } from 'http-status-codes'
 import {
   request,
@@ -8,9 +9,11 @@ import {
   uniqueUser,
   seedUser,
   seedVendorCatalog,
+  seedProduct,
 } from './helpers.js'
 import { userFactory, vendorFactory } from '../factories/index.js'
 import { deleteUserForTesting } from '../helpers/delete-user.js'
+import { knex } from '#src/db/index.js'
 
 chai.use(chaiHttp).should()
 
@@ -177,6 +180,44 @@ export default function () {
         } finally {
           await deleteUserForTesting(fresh.id)
         }
+      })
+    })
+
+    describe('multi-location stock', () => {
+      it('counts stock held across multiple locations', async () => {
+        const product = await seedProduct(
+          catalog.vendor.token,
+          catalog.storeId,
+          {
+            variants: [
+              {
+                sku: `ADV-${randomUUID().slice(0, 8)}`,
+                base_price: 1000,
+                quantity_available: 1,
+                options: [{ option_name: 'COLOR', value: 'BLACK' }],
+              },
+            ],
+          },
+        )
+        const [location] = await knex('locations')
+          .insert({
+            store_id: catalog.storeId,
+            location_name: `WH-${randomUUID().slice(0, 6)}`,
+          })
+          .returning('*')
+        await knex('inventory').insert({
+          variant_id: product.variants[0].variant_id,
+          location_id: location.location_id,
+          quantity_change: 4,
+          reason: 'restock',
+        })
+
+        const res = await addItem({
+          variant_id: product.variants[0].variant_id,
+          quantity: 5,
+        })
+
+        res.should.have.status(CREATED)
       })
     })
   })

@@ -494,6 +494,10 @@ erDiagram
   integer location_id
   bigint quantity_available
 }
+
+Note: this view is per `(variant_id, location_id)`. Application reads must
+aggregate `SUM(quantity_change)` per variant (`src/db/inventory.ts`), never take
+a single per-location row.
 "public.user_wallet_balance" {
   uuid user_id
   numeric balance_in_cents

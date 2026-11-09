@@ -1,4 +1,5 @@
 import { knex } from '#src/db/index.js'
+import { stockByVariant } from '#src/db/inventory.js'
 import { Knex } from 'knex'
 import {
   OrderRepository,
@@ -31,19 +32,6 @@ const lockVariants = async (
     .orderBy('variant_id')
     .forUpdate()
     .select('variant_id')
-}
-
-const stockInTransaction = async (
-  trx: Knex.Transaction,
-  variantIds: number[],
-): Promise<Map<number, number>> => {
-  if (!variantIds.length) return new Map()
-  const rows = await trx('inventory')
-    .whereIn('variant_id', variantIds)
-    .select('variant_id')
-    .sum({ available: 'quantity_change' })
-    .groupBy('variant_id')
-  return new Map(rows.map((row) => [row.variant_id, Number(row.available)]))
 }
 
 const assembleOrderItems = async (orderIds: number[]) => {
@@ -89,12 +77,7 @@ export const knexOrderRepository: OrderRepository = {
   },
 
   async getAvailableStock(variantIds) {
-    const rows = await knex('product_variant_inventory')
-      .whereIn('variant_id', variantIds)
-      .select('variant_id', 'quantity_available')
-    return new Map(
-      rows.map((row) => [row.variant_id, Number(row.quantity_available)]),
-    )
+    return stockByVariant(variantIds)
   },
 
   async getVariantStoreIds(variantIds) {
@@ -113,7 +96,7 @@ export const knexOrderRepository: OrderRepository = {
         )
         await lockVariants(trx, variantIds)
 
-        const stock = await stockInTransaction(trx, variantIds)
+        const stock = await stockByVariant(variantIds, trx)
         for (const item of order.items) {
           if ((stock.get(item.variantId) ?? 0) < item.quantity) {
             throw new InsufficientStockError(item.variantId)
@@ -266,7 +249,7 @@ export const knexOrderRepository: OrderRepository = {
         )
 
         const newVariantIds = sortedUnique(items.map((item) => item.variantId))
-        const stock = await stockInTransaction(trx, newVariantIds)
+        const stock = await stockByVariant(newVariantIds, trx)
         for (const item of items) {
           const effective =
             (stock.get(item.variantId) ?? 0) + (held.get(item.variantId) ?? 0)

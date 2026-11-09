@@ -393,6 +393,12 @@ inventory row with a reason) inside a transaction that rolls back on error.
 `getAll` / `getById` run the large `JSON_AGG` read queries (moved verbatim from
 the old middleware) and return the aggregated read model.
 
+Stock is never read from the per-location `product_variant_inventory` view
+directly. `src/db/inventory.ts` (`stockByVariant` / `stockForVariant`) sums the
+`inventory` ledger per variant across locations; catalog, cart, and orders all
+use it, and the product read queries join a grouped ledger subquery rather than
+the raw view.
+
 ---
 
 ## 8. Full request lifecycle (create-product example)

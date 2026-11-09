@@ -330,6 +330,43 @@ export default function () {
       })
     })
 
+    describe('multi-location stock', () => {
+      it('can sell stock held across multiple locations', async () => {
+        const fresh = await seedProduct(catalog.vendor.token, catalog.storeId, {
+          variants: [
+            {
+              sku: `ADV-${randomUUID().slice(0, 8)}`,
+              base_price: 1000,
+              quantity_available: 1,
+              options: [{ option_name: 'COLOR', value: 'BLACK' }],
+            },
+          ],
+        })
+        const [location] = await knex('locations')
+          .insert({
+            store_id: catalog.storeId,
+            location_name: `WH-${randomUUID().slice(0, 6)}`,
+          })
+          .returning('*')
+        await knex('inventory').insert({
+          variant_id: fresh.variants[0].variant_id,
+          location_id: location.location_id,
+          quantity_change: 4,
+          reason: 'restock',
+        })
+
+        const res = await request('post', '/v1/orders', {
+          token: customer.token,
+          query: { store_id: catalog.storeId },
+          body: {
+            items: [{ variant_id: fresh.variants[0].variant_id, quantity: 5 }],
+          },
+        })
+
+        res.should.have.status(CREATED)
+      })
+    })
+
     describe('param coercion', () => {
       it('rejects a non-numeric order id', async () => {
         const res = await request('get', '/v1/orders/not-a-number', {
