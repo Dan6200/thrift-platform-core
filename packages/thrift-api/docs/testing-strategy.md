@@ -257,18 +257,18 @@ A blind agent adding integration coverage should:
 
 ## 6. Current coverage & gaps
 
-The last full run (Node 20) had **445 tests, all passing**, across 156 suites in
-about 6m21s:
+The last full run (Node 20) had **447 tests, all passing**, across 157 suites in
+about 4m:
 
 | Group                  | Tests |
 | ---------------------- | ----- |
 | Unit                   | 155   |
-| Integrated             | 290   |
-| — of which adversarial | 107   |
-| **Total**              | 445   |
+| Integrated             | 292   |
+| — of which adversarial | 109   |
+| **Total**              | 447   |
 
 Unit by area: catalog 44, shared 29, orders 33, payments 17, cart 16, reviews 10,
-media 6. Integrated by area: adversarial 107, reviews 30, store staff 24,
+media 6. Integrated by area: adversarial 109, reviews 30, store staff 24,
 delivery info 21, media 21, cart 18, orders 18, stores 13, analytics 11,
 profiles 8, products 7, payments 12 (2 callback + 10 module-scope tests in
 `integrated/payments/index.ts`).

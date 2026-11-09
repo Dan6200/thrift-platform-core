@@ -504,7 +504,7 @@ create table if not exists order_items (
   order_id           int not null references orders(order_id) on delete cascade,
   variant_id         int not null references product_variants(variant_id) on delete cascade,
   quantity           int not null check (quantity > 0),
-  price_at_purchase  numeric(19, 4) not null,
+  price_at_purchase  bigint not null check (price_at_purchase >= 0),
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );

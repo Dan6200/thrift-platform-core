@@ -405,7 +405,7 @@ erDiagram
   integer order_id FK
   integer variant_id FK
   integer quantity
-  numeric_19_4_ price_at_purchase
+  bigint price_at_purchase
   timestamp_with_time_zone created_at
   timestamp_with_time_zone updated_at
 }

@@ -79,7 +79,7 @@ export const OrderResponseSchema = Joi.object({
   store_id: Joi.number().integer().positive().required(),
   delivery_info_id: Joi.number().integer().positive().allow(null).required(),
   order_date: Joi.date().iso().required(),
-  total_amount: Joi.number().precision(2).positive().required(),
+  total_amount: Joi.number().integer().min(0).required(),
   status: Joi.string()
     .valid(
       'pending',
@@ -101,7 +101,7 @@ export const OrderResponseSchema = Joi.object({
         order_item_id: Joi.number().integer().positive().required(),
         variant_id: Joi.number().integer().positive().required(),
         quantity: Joi.number().integer().positive().required(),
-        price_at_purchase: Joi.number().precision(2).positive().required(),
+        price_at_purchase: Joi.number().integer().min(0).required(),
       }),
     )
     .required(),

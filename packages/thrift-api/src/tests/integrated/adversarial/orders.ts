@@ -293,6 +293,43 @@ export default function () {
       })
     })
 
+    describe('money columns', () => {
+      it('stores line prices as integer kobo (bigint)', async () => {
+        const { rows } = await knex.raw(
+          `select data_type from information_schema.columns
+           where table_name = 'order_items'
+             and column_name = 'price_at_purchase'`,
+        )
+        rows[0].data_type.should.equal('bigint')
+      })
+
+      it('accepts a zero-price item and returns integer kobo', async () => {
+        const free = await seedProduct(catalog.vendor.token, catalog.storeId, {
+          variants: [
+            {
+              sku: `ADV-${randomUUID().slice(0, 8)}`,
+              base_price: 0,
+              quantity_available: 1,
+              options: [{ option_name: 'COLOR', value: 'BLACK' }],
+            },
+          ],
+        })
+
+        const res = await request('post', '/v1/orders', {
+          token: customer.token,
+          query: { store_id: catalog.storeId },
+          body: {
+            items: [{ variant_id: free.variants[0].variant_id, quantity: 1 }],
+          },
+        })
+
+        res.should.have.status(CREATED)
+        res.body.total_amount.should.equal(0)
+        res.body.items[0].price_at_purchase.should.equal(0)
+        Number.isInteger(res.body.items[0].price_at_purchase).should.equal(true)
+      })
+    })
+
     describe('param coercion', () => {
       it('rejects a non-numeric order id', async () => {
         const res = await request('get', '/v1/orders/not-a-number', {
