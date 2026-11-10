@@ -22,6 +22,7 @@ import handleCallbackUseCaseTests from './payments/handle-callback-use-case.js'
 import handleWebhookUseCaseTests from './payments/handle-webhook-use-case.js'
 import processOrderJobUseCaseTests from './payments/process-order-job-use-case.js'
 import mediaUseCaseTests from './media/use-cases.js'
+import cloudflareRuntimeTests from './cloudflare-runtime.js'
 
 chai.should()
 
@@ -48,4 +49,5 @@ export default () => {
   describe('Payments handle webhook use case', handleWebhookUseCaseTests)
   describe('Payments process order job use case', processOrderJobUseCaseTests)
   describe('Media use cases', mediaUseCaseTests)
+  describe('Cloudflare API Worker runtime', cloudflareRuntimeTests)
 }
