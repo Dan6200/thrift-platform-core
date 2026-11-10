@@ -39,6 +39,12 @@ Supabase Postgres connection string, plus the existing production secrets and
 variables used by the API. Do not commit secret values. QStash callback URLs and
 Paystack callback URLs must point at the production API hostname after cutover.
 
+The API Wrangler config currently uses the marker
+`REPLACE_WITH_CLOUDFLARE_HYPERDRIVE_ID`. Replace it with the Hyperdrive ID for
+the target Cloudflare account before deploying. The Worker entry maps that
+binding to the existing `SUPABASE_DB_URL` setting before importing the Express
+application.
+
 The web Worker needs its existing `NEXT_PUBLIC_*` build-time values and any
 server-side secrets used by Next.js. Cloudflare production and preview
 configurations must be kept distinct.
@@ -67,7 +73,10 @@ secrets before enabling automatic production deployment.
 - [x] Existing Vercel deployment workflows and configuration identified.
 - [x] Existing Cloud Run search deployment identified and retained.
 - [x] Push the pre-migration commits before starting changes.
-- [ ] Configure Cloudflare Workers for the web application with OpenNext.
-- [ ] Configure Cloudflare Workers for the API, Hyperdrive, and runtime bindings.
+- [x] Add OpenNext/Wrangler tooling and initial Worker config for the web.
+- [x] Add the API Worker entry, Hyperdrive mapping, and Cloudflare-safe logging.
+- [ ] Complete an OpenNext build; static generation currently fails fetching
+      product data from the configured Vercel API endpoint.
+- [ ] Provision Hyperdrive and validate the API Worker against Supabase.
 - [ ] Update CI deployment workflows and repository secrets.
 - [ ] Validate preview deployments and complete production cutover.
