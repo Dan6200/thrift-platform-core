@@ -5,7 +5,7 @@ chai.should()
 export default () => {
   it('provides the Hyperdrive connection string before app initialization', async () => {
     const runtime = await import('../../worker/runtime-config.js').catch(
-      () => null,
+      (): null => null,
     )
 
     chai.expect(runtime).to.not.equal(null)
