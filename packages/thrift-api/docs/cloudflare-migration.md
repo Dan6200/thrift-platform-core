@@ -16,6 +16,10 @@ Vercel to Cloudflare. Search remains on Google Cloud Run for this migration.
   deployment for `thrift-classical-search`.
 - **Media and payments:** Cloudinary and Paystack remain external integrations.
 
+The existing Vercel deployment workflows remain available during migration and
+rollback. Cloudflare deployment is separate until preview validation and DNS
+cutover are complete.
+
 ## Migration sequence
 
 1. Add Worker runtime adapters and local preview configuration for the API and
@@ -51,7 +55,17 @@ configurations must be kept distinct.
 
 GitHub Actions will need a Cloudflare API token with Workers deployment
 permissions and the Cloudflare account ID. Configure these as repository
-secrets before enabling automatic production deployment.
+secrets before enabling automatic production deployment. The API workflow also
+uses the `CLOUDFLARE_HYPERDRIVE_ID` repository variable. Set
+`CLOUDFLARE_DEPLOY_ENABLED=true` only after the API and web bindings, secrets,
+and R2 cache bucket are provisioned.
+
+The web deployment workflow reads its public build-time configuration from
+repository variables (`NEXT_PUBLIC_SERVER`, Supabase public values, search URL
+and key, and the Upstash Redis URL). It reads `UPSTASH_REDIS_REST_TOKEN` from a
+repository secret. The API's runtime secrets and the web Worker's runtime
+Upstash secret must also be configured in Cloudflare; Wrangler deploy does not
+copy GitHub secrets into Worker secrets.
 
 ## Verification and cutover checklist
 
@@ -75,8 +89,11 @@ secrets before enabling automatic production deployment.
 - [x] Push the pre-migration commits before starting changes.
 - [x] Add OpenNext/Wrangler tooling and initial Worker config for the web.
 - [x] Add the API Worker entry, Hyperdrive mapping, and Cloudflare-safe logging.
+- [x] Add gated Cloudflare API/web deployment workflows alongside the existing
+      Vercel workflows.
 - [ ] Complete an OpenNext build; static generation currently fails fetching
       product data from the configured Vercel API endpoint.
 - [ ] Provision Hyperdrive and validate the API Worker against Supabase.
-- [ ] Update CI deployment workflows and repository secrets.
+- [ ] Configure Cloudflare resources, GitHub variables/secrets, and enable the
+      Cloudflare deploy workflows.
 - [ ] Validate preview deployments and complete production cutover.
