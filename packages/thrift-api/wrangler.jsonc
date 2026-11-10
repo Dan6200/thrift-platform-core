@@ -5,12 +5,12 @@
   "compatibility_date": "2026-11-10",
   "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_server_modules"],
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "REPLACE_WITH_CLOUDFLARE_HYPERDRIVE_ID"
-    }
-  ]
+      "id": "REPLACE_WITH_CLOUDFLARE_HYPERDRIVE_ID",
+    },
+  ],
 }
