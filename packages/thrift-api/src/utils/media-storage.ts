@@ -7,11 +7,14 @@
 import { v2 as cloudinary } from 'cloudinary'
 import dotenv from 'dotenv'
 
-if (process.env.NODE_ENV === 'production') {
-  if (process.env.VERCEL_ENV)
-    dotenv.config({ path: `.env.${process.env.VERCEL_ENV}` })
-  else dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
-} else dotenv.config({ path: `.env.${process.env.NODE_ENV ?? 'development'}` })
+if (process.env.CLOUDFLARE_WORKERS !== 'true') {
+  if (process.env.NODE_ENV === 'production') {
+    if (process.env.VERCEL_ENV)
+      dotenv.config({ path: `.env.${process.env.VERCEL_ENV}` })
+    else dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+  } else
+    dotenv.config({ path: `.env.${process.env.NODE_ENV ?? 'development'}` })
+}
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

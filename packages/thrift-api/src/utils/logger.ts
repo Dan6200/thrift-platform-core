@@ -22,13 +22,17 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({
-      filename: path.join(logDir, 'error.log'),
-      level: 'error',
-    }),
-    new winston.transports.File({
-      filename: path.join(logDir, 'combined.log'),
-    }),
+    ...(process.env.CLOUDFLARE_WORKERS === 'true'
+      ? []
+      : [
+          new winston.transports.File({
+            filename: path.join(logDir, 'error.log'),
+            level: 'error',
+          }),
+          new winston.transports.File({
+            filename: path.join(logDir, 'combined.log'),
+          }),
+        ]),
   ],
 })
 

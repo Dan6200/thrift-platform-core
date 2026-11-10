@@ -8,6 +8,7 @@
     "rootDir": ".",
     "resolveJsonModule": true,
     "strict": true,
+    "types": ["node", "mocha", "@cloudflare/workers-types"],
     "outDir": "built",
     "target": "ESNext",
     "esModuleInterop": true,
