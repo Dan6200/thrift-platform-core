@@ -1,0 +1,67 @@
+name: Deploy API to Cloudflare
+
+on:
+  workflow_run:
+    workflows: ["Thrift-api Testing"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: thrift-api-cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Enable automatic deployment after Cloudflare credentials and Hyperdrive
+    # are provisioned by setting the CLOUDFLARE_DEPLOY_ENABLED repo variable.
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (github.event.workflow_run.conclusion == 'success' && vars.CLOUDFLARE_DEPLOY_ENABLED == 'true')
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure Hyperdrive binding
+        working-directory: packages/thrift-api
+        env:
+          CLOUDFLARE_HYPERDRIVE_ID: ${{ vars.CLOUDFLARE_HYPERDRIVE_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_HYPERDRIVE_ID" ]; then
+            echo "Set the CLOUDFLARE_HYPERDRIVE_ID repository variable." >&2
+            exit 1
+          fi
+          node -e '
+            const fs = require("node:fs");
+            const file = "wrangler.jsonc";
+            const marker = "REPLACE_WITH_CLOUDFLARE_HYPERDRIVE_ID";
+            const config = fs.readFileSync(file, "utf8");
+            if (!config.includes(marker)) throw new Error("Hyperdrive marker missing from wrangler.jsonc");
+            fs.writeFileSync(file, config.replace(marker, process.env.CLOUDFLARE_HYPERDRIVE_ID));
+          '
+
+      - name: Build and deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm --filter thrift-api worker:deploy
