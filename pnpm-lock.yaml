@@ -181,9 +181,6 @@ importers:
         specifier: ^3.17.0
         version: 3.17.0
     devDependencies:
-      '@cloudflare/workers-types':
-        specifier: ^5.20261110.1
-        version: 5.20261110.1
       '@faker-js/faker':
         specifier: ^8.4.1
         version: 8.4.1
@@ -8053,7 +8050,8 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20261110.1':
     optional: true
 
-  '@cloudflare/workers-types@5.20261110.1': {}
+  '@cloudflare/workers-types@5.20261110.1':
+    optional: true
 
   '@cloudinary-util/types@1.5.10': {}
 
