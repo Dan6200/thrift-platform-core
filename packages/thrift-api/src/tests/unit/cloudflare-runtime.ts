@@ -19,5 +19,6 @@ export default () => {
 
     target.SUPABASE_DB_URL.should.equal('postgres://hyperdrive.test/db')
     target.NODE_ENV.should.equal('production')
+    target.CLOUDFLARE_WORKERS.should.equal('true')
   })
 }
