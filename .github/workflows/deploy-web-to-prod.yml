@@ -1,31 +1,32 @@
-name: Deploy Web to Production
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
-
-      - name: Link and Deploy to Vercel
-        working-directory: packages/thrift-web
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
+# Disabled during the Cloudflare migration. Restore this workflow by removing this comment prefix.
+# name: Deploy Web to Production
+#
+# on:
+#   push:
+#     branches: [main]
+#   workflow_dispatch:
+#
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+#
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "22"
+#
+#       - name: Setup pnpm
+#         uses: pnpm/action-setup@v3
+#         with:
+#           version: 10
+#
+#       - name: Link and Deploy to Vercel
+#         working-directory: packages/thrift-web
+#         env:
+#           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+#         run: |
+#           npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+#           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
