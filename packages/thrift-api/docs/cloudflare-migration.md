@@ -16,20 +16,21 @@ Vercel to Cloudflare. Search remains on Google Cloud Run for this migration.
   deployment for `thrift-classical-search`.
 - **Media and payments:** Cloudinary and Paystack remain external integrations.
 
-The existing Vercel deployment workflows remain available during migration and
-rollback. Cloudflare deployment is separate until preview validation and DNS
-cutover are complete.
+The Vercel deployment workflow files are currently commented out, so pushes no
+longer trigger Vercel deployments. To roll back before Cloudflare cutover,
+remove the comment prefix from those files and restore their prior triggers.
+The Cloudflare workflows are present but automatic deployment remains gated
+until Cloudflare resources and credentials are configured.
 
 ## Migration sequence
 
 1. Add Worker runtime adapters and local preview configuration for the API and
-   web. Keep the existing Vercel deployment definitions until Cloudflare preview
-   deployments pass validation.
+   web. Keep the commented Vercel workflow definitions available for rollback.
 2. Configure the API Worker to use the Hyperdrive binding for Supabase and
    Cloudflare secrets/vars for runtime configuration. Preserve the existing
    Express routes and Upstash integrations.
-3. Move both production workflows to Cloudflare deploys. Preserve the API's
-   test-success deployment gate and the web's `main` branch trigger.
+3. Configure the Cloudflare production workflows. Preserve the API's
+   test-success deployment gate and the web's API-deploy-success trigger.
 4. Validate the production-equivalent Worker previews, database transactions,
    payment callbacks and QStash callbacks before changing public DNS or removing
    the Vercel project configuration.
@@ -79,8 +80,9 @@ copy GitHub secrets into Worker secrets.
   image delivery, search requests, and environment-specific values.
 - Confirm deployment side effects in Cloudflare and confirm QStash/Paystack
   callbacks reach the deployed API.
-- Cut over DNS only after the above checks pass. Keep Vercel deployments
-  available through the rollback window.
+- Cut over DNS only after the above checks pass. Keep the Vercel project
+  configuration and commented workflow files available through the rollback
+  window; restore the Vercel workflows if a rollback is needed.
 
 ## Current status
 
@@ -91,6 +93,10 @@ copy GitHub secrets into Worker secrets.
 - [x] Add the API Worker entry, Hyperdrive mapping, and Cloudflare-safe logging.
 - [x] Add gated Cloudflare API/web deployment workflows alongside the existing
       Vercel workflows.
+- [x] Comment out both Vercel production workflow files; retain their contents
+      for manual rollback.
+- [ ] Cloudflare deployment workflows are gated until Cloudflare resources,
+      repository variables/secrets, and Worker secrets are provisioned.
 - [ ] Complete an OpenNext build; static generation currently fails fetching
       product data from the configured Vercel API endpoint.
 - [ ] Provision Hyperdrive and validate the API Worker against Supabase.
