@@ -1,0 +1,96 @@
+name: Provision API Hyperdrive
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: thrift-api-hyperdrive-provisioning
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or verify Hyperdrive configuration
+        id: hyperdrive
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          node --input-type=module <<'NODE'
+          const { CLOUDFLARE_API_TOKEN: token, CLOUDFLARE_ACCOUNT_ID: accountId, SUPABASE_DB_URL: connectionString } = process.env;
+          if (!token || !accountId || !connectionString) {
+            throw new Error('Set CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, and SUPABASE_DB_URL repository secrets.');
+          }
+
+          const databaseUrl = new URL(connectionString);
+          if (!['postgres:', 'postgresql:'].includes(databaseUrl.protocol) || !databaseUrl.hostname || !databaseUrl.username || !databaseUrl.password) {
+            throw new Error('SUPABASE_DB_URL must be a PostgreSQL URL with username, password, host, and database.');
+          }
+
+          const desired = {
+            name: 'thrift-api-supabase',
+            origin: {
+              scheme: databaseUrl.protocol.slice(0, -1),
+              host: databaseUrl.hostname,
+              port: Number(databaseUrl.port || 5432),
+              database: decodeURIComponent(databaseUrl.pathname.replace(/^\//, '')),
+              user: decodeURIComponent(databaseUrl.username),
+              password: decodeURIComponent(databaseUrl.password),
+            },
+            caching: { disabled: true },
+          };
+          if (!desired.origin.database || !Number.isInteger(desired.origin.port) || desired.origin.port < 1 || desired.origin.port > 65535) {
+            throw new Error('SUPABASE_DB_URL has an invalid database name or port.');
+          }
+
+          const base = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}/hyperdrive/configs`;
+          async function api(url, options = {}) {
+            const response = await fetch(url, {
+              ...options,
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                ...options.headers,
+              },
+            });
+            const body = await response.json().catch(() => ({}));
+            if (!response.ok || body.success === false) {
+              const codes = Array.isArray(body.errors) ? body.errors.map((error) => error.code).filter(Boolean).join(', ') : '';
+              throw new Error(`Cloudflare Hyperdrive API request failed (HTTP ${response.status}${codes ? `, error codes ${codes}` : ''}). Check the token's Hyperdrive Read and Write permissions and the Supabase connection. No response body or credentials were logged.`);
+            }
+            return body;
+          }
+
+          let existing;
+          for (let page = 1; ; page += 1) {
+            const result = await api(`${base}?page=${page}&per_page=100`);
+            existing = (result.result ?? []).find((config) => config.name === desired.name);
+            if (existing || !result.result_info?.total_pages || page >= result.result_info.total_pages) break;
+          }
+
+          if (existing) {
+            const origin = existing.origin ?? {};
+            const matches = origin.host === desired.origin.host && origin.port === desired.origin.port && origin.database === desired.origin.database && origin.user === desired.origin.user;
+            if (!matches || existing.caching?.disabled !== true) {
+              throw new Error(`A Hyperdrive named ${desired.name} already exists but does not match this database configuration or has query caching enabled. Inspect it in Cloudflare and resolve it before rerunning.`);
+            }
+          } else {
+            const result = await api(base, { method: 'POST', body: JSON.stringify(desired) });
+            existing = result.result;
+          }
+
+          if (!existing?.id) throw new Error('Cloudflare did not return a Hyperdrive ID.');
+          // Read the resource back to confirm the configuration exists before reporting success.
+          const verified = await api(`${base}/${encodeURIComponent(existing.id)}`);
+          if (verified.result?.id !== existing.id || verified.result?.name !== desired.name) {
+            throw new Error('Hyperdrive creation could not be verified by reading the resource back.');
+          }
+          await import('node:fs/promises').then(({ appendFile }) => appendFile(process.env.GITHUB_OUTPUT, `id=${existing.id}\n`));
+          await import('node:fs/promises').then(({ appendFile }) => appendFile(process.env.GITHUB_STEP_SUMMARY, `## Hyperdrive ready\n\n- Name: \`${desired.name}\`\n- ID: \`${existing.id}\`\n- Query caching: disabled\n\nSet the repository variable \`CLOUDFLARE_HYPERDRIVE_ID\` to this ID before deploying the API Worker.\n`));
+          console.log(`Hyperdrive ${desired.name} is ready. ID: ${existing.id}`);
+          NODE

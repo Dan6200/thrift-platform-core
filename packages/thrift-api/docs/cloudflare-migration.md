@@ -45,10 +45,22 @@ variables used by the API. Do not commit secret values. QStash callback URLs and
 Paystack callback URLs must point at the production API hostname after cutover.
 
 The API Wrangler config currently uses the marker
-`REPLACE_WITH_CLOUDFLARE_HYPERDRIVE_ID`. Replace it with the Hyperdrive ID for
-the target Cloudflare account before deploying. The Worker entry maps that
-binding to the existing `SUPABASE_DB_URL` setting before importing the Express
-application.
+`REPLACE_WITH_CLOUDFLARE_HYPERDRIVE_ID`. The manual GitHub Actions workflow
+`.github/workflows/provision-api-hyperdrive.yml` creates or verifies the
+`thrift-api-supabase` configuration and reports its ID. It reads
+`SUPABASE_DB_URL` from a GitHub Actions secret and leaves the database URL and
+password out of logs. Add the returned ID as the repository variable
+`CLOUDFLARE_HYPERDRIVE_ID`; the API deploy workflow substitutes it into the
+Wrangler config. The Worker entry maps the binding to the existing
+`SUPABASE_DB_URL` setting before importing the Express application.
+
+Before running the provisioning workflow, configure repository secrets
+`SUPABASE_DB_URL`, `CLOUDFLARE_API_TOKEN`, and `CLOUDFLARE_ACCOUNT_ID`. The
+Cloudflare API token needs account-scoped **Hyperdrive Read** and **Hyperdrive
+Write** permissions as well as the permissions needed to deploy Workers. The
+workflow disables Hyperdrive query caching initially because cached reads are
+not invalidated by database writes; revisit caching after validating the API's
+read-after-write behavior.
 
 The web Worker needs its existing `NEXT_PUBLIC_*` build-time values and any
 server-side secrets used by Next.js. Cloudflare production and preview
@@ -93,13 +105,15 @@ copy GitHub secrets into Worker secrets.
 - [x] Add the API Worker entry, Hyperdrive mapping, and Cloudflare-safe logging.
 - [x] Add gated Cloudflare API/web deployment workflows alongside the existing
       Vercel workflows.
+- [x] Add manual, rerunnable Hyperdrive provisioning through GitHub Actions.
 - [x] Comment out both Vercel production workflow files; retain their contents
       for manual rollback.
 - [ ] Cloudflare deployment workflows are gated until Cloudflare resources,
       repository variables/secrets, and Worker secrets are provisioned.
 - [ ] Complete an OpenNext build; static generation currently fails fetching
       product data from the configured Vercel API endpoint.
-- [ ] Provision Hyperdrive and validate the API Worker against Supabase.
+- [ ] Add the `SUPABASE_DB_URL` GitHub secret, run Hyperdrive provisioning, and
+      validate the API Worker against Supabase.
 - [ ] Configure Cloudflare resources, GitHub variables/secrets, and enable the
       Cloudflare deploy workflows.
 - [ ] Validate preview deployments and complete production cutover.
