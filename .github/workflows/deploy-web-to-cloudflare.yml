@@ -61,4 +61,4 @@ jobs:
           : "${CLOUDFLARE_API_TOKEN:?Set the CLOUDFLARE_API_TOKEN repository secret}"
 
       - name: Build and deploy Worker
-        run: pnpm --filter thrift-web deploy
+        run: pnpm --filter thrift-web run deploy
