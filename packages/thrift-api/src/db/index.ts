@@ -33,3 +33,9 @@ export const pg = {
 }
 
 export const knex = Knex(knexOptions)
+
+if (process.env.CLOUDFLARE_WORKERS === 'true') {
+  // Wrangler bundles Knex's CommonJS `require('pg')` as a namespace object
+  // without the Client constructor. Use the ESM pg import already used above.
+  knex.client.driver = nodePostgres
+}
