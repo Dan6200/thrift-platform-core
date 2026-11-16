@@ -113,8 +113,9 @@ copy GitHub secrets into Worker secrets.
       repository variables/secrets, and Worker secrets are provisioned.
 - [ ] Complete an OpenNext build; static generation currently fails fetching
       product data from the configured Vercel API endpoint.
-- [ ] Add the `SUPABASE_DB_URL` GitHub secret, run Hyperdrive provisioning, and
-      validate the API Worker against Supabase.
+- [x] Provision Hyperdrive from the `SUPABASE_DB_URL` GitHub secret and set the
+      `CLOUDFLARE_HYPERDRIVE_ID` repository variable.
+- [ ] Validate the deployed API Worker against Supabase.
 - [ ] Configure Cloudflare resources, GitHub variables/secrets, and enable the
       Cloudflare deploy workflows.
 - [ ] Validate preview deployments and complete production cutover.
