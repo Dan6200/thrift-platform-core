@@ -99,8 +99,7 @@ export const knexProductRepository: ProductRepository = {
 
         const links = createdOptions.map((option) => ({
           variant_id: newVariant.variant_id,
-          option_id: option.option_id,
-          option_value_id: option.option_value_id,
+          variant_value_id: option.option_value_id,
         }))
         await trx('variant_to_option_values').insert(links)
 
@@ -173,7 +172,7 @@ export const knexProductRepository: ProductRepository = {
                       pov.option_value_id,
                       pov.value
                     FROM variant_to_option_values vtov
-                    JOIN product_option_values pov ON vtov.option_value_id = pov.option_value_id
+                    JOIN product_option_values pov ON vtov.variant_value_id = pov.option_value_id
                     JOIN product_options po ON pov.option_id = po.option_id
                     WHERE vtov.variant_id = pv.variant_id
                   ) AS option_data
@@ -270,7 +269,7 @@ export const knexProductRepository: ProductRepository = {
                     pov.option_value_id,
                     pov.value
                   FROM variant_to_option_values vtov
-                  JOIN product_option_values pov ON vtov.option_value_id = pov.option_value_id
+                  JOIN product_option_values pov ON vtov.variant_value_id = pov.option_value_id
                   JOIN product_options po ON pov.option_id = po.option_id
                   WHERE vtov.variant_id = pv.variant_id
                 ) AS option_data
@@ -395,8 +394,7 @@ export const knexProductRepository: ProductRepository = {
 
       const links = variant.options.map((option) => ({
         variant_id: createdVariant.variant_id,
-        option_id: valueMap.get(option.value).option_id,
-        option_value_id: valueMap.get(option.value).option_value_id,
+        variant_value_id: valueMap.get(option.value).option_value_id,
       }))
       await trx('variant_to_option_values').insert(links)
 
@@ -480,7 +478,7 @@ export const knexProductRepository: ProductRepository = {
       const options = await trx('variant_to_option_values as vtov')
         .join(
           'product_option_values as pov',
-          'vtov.option_value_id',
+          'vtov.variant_value_id',
           'pov.option_value_id',
         )
         .join('product_options as po', 'pov.option_id', 'po.option_id')
