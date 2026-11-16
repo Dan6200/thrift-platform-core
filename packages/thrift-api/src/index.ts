@@ -27,6 +27,7 @@ import yaml from 'js-yaml'
 import { readFile } from 'fs/promises'
 import { fileURLToPath } from 'url'
 import path from 'path'
+import { knex } from '#src/db/index.js'
 
 // Swagger docs are optional. Vercel bundles the file under a different path
 // than the process CWD, so try the common locations and never crash if the
@@ -107,6 +108,15 @@ app.get('/api.json', (_req: Request, res: Response) =>
   // @ts-ignore (vercel workaround)
   res.json(swaggerDocument),
 )
+
+app.get('/_worker-db-columns', async (_req: Request, res: Response) => {
+  const result = await knex.raw(
+    "select column_name from information_schema.columns where table_schema = 'public' and table_name = 'variant_to_option_values' order by ordinal_position",
+  )
+  res.json(
+    result.rows.map(({ column_name }: { column_name: string }) => column_name),
+  )
+})
 
 app.use(helmet())
 app.use(requestLogger)
