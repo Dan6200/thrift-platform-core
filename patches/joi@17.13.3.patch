@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index 6a5f03513f6920253732c62e53032e52c438fd8e..64b107bf67f667d2f519707d8faa82e08d0d5e6d 100755
+--- a/package.json
++++ b/package.json
+@@ -5,7 +5,6 @@
+     "repository": "git://github.com/hapijs/joi",
+     "main": "lib/index.js",
+     "types": "lib/index.d.ts",
+-    "browser": "dist/joi-browser.min.js",
+     "files": [
+         "lib/**/*",
+         "dist/*"

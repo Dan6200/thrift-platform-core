@@ -11,3 +11,4 @@ onlyBuiltDependencies:
   - msgpackr-extract
 patchedDependencies:
   iconv-lite@0.4.24: patches/iconv-lite@0.4.24.patch
+  joi@17.13.3: patches/joi@17.13.3.patch
