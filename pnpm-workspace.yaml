@@ -9,3 +9,5 @@ onlyBuiltDependencies:
   - sharp
   - unrs-resolver
   - msgpackr-extract
+patchedDependencies:
+  iconv-lite@0.4.24: patches/iconv-lite@0.4.24.patch
