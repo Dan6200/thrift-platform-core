@@ -14,12 +14,16 @@ export default () => {
     let requestStarted = false
     let appInitializationCount = 0
     const connectionString = 'postgres://hyperdrive.test/db'
-    const hyperdrive = Object.defineProperty({}, 'connectionString', {
-      get: () => {
-        chai.expect(requestStarted).to.equal(true)
-        return connectionString
+    const hyperdrive = Object.defineProperty(
+      {} as { connectionString: string },
+      'connectionString',
+      {
+        get: () => {
+          chai.expect(requestStarted).to.equal(true)
+          return connectionString
+        },
       },
-    })
+    )
     const bindings = { HYPERDRIVE: hyperdrive }
     const environment: Record<string, string | undefined> = {}
     const initializeApplication =
