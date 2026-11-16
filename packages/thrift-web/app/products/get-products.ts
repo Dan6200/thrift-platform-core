@@ -2,6 +2,24 @@
 import { ProductData, ProductDataSchema } from '@/types/products'
 import { normalizeProduct } from '@/lib/normalize-product'
 
+const emptyProductData: ProductData = { products: [], total_count: 0 }
+
+export function normalizeProductData(response: unknown): ProductData {
+  if (!response || typeof response !== 'object' || Array.isArray(response)) {
+    return emptyProductData
+  }
+
+  const responseData = response as Record<string, unknown>
+  const normalized = {
+    ...responseData,
+    products: Array.isArray(responseData.products)
+      ? responseData.products.map(normalizeProduct)
+      : responseData.products,
+  }
+  const parsed = ProductDataSchema.safeParse(normalized)
+  return parsed.success ? parsed.data : emptyProductData
+}
+
 export default async function getProducts({
   page = 1,
   limit = 50,
@@ -9,7 +27,7 @@ export default async function getProducts({
   page?: number
   limit?: number
 }): Promise<ProductData> {
-  const response = await fetch(
+  const response: unknown = await fetch(
     process.env.NEXT_PUBLIC_SERVER +
       '/v1/products?' +
       new URLSearchParams({
@@ -23,24 +41,5 @@ export default async function getProducts({
     return res.json()
   })
 
-  if (!response) {
-    return { products: [], total_count: 0 }
-  }
-
-  // Tolerate schema drift / malformed responses by degrading to an empty list.
-  const normalized = {
-    ...response,
-    products: Array.isArray(response.products)
-      ? response.products.map(normalizeProduct)
-      : response.products,
-  }
-  const parsed = ProductDataSchema.safeParse(normalized)
-  if (!parsed.success) {
-    return { products: [], total_count: 0 }
-  }
-
-  return {
-    products: parsed.data.products,
-    total_count: parsed.data.total_count,
-  }
+  return normalizeProductData(response)
 }
