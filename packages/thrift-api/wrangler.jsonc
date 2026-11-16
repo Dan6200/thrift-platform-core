@@ -3,6 +3,13 @@
   "name": "thrift-api",
   "account_id": "533400ef2a46b6620967eb41f8837e6e",
   "main": "src/worker.ts",
+  "rules": [
+    {
+      "type": "Text",
+      "globs": ["**/*.yaml"],
+      "fallthrough": false,
+    },
+  ],
   "compatibility_date": "2026-11-10",
   "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_server_modules"],
   "observability": {

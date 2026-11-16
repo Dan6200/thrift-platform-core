@@ -1,5 +1,6 @@
 import { handleAsNodeRequest } from 'cloudflare:node'
 import { createServer } from 'node:http'
+import swaggerDocumentYaml from '../../api-docs/dist.yaml'
 import {
   createCloudflareApplicationInitializer,
   type CloudflareRuntimeBindings,
@@ -7,6 +8,7 @@ import {
 
 const initializeApplication = createCloudflareApplicationInitializer(
   async () => {
+    globalThis.__THRIFT_API_DOCS_YAML = swaggerDocumentYaml
     const { default: app } = await import('./index.js')
     const server = createServer(app)
     server.listen(8080)

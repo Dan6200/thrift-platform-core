@@ -32,6 +32,9 @@ import path from 'path'
 // than the process CWD, so try the common locations and never crash if the
 // file is missing (e.g. in a serverless function bundle).
 async function loadSwaggerDocument(): Promise<unknown> {
+  if (globalThis.__THRIFT_API_DOCS_YAML != null)
+    return yaml.load(globalThis.__THRIFT_API_DOCS_YAML)
+
   const here = path.dirname(fileURLToPath(import.meta.url))
   const candidates = [
     path.resolve('./api-docs/dist.yaml'),
