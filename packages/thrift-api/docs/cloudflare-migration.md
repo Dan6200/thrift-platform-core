@@ -58,9 +58,11 @@ The Cloudflare account ID is public configuration and is stored in the API and
 web Wrangler configs. Before running the provisioning workflow, configure
 repository secrets `SUPABASE_DB_URL` and `CLOUDFLARE_API_TOKEN`. The Cloudflare
 API token needs account-scoped **Hyperdrive Read** and **Hyperdrive Write**
-permissions as well as the permissions needed to deploy Workers. The workflow
-disables Hyperdrive query caching initially because cached reads are not
-invalidated by database writes; revisit caching after validating the API's
+permissions as well as the permissions needed to deploy Workers. To provision
+the web cache bucket, it also needs account-scoped **Workers R2 Storage Write**.
+R2 must first be activated for the account in the Cloudflare dashboard. The
+workflow disables Hyperdrive query caching initially because cached reads are
+not invalidated by database writes; revisit caching after validating the API's
 read-after-write behavior.
 
 The web Worker needs its existing `NEXT_PUBLIC_*` build-time values and any
@@ -80,10 +82,9 @@ values, search URL and key, and the Upstash Redis URL). It reads
 `UPSTASH_REDIS_REST_TOKEN` from a repository secret. The production values from
 both package `.env.production` files have been uploaded to their Cloudflare
 Workers with `wrangler secret bulk`; the web build variables and Upstash token
-are also configured in GitHub. `NEXT_PUBLIC_SERVER` is intentionally pending
-until the Cloudflare API URL is available. Wrangler deploy does not copy GitHub
-secrets into Worker secrets, so keep these configurations in sync when they
-change.
+are also configured in GitHub. `NEXT_PUBLIC_SERVER` points at the API Worker.
+Wrangler deploy does not copy GitHub secrets into Worker secrets, so keep these
+configurations in sync when they change.
 
 ## Verification and cutover checklist
 
@@ -116,23 +117,28 @@ change.
 - [x] Provision the Cloudflare API and web Worker secrets from each package's
       `.env.production`; API and web secret names have been verified in
       Wrangler without exposing their values.
-- [ ] Complete an OpenNext build; static generation currently fails fetching
-      product data from the configured Vercel API endpoint.
+- [x] Validate product response types and make product detail pages render
+      dynamically at request time.
 - [x] Provision Hyperdrive from the `SUPABASE_DB_URL` GitHub secret and set the
       `CLOUDFLARE_HYPERDRIVE_ID` repository variable.
 - [x] Upload API and web production Worker secrets from their `.env.production`
       files and configure the web build variables in GitHub.
-- [x] Deploy the API Worker and verify `/api.json`, `/api`, and a product read
-      through Hyperdrive against Supabase.
+- [x] Deploy the API Worker. The latest GitHub deployment workflow, including
+      its API smoke checks, passed after limiting Worker database pools.
+- [ ] Continue validating repeated/concurrent product reads through Hyperdrive;
+      direct production reads previously showed intermittent pool timeouts.
 - [x] Set the GitHub `NEXT_PUBLIC_SERVER` variable to
       `https://thrift-api.thrift-platform-core.workers.dev`.
-- [ ] Complete the OpenNext build and deploy the web Worker. The first manual
-      attempt exposed an incorrect pnpm script invocation; that workflow fix is
-      committed, and a second manual deployment is running.
-- [ ] Add the API's QStash token and signing keys to Cloudflare Worker secrets.
-      They are absent from the API `.env.production` and current GitHub secret
-      inventory, so payment event publishing and QStash signature verification
-      remain unconfigured in production.
+- [ ] Enable R2 for the Cloudflare account and provision the configured
+      `thrift-web-opennext-cache` bucket. Wrangler currently reports R2 is not
+      enabled for this account.
+- [ ] Complete an OpenNext build and deploy the web Worker. The deploy workflow
+      invokes the package deploy script correctly; the latest manual build was
+      canceled after remaining in the build step for over ten minutes.
+- [ ] Configure production QStash token and signing keys as API Worker secrets.
+      They are absent from the API `.env.production` and GitHub secret inventory.
+      CI starts a QStash dev server for tests; local dev-server installation was
+      blocked by an artifact download timeout.
 - [ ] Keep automatic deployments gated until the web Worker and integrations
       are validated; manual workflow dispatches are available meanwhile.
 - [ ] Validate preview deployments and complete production cutover.
