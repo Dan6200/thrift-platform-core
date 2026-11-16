@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   iconv-lite@0.4.24:
-    hash: 288fe0c3678612ac2da5c31a37a472417bca19b7faf97496835ca892c32d9b08
+    hash: 02a32324a295a5365c9104bee867bddd5570e903c356c84502c72703a4db0d0e
     path: patches/iconv-lite@0.4.24.patch
 
 importers:
@@ -10846,7 +10846,7 @@ snapshots:
       depd: 2.0.0
       destroy: 1.2.0
       http-errors: 2.0.0
-      iconv-lite: 0.4.24(patch_hash=288fe0c3678612ac2da5c31a37a472417bca19b7faf97496835ca892c32d9b08)
+      iconv-lite: 0.4.24(patch_hash=02a32324a295a5365c9104bee867bddd5570e903c356c84502c72703a4db0d0e)
       on-finished: 2.4.1
       qs: 6.13.0
       raw-body: 2.5.2
@@ -12516,7 +12516,7 @@ snapshots:
 
   iceberg-js@0.8.1: {}
 
-  iconv-lite@0.4.24(patch_hash=288fe0c3678612ac2da5c31a37a472417bca19b7faf97496835ca892c32d9b08):
+  iconv-lite@0.4.24(patch_hash=02a32324a295a5365c9104bee867bddd5570e903c356c84502c72703a4db0d0e):
     dependencies:
       safer-buffer: 2.1.2
 
@@ -13716,7 +13716,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       http-errors: 2.0.0
-      iconv-lite: 0.4.24(patch_hash=288fe0c3678612ac2da5c31a37a472417bca19b7faf97496835ca892c32d9b08)
+      iconv-lite: 0.4.24(patch_hash=02a32324a295a5365c9104bee867bddd5570e903c356c84502c72703a4db0d0e)
       unpipe: 1.0.0
 
   raw-body@3.0.2:
