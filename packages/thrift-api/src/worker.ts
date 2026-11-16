@@ -1,6 +1,6 @@
 import { handleAsNodeRequest } from 'cloudflare:node'
 import { createServer } from 'node:http'
-import swaggerDocumentYaml from '../../api-docs/dist.yaml'
+import swaggerDocumentYaml from '../api-docs/dist.yaml'
 import {
   createCloudflareApplicationInitializer,
   type CloudflareRuntimeBindings,
