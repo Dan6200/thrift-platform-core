@@ -14,18 +14,25 @@ jobs:
   provision:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Create or verify Hyperdrive configuration
         id: hyperdrive
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
           node --input-type=module <<'NODE'
-          const { CLOUDFLARE_API_TOKEN: token, CLOUDFLARE_ACCOUNT_ID: accountId, SUPABASE_DB_URL: connectionString } = process.env;
-          if (!token || !accountId || !connectionString) {
-            throw new Error('Set CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, and SUPABASE_DB_URL repository secrets.');
+          import { readFile } from 'node:fs/promises';
+          const { CLOUDFLARE_API_TOKEN: token, SUPABASE_DB_URL: connectionString } = process.env;
+          if (!token || !connectionString) {
+            throw new Error('Set CLOUDFLARE_API_TOKEN and SUPABASE_DB_URL repository secrets.');
           }
+
+          const wranglerConfig = await readFile('packages/thrift-api/wrangler.jsonc', 'utf8');
+          const accountId = wranglerConfig.match(/"account_id"\s*:\s*"([a-f0-9]{32})"/i)?.[1];
+          if (!accountId) throw new Error('A valid account_id must be set in packages/thrift-api/wrangler.jsonc.');
 
           const databaseUrl = new URL(connectionString);
           if (!['postgres:', 'postgresql:'].includes(databaseUrl.protocol) || !databaseUrl.hostname || !databaseUrl.username || !databaseUrl.password) {

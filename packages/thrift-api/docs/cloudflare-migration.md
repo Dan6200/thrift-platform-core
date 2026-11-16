@@ -54,12 +54,13 @@ password out of logs. Add the returned ID as the repository variable
 Wrangler config. The Worker entry maps the binding to the existing
 `SUPABASE_DB_URL` setting before importing the Express application.
 
-Before running the provisioning workflow, configure repository secrets
-`SUPABASE_DB_URL`, `CLOUDFLARE_API_TOKEN`, and `CLOUDFLARE_ACCOUNT_ID`. The
-Cloudflare API token needs account-scoped **Hyperdrive Read** and **Hyperdrive
-Write** permissions as well as the permissions needed to deploy Workers. The
-workflow disables Hyperdrive query caching initially because cached reads are
-not invalidated by database writes; revisit caching after validating the API's
+The Cloudflare account ID is public configuration and is stored in the API and
+web Wrangler configs. Before running the provisioning workflow, configure
+repository secrets `SUPABASE_DB_URL` and `CLOUDFLARE_API_TOKEN`. The Cloudflare
+API token needs account-scoped **Hyperdrive Read** and **Hyperdrive Write**
+permissions as well as the permissions needed to deploy Workers. The workflow
+disables Hyperdrive query caching initially because cached reads are not
+invalidated by database writes; revisit caching after validating the API's
 read-after-write behavior.
 
 The web Worker needs its existing `NEXT_PUBLIC_*` build-time values and any
