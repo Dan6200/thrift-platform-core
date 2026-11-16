@@ -113,3 +113,4 @@ jobs:
         run: |
           curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors https://thrift-api.thrift-platform-core.workers.dev/api.json
           curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors https://thrift-api.thrift-platform-core.workers.dev/api
+          curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors "https://thrift-api.thrift-platform-core.workers.dev/v1/products?limit=1"
