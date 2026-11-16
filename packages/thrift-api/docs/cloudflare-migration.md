@@ -113,17 +113,26 @@ change.
 - [x] Add manual, rerunnable Hyperdrive provisioning through GitHub Actions.
 - [x] Comment out both Vercel production workflow files; retain their contents
       for manual rollback.
-- [ ] Cloudflare deployment workflows are gated until Cloudflare resources,
-      repository variables/secrets, and Worker secrets are provisioned.
+- [x] Provision the Cloudflare API and web Worker secrets from each package's
+      `.env.production`; API and web secret names have been verified in
+      Wrangler without exposing their values.
 - [ ] Complete an OpenNext build; static generation currently fails fetching
       product data from the configured Vercel API endpoint.
 - [x] Provision Hyperdrive from the `SUPABASE_DB_URL` GitHub secret and set the
       `CLOUDFLARE_HYPERDRIVE_ID` repository variable.
 - [x] Upload API and web production Worker secrets from their `.env.production`
       files and configure the web build variables in GitHub.
-- [ ] Validate the deployed API Worker against Supabase.
-- [ ] Set `NEXT_PUBLIC_SERVER` to the deployed Cloudflare API URL and complete
-      the OpenNext build.
-- [ ] Configure Cloudflare resources, GitHub variables/secrets, and enable the
-      Cloudflare deploy workflows.
+- [x] Deploy the API Worker and verify `/api.json`, `/api`, and a product read
+      through Hyperdrive against Supabase.
+- [x] Set the GitHub `NEXT_PUBLIC_SERVER` variable to
+      `https://thrift-api.thrift-platform-core.workers.dev`.
+- [ ] Complete the OpenNext build and deploy the web Worker. The first manual
+      attempt exposed an incorrect pnpm script invocation; that workflow fix is
+      committed, and a second manual deployment is running.
+- [ ] Add the API's QStash token and signing keys to Cloudflare Worker secrets.
+      They are absent from the API `.env.production` and current GitHub secret
+      inventory, so payment event publishing and QStash signature verification
+      remain unconfigured in production.
+- [ ] Keep automatic deployments gated until the web Worker and integrations
+      are validated; manual workflow dispatches are available meanwhile.
 - [ ] Validate preview deployments and complete production cutover.

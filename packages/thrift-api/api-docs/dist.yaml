@@ -18,7 +18,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 servers:
-  - url: 'https://thrift-app-latest.onrender.com/{basePath}'
+  - url: 'https://thrift-api.thrift-platform-core.workers.dev/{basePath}'
     description: Production server
     variables:
       basePath:
