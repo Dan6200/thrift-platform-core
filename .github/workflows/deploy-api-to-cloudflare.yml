@@ -92,12 +92,12 @@ jobs:
           if (response.ok && payload.success && payload.result?.subdomain) {
             console.log(`Using existing workers.dev subdomain: ${payload.result.subdomain}`);
           } else if (response.status === 404 || (response.ok && payload.success)) {
-            ({ response, payload } = await cloudflareRequest('PUT', { subdomain: 'thrift' }));
-            if (!response.ok || !payload.success || payload.result?.subdomain !== 'thrift') {
+            ({ response, payload } = await cloudflareRequest('PUT', { subdomain: 'thrift-platform-core' }));
+            if (!response.ok || !payload.success || payload.result?.subdomain !== 'thrift-platform-core') {
               const codes = Array.isArray(payload.errors) ? payload.errors.map((error) => error.code).filter(Boolean).join(', ') : '';
-              throw new Error(`Could not register the thrift workers.dev subdomain (HTTP ${response.status}${codes ? `, error codes ${codes}` : ''}). Check the token's Workers Scripts Write permission and account-level subdomain availability.`);
+              throw new Error(`Could not register the thrift-platform-core workers.dev subdomain (HTTP ${response.status}${codes ? `, error codes ${codes}` : ''}). Check the token's Workers Scripts Write permission and account-level subdomain availability.`);
             }
-            console.log('Registered workers.dev subdomain: thrift');
+            console.log('Registered workers.dev subdomain: thrift-platform-core');
           } else {
             const codes = Array.isArray(payload.errors) ? payload.errors.map((error) => error.code).filter(Boolean).join(', ') : '';
             throw new Error(`Could not read the workers.dev subdomain (HTTP ${response.status}${codes ? `, error codes ${codes}` : ''}). Check the token's Workers Scripts Read and Write permissions.`);
