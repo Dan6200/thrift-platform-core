@@ -23,6 +23,7 @@ import handleWebhookUseCaseTests from './payments/handle-webhook-use-case.js'
 import processOrderJobUseCaseTests from './payments/process-order-job-use-case.js'
 import mediaUseCaseTests from './media/use-cases.js'
 import cloudflareRuntimeTests from './cloudflare-runtime.js'
+import postgresPoolOptionTests from './db/postgres-pool-options.js'
 
 chai.should()
 
@@ -50,4 +51,5 @@ export default () => {
   describe('Payments process order job use case', processOrderJobUseCaseTests)
   describe('Media use cases', mediaUseCaseTests)
   describe('Cloudflare API Worker runtime', cloudflareRuntimeTests)
+  describe('Cloudflare Worker Postgres pools', postgresPoolOptionTests)
 }
