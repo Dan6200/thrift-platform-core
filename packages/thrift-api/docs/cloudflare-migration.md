@@ -75,11 +75,15 @@ uses the `CLOUDFLARE_HYPERDRIVE_ID` repository variable. Set
 and R2 cache bucket are provisioned.
 
 The web deployment workflow reads its public build-time configuration from
-repository variables (`NEXT_PUBLIC_SERVER`, Supabase public values, search URL
-and key, and the Upstash Redis URL). It reads `UPSTASH_REDIS_REST_TOKEN` from a
-repository secret. The API's runtime secrets and the web Worker's runtime
-Upstash secret must also be configured in Cloudflare; Wrangler deploy does not
-copy GitHub secrets into Worker secrets.
+repository variables (`NEXT_PUBLIC_SERVER`, Cloudinary values, Supabase public
+values, search URL and key, and the Upstash Redis URL). It reads
+`UPSTASH_REDIS_REST_TOKEN` from a repository secret. The production values from
+both package `.env.production` files have been uploaded to their Cloudflare
+Workers with `wrangler secret bulk`; the web build variables and Upstash token
+are also configured in GitHub. `NEXT_PUBLIC_SERVER` is intentionally pending
+until the Cloudflare API URL is available. Wrangler deploy does not copy GitHub
+secrets into Worker secrets, so keep these configurations in sync when they
+change.
 
 ## Verification and cutover checklist
 
@@ -115,7 +119,11 @@ copy GitHub secrets into Worker secrets.
       product data from the configured Vercel API endpoint.
 - [x] Provision Hyperdrive from the `SUPABASE_DB_URL` GitHub secret and set the
       `CLOUDFLARE_HYPERDRIVE_ID` repository variable.
+- [x] Upload API and web production Worker secrets from their `.env.production`
+      files and configure the web build variables in GitHub.
 - [ ] Validate the deployed API Worker against Supabase.
+- [ ] Set `NEXT_PUBLIC_SERVER` to the deployed Cloudflare API URL and complete
+      the OpenNext build.
 - [ ] Configure Cloudflare resources, GitHub variables/secrets, and enable the
       Cloudflare deploy workflows.
 - [ ] Validate preview deployments and complete production cutover.
