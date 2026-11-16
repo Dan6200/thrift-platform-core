@@ -111,11 +111,26 @@ app.get('/api.json', (_req: Request, res: Response) =>
 
 app.get('/_worker-db-columns', async (_req: Request, res: Response) => {
   const result = await knex.raw(
-    "select column_name from information_schema.columns where table_schema = 'public' and table_name = 'variant_to_option_values' order by ordinal_position",
+    `select
+      tc.table_name,
+      tc.constraint_type,
+      tc.constraint_name,
+      kcu.column_name,
+      ccu.table_name as foreign_table_name,
+      ccu.column_name as foreign_column_name
+    from information_schema.table_constraints tc
+    left join information_schema.key_column_usage kcu
+      on tc.constraint_name = kcu.constraint_name
+      and tc.table_schema = kcu.table_schema
+      and tc.table_name = kcu.table_name
+    left join information_schema.constraint_column_usage ccu
+      on tc.constraint_name = ccu.constraint_name
+      and tc.table_schema = ccu.table_schema
+    where tc.table_schema = 'public'
+      and tc.table_name in ('variant_to_option_values', 'product_option_values')
+    order by tc.table_name, tc.constraint_name, kcu.ordinal_position`,
   )
-  res.json(
-    result.rows.map(({ column_name }: { column_name: string }) => column_name),
-  )
+  res.json(result.rows)
 })
 
 app.use(helmet())
