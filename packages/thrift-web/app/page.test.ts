@@ -9,7 +9,7 @@ describe('home route rendering', () => {
   it('renders product data at request time instead of during the build', () => {
     assert.match(
       pageSource,
-      /export const dynamic\s*=\s*['"]force-dynamic['"];/,
+      /export const dynamic\s*=\s*['"]force-dynamic['"];?/,
     )
   })
 })
