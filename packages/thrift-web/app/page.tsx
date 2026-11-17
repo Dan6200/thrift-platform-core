@@ -7,6 +7,8 @@ import { Suspense } from 'react'
 import { HeroLoading } from '@/components/hero-loading'
 import { verifySession } from '@/auth/server/definitions'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   let isAuthenticated = true
   try {
