@@ -1,3 +1,4 @@
+import configuredMediaUrlTests from './media/cloudinary-url.js'
 // cspell:disable
 import chai from 'chai'
 import resultTests from './shared/result.js'
@@ -51,6 +52,7 @@ export default () => {
   describe('Payments handle webhook use case', handleWebhookUseCaseTests)
   describe('Payments process order job use case', processOrderJobUseCaseTests)
   describe('Media use cases', mediaUseCaseTests)
+  describe('Configured media URLs', configuredMediaUrlTests)
   describe('Cloudflare API Worker runtime', cloudflareRuntimeTests)
   describe('Cloudflare Worker Postgres pools', postgresPoolOptionTests)
   describe('Cloudflare production hostname', cloudflareProductionHostnameTests)
