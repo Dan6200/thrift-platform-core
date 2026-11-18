@@ -9,6 +9,7 @@ export default {
   async fetch(
     request: Request,
     bindings: CloudflareRuntimeBindings,
+    context?: { waitUntil(promise: Promise<unknown>): void },
   ): Promise<Response> {
     configureCloudflareRuntime(bindings, process.env)
     isolateId ??= crypto.randomUUID()
@@ -34,7 +35,7 @@ export default {
           response = Response.json({ ok: result.rows[0]?.ok === 1 })
         } else {
           const worker = await import('../worker.js')
-          response = await worker.default.fetch(request, bindings)
+          response = await worker.default.fetch(request, bindings, context)
         }
       } catch (error) {
         console.error(

@@ -68,6 +68,8 @@ if (process.env.CLOUDFLARE_WORKERS === 'true') {
     const cleanup = withDatabaseRequest(
       () =>
         new Promise<void>((resolve) => {
+          if (process.env.DB_DIAGNOSTIC === 'true')
+            res.setHeader('x-db-context', databaseContext.getStore()!.id)
           res.once('finish', resolve)
           res.once('close', resolve)
           next()
