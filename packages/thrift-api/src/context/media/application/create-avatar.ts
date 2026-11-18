@@ -15,5 +15,5 @@ export const createAvatarUseCase =
       },
       description: input.description,
     })
-    return withMediaUrl(media, mediaUrl)
+    return withMediaUrl(media, mediaUrl, 'avatars')
   }

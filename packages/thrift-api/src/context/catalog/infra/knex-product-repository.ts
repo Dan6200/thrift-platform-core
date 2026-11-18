@@ -9,14 +9,16 @@ import {
   PersistedVariant,
 } from '../ports/product-repository.js'
 
-const withMediaFilepaths = (row: any): any => {
+const withMediaFilepaths = async (row: any): Promise<any> => {
   if (!row || !Array.isArray(row.media)) return row
   return {
     ...row,
-    media: row.media.map((media: any) => ({
-      ...media,
-      filepath: cloudinaryMediaUrl.url(media.filename, media.filetype),
-    })),
+    media: await Promise.all(
+      row.media.map(async (media: any) => ({
+        ...media,
+        filepath: await cloudinaryMediaUrl.url(media.filename, media.filetype),
+      })),
+    ),
   }
 }
 
@@ -215,7 +217,7 @@ export const knexProductRepository: ProductRepository = {
     return {
       ...row,
       products: Array.isArray(row.products)
-        ? row.products.map(withMediaFilepaths)
+        ? await Promise.all(row.products.map(withMediaFilepaths))
         : row.products,
     }
   },

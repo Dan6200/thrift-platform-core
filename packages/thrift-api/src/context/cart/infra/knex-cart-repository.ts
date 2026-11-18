@@ -46,13 +46,13 @@ export const knexCartRepository: CartRepository = {
         'm.filetype as image_filetype',
       )
 
-    const items = cartItems.map(
-      ({ image_filename, image_filetype, ...item }) => ({
+    const items = await Promise.all(
+      cartItems.map(async ({ image_filename, image_filetype, ...item }) => ({
         ...item,
         image_url: image_filename
-          ? cloudinaryMediaUrl.url(image_filename, image_filetype)
+          ? await cloudinaryMediaUrl.url(image_filename, image_filetype)
           : null,
-      }),
+      })),
     )
 
     const total_items = items.reduce((sum, item) => sum + item.quantity, 0)

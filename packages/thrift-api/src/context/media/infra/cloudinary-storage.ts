@@ -3,18 +3,10 @@ import { knex } from '#src/db/index.js'
 import { cloudinary } from '#src/utils/media-storage.js'
 import { MediaStorage } from '../ports/media-storage.js'
 
-let cachedDamFolder: string | null = null
-const damFolderPrefix = async (): Promise<string> => {
-  if (cachedDamFolder !== null) return cachedDamFolder
-  const row = await knex('app_config')
-    .where({ config_key: 'dam_folder_prefix' })
-    .first('config_value')
-  cachedDamFolder = String(row?.config_value ?? 'sellit-media/')
-  return cachedDamFolder
-}
+import { readMediaFolderPrefix } from './media-folder.js'
 
 const folderFor = async (folder: 'avatars' | 'products'): Promise<string> => {
-  const prefix = await damFolderPrefix()
+  const prefix = await readMediaFolderPrefix()
   return prefix.endsWith('/') ? `${prefix}${folder}` : `${prefix}/${folder}`
 }
 

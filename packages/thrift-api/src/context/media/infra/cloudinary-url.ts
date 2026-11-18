@@ -1,14 +1,14 @@
 import { cloudinary } from '#src/utils/media-storage.js'
 import { MediaUrl } from '../ports/media-url.js'
 
-const cloudinaryUrl: MediaUrl = {
-  url(filename, filetype) {
-    return cloudinary.url(filename, {
-      secure: true,
-      resource_type: filetype?.startsWith('video/') ? 'video' : 'image',
-    })
-  },
-}
+import { createConfiguredMediaUrl } from './configured-media-url.js'
+import { readMediaFolderPrefix } from './media-folder.js'
+
+const cloudinaryUrl = createConfiguredMediaUrl(
+  readMediaFolderPrefix,
+  (publicId, resourceType) =>
+    cloudinary.url(publicId, { secure: true, resource_type: resourceType }),
+)
 
 /**
  * Test double: integration tests must not depend on Cloudinary. The URL shape

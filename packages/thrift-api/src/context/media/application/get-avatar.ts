@@ -4,4 +4,4 @@ import { withMediaUrl } from './with-media-url.js'
 
 export const getAvatarUseCase =
   (mediaUrl: MediaUrl, repository: MediaRepository) => async (userId: string) =>
-    withMediaUrl(await repository.getAvatar(userId), mediaUrl)
+    withMediaUrl(await repository.getAvatar(userId), mediaUrl, 'avatars')

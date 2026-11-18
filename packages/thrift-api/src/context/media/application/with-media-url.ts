@@ -1,20 +1,20 @@
 import { MediaUrl } from '../ports/media-url.js'
 
-const attach = (value: unknown, mediaUrl: MediaUrl): unknown => {
-  if (Array.isArray(value)) return value.map((item) => attach(item, mediaUrl))
+export const withMediaUrl = async (
+  value: unknown,
+  mediaUrl: MediaUrl,
+  folder: 'products' | 'avatars' = 'products',
+): Promise<unknown> => {
+  if (Array.isArray(value))
+    return Promise.all(
+      value.map((item) => withMediaUrl(item, mediaUrl, folder)),
+    )
   if (value && typeof value === 'object' && 'filename' in value) {
     const media = value as { filename: string; filetype?: string }
     return {
       ...value,
-      filepath: mediaUrl.url(media.filename, media.filetype),
+      filepath: await mediaUrl.url(media.filename, media.filetype, folder),
     }
   }
   return value
 }
-
-/**
- * Media rows only store the filename/public_id; the delivery URL is derived on
- * read so delivery configuration can change without a data migration.
- */
-export const withMediaUrl = (value: unknown, mediaUrl: MediaUrl): unknown =>
-  attach(value, mediaUrl)
