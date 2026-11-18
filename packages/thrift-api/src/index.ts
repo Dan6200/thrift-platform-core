@@ -1,4 +1,5 @@
 import {
+  databaseContext,
   withDatabaseRequest,
   workerCleanupContext,
 } from './db/request-context.js'
