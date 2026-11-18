@@ -1,0 +1,40 @@
+{"phase": "sequential", "index": 0, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12027, "valid": false}
+{"phase": "sequential", "index": 1, "path": "/v1/products?limit=1", "status": "HTTP/2 200 ", "exit": 0, "ms": 1379, "valid": true, "x-db-duration-ms": "197", "x-db-isolate": "38366d88-0dbb-4466-b4f5-70a9c868eb7c", "x-db-request-id": "780c099f-d363-46be-a178-5cd38c9a2c81", "x-db-sequence": "1"}
+{"phase": "sequential", "index": 2, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12024, "valid": false}
+{"phase": "sequential", "index": 3, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12064, "valid": false}
+{"phase": "sequential", "index": 4, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12018, "valid": false}
+{"phase": "sequential", "index": 5, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12016, "valid": false}
+{"phase": "sequential", "index": 6, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12021, "valid": false}
+{"phase": "sequential", "index": 7, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12043, "valid": false}
+{"phase": "sequential", "index": 8, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12036, "valid": false}
+{"phase": "sequential", "index": 9, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12024, "valid": false}
+{"phase": "sequential", "index": 10, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12023, "valid": false}
+{"phase": "sequential", "index": 11, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12027, "valid": false}
+{"phase": "sequential", "index": 12, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12019, "valid": false}
+{"phase": "sequential", "index": 13, "path": "/v1/products?limit=1", "status": "HTTP/2 200 ", "exit": 0, "ms": 2135, "valid": true, "x-db-duration-ms": "228", "x-db-isolate": "64f9f4ed-e1ce-4925-b520-6086b1c004af", "x-db-request-id": "7676fe3c-cd2e-4678-9088-138eff77fd99", "x-db-sequence": "1"}
+{"phase": "sequential", "index": 14, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12034, "valid": false}
+{"phase": "sequential", "index": 15, "path": "/v1/products?limit=1", "status": "HTTP/2 200 ", "exit": 0, "ms": 1418, "valid": true, "x-db-duration-ms": "116", "x-db-isolate": "1fe52fda-3815-44e7-a942-b9d9a3f7e4d3", "x-db-request-id": "af6cacb6-64c1-4502-aabf-46ea57777f12", "x-db-sequence": "1"}
+{"phase": "sequential", "index": 16, "path": "/__db-check", "status": "HTTP/2 500 ", "exit": 0, "ms": 914, "valid": false}
+{"phase": "sequential", "index": 17, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12042, "valid": false}
+{"phase": "sequential", "index": 18, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12066, "valid": false}
+{"phase": "sequential", "index": 19, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12033, "valid": false}
+{"phase": "after-idle", "index": 0, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12027, "valid": false}
+{"phase": "after-idle", "index": 1, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12018, "valid": false}
+{"phase": "after-idle", "index": 2, "path": "/__db-check", "status": "HTTP/2 500 ", "exit": 0, "ms": 727, "valid": false}
+{"phase": "after-idle", "index": 3, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12021, "valid": false}
+{"phase": "after-idle", "index": 4, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12036, "valid": false}
+{"phase": "after-idle", "index": 5, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12072, "valid": false}
+{"phase": "after-idle", "index": 6, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12050, "valid": false}
+{"phase": "after-idle", "index": 7, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12040, "valid": false}
+{"phase": "after-idle", "index": 8, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12035, "valid": false}
+{"phase": "after-idle", "index": 9, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12029, "valid": false}
+{"phase": "after-idle", "index": 10, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12046, "valid": false}
+{"phase": "after-idle", "index": 11, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12042, "valid": false}
+{"phase": "after-idle", "index": 12, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12020, "valid": false}
+{"phase": "after-idle", "index": 13, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12037, "valid": false}
+{"phase": "after-idle", "index": 14, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12052, "valid": false}
+{"phase": "after-idle", "index": 15, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12029, "valid": false}
+{"phase": "after-idle", "index": 16, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12028, "valid": false}
+{"phase": "after-idle", "index": 17, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12025, "valid": false}
+{"phase": "after-idle", "index": 18, "path": "/__db-check", "status": "no-response", "exit": 28, "ms": 12012, "valid": false}
+{"phase": "after-idle", "index": 19, "path": "/v1/products?limit=1", "status": "no-response", "exit": 28, "ms": 12024, "valid": false}
