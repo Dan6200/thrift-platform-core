@@ -127,16 +127,19 @@ they change.
 - [x] Deploy the API Worker. The latest GitHub deployment workflow, including
       its API smoke checks, passed after limiting Worker database pools.
 - [ ] Continue validating product reads through Hyperdrive; direct production
-      reads still return intermittent Knex pool acquisition timeouts.
+      reads return Knex pool acquisition timeouts, and the web homepage request
+      timed out while waiting for product data.
 - [x] Set the GitHub `NEXT_PUBLIC_SERVER` variable to
       `https://thrift-api.thrift-commerce.workers.dev`.
 - [x] Enable R2 and create `thrift-web-opennext-cache`.
 - [x] Build and deploy the web Worker at
       `https://thrift-web.thrift-commerce.workers.dev`; the deployment passed
-      and the homepage returned HTTP 200.
+      and Cloudflare published the Worker.
 - [x] Skip initial OpenNext remote cache prepopulation during deploy because
       its helper stalls in CI; runtime R2 caching remains enabled and fills on
       cache misses.
+- [ ] Verify the web homepage and product flows after fixing the API's
+      intermittent Hyperdrive/Knex connection-pool failures.
 - [ ] Configure production QStash token and signing keys as API Worker secrets.
       They are absent from the API `.env.production` and GitHub secret inventory.
       CI starts a QStash dev server for tests; local dev-server installation was
