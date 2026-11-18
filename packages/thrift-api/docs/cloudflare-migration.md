@@ -82,9 +82,10 @@ values, search URL and key, and the Upstash Redis URL). It reads
 `UPSTASH_REDIS_REST_TOKEN` from a repository secret. The production values from
 both package `.env.production` files have been uploaded to their Cloudflare
 Workers with `wrangler secret bulk`; the web build variables and Upstash token
-are also configured in GitHub. `NEXT_PUBLIC_SERVER` points at the API Worker.
-Wrangler deploy does not copy GitHub secrets into Worker secrets, so keep these
-configurations in sync when they change.
+are also configured in GitHub. `NEXT_PUBLIC_SERVER` points at
+`https://thrift-api.thrift-commerce.workers.dev`. Wrangler deploy does not copy
+GitHub secrets into Worker secrets, so keep these configurations in sync when
+they change.
 
 ## Verification and cutover checklist
 
@@ -125,16 +126,17 @@ configurations in sync when they change.
       files and configure the web build variables in GitHub.
 - [x] Deploy the API Worker. The latest GitHub deployment workflow, including
       its API smoke checks, passed after limiting Worker database pools.
-- [ ] Continue validating repeated/concurrent product reads through Hyperdrive;
-      direct production reads previously showed intermittent pool timeouts.
+- [ ] Continue validating product reads through Hyperdrive; direct production
+      reads still return intermittent Knex pool acquisition timeouts.
 - [x] Set the GitHub `NEXT_PUBLIC_SERVER` variable to
-      `https://thrift-api.thrift-platform-core.workers.dev`.
-- [ ] Enable R2 for the Cloudflare account and provision the configured
-      `thrift-web-opennext-cache` bucket. Wrangler currently reports R2 is not
-      enabled for this account.
-- [ ] Complete an OpenNext build and deploy the web Worker. The deploy workflow
-      invokes the package deploy script correctly; the latest manual build was
-      canceled after remaining in the build step for over ten minutes.
+      `https://thrift-api.thrift-commerce.workers.dev`.
+- [x] Enable R2 and create `thrift-web-opennext-cache`.
+- [x] Build and deploy the web Worker at
+      `https://thrift-web.thrift-commerce.workers.dev`; the deployment passed
+      and the homepage returned HTTP 200.
+- [x] Skip initial OpenNext remote cache prepopulation during deploy because
+      its helper stalls in CI; runtime R2 caching remains enabled and fills on
+      cache misses.
 - [ ] Configure production QStash token and signing keys as API Worker secrets.
       They are absent from the API `.env.production` and GitHub secret inventory.
       CI starts a QStash dev server for tests; local dev-server installation was
