@@ -1,3 +1,4 @@
+import { knex } from '../../../db/index.js'
 import { expect } from 'chai'
 import {
   databaseContext,
@@ -20,6 +21,19 @@ export default () => {
     )
     expect(instances[0]).not.to.equal(instances[1])
     expect(databaseContext.getStore()).to.equal(undefined)
+  })
+  it('routes the shared Knex export to the active request and restores Node defaults', async () => {
+    const nodeClient = knex.client
+    await withDatabaseRequest(async () => {
+      expect(knex.client).to.equal(databaseContext.getStore()!.knex.client)
+      expect(knex.client).not.to.equal(nodeClient)
+      expect(
+        knex('products').where({ product_id: 1 }).toSQL().bindings,
+      ).to.deep.equal([1])
+      await Promise.resolve()
+      expect(knex.client).to.equal(databaseContext.getStore()!.knex.client)
+    })
+    expect(knex.client).to.equal(nodeClient)
   })
   it('destroys the request pool after success and failure', async () => {
     for (const shouldFail of [false, true]) {
