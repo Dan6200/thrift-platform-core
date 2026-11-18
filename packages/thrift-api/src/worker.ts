@@ -20,8 +20,13 @@ export default {
   async fetch(
     request: Request,
     bindings: CloudflareRuntimeBindings,
+    context?: { waitUntil(promise: Promise<unknown>): void },
   ): Promise<Response> {
     await initializeApplication(bindings)
-    return await handleAsNodeRequest(8080, request)
+    const { workerCleanupContext } = await import('./db/request-context.js')
+    return workerCleanupContext.run(
+      (promise) => context?.waitUntil(promise),
+      () => handleAsNodeRequest(8080, request),
+    )
   },
 }

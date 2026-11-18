@@ -1,4 +1,7 @@
-import { withDatabaseRequest } from './db/request-context.js'
+import {
+  withDatabaseRequest,
+  workerCleanupContext,
+} from './db/request-context.js'
 import express, { Request, Response, Router } from 'express'
 import 'express-async-errors'
 import helmet from 'helmet'
@@ -62,7 +65,7 @@ let app = express()
 app.set('trust proxy', 1)
 if (process.env.CLOUDFLARE_WORKERS === 'true') {
   app.use((_req, res, next) => {
-    void withDatabaseRequest(
+    const cleanup = withDatabaseRequest(
       () =>
         new Promise<void>((resolve) => {
           res.once('finish', resolve)
@@ -70,6 +73,7 @@ if (process.env.CLOUDFLARE_WORKERS === 'true') {
           next()
         }),
     ).catch(next)
+    workerCleanupContext.getStore()?.(cleanup)
   })
 }
 app.use(cookieParser())

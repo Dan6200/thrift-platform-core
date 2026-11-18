@@ -54,3 +54,7 @@ export async function withDatabaseRequest<T>(
     }
   })
 }
+
+export const workerCleanupContext = new AsyncLocalStorage<
+  (promise: Promise<unknown>) => void
+>()
