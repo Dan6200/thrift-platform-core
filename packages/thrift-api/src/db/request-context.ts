@@ -22,6 +22,14 @@ export const createDatabaseHandles = () => {
   if (process.env.CLOUDFLARE_WORKERS === 'true') {
     const log = (event: string, extra = {}) =>
       console.log(JSON.stringify({ event, dbContextId: id, ...extra }))
+    knex.client.pool.on(
+      'createFail',
+      (_eventId: number, error: Error & { code?: string }) =>
+        log('db-connection-create-failed', {
+          errorType: error.name,
+          code: error.code ?? null,
+        }),
+    )
     knex.on('query', () => log('db-query-start'))
     knex.on('query-response', () => log('db-query-complete'))
     knex.on('query-error', (error: Error) =>
@@ -64,3 +72,8 @@ export const workerCleanupContext = new AsyncLocalStorage<{
   connectionString: string
   waitUntil(promise: Promise<unknown>): void
 }>()
+
+export const workerRequests = new Map<
+  string,
+  { connectionString: string; waitUntil(promise: Promise<unknown>): void }
+>()

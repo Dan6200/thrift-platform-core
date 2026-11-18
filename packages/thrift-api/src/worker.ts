@@ -23,13 +23,18 @@ export default {
     context?: { waitUntil(promise: Promise<unknown>): void },
   ): Promise<Response> {
     await initializeApplication(bindings)
-    const { workerCleanupContext } = await import('./db/request-context.js')
-    return workerCleanupContext.run(
-      {
-        connectionString: bindings.HYPERDRIVE.connectionString,
-        waitUntil: (promise) => context?.waitUntil(promise),
-      },
-      () => handleAsNodeRequest(8080, request),
-    )
+    const { workerRequests } = await import('./db/request-context.js')
+    const requestId = crypto.randomUUID()
+    workerRequests.set(requestId, {
+      connectionString: bindings.HYPERDRIVE.connectionString,
+      waitUntil: (promise) => context?.waitUntil(promise),
+    })
+    const headers = new Headers(request.headers)
+    headers.set('x-thrift-worker-request', requestId)
+    try {
+      return await handleAsNodeRequest(8080, new Request(request, { headers }))
+    } finally {
+      workerRequests.delete(requestId)
+    }
   },
 }

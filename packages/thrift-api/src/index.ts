@@ -1,5 +1,6 @@
 import {
   databaseContext,
+  workerRequests,
   withDatabaseRequest,
   workerCleanupContext,
 } from './db/request-context.js'
@@ -65,18 +66,26 @@ const swaggerDocument = await loadSwaggerDocument()
 let app = express()
 app.set('trust proxy', 1)
 if (process.env.CLOUDFLARE_WORKERS === 'true') {
-  app.use((_req, res, next) => {
-    const cleanup = withDatabaseRequest(
-      () =>
-        new Promise<void>((resolve) => {
-          if (process.env.DB_DIAGNOSTIC === 'true')
-            res.setHeader('x-db-context', databaseContext.getStore()!.id)
-          res.once('finish', resolve)
-          res.once('close', resolve)
-          next()
-        }),
-    ).catch(next)
-    workerCleanupContext.getStore()?.waitUntil(cleanup)
+  app.use((req, res, next) => {
+    const requestId = req.headers['x-thrift-worker-request']
+    const settings =
+      typeof requestId === 'string' ? workerRequests.get(requestId) : undefined
+    delete req.headers['x-thrift-worker-request']
+    if (!settings)
+      return next(new Error('Worker database invocation context is missing'))
+    workerCleanupContext.run(settings, () => {
+      const cleanup = withDatabaseRequest(
+        () =>
+          new Promise<void>((resolve) => {
+            if (process.env.DB_DIAGNOSTIC === 'true')
+              res.setHeader('x-db-context', databaseContext.getStore()!.id)
+            res.once('finish', resolve)
+            res.once('close', resolve)
+            next()
+          }),
+      ).catch(next)
+      settings.waitUntil(cleanup)
+    })
   })
 }
 app.use(cookieParser())
