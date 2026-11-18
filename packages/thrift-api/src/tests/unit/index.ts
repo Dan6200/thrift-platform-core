@@ -24,6 +24,7 @@ import processOrderJobUseCaseTests from './payments/process-order-job-use-case.j
 import mediaUseCaseTests from './media/use-cases.js'
 import cloudflareRuntimeTests from './cloudflare-runtime.js'
 import postgresPoolOptionTests from './db/postgres-pool-options.js'
+import cloudflareProductionHostnameTests from './cloudflare-production-hostname.js'
 
 chai.should()
 
@@ -52,4 +53,5 @@ export default () => {
   describe('Media use cases', mediaUseCaseTests)
   describe('Cloudflare API Worker runtime', cloudflareRuntimeTests)
   describe('Cloudflare Worker Postgres pools', postgresPoolOptionTests)
+  describe('Cloudflare production hostname', cloudflareProductionHostnameTests)
 }
