@@ -149,3 +149,12 @@ they change.
 - [ ] Keep automatic deployments gated until the web Worker and integrations
       are validated; manual workflow dispatches are available meanwhile.
 - [ ] Validate preview deployments and complete production cutover.
+
+## Media delivery paths
+
+Media URLs resolve bare filenames using `app_config.dam_folder_prefix` (default
+`sellit-media/`) followed by `products/` or `avatars/`. Stored public IDs that
+already contain a slash are preserved. Uploads reread the same setting, so a
+configuration change does not require a deployment. Moving assets requires
+matching Cloudinary public IDs; changing a Media Library folder alone may not
+change the delivery path. Existing full public IDs remain authoritative.
