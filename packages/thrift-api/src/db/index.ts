@@ -6,11 +6,27 @@ import pgQuery from './postgres/pg-query.js'
 import pgGetClient from './postgres/pg-get-client.js'
 import Knex from 'knex'
 
-const { Pool, types } = nodePostgres
-const pool = new Pool(pgOptions)
+const { types } = nodePostgres
+import { databaseContext, createDatabaseHandles } from './request-context.js'
+
+const isWorker = process.env.CLOUDFLARE_WORKERS === 'true'
+const nodeHandles = isWorker ? undefined : createDatabaseHandles()
+const current = () => {
+  const handles = databaseContext.getStore() ?? nodeHandles
+  if (!handles)
+    throw new Error('Database access requires an active Worker request context')
+  return handles
+}
+const pool = new Proxy({} as nodePostgres.Pool, {
+  get(_target, property) {
+    const actual = current().pool
+    const value = Reflect.get(actual, property)
+    return typeof value === 'function' ? value.bind(actual) : value
+  },
+})
 
 // handle error...
-pool.on('error', retryConnection(pool))
+if (!isWorker) pool.on('error', retryConnection(pool))
 
 types.setTypeParser(23, function (val) {
   return parseInt(val, 10)
@@ -32,10 +48,13 @@ export const pg = {
   },
 }
 
-export const knex = Knex(knexOptions)
-
-if (process.env.CLOUDFLARE_WORKERS === 'true') {
-  // Wrangler bundles Knex's CommonJS `require('pg')` as a namespace object
-  // without the Client constructor. Use the ESM pg import already used above.
-  knex.client.driver = nodePostgres
-}
+export const knex = new Proxy(function () {} as unknown as Knex.Knex, {
+  apply(_target, _thisArg, args) {
+    return Reflect.apply(current().knex, current().knex, args)
+  },
+  get(_target, property) {
+    const actual = current().knex
+    const value = Reflect.get(actual, property)
+    return typeof value === 'function' ? value.bind(actual) : value
+  },
+})

@@ -1,3 +1,4 @@
+import { withDatabaseRequest } from './db/request-context.js'
 import express, { Request, Response, Router } from 'express'
 import 'express-async-errors'
 import helmet from 'helmet'
@@ -59,6 +60,18 @@ const swaggerDocument = await loadSwaggerDocument()
 ////////////// Middlewares //////////////
 let app = express()
 app.set('trust proxy', 1)
+if (process.env.CLOUDFLARE_WORKERS === 'true') {
+  app.use((_req, res, next) => {
+    void withDatabaseRequest(
+      () =>
+        new Promise<void>((resolve) => {
+          res.once('finish', resolve)
+          res.once('close', resolve)
+          next()
+        }),
+    ).catch(next)
+  })
+}
 app.use(cookieParser())
 if (process.env.NODE_ENV === 'production')
   app.use(
