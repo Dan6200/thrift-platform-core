@@ -4,9 +4,14 @@ import Knex from 'knex'
 import { knexOptions, pgOptions } from './postgres/options.js'
 
 export const createDatabaseHandles = () => {
+  const connectionString = workerCleanupContext.getStore()?.connectionString
+  const connection = connectionString ? { connectionString } : {}
   const id = crypto.randomUUID()
-  const pool = new nodePostgres.Pool(pgOptions)
-  const knex = Knex(knexOptions)
+  const pool = new nodePostgres.Pool({ ...pgOptions, ...connection })
+  const knex = Knex({
+    ...knexOptions,
+    connection: { ...knexOptions.connection, ...connection },
+  })
   if (process.env.CLOUDFLARE_WORKERS === 'true')
     knex.client.driver = nodePostgres
   pool.on('error', (error: Error) =>
@@ -55,6 +60,7 @@ export async function withDatabaseRequest<T>(
   })
 }
 
-export const workerCleanupContext = new AsyncLocalStorage<
-  (promise: Promise<unknown>) => void
->()
+export const workerCleanupContext = new AsyncLocalStorage<{
+  connectionString: string
+  waitUntil(promise: Promise<unknown>): void
+}>()

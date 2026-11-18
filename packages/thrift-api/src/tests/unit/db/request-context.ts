@@ -1,6 +1,7 @@
 import { knex } from '../../../db/index.js'
 import { expect } from 'chai'
 import {
+  workerCleanupContext,
   databaseContext,
   createDatabaseHandles,
   withDatabaseRequest,
@@ -34,6 +35,20 @@ export default () => {
       expect(knex.client).to.equal(databaseContext.getStore()!.knex.client)
     })
     expect(knex.client).to.equal(nodeClient)
+  })
+  it('takes connection settings from each invocation rather than startup', async () => {
+    await Promise.all(
+      ['postgres://one/db', 'postgres://two/db'].map((connectionString) =>
+        workerCleanupContext.run({ connectionString, waitUntil() {} }, () =>
+          withDatabaseRequest(async () => {
+            expect(
+              databaseContext.getStore()!.knex.client.connectionSettings
+                .connectionString,
+            ).to.equal(connectionString)
+          }),
+        ),
+      ),
+    )
   })
   it('destroys the request pool after success and failure', async () => {
     for (const shouldFail of [false, true]) {

@@ -25,7 +25,10 @@ export default {
     await initializeApplication(bindings)
     const { workerCleanupContext } = await import('./db/request-context.js')
     return workerCleanupContext.run(
-      (promise) => context?.waitUntil(promise),
+      {
+        connectionString: bindings.HYPERDRIVE.connectionString,
+        waitUntil: (promise) => context?.waitUntil(promise),
+      },
       () => handleAsNodeRequest(8080, request),
     )
   },

@@ -76,7 +76,7 @@ if (process.env.CLOUDFLARE_WORKERS === 'true') {
           next()
         }),
     ).catch(next)
-    workerCleanupContext.getStore()?.(cleanup)
+    workerCleanupContext.getStore()?.waitUntil(cleanup)
   })
 }
 app.use(cookieParser())
