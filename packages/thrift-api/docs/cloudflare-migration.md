@@ -126,9 +126,9 @@ they change.
       files and configure the web build variables in GitHub.
 - [x] Deploy the API Worker. The latest GitHub deployment workflow, including
       its API smoke checks, passed after limiting Worker database pools.
-- [ ] Continue validating product reads through Hyperdrive; direct production
-      reads intermittently return Knex pool acquisition timeouts. The latest
-      product read and homepage request succeeded.
+- [x] Verify bounded repeated/concurrent product reads after scoping Worker
+      database clients per request and switching Hyperdrive to the direct
+      Supabase endpoint. See `verification/worker-db-lifecycle.md` for results.
 - [x] Set the GitHub `NEXT_PUBLIC_SERVER` variable to
       `https://thrift-api.thrift-commerce.workers.dev`.
 - [x] Enable R2 and create `thrift-web-opennext-cache`.
@@ -140,8 +140,9 @@ they change.
 - [x] Skip initial OpenNext remote cache prepopulation during deploy because
       its helper stalls in CI; runtime R2 caching remains enabled and fills on
       cache misses.
-- [ ] Verify repeated and concurrent product reads through Hyperdrive and
-      resolve the intermittent Knex connection-pool timeouts.
+- [x] Verify repeated and concurrent product reads: 60/60 diagnostic probes and
+      10/10 production product reads passed; longer idle and write-load checks
+      remain outside this bounded verification.
 - [ ] Configure production QStash token and signing keys as API Worker secrets.
       They are absent from the API `.env.production` and GitHub secret inventory.
       CI starts a QStash dev server for tests; local dev-server installation was

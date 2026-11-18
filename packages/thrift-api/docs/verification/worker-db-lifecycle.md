@@ -87,3 +87,17 @@ separate diagnostic Worker; it is not part of the production Worker routes.
 
 Longer idle periods, other regions, and authenticated write/transaction load
 remain outside this bounded verification.
+
+## Production verification and cleanup
+
+Production deployment: https://github.com/Dan6200/thrift-platform-core/actions/runs/44408805946
+
+Deployment and all smoke checks passed. A separate production check then made
+5 sequential and 5 concurrent `/v1/products?limit=1` requests: **10/10 valid HTTP
+200 responses**, with measured end-to-end latency **823–1588 ms**.
+
+Tail evidence for the direct diagnostic revision contained all 60 requests,
+90 query starts, 90 query completions, and **90 distinct successful cleanup
+records, zero cleanup failures** (60 outer diagnostic scopes plus 30 Express
+product scopes). Diagnostic traffic was stopped after verification and the
+temporary Worker was removed.
