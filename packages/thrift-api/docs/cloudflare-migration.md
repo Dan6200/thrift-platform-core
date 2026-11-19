@@ -159,3 +159,9 @@ already contain a slash are preserved. Uploads reread the same setting, so a
 configuration change does not require a deployment. Moving assets requires
 matching Cloudinary public IDs; changing a Media Library folder alone may not
 change the delivery path. Existing full public IDs remain authoritative.
+
+## Database timeout troubleshooting
+
+For the resolved Knex acquisition timeout incident, confirmed findings, request
+lifecycle design, and recurrence checks, see
+[Worker database troubleshooting](worker-database-troubleshooting.md).

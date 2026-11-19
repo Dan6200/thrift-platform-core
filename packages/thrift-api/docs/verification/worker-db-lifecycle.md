@@ -2,6 +2,9 @@
 
 Tracked in https://github.com/Dan6200/thrift-platform-core/issues/36.
 
+For symptoms, implementation details, investigation history, and recurrence
+commands, see the [troubleshooting guide](../worker-database-troubleshooting.md).
+
 ## Findings
 
 The original API used isolate-global Knex/pg pools. Worker tail logs captured:
