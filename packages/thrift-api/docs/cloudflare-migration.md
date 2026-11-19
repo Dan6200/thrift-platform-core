@@ -190,3 +190,10 @@ node --test packages/thrift-web/tests/runtime/product-image.test.mjs
 The check compares the rendered page with the current API image URL and fetches
 that asset, requiring HTTP 200 and an image content type. `SMOKE_PRODUCT_ID`
 defaults to 82 and can select another product that has media.
+
+The renamed API and web deployments passed on November 19, 2026. The old
+`thrift-api` and `thrift-web` services were deleted after verification. Full API
+CI passed **472 tests**; the complete web check run passed **6 tests**, including
+the live product-image regression. One earlier live asset fetch failed during a
+local network request; the full retry with IPv4-first DNS passed with the same
+assertions and services. The new page and asset both returned HTTP 200.
