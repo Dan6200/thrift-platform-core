@@ -1,3 +1,4 @@
+import seedMoneyTests from './db/seed-money.js'
 import requestContextTests from './db/request-context.js'
 import configuredMediaUrlTests from './media/cloudinary-url.js'
 // cspell:disable
@@ -54,6 +55,7 @@ export default () => {
   describe('Payments process order job use case', processOrderJobUseCaseTests)
   describe('Media use cases', mediaUseCaseTests)
   describe('Configured media URLs', configuredMediaUrlTests)
+  describe('Seed money units', seedMoneyTests)
   describe('Cloudflare API Worker runtime', cloudflareRuntimeTests)
   describe('Cloudflare Worker Postgres pools', postgresPoolOptionTests)
   describe('Request database context', requestContextTests)
