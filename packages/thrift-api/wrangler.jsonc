@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "thrift-api",
+  "name": "api",
   "account_id": "533400ef2a46b6620967eb41f8837e6e",
   "main": "src/worker.ts",
   "rules": [
@@ -16,7 +16,7 @@
     "enabled": true,
   },
   "vars": {
-    "APP_URL": "https://thrift-api.thrift-commerce.workers.dev",
+    "APP_URL": "https://api.thrift-commerce.workers.dev",
   },
   "hyperdrive": [
     {

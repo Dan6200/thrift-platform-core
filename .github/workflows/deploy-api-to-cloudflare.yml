@@ -111,6 +111,6 @@ jobs:
 
       - name: Smoke test deployed API
         run: |
-          curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors https://thrift-api.thrift-commerce.workers.dev/api.json
-          curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors https://thrift-api.thrift-commerce.workers.dev/api
-          curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors "https://thrift-api.thrift-commerce.workers.dev/v1/products?limit=1"
+          curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors https://api.thrift-commerce.workers.dev/api.json
+          curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors https://api.thrift-commerce.workers.dev/api
+          curl --fail --show-error --retry 8 --retry-delay 5 --retry-all-errors "https://api.thrift-commerce.workers.dev/v1/products?limit=1"

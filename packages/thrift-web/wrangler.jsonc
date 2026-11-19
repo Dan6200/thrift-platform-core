@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "thrift-web",
+  "name": "web",
   "account_id": "533400ef2a46b6620967eb41f8837e6e",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-10",
@@ -12,7 +12,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "thrift-web",
+      "service": "web",
     },
   ],
   "r2_buckets": [
