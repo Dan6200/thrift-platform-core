@@ -6,7 +6,7 @@ export default async function getProductById(
 ): Promise<Product | null> {
   const response = await fetch(
     process.env.NEXT_PUBLIC_SERVER + '/v1/products/' + id,
-    { next: { revalidate: 30 * 60 } },
+    { cache: 'no-store' },
   ).then((res) => {
     if (!res.ok) return null
     return res.json()
