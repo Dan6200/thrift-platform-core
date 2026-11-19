@@ -120,14 +120,14 @@ status. Do not repeatedly retry a stalled endpoint without collecting logs.
 curl --silent --show-error --max-time 20 \
   --output /tmp/thrift-products-check.json \
   --write-out 'HTTP %{http_code}; total %{time_total}s\n' \
-  'https://thrift-api.thrift-commerce.workers.dev/v1/products?limit=1'
+  'https://api.thrift-commerce.workers.dev/v1/products?limit=1'
 
 # Read configuration back: check direct host/port, cache setting, and limits.
 pnpm --filter thrift-api exec wrangler hyperdrive get \
   1f80573318e5432381da2a8fe5a048e3
 
 # Run in another terminal, then make one bounded request.
-pnpm --filter thrift-api exec wrangler tail thrift-api \
+pnpm --filter thrift-api exec wrangler tail api \
   --config wrangler.jsonc --format json
 ```
 

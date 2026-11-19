@@ -5,9 +5,9 @@ Vercel to Cloudflare. Search remains on Google Cloud Run for this migration.
 
 ## Target deployment
 
-- **Web:** `thrift-web`, Next.js 15, deployed to Cloudflare Workers with
+- **Web:** `web`, Next.js 15, deployed to Cloudflare Workers with
   `@opennextjs/cloudflare`.
-- **API:** `thrift-api`, Express deployed to Cloudflare Workers through
+- **API:** `api`, Express deployed to Cloudflare Workers through
   Cloudflare's Node HTTP server adapter.
 - **Database:** existing Supabase Postgres, reached through Cloudflare
   Hyperdrive. This changes the connection path, not the database provider.
@@ -83,7 +83,7 @@ values, search URL and key, and the Upstash Redis URL). It reads
 both package `.env.production` files have been uploaded to their Cloudflare
 Workers with `wrangler secret bulk`; the web build variables and Upstash token
 are also configured in GitHub. `NEXT_PUBLIC_SERVER` points at
-`https://thrift-api.thrift-commerce.workers.dev`. Wrangler deploy does not copy
+`https://api.thrift-commerce.workers.dev`. Wrangler deploy does not copy
 GitHub secrets into Worker secrets, so keep these configurations in sync when
 they change.
 
@@ -130,10 +130,10 @@ they change.
       database clients per request and switching Hyperdrive to the direct
       Supabase endpoint. See `verification/worker-db-lifecycle.md` for results.
 - [x] Set the GitHub `NEXT_PUBLIC_SERVER` variable to
-      `https://thrift-api.thrift-commerce.workers.dev`.
+      `https://api.thrift-commerce.workers.dev`.
 - [x] Enable R2 and create `thrift-web-opennext-cache`.
 - [x] Build and deploy the web Worker at
-      `https://thrift-web.thrift-commerce.workers.dev`; the deployment passed
+      `https://web.thrift-commerce.workers.dev`; the deployment passed
       and Cloudflare published the Worker.
 - [x] Verify the web homepage returns HTTP 200 and includes a product from the
       API response in its rendered HTML.
@@ -165,3 +165,28 @@ change the delivery path. Existing full public IDs remain authoritative.
 For the resolved Knex acquisition timeout incident, confirmed findings, request
 lifecycle design, and recurrence checks, see
 [Worker database troubleshooting](worker-database-troubleshooting.md).
+
+## Worker names and product image freshness
+
+Cloudflare services are named `api` and `web`. The web self-reference points at
+`web`; the GitHub `NEXT_PUBLIC_SERVER` variable and web Worker secret point at
+`https://api.thrift-commerce.workers.dev`. Package names and the existing
+`thrift-web-opennext-cache` bucket retain their names.
+
+Product details previously cached API responses for 30 minutes. A live check on
+`/products/82` found the page rendering an old image URL without its folder even
+though the API returned the corrected `sellit-media/products/` public ID.
+Product details now use `cache: 'no-store'`, so current media paths, stock and
+prices are fetched on each request. This increases API reads for those pages.
+
+Recheck the deployed product image using real services (no mocked responses):
+
+```sh
+SMOKE_WEB_URL=https://web.thrift-commerce.workers.dev \
+SMOKE_API_URL=https://api.thrift-commerce.workers.dev \
+node --test packages/thrift-web/tests/runtime/product-image.test.mjs
+```
+
+The check compares the rendered page with the current API image URL and fetches
+that asset, requiring HTTP 200 and an image content type. `SMOKE_PRODUCT_ID`
+defaults to 82 and can select another product that has media.
