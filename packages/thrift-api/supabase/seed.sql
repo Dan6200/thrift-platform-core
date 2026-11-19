@@ -2055,29 +2055,30 @@ BEGIN
 END $$;
 
 -- Orders Seed Data
+-- Monetary seed literals below are stored as integer kobo.
 insert into public.orders (customer_id, store_id, total_amount) values
-('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', (select store_id from stores where vendor_id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' limit 1), 1100.00),
-('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', (select store_id from stores where vendor_id = 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33' limit 1), 220.00),
-('f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66', (select store_id from stores where vendor_id = 'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55' limit 1), 80.00),
-('14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99', (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' limit 1), 280.00),
-('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', (select store_id from stores where vendor_id = 'e3eebc99-9c0b-4ef8-bb6d-6bb9bd380a88' limit 1), 270.00),
-('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' limit 1), 60.00),
-('f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66', (select store_id from stores where vendor_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' limit 1), 70.00),
-('14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99', (select store_id from stores where vendor_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' limit 1), 20.00),
-('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' limit 1), 1650.00),
-('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' limit 1), 50.00);
+('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', (select store_id from stores where vendor_id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' limit 1), 110000),
+('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', (select store_id from stores where vendor_id = 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33' limit 1), 22000),
+('f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66', (select store_id from stores where vendor_id = 'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55' limit 1), 8000),
+('14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99', (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' limit 1), 28000),
+('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', (select store_id from stores where vendor_id = 'e3eebc99-9c0b-4ef8-bb6d-6bb9bd380a88' limit 1), 27000),
+('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' limit 1), 6000),
+('f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66', (select store_id from stores where vendor_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' limit 1), 7000),
+('14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99', (select store_id from stores where vendor_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' limit 1), 2000),
+('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' limit 1), 165000),
+('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' limit 1), 5000);
 
 insert into public.order_items (variant_id, order_id, quantity, price_at_purchase) values
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Laptop Pro X') LIMIT 1)), (select order_id from orders where customer_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22' and store_id = (select store_id from stores where vendor_id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' LIMIT 1) LIMIT 1), 1, 1100.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Classic Leather Jacket') LIMIT 1)), (select order_id from orders where customer_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' and store_id = (select store_id from stores where vendor_id = 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33' LIMIT 1) LIMIT 1), 1, 220.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Organic Skincare Kit') LIMIT 1)), (select order_id from orders where customer_id = 'f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66' and store_id = (select store_id from stores where vendor_id = 'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55' LIMIT 1) LIMIT 1), 1, 80.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Curved Gaming Monitor') LIMIT 1)), (select order_id from orders where customer_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' and store_id = (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' LIMIT 1) LIMIT 1), 1, 280.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Evening Gown Elegant') LIMIT 1)), (select order_id from orders where customer_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22' and store_id = (select store_id from stores where vendor_id = 'e3eebc99-9c0b-4ef8-bb6d-6bb9bd380a88' LIMIT 1) LIMIT 1), 1, 270.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Coffee Maker Drip') LIMIT 1)), (select order_id from orders where customer_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' and store_id = (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' LIMIT 1) LIMIT 1), 1, 60.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Travel Backpack 40L') LIMIT 1)), (select order_id from orders where customer_id = 'f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66' and store_id = (select store_id from stores where vendor_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' LIMIT 1) LIMIT 1), 1, 70.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Hand-painted Ceramic Mug') LIMIT 1)), (select order_id from orders where customer_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' and store_id = (select store_id from stores where vendor_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' LIMIT 1) LIMIT 1), 1, 20.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'High-Performance Gaming Laptop') LIMIT 1)), (select order_id from orders where customer_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22' and store_id = (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' LIMIT 1) LIMIT 1), 1, 1650.00),
-(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Women''s Denim Jeans') LIMIT 1)), (select order_id from orders where customer_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' and store_id = (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' LIMIT 1) LIMIT 1), 1, 50.00);
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Laptop Pro X') LIMIT 1)), (select order_id from orders where customer_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22' and store_id = (select store_id from stores where vendor_id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' LIMIT 1) LIMIT 1), 1, 110000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Classic Leather Jacket') LIMIT 1)), (select order_id from orders where customer_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' and store_id = (select store_id from stores where vendor_id = 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33' LIMIT 1) LIMIT 1), 1, 22000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Organic Skincare Kit') LIMIT 1)), (select order_id from orders where customer_id = 'f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66' and store_id = (select store_id from stores where vendor_id = 'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55' LIMIT 1) LIMIT 1), 1, 8000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Curved Gaming Monitor') LIMIT 1)), (select order_id from orders where customer_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' and store_id = (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' LIMIT 1) LIMIT 1), 1, 28000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Evening Gown Elegant') LIMIT 1)), (select order_id from orders where customer_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22' and store_id = (select store_id from stores where vendor_id = 'e3eebc99-9c0b-4ef8-bb6d-6bb9bd380a88' LIMIT 1) LIMIT 1), 1, 27000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Coffee Maker Drip') LIMIT 1)), (select order_id from orders where customer_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' and store_id = (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' LIMIT 1) LIMIT 1), 1, 6000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Travel Backpack 40L') LIMIT 1)), (select order_id from orders where customer_id = 'f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a66' and store_id = (select store_id from stores where vendor_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' LIMIT 1) LIMIT 1), 1, 7000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Hand-painted Ceramic Mug') LIMIT 1)), (select order_id from orders where customer_id = '14eebc99-9c0b-4ef8-bb6d-6bb9bd380a99' and store_id = (select store_id from stores where vendor_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' LIMIT 1) LIMIT 1), 1, 2000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'High-Performance Gaming Laptop') LIMIT 1)), (select order_id from orders where customer_id = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22' and store_id = (select store_id from stores where vendor_id = 'a2eebc99-9c0b-4ef8-bb6d-6bb9bd380a77' LIMIT 1) LIMIT 1), 1, 165000),
+(((select variant_id from product_variants where product_id = (select product_id from products where title = 'Women''s Denim Jeans') LIMIT 1)), (select order_id from orders where customer_id = 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44' and store_id = (select store_id from stores where vendor_id = '45eebc99-9c0b-4ef8-bb6d-6bb9bd380b00' LIMIT 1) LIMIT 1), 1, 5000);
 
 -- Product Reviews Seed Data
 -- Fake data for product_reviews
@@ -2213,6 +2214,7 @@ END $$;
 -- All variants are seeded with a flat base_price of 100000; this replaces that
 -- with per-category base prices plus a per-product spread. base_price is stored
 -- in kobo (the minor unit for NGN; NGN 1 = 100 kobo).
+-- CASE anchors below are authored in naira; convert once before storing.
 UPDATE product_variants pv
 SET base_price = (
     SELECT
@@ -2240,6 +2242,7 @@ SET base_price = (
         WHEN 'Handmade' THEN 35000
         ELSE 15000
       END
+      * 100 -- naira -> kobo
       * (100 + (p.product_id % 41)) / 100
     FROM products p
     JOIN categories c ON p.category_id = c.category_id
@@ -2282,10 +2285,10 @@ UPDATE public.media m SET filename = '4K_Smart_TV_55.jpg'
 --   effective   = product_variant_effective_price view
 -- ---------------------------------------------------------------------------
 
--- 1. Default modifier per option value, in kobo. Colours/scents carry no
+-- 1. Default modifier per option value: author naira, store kobo. Colours/scents carry no
 --    delta; capacity/storage/RAM/size/etc. step the price up.
 UPDATE public.product_option_values pov
-SET default_price_modifier = CASE pov.value
+SET default_price_modifier = (CASE pov.value
   -- STORAGE
   WHEN '128GB' THEN 0
   WHEN '256GB' THEN 30000
@@ -2364,7 +2367,7 @@ SET default_price_modifier = CASE pov.value
   WHEN '144Hz' THEN 0
   WHEN '240Hz' THEN 30000
   ELSE 0
-END;
+END) * 100; -- naira -> kobo
 
 -- 2. Apply each option value's default delta to the variant-option links, so
 --    effective price = base_price + Σ modifiers. Individual links can later be
