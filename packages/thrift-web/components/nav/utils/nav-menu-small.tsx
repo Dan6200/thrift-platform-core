@@ -73,6 +73,9 @@ export const NavMenuSmall = ({
       className={cn(
         'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16',
         showSearchBox ? '' : 'relative',
+        pathname === '/' &&
+          !user &&
+          'rounded-xl bg-background text-foreground shadow-sm',
       )}
     >
       <Link

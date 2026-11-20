@@ -60,7 +60,9 @@ export function NavMenu({
     setShow(false)
   }, [pathname])
   return (
-    <NavigationMenu className="max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16">
+    <NavigationMenu
+      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 ${pathname === '/' && !user ? 'rounded-xl bg-background text-foreground shadow-sm' : ''}`}
+    >
       <div className="justify-start flex items-center">
         <Link
           href="/"
