@@ -4,7 +4,7 @@ import AnimatedText from './ui/animated-text'
 import { getCldVideoUrl } from 'next-cloudinary'
 import { Montagu_Slab } from 'next/font/google'
 import { useEffect, useRef, useState } from 'react'
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from '@/hooks/use-reduced-motion'
 import { Pause, Play } from 'lucide-react'
 import { heroContent, heroFrame, heroHeading, heroTitle } from './hero-layout'
 

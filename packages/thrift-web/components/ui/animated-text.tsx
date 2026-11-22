@@ -1,8 +1,9 @@
 // components/AnimatedText.tsx
 'use client'
 
-import { motion, Transition, useReducedMotion } from 'framer-motion'
+import { motion, Transition } from 'framer-motion'
 import React from 'react'
+import { useReducedMotion } from '@/hooks/use-reduced-motion'
 
 interface AnimatedTextProps {
   as?: 'div' | 'h1'
@@ -52,14 +53,14 @@ export default function AnimatedText({
       id={id}
       className={`overflow-hidden flex flex-wrap ${className}`}
       variants={containerVariants}
-      initial={reducedMotion ? false : 'hidden'}
+      initial={reducedMotion !== false ? false : 'hidden'}
       animate="visible"
     >
       {words.map((word, index) => (
         <React.Fragment key={index}>
           <motion.span
             className="block w-full"
-            variants={reducedMotion ? undefined : wordVariants}
+            variants={reducedMotion !== false ? undefined : wordVariants}
           >
             {word}
           </motion.span>
