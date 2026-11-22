@@ -33,13 +33,14 @@ type SearchProps = {
 const Search = forwardRef<HTMLDivElement, SearchProps>(
   ({ show, setShow, setShowSearchBox, className }, searchRef) => {
     const isSmallScreen = useAtomValue(isSmallScreenAtom)
+    const searchProps = {
+      indexName: 'products',
+      searchClient,
+      catchError: true,
+    }
     return (
-      //@ts-ignore
-      <InstantSearch
-        indexName="products"
-        searchClient={searchClient}
-        catchError
-      >
+      // @ts-expect-error Meili's Algolia v4 adapter types differ from InstantSearch's v5 types.
+      <InstantSearch {...searchProps}>
         <div
           className={className}
           ref={searchRef}
