@@ -8,6 +8,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
+  DrawerClose,
 } from '@/components/ui/drawer'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
@@ -16,6 +17,7 @@ import {
   useUpdateCartItem,
 } from '@/lib/cart/use-cart'
 import { Button } from '@/components/ui/button'
+import { X } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 
 /**
@@ -28,10 +30,20 @@ export function ShoppingCartDrawerContent() {
   const removeItem = useRemoveCartItem()
 
   return (
-    <DrawerContent className="thick-glass-effect">
+    <DrawerContent className="w-[90vw] max-w-md bg-background text-foreground">
+      <DrawerClose asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Close cart"
+          className="absolute right-3 top-3 h-11 w-11 focus-visible:ring-foreground"
+        >
+          <X aria-hidden="true" />
+        </Button>
+      </DrawerClose>
       <DrawerHeader>
-        <DrawerTitle>Your Shopping Cart</DrawerTitle>
-        <DrawerDescription>
+        <DrawerTitle className="pr-10">Your Shopping Cart</DrawerTitle>
+        <DrawerDescription className="text-foreground/80">
           Review the items in your cart before proceeding to checkout.
         </DrawerDescription>
       </DrawerHeader>
@@ -39,9 +51,12 @@ export function ShoppingCartDrawerContent() {
         {!user ? (
           <div className="p-6 text-center">
             <p className="mb-4">Sign in to view your cart.</p>
-            <Link href="/auth/login?redirect=/shopping-cart">
-              <Button>Sign in</Button>
-            </Link>
+            <Button
+              asChild
+              className="min-h-11 dark:text-background focus-visible:ring-foreground"
+            >
+              <Link href="/auth/login?redirect=/shopping-cart">Sign in</Link>
+            </Button>
           </div>
         ) : isLoading ? (
           <div className="p-6 flex justify-center">
