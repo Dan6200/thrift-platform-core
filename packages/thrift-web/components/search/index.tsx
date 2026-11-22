@@ -1,6 +1,6 @@
 // cspell:ignore instantsearch, meilisearch, Meili
 import React, { Dispatch, forwardRef, SetStateAction } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   InstantSearch,
   SearchBox,
@@ -35,40 +35,60 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
     const isSmallScreen = useAtomValue(isSmallScreenAtom)
     return (
       //@ts-ignore
-      <InstantSearch indexName="products" searchClient={searchClient}>
-        <div className={className} ref={searchRef}>
-          <span className="bg-transparent flex h-10 px-3 w-full justify-between rounded-md border border-white/20 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+      <InstantSearch
+        indexName="products"
+        searchClient={searchClient}
+        catchError
+      >
+        <div
+          className={className}
+          ref={searchRef}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              setShow(false)
+              setShowSearchBox?.(false)
+            }
+          }}
+        >
+          <span className="flex min-h-11 w-full items-center rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm focus-within:ring-2 focus-within:ring-foreground">
             <SearchBox
-              onClick={() => setShow(true)}
+              onFocus={() => setShow(true)}
+              placeholder="Search products"
               submitIconComponent={SearchIcon as any}
               searchAsYouType
               resetIconComponent={X as any}
               classNames={{
                 root: 'w-full',
-                submit: 'text-foreground my-1 order-1',
-                reset: 'order-3',
-                form: 'w-full flex justify-between',
+                submit:
+                  'text-foreground min-h-11 min-w-6 order-1 focus-visible:outline-2 focus-visible:outline-foreground',
+                reset:
+                  'order-3 min-h-11 min-w-6 focus-visible:outline-2 focus-visible:outline-foreground',
+                form: 'w-full flex items-center justify-between',
                 loadingIcon: 'hidden',
                 input:
-                  'z-1000 h-9 px-3 py-1 order-2 w-[90%] bg-inherit focus-visible:outline-none',
+                  'min-w-0 h-11 px-2 py-1 order-2 w-full bg-inherit text-foreground placeholder:text-foreground/70 focus-visible:outline-none',
               }}
             />
           </span>
           <div
-            className={`p-8 border relative z-1000 top-5 rounded-md w-[90vw] md:w-[50vw] h-[80vh] ${isSmallScreen ? 'bg-transparent border-white/20' : 'thick-glass-effect'} overflow-y-scroll ${show ? '' : ' hidden'}`}
+            className={`px-4 pb-4 pt-16 border border-border relative z-20 mt-3 rounded-md w-full md:w-[min(50vw,42rem)] max-h-[65svh] min-h-28 bg-popover text-popover-foreground overflow-y-auto ${show ? '' : ' hidden'}`}
           >
             <CustomHits
               isSmallScreen={isSmallScreen}
               setShow={setShow}
               setShowSearchBox={setShowSearchBox}
             />
-            <X
-              className="w-fit absolute right-5 top-5 border rounded border-white/20 pointer"
+            <button
+              type="button"
+              aria-label="Close search results"
+              className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
               onClick={() => {
                 setShow(false)
-                setShowSearchBox && setShowSearchBox(false)
+                setShowSearchBox?.(false)
               }}
-            />
+            >
+              <X aria-hidden="true" />
+            </button>
           </div>
         </div>
       </InstantSearch>
@@ -88,7 +108,19 @@ function CustomHits({
   setShowSearchBox?: Dispatch<SetStateAction<boolean>>
 }) {
   const { hits } = useHits()
-  const { results } = useInstantSearch()
+  const { results, status } = useInstantSearch()
+  if (status === 'error')
+    return (
+      <p role="alert">
+        Search is temporarily unavailable. Please try again or{' '}
+        <Link href="/products" className="underline">
+          browse products
+        </Link>
+        .
+      </p>
+    )
+  if (status === 'loading' || status === 'stalled')
+    return <p role="status">Searching products…</p>
 
   // Initial state before any search is performed
   if (!results && (results as any)?.query) {
@@ -152,7 +184,6 @@ const Hit = ({
   setShow: Dispatch<SetStateAction<boolean>>
   setShowSearchBox?: Dispatch<SetStateAction<boolean>>
 }) => {
-  const router = useRouter()
   // Find the display image or fall back to the first image
   const displayImage =
     hit.media?.find((m: any) => m.is_display_image) || hit.media?.[0]
@@ -164,12 +195,12 @@ const Hit = ({
       : ''
 
   return (
-    <article
-      className="my-4 p-2 rounded-md text-foreground/70 dark:text-foreground/70 hover:bg-foreground/10 cursor-pointer flex items-center gap-4"
+    <Link
+      href={`/products/${hit.product_id}`}
+      className="my-4 p-2 rounded-md text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground flex items-center gap-4"
       onClick={() => {
-        router.push(`/products/${hit.product_id}`)
-        setShow(false) // Close search on navigation
-        setShowSearchBox && setShowSearchBox(false)
+        setShow(false)
+        setShowSearchBox?.(false)
       }}
       key={hit.product_id}
     >
@@ -184,7 +215,7 @@ const Hit = ({
         </div>
       )}
       <div className="flex-grow">
-        <h1 className="font-bold sm:text-lg mb-1">
+        <h2 className="font-bold sm:text-lg mb-1">
           <Highlight
             attribute="title"
             hit={hit}
@@ -193,10 +224,10 @@ const Hit = ({
               highlighted: 'bg-transparent font-extrabold text-foreground',
             }}
           />
-        </h1>
+        </h2>
         <p className="text-sm sm:text-base">{description.slice(0, 70)}...</p>
       </div>
-    </article>
+    </Link>
   )
 }
 
