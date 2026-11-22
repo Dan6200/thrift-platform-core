@@ -27,3 +27,11 @@ Build before verification. Local `next build` timed out fetching Google Fonts in
 ## External service finding
 
 The browser reported `ERR_NAME_NOT_RESOLVED` for the configured search hostname, `thrift-search.danielnyo.ng`. Search-result retrieval could not be verified while that endpoint was unavailable. The audit leaves search infrastructure configuration unchanged; it verifies dialog presentation and keyboard behavior against the actual configured service.
+
+## Verified result
+
+- Final build/deployment: [Cloudflare workflow 45020987069](https://github.com/Dan6200/thrift-platform-core/actions/runs/45020987069), Worker version `3d1cde3b-ba05-4f4a-9958-c9c1397e5855`.
+- Deployed Playwright audit: passed in light/dark at 390, 768 and 1440px. Additional live checks confirmed the 320px layout, mobile theme buttons, and pausing/resuming playback when the reduced-motion preference changes.
+- Full web suite: **6 passed, 0 failed, 0 skipped**, including the bracketed product route and the real API/page/image smoke test. An earlier complete run failed on a live network fetch; the final complete rerun passed without mocks or relaxed assertions.
+- API CI for the deployed implementation: [45020987657](https://github.com/Dan6200/thrift-platform-core/actions/runs/45020987657) passed.
+- Visual inspection included light/dark hero states, desktop dropdowns, and mobile navigation. Successful search results remain unverified because of the DNS finding above.
