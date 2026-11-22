@@ -1,5 +1,5 @@
 // Run with Playwright MCP browser_run_code_unsafe(filename). Uses the real site.
-;async (page) => {
+async function auditHero(page) {
   const failures = []
   const check = (ok, message) => {
     if (!ok) failures.push(message)
@@ -7,11 +7,13 @@
   for (const theme of ['light', 'dark']) {
     for (const width of [390, 768, 1440]) {
       await page.setViewportSize({ width, height: 900 })
-      await page.goto('https://web.thrift-commerce.workers.dev')
+      await page.goto('https://web.thrift-commerce.workers.dev', {
+        waitUntil: 'domcontentloaded',
+      })
       await page.evaluate((theme) => {
         localStorage.setItem('theme', theme)
       }, theme)
-      await page.reload()
+      await page.reload({ waitUntil: 'domcontentloaded' })
       await page
         .getByRole('link', { name: 'Start selling', exact: true })
         .waitFor()
@@ -42,6 +44,50 @@
           await link.evaluate((e) => e.matches(':focus-visible')),
           `${prefix}: ${name} keyboard focus`,
         )
+        for (const state of ['normal', 'hover']) {
+          if (state === 'hover') await link.hover()
+          const contrast = await link.evaluate((e) => {
+            const ctx = document.createElement('canvas').getContext('2d')
+            const pixel = (color) => {
+              ctx.clearRect(0, 0, 1, 1)
+              ctx.fillStyle = color
+              ctx.fillRect(0, 0, 1, 1)
+              return [...ctx.getImageData(0, 0, 1, 1).data]
+            }
+            const style = getComputedStyle(e)
+            const fg = pixel(style.color)
+            const bg = pixel(style.backgroundColor)
+            let backdrop = [102, 102, 102]
+            for (let p = e.parentElement; p; p = p.parentElement) {
+              const value = pixel(getComputedStyle(p).backgroundColor)
+              if (value[3] === 255) {
+                backdrop = value
+                break
+              }
+            }
+            const composed = bg
+              .slice(0, 3)
+              .map(
+                (c, i) => (c * bg[3]) / 255 + backdrop[i] * (1 - bg[3] / 255),
+              )
+            const lum = (rgb) =>
+              rgb
+                .slice(0, 3)
+                .map((v) => v / 255)
+                .map((v) =>
+                  v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4,
+                )
+                .reduce((n, v, i) => n + v * [0.2126, 0.7152, 0.0722][i], 0)
+            return (
+              (Math.max(lum(fg), lum(composed)) + 0.05) /
+              (Math.min(lum(fg), lum(composed)) + 0.05)
+            )
+          })
+          check(
+            contrast >= 4.5,
+            `${prefix}: ${name} ${state} contrast ${contrast.toFixed(2)} < 4.5`,
+          )
+        }
       }
       check(
         (await page
@@ -94,7 +140,7 @@
     }
   }
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.reload()
+  await page.reload({ waitUntil: 'domcontentloaded' })
   check(
     await page.locator('video').evaluate((e) => e.paused),
     'reduced motion: video autoplayed',
