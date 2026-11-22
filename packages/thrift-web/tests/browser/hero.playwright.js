@@ -147,6 +147,22 @@ async function auditHero(page) {
       }
     }
   }
+  await page.getByRole('button', { name: /Shopping cart,/ }).click()
+  const cart = page.getByRole('dialog', { name: 'Your Shopping Cart' })
+  await cart.waitFor()
+  const cartOpaque = await cart.evaluate((e) => {
+    const ctx = document.createElement('canvas').getContext('2d')
+    ctx.fillStyle = getComputedStyle(e).backgroundColor
+    ctx.fillRect(0, 0, 1, 1)
+    return ctx.getImageData(0, 0, 1, 1).data[3] === 255
+  })
+  check(cartOpaque, 'cart drawer: translucent surface over hero')
+  check(
+    (await cart.locator('a button').count()) === 0,
+    'cart drawer: nested interactive controls',
+  )
+  await page.keyboard.press('Escape')
+  await cart.waitFor({ state: 'hidden' })
   const toggle = page.getByRole('button', { name: 'Toggle theme', exact: true })
   await toggle.click()
   await page.getByRole('menuitem', { name: 'Light', exact: true }).click()
