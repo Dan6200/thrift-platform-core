@@ -17,6 +17,10 @@ async function auditHero(page) {
       await page
         .getByRole('link', { name: 'Start selling', exact: true })
         .waitFor()
+      // autoPlay is enabled by the hydrated client after reading motion preferences.
+      await page.waitForFunction(
+        () => document.querySelector('video')?.autoplay === true,
+      )
       const prefix = `${theme}/${width}`
       check(
         (await page
