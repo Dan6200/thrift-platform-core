@@ -46,6 +46,11 @@ async function auditHero(page) {
         )
         for (const state of ['normal', 'hover']) {
           if (state === 'hover') await link.hover()
+          await link.evaluate((e) =>
+            Promise.all(
+              e.getAnimations().map((animation) => animation.finished),
+            ),
+          )
           const contrast = await link.evaluate((e) => {
             const ctx = document.createElement('canvas').getContext('2d')
             const pixel = (color) => {
@@ -138,6 +143,48 @@ async function auditHero(page) {
       }
     }
   }
+  const toggle = page.getByRole('button', { name: 'Toggle theme', exact: true })
+  await toggle.click()
+  await page.getByRole('menuitem', { name: 'Light', exact: true }).click()
+  check(
+    await page.evaluate(() =>
+      document.documentElement.classList.contains('light'),
+    ),
+    'theme menu: light did not apply',
+  )
+  await page
+    .getByRole('button', { name: 'Browse Categories', exact: true })
+    .click()
+  await page
+    .getByRole('link', { name: /Electronics/ })
+    .first()
+    .waitFor()
+  await page.keyboard.press('Escape')
+  const pause = page.getByRole('button', { name: 'Pause background video' })
+  await pause.waitFor()
+  await pause.click()
+  check(
+    await page.locator('video').evaluate((e) => e.paused),
+    'pause video did not pause playback',
+  )
+  await page.getByRole('button', { name: 'Play background video' }).click()
+  await page.waitForFunction(() => !document.querySelector('video').paused)
+  await page.setViewportSize({ width: 390, height: 844 })
+  const search = page.getByRole('button', {
+    name: 'Search products',
+    exact: true,
+  })
+  await search.click()
+  const dialog = page.getByRole('dialog', { name: 'Search products' })
+  await dialog.waitFor()
+  const input = dialog.getByRole('searchbox')
+  await input.fill('dress')
+  await page.keyboard.press('Escape')
+  await dialog.waitFor({ state: 'hidden' })
+  check(
+    await search.evaluate((e) => e === document.activeElement),
+    'search: focus not restored on Escape',
+  )
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.reload({ waitUntil: 'domcontentloaded' })
   check(
