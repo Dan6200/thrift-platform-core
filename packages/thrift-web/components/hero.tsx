@@ -27,7 +27,21 @@ export function Hero({
   const [playing, setPlaying] = useState(false)
   const [failed, setFailed] = useState(false)
   useEffect(() => {
-    if (reducedMotion) video.current?.pause()
+    const element = video.current
+    if (!element) return
+    if (reducedMotion !== false) element.pause()
+    else {
+      // Adding autoplay after media has loaded does not reliably start playback.
+      void element.play().catch((error: DOMException) => {
+        if (error.name === 'NotAllowedError' || error.name === 'AbortError') {
+          // Browser policy can require a gesture; the Play control remains available.
+          setPlaying(false)
+        } else {
+          console.warn('Background video could not start', error)
+          setFailed(true)
+        }
+      })
+    }
   }, [reducedMotion])
   return (
     <section aria-labelledby="hero-heading" className={heroFrame}>
