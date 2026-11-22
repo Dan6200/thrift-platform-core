@@ -1,0 +1,25 @@
+# Hero and navigation audit
+
+Audited on 22 November 2026 against the deployed Cloudflare web Worker.
+
+## Findings and changes
+
+The navbar-only fix left other surfaces dependent on the video frame underneath. The full audit covered the hero, both calls to action, desktop menus, theme selection, mobile navigation/search, and the cart drawer.
+
+- The headline had no `h1`, and the video could extend a pixel past the viewport. The hero now uses a labelled section, a semantic heading, a positioned frame, and a small-viewport-height layout with enough minimum height for short screens to scroll safely.
+- The Browse CTA inherited pale text on light purple in dark mode. Both CTAs now have explicit theme-aware foregrounds and surfaces, 48px minimum height, visible keyboard focus, and short transitions. Links contain no nested buttons.
+- A 60% black video overlay keeps the white headline readable even over a white frame (approximately 5.74:1). Menus and action surfaces use solid theme colors instead of relying on blur for contrast.
+- Welcome, categories, theme selection, search results, mobile navigation, and the cart drawer now have opaque backgrounds. Cart and mobile search have named close controls; mobile navigation has an accessible title and scrolls on short screens.
+- Mobile search now uses the existing Radix dialog for focus containment, Escape handling, and return focus. Search results are keyboard-accessible links, and search loading/error messages have status/alert roles.
+- The background video has a working Play/Pause control and a static poster fallback. A browser media-query hook reads reduced-motion preferences after hydration, responds to changes, and cleans up its listener. The initial implementation using the motion library's hook left autoplay disabled on the deployed site; the live playback check caught this and prompted the replacement.
+- The loading fallback shares the hero's heading, layout, overlay, font, poster and CTAs to avoid a visually different loading state.
+
+## Regression checks
+
+`tests/browser/hero.playwright.js` is an async function for Playwright MCP's `browser_run_code_unsafe` tool (`filename` argument, relative to the repository root). It exercises the actual deployed site without mocked API, search or video responses.
+
+The checks cover both themes at phone, tablet and desktop sizes, CTA text contrast (at least 4.5:1, including hover), target size, focus, heading semantics, overflow, opaque menus/cart, theme switching, video pause/resume, mobile search focus restoration, and reduced motion. Wait for hydration before clicking server-rendered controls.
+
+Run all web Node tests with the workspace's `tsx` runner, including `app/products/[id]/page.test.ts`. Escape brackets in paths passed to Node's test runner: otherwise it treats `[id]` as a glob and silently leaves that test out. Set `SMOKE_WEB_URL` and `SMOKE_API_URL` to the deployed services for the live image check. Do not replace failed network checks with mocks.
+
+Build before verification. Local `next build` timed out fetching Google Fonts in this environment; the Cloudflare workflow performs the real Next/OpenNext build and type check before deployment. After deployment, inspect actual rendering and playback instead of relying only on a successful workflow status.
