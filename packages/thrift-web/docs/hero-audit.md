@@ -11,7 +11,7 @@ The navbar-only fix left other surfaces dependent on the video frame underneath.
 - A 60% black video overlay keeps the white headline readable even over a white frame (approximately 5.74:1). Menus and action surfaces use solid theme colors instead of relying on blur for contrast.
 - Welcome, categories, theme selection, search results, mobile navigation, and the cart drawer now have opaque backgrounds. Cart and mobile search have named close controls; mobile navigation has an accessible title and scrolls on short screens.
 - Mobile search now uses the existing Radix dialog for focus containment, Escape handling, and return focus. Search results are keyboard-accessible links, and search loading/error messages have status/alert roles.
-- The background video has a working Play/Pause control and a static poster fallback. A browser media-query hook reads reduced-motion preferences after hydration, responds to changes, and cleans up its listener. The initial implementation using the motion library's hook left autoplay disabled on the deployed site; the live playback check caught this and prompted the replacement.
+- The background video has a working Play/Pause control and a static poster fallback. A browser media-query hook reads reduced-motion preferences after hydration, responds to changes, and cleans up its listener. The initial implementation using the motion library's hook left autoplay disabled on the deployed site; the live playback check caught this and prompted the replacement. Playback is explicitly requested after the preference resolves; setting the autoplay attribute alone after media has loaded was insufficient in the deployed browser.
 - The loading fallback shares the hero's heading, layout, overlay, font, poster and CTAs to avoid a visually different loading state.
 
 ## Regression checks
@@ -23,3 +23,7 @@ The checks cover both themes at phone, tablet and desktop sizes, CTA text contra
 Run all web Node tests with the workspace's `tsx` runner, including `app/products/[id]/page.test.ts`. Escape brackets in paths passed to Node's test runner: otherwise it treats `[id]` as a glob and silently leaves that test out. Set `SMOKE_WEB_URL` and `SMOKE_API_URL` to the deployed services for the live image check. Do not replace failed network checks with mocks.
 
 Build before verification. Local `next build` timed out fetching Google Fonts in this environment; the Cloudflare workflow performs the real Next/OpenNext build and type check before deployment. After deployment, inspect actual rendering and playback instead of relying only on a successful workflow status.
+
+## External service finding
+
+The browser reported `ERR_NAME_NOT_RESOLVED` for the configured search hostname, `thrift-search.danielnyo.ng`. Search-result retrieval could not be verified while that endpoint was unavailable. The audit leaves search infrastructure configuration unchanged; it verifies dialog presentation and keyboard behavior against the actual configured service.
