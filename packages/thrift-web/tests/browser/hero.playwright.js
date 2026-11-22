@@ -143,6 +143,9 @@ async function auditHero(page) {
             .getByRole('button', { name: 'Browse Categories', exact: true })
             .click()
           await page.keyboard.press('Escape')
+          await page
+            .getByRole('dialog', { name: 'Navigation' })
+            .waitFor({ state: 'hidden' })
           check(
             await open.evaluate((e) => e === document.activeElement),
             `${prefix}: menu focus not restored`,
