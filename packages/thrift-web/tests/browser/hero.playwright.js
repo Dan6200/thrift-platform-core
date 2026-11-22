@@ -54,7 +54,7 @@ async function auditHero(page) {
               ctx.fillRect(0, 0, 1, 1)
               return [...ctx.getImageData(0, 0, 1, 1).data]
             }
-            const style = getComputedStyle(e)
+            const style = getComputedStyle(e.querySelector('button') || e)
             const fg = pixel(style.color)
             const bg = pixel(style.backgroundColor)
             let backdrop = [102, 102, 102]
@@ -106,12 +106,11 @@ async function auditHero(page) {
         const opaque = await page
           .getByRole('link', { name: /Thrift Commerce/ })
           .evaluate((e) => {
-            for (let p = e; p; p = p.parentElement) {
-              const bg = getComputedStyle(p).backgroundColor
-              if (bg !== 'rgba(0, 0, 0, 0)' && !bg.startsWith('rgba'))
-                return true
-            }
-            return false
+            const panel = e.closest('ul').parentElement
+            const ctx = document.createElement('canvas').getContext('2d')
+            ctx.fillStyle = getComputedStyle(panel).backgroundColor
+            ctx.fillRect(0, 0, 1, 1)
+            return ctx.getImageData(0, 0, 1, 1).data[3] === 255
           })
         check(opaque, `${prefix}: menu has no opaque surface`)
         await page.keyboard.press('Escape')
