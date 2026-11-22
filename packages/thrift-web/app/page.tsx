@@ -27,7 +27,7 @@ export default async function Home() {
             </HeroLoading>
           }
         >
-          <Hero className="text-white flex flex-col gap-16 md:gap-32">
+          <Hero>
             <CTA />
           </Hero>
         </Suspense>

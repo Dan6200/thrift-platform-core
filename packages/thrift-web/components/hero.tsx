@@ -1,20 +1,18 @@
 'use client'
 import { cn } from '@/lib/utils'
 import AnimatedText from './ui/animated-text'
-import { useAtomValue } from 'jotai'
-import { isSmallScreenAtom } from '@/atoms'
 import { getCldVideoUrl } from 'next-cloudinary'
 import { Montagu_Slab } from 'next/font/google'
+import { useEffect, useRef, useState } from 'react'
+import { useReducedMotion } from 'framer-motion'
+import { Pause, Play } from 'lucide-react'
+import { heroContent, heroFrame, heroHeading, heroTitle } from './hero-layout'
 
 const font = Montagu_Slab({ weight: '500', subsets: ['latin'] })
-
-const dim = {
+const videoSrc = getCldVideoUrl({
   width: 1920,
   height: 1080,
-}
-const videoSrc = getCldVideoUrl({
-  ...dim,
-  src: 'sellit-media/hero/laptop-unboxing-hd', // Public ID of your video
+  src: 'sellit-media/hero/laptop-unboxing-hd',
 })
 
 export function Hero({
@@ -24,29 +22,64 @@ export function Hero({
   children: React.ReactNode
   className?: string
 }) {
-  const text = 'Create lasting|memories shopping|with Thrift.'
-  const delim = '|'
+  const video = useRef<HTMLVideoElement>(null)
+  const reducedMotion = useReducedMotion()
+  const [playing, setPlaying] = useState(false)
+  const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    if (reducedMotion) video.current?.pause()
+  }, [reducedMotion])
   return (
-    <div className="h-screen">
+    <section aria-labelledby="hero-heading" className={heroFrame}>
       <video
+        ref={video}
         src={videoSrc}
-        autoPlay
+        autoPlay={reducedMotion === false}
         loop
         muted
         playsInline
-        className="z-0 absolute top-0 h-screen w-full object-cover"
+        aria-hidden="true"
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onError={() => setFailed(true)}
+        className="absolute inset-0 h-full w-full object-cover"
         poster="/laptop-unboxing-hd.jpg"
       />
-      <div
-        className={cn(
-          'text-3xl sm:text-5xl md:text-5xl xl:text-7xl capitalize p-4 md:p-16 bg-black/50 inset-0 top-0 absolute font-extrabold z-5 flex h-full text-left items-start justify-end',
-          className,
-          font?.className,
-        )}
-      >
-        <AnimatedText text={text} delim={delim} />
+      <div className={cn(heroContent, font.className, className)}>
+        <AnimatedText
+          as="h1"
+          id="hero-heading"
+          className={heroHeading}
+          text={heroTitle}
+          delim="|"
+        />
         {children}
       </div>
-    </div>
+      {!failed && (
+        <button
+          type="button"
+          aria-label={`${playing ? 'Pause' : 'Play'} background video`}
+          className="absolute bottom-5 right-6 flex min-h-11 items-center gap-2 rounded-md bg-black px-4 text-sm text-white hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          onClick={async () => {
+            if (!video.current) return
+            if (playing) video.current.pause()
+            else {
+              try {
+                await video.current.play()
+              } catch {
+                setFailed(true)
+              }
+            }
+          }}
+        >
+          {playing ? (
+            <Pause aria-hidden="true" size={16} />
+          ) : (
+            <Play aria-hidden="true" size={16} />
+          )}
+          {playing ? 'Pause video' : 'Play video'}
+        </button>
+      )}
+    </section>
   )
 }
