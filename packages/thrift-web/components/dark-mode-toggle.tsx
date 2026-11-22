@@ -42,26 +42,29 @@ export const AccordionComp = ({
       </AccordionTrigger>
       <AccordionContent>
         <div className="flex flex-col space-y-3 p-4 items-center">
-          <a
+          <button
+            type="button"
             onClick={() => setTheme('light')}
-            className="block active:bg-neutral-300 dark:active:bg-neutral-700 h-9 w-full  p-2 "
+            className="block active:bg-neutral-300 dark:active:bg-neutral-700 min-h-11 w-full rounded-md p-2 text-left focus-visible:outline-2 focus-visible:outline-foreground "
           >
             Light
             <Sun className="h-[1.2rem] inline ml-4 w-[1.2rem]" />
-          </a>
-          <a
+          </button>
+          <button
+            type="button"
             onClick={() => setTheme('dark')}
-            className="block active:bg-neutral-300 dark:active:bg-neutral-700 h-9 w-full  p-2 "
+            className="block active:bg-neutral-300 dark:active:bg-neutral-700 min-h-11 w-full rounded-md p-2 text-left focus-visible:outline-2 focus-visible:outline-foreground "
           >
             Dark
             <Moon className="h-[1.2rem] inline ml-4 w-[1.2rem]" />
-          </a>
-          <a
+          </button>
+          <button
+            type="button"
             onClick={() => setTheme('system')}
-            className="block active:bg-neutral-300 dark:active:bg-neutral-700 h-9 w-full  p-2 "
+            className="block active:bg-neutral-300 dark:active:bg-neutral-700 min-h-11 w-full rounded-md p-2 text-left focus-visible:outline-2 focus-visible:outline-foreground "
           >
             System <Smartphone className="h-[1.2rem] inline ml-4 w-[1.2rem]" />
-          </a>
+          </button>
         </div>
       </AccordionContent>
     </AccordionItem>
@@ -74,14 +77,17 @@ const DropDown = ({ setTheme }: { setTheme: (theme: string) => void }) => (
       <Button
         variant="outline"
         size="icon"
-        className="my-2 p-0 w-10 bg-transparent hover:bg-white/20 focus:bg-white/20 border-none"
+        className="my-2 p-0 h-11 w-11 bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground border-none"
       >
         <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="thick-glass-effect">
+    <DropdownMenuContent
+      align="end"
+      className="bg-popover text-popover-foreground"
+    >
       <DropdownMenuItem onClick={() => setTheme('light')}>
         Light
       </DropdownMenuItem>

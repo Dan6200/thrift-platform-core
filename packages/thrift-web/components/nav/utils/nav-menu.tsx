@@ -70,23 +70,23 @@ export function NavMenu({
         >
           Thrift
         </Link>
-        <NavigationMenuList className="ml-16 bg-transparent">
+        <NavigationMenuList className="ml-6 bg-transparent">
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent hover:bg-white/20 focus:bg-white/20 rounded-md">
+            <NavigationMenuTrigger className="bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
               Welcome
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl backdrop-blur-md bg-accent/30">
+            <NavigationMenuContent className="rounded-xl bg-popover text-popover-foreground">
               <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/80 to-secondary text-primary-foreground dark:from-primary/40 dark:to-secondary/50 p-6 no-underline outline-none focus:shadow-md"
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-primary text-primary-foreground dark:text-background p-6 no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
                       href="/"
                     >
                       <div className="mb-2 mt-4 text-lg font-bold">
                         Thrift Commerce
                       </div>
-                      <p className="text-sm leading-tight text-primary-foreground dark:text-primary-foreground/80">
+                      <p className="text-sm leading-snug">
                         Shop new handpicked deals in categories such as
                         electronics, computers & tablets, fashion & fashion
                         accessories etc.
@@ -111,10 +111,10 @@ export function NavMenu({
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent hover:bg-white/20 focus:bg-white/20 rounded-md">
+            <NavigationMenuTrigger className="bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
               Browse Categories
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl backdrop-blur-xl bg-accent/30">
+            <NavigationMenuContent className="rounded-xl bg-popover text-popover-foreground">
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                 {components.map((component) => (
                   <ListItem
@@ -131,26 +131,25 @@ export function NavMenu({
         </NavigationMenuList>
       </div>
       <Search
-        className="absolute top-0 sm:top-0 w-80 sm:w-[25rem] border-white/20 flex flex-col z-100 items-center mt-[.75rem] left-[50%] translate-x-[-50%]"
+        className="relative mx-6 flex min-w-0 max-w-md flex-1 flex-col items-center z-20"
         ref={searchRef}
         {...{ show, setShow }}
       />
       <div className="flex space-x-4 items-center justify-between">
         <Drawer direction="right">
           <DrawerTrigger asChild>
-            <div className="relative h-12 w-12 p-0 z-10">
+            <Button
+              variant="outline"
+              aria-label={`Shopping cart, ${totalItems} items`}
+              className="relative h-11 w-11 border-none bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground"
+            >
+              <ShoppingCart className="w-5" aria-hidden="true" />
               {!!totalItems && (
-                <span className="bg-primary text-primary-foreground w-6 text-center block absolute right-0 top-0 text-sm rounded-full">
+                <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-sm text-primary-foreground dark:text-background">
                   {totalItems}
                 </span>
               )}
-              <Button
-                variant="outline"
-                className="my-2 p-0 w-10 bg-transparent hover:bg-white/20 focus:bg-white/20 border-none"
-              >
-                <ShoppingCart className="w-5" />
-              </Button>
-            </div>
+            </Button>
           </DrawerTrigger>
           <ShoppingCartDrawerContent />
         </Drawer>
@@ -159,7 +158,7 @@ export function NavMenu({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="border-none bg-transparent hover:bg-white/20 focus:bg-white/20"
+                className="border-none bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground"
               >
                 Hello,
                 {user && (
@@ -171,7 +170,7 @@ export function NavMenu({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="rounded-xl glass-effect">
+            <PopoverContent className="rounded-xl bg-popover text-popover-foreground">
               <section className="flex flex-col space-y-2">
                 <Link
                   href="/create-vendor"
@@ -191,14 +190,12 @@ export function NavMenu({
             </PopoverContent>
           </Popover>
         ) : (
-          <Link href="/auth/login">
-            <Button
-              type="button"
-              className="text-md py-1 px-3 bg-primary/80 hover:bg-primary"
-            >
-              Sign In
-            </Button>
-          </Link>
+          <Button
+            asChild
+            className="min-h-11 bg-primary text-primary-foreground dark:text-background hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-foreground"
+          >
+            <Link href="/auth/login">Sign In</Link>
+          </Button>
         )}
         <ModeToggle />
       </div>

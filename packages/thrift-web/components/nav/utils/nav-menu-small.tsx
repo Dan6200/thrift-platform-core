@@ -13,6 +13,7 @@ import {
   DrawerContent,
   DrawerTrigger,
   DrawerClose,
+  DrawerTitle,
 } from '@/components/ui/drawer'
 import { PanelRightClose, UserCircle2 } from 'lucide-react'
 import { components } from './nav-components'
@@ -21,6 +22,12 @@ import { useSetAtom } from 'jotai'
 import { useCart } from '@/lib/cart/use-cart'
 import SearchComp from '@/components/search'
 import { cn } from '@/lib/utils'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { signOutWrapper } from '@/app/auth'
 import { Montagu_Slab } from 'next/font/google'
 import { Profile } from '@/types/profile'
@@ -41,9 +48,7 @@ export const NavMenuSmall = ({
   const [showSearchBox, setShowSearchBox] = useState(false)
   const { data: cart } = useCart()
   const totalItems = cart?.total_items ?? 0
-  const searchOverLayRef = useRef<null | HTMLDivElement>(null)
   const searchRef = useRef<null | HTMLDivElement>(null)
-  const toggleSearchButton = useRef<null | HTMLButtonElement>(null)
   const [show, setShow] = useState(false)
   const pathname = usePathname()
 
@@ -52,27 +57,11 @@ export const NavMenuSmall = ({
     setShowSearchBox(false)
   }, [pathname])
 
-  useEffect(() => {
-    document.addEventListener('click', hide)
-    return () => document.removeEventListener('click', hide)
-  }, [])
-
-  const hide = (e: Event) => {
-    if (
-      searchRef.current &&
-      !searchRef.current.contains(e.target as any) &&
-      !toggleSearchButton.current?.contains(e.target as any)
-    ) {
-      setShow(false)
-      setShowSearchBox(false)
-    }
-  }
-
   return (
     <div
       className={cn(
-        'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-4 h-16',
-        showSearchBox ? '' : 'relative',
+        'z-10 max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto my-8 px-3 h-16',
+        'relative',
         pathname === '/' &&
           !user &&
           'rounded-xl bg-background text-foreground shadow-sm',
@@ -84,60 +73,80 @@ export const NavMenuSmall = ({
       >
         Thrift
       </Link>
-      <div className="flex items-center justify-between space-x-2">
-        <Button
-          variant={'outline'}
-          className="bg-transparent self-center border-none"
-          size="icon"
-          onClick={() => setShowSearchBox(true)}
-          ref={toggleSearchButton}
+      <div className="flex items-center justify-between gap-1">
+        <Dialog open={showSearchBox} onOpenChange={setShowSearchBox}>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="h-11 w-11 border-none bg-transparent"
+              size="icon"
+              aria-label="Search products"
+            >
+              <Search aria-hidden="true" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent
+            aria-describedby={undefined}
+            className="top-4 translate-y-0 w-[95vw] max-h-[90svh] overflow-y-auto bg-background text-foreground [&>button]:h-11 [&>button]:w-11"
+          >
+            <DialogTitle className="pr-12">Search products</DialogTitle>
+            <SearchComp
+              className="flex w-full flex-col items-center"
+              ref={searchRef}
+              {...{ show, setShow, setShowSearchBox }}
+            />
+          </DialogContent>
+        </Dialog>
+        <Link
+          href="/shopping-cart"
+          aria-label={`Shopping cart, ${totalItems} items`}
+          className="relative flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
         >
-          <Search />
-        </Button>
-        <Link href="/shopping-cart" className="block relative h-12 w-12 p-0">
+          <ShoppingCart className="w-5" aria-hidden="true" />
           {!!totalItems && (
-            <span className="bg-primary text-primary-foreground w-6 text-center block absolute right-0 top-0 text-sm rounded-full">
+            <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-sm text-primary-foreground dark:text-background">
               {totalItems}
             </span>
           )}
-          <Button
-            variant="outline"
-            size="icon"
-            className="my-2 p-0 w-10 bg-transparent border-none"
-          >
-            <ShoppingCart className="w-5" />
-          </Button>
         </Link>
         {user ? (
           <Link
             href="/account"
-            className="active:bg-neutral-300 dark:active:bg-neutral-700"
+            aria-label="Your account"
+            className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
           >
             <UserCircle2 />
           </Link>
         ) : (
-          <Link href="/auth/login">
-            <Button type="button" className="py-1 px-3 text-md h-8">
-              Sign In
-            </Button>
-          </Link>
+          <Button
+            asChild
+            className="h-11 px-3 bg-primary text-primary-foreground dark:text-background hover:bg-primary/90"
+          >
+            <Link href="/auth/login">Sign In</Link>
+          </Button>
         )}
         <Drawer direction="right">
           <DrawerTrigger asChild>
             <Button
               variant="outline"
-              className="bg-transparent border-none"
+              className="h-11 w-11 bg-transparent border-none"
+              aria-label="Open menu"
               size="icon"
             >
               <Menu />
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="h-full w-[70vw] sm:w-[50vw] p-4 thick-glass-effect">
+          <DrawerContent
+            aria-describedby={undefined}
+            className="h-full w-[85vw] max-w-sm overflow-y-auto p-4 bg-background text-foreground"
+          >
+            <DrawerTitle className="sr-only">Navigation</DrawerTitle>
             <DrawerClose asChild>
               <Button
                 variant="outline"
                 size="icon"
-                className="border-none relative bg-transparent"
+                aria-label="Close menu"
+                className="h-11 w-11 border-none relative bg-transparent"
               >
                 <PanelRightClose />
               </Button>
@@ -152,13 +161,13 @@ export const NavMenuSmall = ({
                 <AccordionContent>
                   <div className="flex flex-col space-y-3 p-4">
                     <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/80 to-secondary/90 text-primary-foreground dark:from-primary/40 dark:to-secondary/50 p-6 no-underline outline-none focus:shadow-md"
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-primary text-primary-foreground dark:text-background p-6 no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
                       href="/"
                     >
                       <div className="mb-2 mt-4 text-lg font-medium">
                         Thrift Commerce
                       </div>
-                      <p className="text-sm leading-tight text-primary-foreground dark:text-primary-foreground/80">
+                      <p className="text-sm leading-snug">
                         Shop new handpicked deals in categories such as
                         electronics, computers & tablets, fashion & fashion
                         accessories etc.
@@ -167,14 +176,14 @@ export const NavMenuSmall = ({
                     <Link
                       href="/deals/new-arrivals"
                       title="New Arrivals"
-                      className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                      className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
                     >
                       New Arrivals for fashion and fashion accessories.
                     </Link>
                     <Link
                       href="/deals/electronics"
                       title="Deals on Electronics"
-                      className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                      className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
                     >
                       Hot new deals on electronic items such as TVs, mobile
                       phones and household electronics
@@ -182,7 +191,7 @@ export const NavMenuSmall = ({
                     <Link
                       href="/deals/computers"
                       title="Computer Deals"
-                      className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                      className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
                     >
                       Hot new deals on computers and computer accessories.
                     </Link>
@@ -194,49 +203,32 @@ export const NavMenuSmall = ({
                   Browse Categories
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="flex flex-col space-y-3 p-4">
+                  <div className="flex flex-col space-y-3 p-4">
                     {components.map((component) => (
                       <Link
                         key={component.title}
                         title={component.title}
                         href={component.href}
-                        className="active:bg-neutral-300 dark:active:bg-neutral-700"
+                        className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
                       >
                         {component.description}
                       </Link>
                     ))}
-                  </ul>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
               <ModeToggle />
             </Accordion>
             {user && (
-              <Link href="/account">
-                <Button
-                  className="w-full text-destructive text-md bg-transparent"
-                  onClick={
-                    user ? signOutWrapper.bind(null, setUser) : undefined
-                  }
-                >
-                  Sign out
-                </Button>
-              </Link>
+              <Button
+                className="w-full text-destructive text-md bg-transparent"
+                onClick={user ? signOutWrapper.bind(null, setUser) : undefined}
+              >
+                Sign out
+              </Button>
             )}
           </DrawerContent>
         </Drawer>
-      </div>
-      <div
-        className={cn(
-          'absolute z-10 top-0 left-0 w-full h-screen bg-background/60 backdrop-blur-md',
-          showSearchBox ? '' : 'hidden',
-        )}
-        ref={searchOverLayRef}
-      >
-        <SearchComp
-          className="absolute z-10 top-0 sm:top-0 w-80 sm:w-[25rem] flex flex-col items-center  mt-[.75rem] left-[50%] translate-x-[-50%]"
-          ref={searchRef}
-          {...{ show, setShow, setShowSearchBox }}
-        />
       </div>
     </div>
   )
