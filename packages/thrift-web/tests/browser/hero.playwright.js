@@ -24,7 +24,11 @@ async function auditHero(page) {
       const prefix = `${theme}/${width}`
       check(
         (await page
-          .getByRole('heading', { level: 1, name: /Create lasting/ })
+          .getByRole('heading', {
+            level: 1,
+            name: 'Create lasting memories shopping with Thrift.',
+            exact: true,
+          })
           .count()) === 1,
         `${prefix}: missing hero h1`,
       )
