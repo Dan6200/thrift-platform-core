@@ -58,7 +58,11 @@ jobs:
           : "${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:?Set the NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME repository variable}"
           : "${NEXT_PUBLIC_SUPABASE_URL:?Set the NEXT_PUBLIC_SUPABASE_URL repository variable}"
           : "${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY:?Set the NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY repository variable}"
+          : "${NEXT_PUBLIC_SEARCH:?Set the NEXT_PUBLIC_SEARCH repository variable to the live search service URL}"
           : "${CLOUDFLARE_API_TOKEN:?Set the CLOUDFLARE_API_TOKEN repository secret}"
 
       - name: Build and deploy Worker
         run: pnpm --filter thrift-web run deploy
+
+      - name: Sync runtime search endpoint
+        run: printf '%s' "$NEXT_PUBLIC_SEARCH" | pnpm --filter thrift-web exec wrangler secret put NEXT_PUBLIC_SEARCH
