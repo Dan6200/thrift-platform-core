@@ -35,3 +35,11 @@ The browser reported `ERR_NAME_NOT_RESOLVED` for the configured search hostname,
 - Full web suite: **6 passed, 0 failed, 0 skipped**, including the bracketed product route and the real API/page/image smoke test. An earlier complete run failed on a live network fetch; the final complete rerun passed without mocks or relaxed assertions.
 - API CI for the deployed implementation: [45020987657](https://github.com/Dan6200/thrift-platform-core/actions/runs/45020987657) passed.
 - Visual inspection included light/dark hero states, desktop dropdowns, and mobile navigation. Successful search results remain unverified because of the DNS finding above.
+
+## Search endpoint replacement — 24 November 2026
+
+The `thrift` gcloud configuration selects `thrift-ecommerce-project`. Cloud Run service `thrift-classical-search` in `us-central1` is ready, publicly invokable, and responds to `/health` with HTTP 200 and `{"status":"available"}`.
+
+Replaced the web `NEXT_PUBLIC_SEARCH` URL with `https://thrift-classical-search-stajxdef6a-uc.a.run.app` in the GitHub repository variable and local web environment files. The deployment workflow now validates this variable and synchronizes the Worker runtime binding after building/deploying, so browser and runtime configuration use the same endpoint.
+
+A real search request with the existing search key reached this service but returned HTTP 404, code `index_not_found`, message `Index products not found`. This is separate from the old hostname's DNS failure: the service is available, but its product index must be restored/reindexed before successful product search can be verified. The service description reports no configured volumes. The new `tests/browser/search.playwright.js` checks the actual search endpoint and rendered results without mocking these failures.
