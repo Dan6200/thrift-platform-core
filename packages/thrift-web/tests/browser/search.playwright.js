@@ -10,7 +10,8 @@ async function auditSearch(page) {
   const pending = page.waitForResponse(
     (response) =>
       response.url().startsWith(origin) &&
-      response.request().method() === 'POST',
+      response.request().method() === 'POST' &&
+      response.request().postData()?.includes('\"dress\"'),
     { timeout: 20000 },
   )
   await input.fill('dress')
