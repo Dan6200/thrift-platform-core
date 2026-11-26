@@ -21,6 +21,11 @@ async function auditSearchLayout(page) {
         `${width}px: search input moved from y=${before.y} to y=${after.y}`,
       )
     const panel = await close.locator('..').boundingBox()
+    const field = await input.locator('xpath=ancestor::span[1]').boundingBox()
+    if (Math.abs(panel.x + panel.width / 2 - field.x - field.width / 2) > 1)
+      throw new Error(
+        `${width}px: results panel is not centered under the search field`,
+      )
     if (
       panel.y < after.y + after.height ||
       panel.x < 0 ||
