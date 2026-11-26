@@ -61,3 +61,9 @@ There was a second startup defect: the public TCP port opened before the catalog
 Cloud Build `e13903cc-82ed-42e4-9a4a-2f9d86931ba7` built image digest `sha256:0b437f95a36f55aa19ee921baa5c40f3893c8751779b68bc09ff3b061ec1bfcd`. Cloud Run revision `thrift-classical-search-00009-v8c` serves 100% of traffic. Its log records `Search index ready: 110 products` before the public listener starts.
 
 The previously failing live browser regression now passes: the `dress` request returns HTTP 200 with **2 hits**, and the results render with images. The reported 1318×728 viewport keeps the input at `y=43` with results open. Mobile search at 390px also returns the dress result and navigates to its product page. The full hero audit passes in both themes at 390/768/1440px. The layout regression passes at 1024/1318/1440px; both container startup tests and all six web Node tests pass without mocks or skipped checks.
+
+## Theme and dropdown alignment refinement
+
+The background-video Play/Pause control now uses the existing background/foreground/accent tokens, matching light and dark mode while retaining a solid surface and visible focus indication. Desktop search results are horizontally centered beneath the full search field rather than aligned to its left edge. Results remain absolutely positioned below the field; the mobile dialog keeps its existing layout.
+
+Regression checks in `tests/browser/video-control.playwright.js` compare the control's actual rendered colors with the active theme. The search-layout regression now also checks matching horizontal centers, in addition to input stability and viewport bounds. Both new assertions failed against the preceding deployment before implementation.
