@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y jq
 COPY ./populate-search/fetch_products.sh /opt/src/fetch_products.sh
 COPY ./populate-search/populate_search.sh /opt/src/populate_search.sh
 COPY ./populate-search/set_searchable_fields.sh /opt/src/set_searchable_fields.sh
+COPY ./populate-search/wait_for_task.sh /opt/src/wait_for_task.sh
 COPY ./test/query.sh	/opt/src/run_test.sh
 
 # Ensure the scripts are executable
