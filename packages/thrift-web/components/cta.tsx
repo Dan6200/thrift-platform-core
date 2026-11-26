@@ -20,7 +20,7 @@ export function CTA({
         href="/products"
         className={cn(
           base,
-          'bg-primary text-primary-foreground dark:text-background hover:bg-primary/90',
+          'bg-primary/90 backdrop-blur-xl text-primary-foreground dark:text-background hover:bg-primary/95',
         )}
       >
         Browse
@@ -29,7 +29,7 @@ export function CTA({
         href="/create-store"
         className={cn(
           base,
-          'border border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground',
+          'border border-border bg-background/85 backdrop-blur-xl text-foreground hover:bg-accent/90 hover:text-accent-foreground',
         )}
       >
         Start selling

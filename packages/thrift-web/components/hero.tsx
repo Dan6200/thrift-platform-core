@@ -73,7 +73,7 @@ export function Hero({
         <button
           type="button"
           aria-label={`${playing ? 'Pause' : 'Play'} background video`}
-          className="absolute bottom-5 right-6 flex min-h-11 items-center gap-2 rounded-md border border-border bg-background px-4 text-sm text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          className="absolute bottom-5 right-6 flex min-h-11 items-center gap-2 rounded-md border border-border bg-background px-4 text-sm text-foreground shadow-sm hover:bg-accent/90 hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
           onClick={async () => {
             if (!video.current) return
             if (playing) video.current.pause()
