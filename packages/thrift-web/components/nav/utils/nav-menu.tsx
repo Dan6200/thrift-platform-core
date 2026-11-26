@@ -61,7 +61,7 @@ export function NavMenu({
   }, [pathname])
   return (
     <NavigationMenu
-      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 ${pathname === '/' && !user ? 'rounded-xl bg-background/85 backdrop-blur-xl text-foreground shadow-sm' : ''}`}
+      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 ${pathname === '/' && !user ? 'rounded-xl bg-transparent text-foreground shadow-sm before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-xl before:bg-background/85 before:backdrop-blur-xl' : ''}`}
     >
       <div className="justify-start flex items-center">
         <Link
