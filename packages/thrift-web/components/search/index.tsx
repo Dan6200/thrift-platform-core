@@ -72,7 +72,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             />
           </span>
           <div
-            className={`px-4 pb-4 pt-16 border border-border z-20 rounded-md ${isSmallScreen ? 'relative mt-3 w-full' : 'absolute left-0 top-full mt-3 w-[min(50vw,42rem)]'} max-h-[65svh] min-h-28 bg-popover text-popover-foreground overflow-y-auto ${show ? '' : ' hidden'}`}
+            className={`px-4 pb-4 pt-16 border border-border z-20 rounded-md ${isSmallScreen ? 'relative mt-3 w-full' : 'absolute left-1/2 top-full mt-3 -translate-x-1/2 w-[min(50vw,42rem)]'} max-h-[65svh] min-h-28 bg-popover text-popover-foreground overflow-y-auto ${show ? '' : ' hidden'}`}
           >
             <CustomHits
               isSmallScreen={isSmallScreen}
