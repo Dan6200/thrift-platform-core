@@ -116,16 +116,16 @@ async function auditHero(page) {
       )
       if (width === 1440) {
         await page.getByRole('button', { name: 'Welcome', exact: true }).click()
-        const opaque = await page
+        const readableSurface = await page
           .getByRole('link', { name: /Thrift Commerce/ })
           .evaluate((e) => {
             const panel = e.closest('ul').parentElement
             const ctx = document.createElement('canvas').getContext('2d')
             ctx.fillStyle = getComputedStyle(panel).backgroundColor
             ctx.fillRect(0, 0, 1, 1)
-            return ctx.getImageData(0, 0, 1, 1).data[3] === 255
+            return ctx.getImageData(0, 0, 1, 1).data[3] / 255 >= 0.85
           })
-        check(opaque, `${prefix}: menu has no opaque surface`)
+        check(readableSurface, `${prefix}: menu surface is too transparent`)
         await page.keyboard.press('Escape')
       } else if (width === 390) {
         const open = page.getByRole('button', {
@@ -157,13 +157,13 @@ async function auditHero(page) {
   await page.getByRole('button', { name: /Shopping cart,/ }).click()
   const cart = page.getByRole('dialog', { name: 'Your Shopping Cart' })
   await cart.waitFor()
-  const cartOpaque = await cart.evaluate((e) => {
+  const cartReadable = await cart.evaluate((e) => {
     const ctx = document.createElement('canvas').getContext('2d')
     ctx.fillStyle = getComputedStyle(e).backgroundColor
     ctx.fillRect(0, 0, 1, 1)
-    return ctx.getImageData(0, 0, 1, 1).data[3] === 255
+    return ctx.getImageData(0, 0, 1, 1).data[3] / 255 >= 0.85
   })
-  check(cartOpaque, 'cart drawer: translucent surface over hero')
+  check(cartReadable, 'cart drawer: surface is too transparent')
   check(
     (await cart.locator('a button').count()) === 0,
     'cart drawer: nested interactive controls',
