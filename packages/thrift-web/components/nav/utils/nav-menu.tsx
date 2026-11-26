@@ -61,7 +61,7 @@ export function NavMenu({
   }, [pathname])
   return (
     <NavigationMenu
-      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 ${pathname === '/' && !user ? 'rounded-xl bg-background text-foreground shadow-sm' : ''}`}
+      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 ${pathname === '/' && !user ? 'rounded-xl bg-background/85 backdrop-blur-xl text-foreground shadow-sm' : ''}`}
     >
       <div className="justify-start flex items-center">
         <Link
@@ -72,15 +72,15 @@ export function NavMenu({
         </Link>
         <NavigationMenuList className="ml-6 bg-transparent">
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
+            <NavigationMenuTrigger className="bg-transparent hover:bg-accent/75 focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
               Welcome
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl bg-popover text-popover-foreground">
+            <NavigationMenuContent className="rounded-xl bg-popover/90 backdrop-blur-xl text-popover-foreground">
               <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-primary text-primary-foreground dark:text-background p-6 no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-primary/90 backdrop-blur-xl text-primary-foreground dark:text-background p-6 no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
                       href="/"
                     >
                       <div className="mb-2 mt-4 text-lg font-bold">
@@ -111,10 +111,10 @@ export function NavMenu({
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
+            <NavigationMenuTrigger className="bg-transparent hover:bg-accent/75 focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
               Browse Categories
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl bg-popover text-popover-foreground">
+            <NavigationMenuContent className="rounded-xl bg-popover/90 backdrop-blur-xl text-popover-foreground">
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                 {components.map((component) => (
                   <ListItem
@@ -141,7 +141,7 @@ export function NavMenu({
             <Button
               variant="outline"
               aria-label={`Shopping cart, ${totalItems} items`}
-              className="relative h-11 w-11 border-none bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground"
+              className="relative h-11 w-11 border-none bg-transparent hover:bg-accent/75 focus-visible:ring-2 focus-visible:ring-foreground"
             >
               <ShoppingCart className="w-5" aria-hidden="true" />
               {!!totalItems && (
@@ -158,7 +158,7 @@ export function NavMenu({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="border-none bg-transparent hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground"
+                className="border-none bg-transparent hover:bg-accent/75 focus-visible:ring-2 focus-visible:ring-foreground"
               >
                 Hello,
                 {user && (
@@ -170,7 +170,7 @@ export function NavMenu({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="rounded-xl bg-popover text-popover-foreground">
+            <PopoverContent className="rounded-xl bg-popover/90 backdrop-blur-xl text-popover-foreground">
               <section className="flex flex-col space-y-2">
                 <Link
                   href="/create-vendor"
@@ -192,7 +192,7 @@ export function NavMenu({
         ) : (
           <Button
             asChild
-            className="min-h-11 bg-primary text-primary-foreground dark:text-background hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-foreground"
+            className="min-h-11 bg-primary/90 backdrop-blur-xl text-primary-foreground dark:text-background hover:bg-primary/95 focus-visible:ring-2 focus-visible:ring-foreground"
           >
             <Link href="/auth/login">Sign In</Link>
           </Button>

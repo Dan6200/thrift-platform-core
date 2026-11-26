@@ -30,7 +30,7 @@ export function ShoppingCartDrawerContent() {
   const removeItem = useRemoveCartItem()
 
   return (
-    <DrawerContent className="w-[90vw] max-w-md bg-background text-foreground">
+    <DrawerContent className="w-[90vw] max-w-md bg-background/90 backdrop-blur-xl text-foreground">
       <DrawerClose asChild>
         <Button
           variant="ghost"

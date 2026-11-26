@@ -51,7 +51,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             }
           }}
         >
-          <span className="flex min-h-11 w-full items-center rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm focus-within:ring-2 focus-within:ring-foreground">
+          <span className="flex min-h-11 w-full items-center rounded-md border border-input bg-background/85 backdrop-blur-xl px-3 text-sm text-foreground shadow-sm focus-within:ring-2 focus-within:ring-foreground">
             <SearchBox
               onFocus={() => setShow(true)}
               placeholder="Search products"
@@ -72,7 +72,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             />
           </span>
           <div
-            className={`px-4 pb-4 pt-16 border border-border z-20 rounded-md ${isSmallScreen ? 'relative mt-3 w-full' : 'absolute left-1/2 top-full mt-3 -translate-x-1/2 w-[min(50vw,42rem)]'} max-h-[65svh] min-h-28 bg-popover text-popover-foreground overflow-y-auto ${show ? '' : ' hidden'}`}
+            className={`px-4 pb-4 pt-16 border border-border z-20 rounded-md ${isSmallScreen ? 'relative mt-3 w-full' : 'absolute left-1/2 top-full mt-3 -translate-x-1/2 w-[min(50vw,42rem)]'} max-h-[65svh] min-h-28 bg-popover/90 backdrop-blur-xl text-popover-foreground overflow-y-auto ${show ? '' : ' hidden'}`}
           >
             <CustomHits
               isSmallScreen={isSmallScreen}
@@ -82,7 +82,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             <button
               type="button"
               aria-label="Close search results"
-              className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
+              className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground"
               onClick={() => {
                 setShow(false)
                 setShowSearchBox?.(false)
@@ -198,7 +198,7 @@ const Hit = ({
   return (
     <Link
       href={`/products/${hit.product_id}`}
-      className="my-4 p-2 rounded-md text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground flex items-center gap-4"
+      className="my-4 p-2 rounded-md text-foreground hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground flex items-center gap-4"
       onClick={() => {
         setShow(false)
         setShowSearchBox?.(false)

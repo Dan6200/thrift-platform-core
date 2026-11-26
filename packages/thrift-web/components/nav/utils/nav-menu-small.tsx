@@ -64,7 +64,7 @@ export const NavMenuSmall = ({
         'relative',
         pathname === '/' &&
           !user &&
-          'rounded-xl bg-background text-foreground shadow-sm',
+          'rounded-xl bg-background/85 backdrop-blur-xl text-foreground shadow-sm',
       )}
     >
       <Link
@@ -87,7 +87,7 @@ export const NavMenuSmall = ({
           </DialogTrigger>
           <DialogContent
             aria-describedby={undefined}
-            className="top-4 translate-y-0 w-[95vw] max-h-[90svh] overflow-y-auto bg-background text-foreground [&>button]:h-11 [&>button]:w-11"
+            className="top-4 translate-y-0 w-[95vw] max-h-[90svh] overflow-y-auto bg-background/90 backdrop-blur-xl text-foreground [&>button]:h-11 [&>button]:w-11"
           >
             <DialogTitle className="pr-12">Search products</DialogTitle>
             <SearchComp
@@ -100,7 +100,7 @@ export const NavMenuSmall = ({
         <Link
           href="/shopping-cart"
           aria-label={`Shopping cart, ${totalItems} items`}
-          className="relative flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
+          className="relative flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground"
         >
           <ShoppingCart className="w-5" aria-hidden="true" />
           {!!totalItems && (
@@ -113,14 +113,14 @@ export const NavMenuSmall = ({
           <Link
             href="/account"
             aria-label="Your account"
-            className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
+            className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground"
           >
             <UserCircle2 />
           </Link>
         ) : (
           <Button
             asChild
-            className="h-11 px-3 bg-primary text-primary-foreground dark:text-background hover:bg-primary/90"
+            className="h-11 px-3 bg-primary/90 backdrop-blur-xl text-primary-foreground dark:text-background hover:bg-primary/95"
           >
             <Link href="/auth/login">Sign In</Link>
           </Button>
@@ -138,7 +138,7 @@ export const NavMenuSmall = ({
           </DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="h-full w-[85vw] max-w-sm overflow-y-auto p-4 bg-background text-foreground"
+            className="h-full w-[85vw] max-w-sm overflow-y-auto p-4 bg-background/90 backdrop-blur-xl text-foreground"
           >
             <DrawerTitle className="sr-only">Navigation</DrawerTitle>
             <DrawerClose asChild>
@@ -161,7 +161,7 @@ export const NavMenuSmall = ({
                 <AccordionContent>
                   <div className="flex flex-col space-y-3 p-4">
                     <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-primary text-primary-foreground dark:text-background p-6 no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-primary/90 backdrop-blur-xl text-primary-foreground dark:text-background p-6 no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
                       href="/"
                     >
                       <div className="mb-2 mt-4 text-lg font-medium">
@@ -176,14 +176,14 @@ export const NavMenuSmall = ({
                     <Link
                       href="/deals/new-arrivals"
                       title="New Arrivals"
-                      className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
+                      className="block min-h-11 rounded-md p-2 hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground"
                     >
                       New Arrivals for fashion and fashion accessories.
                     </Link>
                     <Link
                       href="/deals/electronics"
                       title="Deals on Electronics"
-                      className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
+                      className="block min-h-11 rounded-md p-2 hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground"
                     >
                       Hot new deals on electronic items such as TVs, mobile
                       phones and household electronics
@@ -191,7 +191,7 @@ export const NavMenuSmall = ({
                     <Link
                       href="/deals/computers"
                       title="Computer Deals"
-                      className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
+                      className="block min-h-11 rounded-md p-2 hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground"
                     >
                       Hot new deals on computers and computer accessories.
                     </Link>
@@ -209,7 +209,7 @@ export const NavMenuSmall = ({
                         key={component.title}
                         title={component.title}
                         href={component.href}
-                        className="block min-h-11 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-foreground"
+                        className="block min-h-11 rounded-md p-2 hover:bg-accent/75 focus-visible:outline-2 focus-visible:outline-foreground"
                       >
                         {component.description}
                       </Link>
