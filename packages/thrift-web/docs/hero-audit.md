@@ -69,3 +69,9 @@ The background-video Play/Pause control now uses the existing background/foregro
 Regression checks in `tests/browser/video-control.playwright.js` compare the control's actual rendered colors with the active theme. The search-layout regression now also checks matching horizontal centers, in addition to input stability and viewport bounds. Both new assertions failed against the preceding deployment before implementation.
 
 Verification: web deployment [45850108230](https://github.com/Dan6200/thrift-platform-core/actions/runs/45850108230) succeeded. The theme-color and centered-dropdown browser regressions pass, as do the complete hero browser audit and live search-results check. Visual inspection at 1318×728 confirms the light/dark video control and software-results panel positioning. Type checking passes. The full web Node suite reported **5 passed, 1 failed, 0 skipped** on both runs: its live product-image check failed fetching the API; a direct Node probe reported `ETIMEDOUT`. No test, endpoint, timeout, or assertion was loosened to hide that failure.
+
+## Softer translucent surfaces
+
+Following the request to reduce the harshness of solid theme backgrounds, hero controls and the navbar now use 85% background opacity; menus/results/drawers use 90%, with backdrop blur. Primary actions use 90% theme color and increase to 95% on hover. Text, icons, focus indicators and the content itself retain full opacity. The navigation-menu viewport is transparent so it does not cancel out the translucent content surface.
+
+The earlier solid-surface assertion was updated for this explicitly requested design change. `tests/browser/surfaces.playwright.js` now checks background transparency, blur, full component opacity and minimum 4.5:1 foreground contrast composited over both pure black and pure white in both themes. The new test failed on the previous solid styling before implementation. Existing theme, layout, keyboard and playback checks remain in place.
