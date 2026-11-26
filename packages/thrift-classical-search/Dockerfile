@@ -13,7 +13,7 @@ COPY ./test/query.sh	/opt/src/run_test.sh
 RUN chmod +x /opt/src/*.sh
 
 # Stage 2: MeiliSearch service
-FROM getmeili/meilisearch:latest
+FROM getmeili/meilisearch:v1.26.0
 EXPOSE 7700
 
 # Install required packages
