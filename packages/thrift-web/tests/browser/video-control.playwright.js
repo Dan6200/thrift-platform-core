@@ -13,11 +13,17 @@ async function auditVideoControlTheme(page) {
       .getByRole('button', { name: /background video/ })
       .evaluate((button) => {
         const style = getComputedStyle(button)
-        const nav = getComputedStyle(document.querySelector('nav'))
+        const navElement = document.querySelector('nav')
+        const nav = getComputedStyle(navElement)
+        const pseudo = getComputedStyle(navElement, '::before')
+        const surface =
+          pseudo.content !== 'none' && pseudo.content !== 'normal'
+            ? pseudo
+            : nav
         return {
           background: style.backgroundColor,
           color: style.color,
-          expectedBackground: nav.backgroundColor,
+          expectedBackground: surface.backgroundColor,
           expectedColor: nav.color,
         }
       })

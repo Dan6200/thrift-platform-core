@@ -32,6 +32,31 @@ async function auditSurfaces(page) {
     for (const [name, target] of targets) {
       const result = await target.evaluate((element) => {
         const style = getComputedStyle(element)
+        const pseudo = getComputedStyle(element, '::before')
+        const surface =
+          element.tagName === 'NAV' &&
+          pseudo.content !== 'none' &&
+          pseudo.content !== 'normal'
+            ? pseudo
+            : style
+        const bounds = element.getBoundingClientRect()
+        let clippedBackdrop = false
+        for (
+          let parent = element.parentElement;
+          parent;
+          parent = parent.parentElement
+        ) {
+          const parentStyle = getComputedStyle(parent),
+            box = parent.getBoundingClientRect()
+          if (
+            parentStyle.backdropFilter !== 'none' &&
+            (bounds.left < box.left ||
+              bounds.right > box.right ||
+              bounds.top < box.top ||
+              bounds.bottom > box.bottom)
+          )
+            clippedBackdrop = true
+        }
         const ctx = document.createElement('canvas').getContext('2d')
         const rgba = (color) => {
           ctx.clearRect(0, 0, 1, 1)
@@ -39,7 +64,7 @@ async function auditSurfaces(page) {
           ctx.fillRect(0, 0, 1, 1)
           return [...ctx.getImageData(0, 0, 1, 1).data]
         }
-        const background = rgba(style.backgroundColor),
+        const background = rgba(surface.backgroundColor),
           text = rgba(style.color)
         const luminance = (rgb) =>
           rgb
@@ -61,7 +86,8 @@ async function auditSurfaces(page) {
           alpha,
           minContrast: Math.min(...ratios),
           opacity: style.opacity,
-          blur: style.backdropFilter,
+          blur: surface.backdropFilter,
+          clippedBackdrop,
         }
       })
       if (
@@ -70,7 +96,8 @@ async function auditSurfaces(page) {
           result.alpha < 1 &&
           result.minContrast >= 4.5 &&
           result.opacity === '1' &&
-          result.blur.includes('blur')
+          result.blur.includes('blur') &&
+          !result.clippedBackdrop
         )
       )
         failures.push(`${theme} ${name}: ${JSON.stringify(result)}`)
