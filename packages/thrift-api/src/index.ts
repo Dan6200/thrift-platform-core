@@ -9,6 +9,8 @@ import 'express-async-errors'
 import helmet from 'helmet'
 import { requestLogger } from '#src/logging.js'
 
+import { storefrontCors } from './storefront-cors.js'
+
 import rateLimiter from 'express-rate-limit'
 import cookieParser from 'cookie-parser'
 // routers
@@ -65,6 +67,7 @@ const swaggerDocument = await loadSwaggerDocument()
 ////////////// Middlewares //////////////
 let app = express()
 app.set('trust proxy', 1)
+app.use(storefrontCors)
 if (process.env.CLOUDFLARE_WORKERS === 'true') {
   app.use((req, res, next) => {
     const requestId = req.headers['x-thrift-worker-request']
