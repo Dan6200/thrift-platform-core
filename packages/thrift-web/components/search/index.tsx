@@ -1,10 +1,10 @@
 // cspell:ignore instantsearch, meilisearch, Meili
 import React, { Dispatch, forwardRef, SetStateAction } from 'react'
 import Link from 'next/link'
+import { SearchLoading } from './loading'
 import {
   InstantSearch,
   SearchBox,
-  Hits,
   Highlight,
   useHits,
   useInstantSearch,
@@ -120,29 +120,8 @@ function CustomHits({
         .
       </p>
     )
-  if (status === 'loading' || status === 'stalled')
-    return <p role="status">Searching products…</p>
-
-  // Initial state before any search is performed
-  if (!results && (results as any)?.query) {
-    return (
-      <div className="my-2">
-        <p className="capitalize animate-pulse">
-          Please Wait for Search to come online...
-        </p>
-        <div className="animate-pulse pt-6">
-          {Array(10)
-            .fill(0)
-            .map((_, index) => (
-              <div
-                className="rounded-md h-12 sm:h-16 sm:text-2xl font-bold text-justify mb-4 break-words bg-foreground/20"
-                key={index}
-              ></div>
-            ))}
-        </div>
-      </div>
-    )
-  }
+  if (status === 'loading' || status === 'stalled' || !results)
+    return <SearchLoading />
 
   // Search is performed, but there are no results
   if (hits.length === 0) {
