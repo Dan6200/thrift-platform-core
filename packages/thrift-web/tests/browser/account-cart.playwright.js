@@ -26,7 +26,10 @@ async function auditAccountCart(page) {
       'https://web.thrift-commerce.workers.dev/auth/login?redirect=/shopping-cart',
       { waitUntil: 'networkidle' },
     )
-    const method = await tab.locator('form').getAttribute('method')
+    const method = await tab
+      .locator('form')
+      .filter({ has: tab.getByLabel('Password', { exact: true }) })
+      .getAttribute('method')
     if (method !== 'post')
       throw new Error('Login form can submit credentials in a GET URL')
     await tab.evaluate(() => {
