@@ -23,14 +23,20 @@ export function normalizeProductData(response: unknown): ProductData {
 export default async function getProducts({
   page = 1,
   limit = 50,
+  category,
+  subcategory,
 }: {
   page?: number
   limit?: number
+  category?: string
+  subcategory?: string
 }): Promise<ProductData> {
   const response: unknown = await fetch(
     process.env.NEXT_PUBLIC_SERVER +
       '/v1/products?' +
       new URLSearchParams({
+        ...(category ? { category } : {}),
+        ...(subcategory ? { subcategory } : {}),
         sort: '-created_at',
         offset: String((page - 1) * limit),
         limit: limit.toString(),

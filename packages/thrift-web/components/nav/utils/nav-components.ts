@@ -5,7 +5,7 @@ export const components: {
 }[] = [
   {
     title: 'Computers & Tablets',
-    href: '/categories/computers',
+    href: '/subcategories/computers',
     description: 'Shop new laptop, desktop computers and tablets on Thrift.',
   },
   {
@@ -21,12 +21,12 @@ export const components: {
   },
   {
     title: "Men's Fashion",
-    href: '/categories/mens-fashion',
+    href: '/subcategories/mens-fashion',
     description: "Shop men's wear, and fashion accessories here on Thrift.",
   },
   {
     title: "Women's Fashion",
-    href: '/categories/womens-fashion',
+    href: '/subcategories/womens-fashion',
     description:
       "Shop new women's wear, and women's fashion accessories here on Thrift.",
   },

@@ -5,7 +5,7 @@ import { AxiosError } from 'axios'
 export default async function filterByField(
   field: string,
   operator: string,
-  value: string
+  value: string,
 ) {
   // filter product by category
   try {
@@ -13,7 +13,7 @@ export default async function filterByField(
       `${process.env.NEXT_PUBLIC_SEARCH}/indexes/products/search`,
       {
         filter: field + operator + value,
-      }
+      },
     )
     return response.data.hits
   } catch (error: unknown) {
