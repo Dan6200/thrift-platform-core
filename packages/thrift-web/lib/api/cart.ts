@@ -1,4 +1,5 @@
 // lib/api/cart.ts
+import type { CartAddition } from '../cart/guest-cart'
 import { axiosInstance } from '@/components/axios-instance'
 
 export interface CartItem {
@@ -12,6 +13,7 @@ export interface CartItem {
   image_url: string | null
   store_id: number
   sku: string
+  quantity_available?: number
 }
 
 export interface Cart {
@@ -24,35 +26,47 @@ export interface Cart {
   updated_at: string
 }
 
-export const getCart = async (): Promise<Cart> => {
-  const response = await axiosInstance.get('/cart')
+const authorized = (token?: string) =>
+  token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+
+export const getCart = async (token?: string): Promise<Cart> => {
+  const response = await axiosInstance.get('/cart', authorized(token))
   return response.data
 }
 
-export const addCartItem = async ({
-  variant_id,
-  quantity,
-}: {
-  variant_id: number
-  quantity: number
-}): Promise<CartItem> => {
-  const response = await axiosInstance.post('/cart/items', {
-    variant_id,
-    quantity,
-  })
+export const addCartItem = async (
+  { variant_id, quantity }: CartAddition,
+  token?: string,
+): Promise<CartItem> => {
+  const response = await axiosInstance.post(
+    '/cart/items',
+    {
+      variant_id,
+      quantity,
+    },
+    authorized(token),
+  )
   return response.data
 }
 
 export const updateCartItem = async (
   itemId: number,
   quantity: number,
+  token?: string,
 ): Promise<CartItem> => {
-  const response = await axiosInstance.put(`/cart/items/${itemId}`, {
-    quantity,
-  })
+  const response = await axiosInstance.put(
+    `/cart/items/${itemId}`,
+    {
+      quantity,
+    },
+    authorized(token),
+  )
   return response.data
 }
 
-export const removeCartItem = async (itemId: number): Promise<void> => {
-  await axiosInstance.delete(`/cart/items/${itemId}`)
+export const removeCartItem = async (
+  itemId: number,
+  token?: string,
+): Promise<void> => {
+  await axiosInstance.delete(`/cart/items/${itemId}`, authorized(token))
 }
