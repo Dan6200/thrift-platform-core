@@ -64,7 +64,7 @@ export const NavMenuSmall = ({
         'relative',
         pathname === '/' &&
           !user &&
-          'rounded-xl bg-background/85 backdrop-blur-xl text-foreground shadow-sm',
+          'rounded-xl bg-background/75 backdrop-blur-xl text-foreground shadow-sm',
       )}
     >
       <Link
@@ -87,7 +87,7 @@ export const NavMenuSmall = ({
           </DialogTrigger>
           <DialogContent
             aria-describedby={undefined}
-            className="top-4 translate-y-0 w-[95vw] max-h-[90svh] overflow-y-auto bg-background/90 backdrop-blur-xl text-foreground [&>button]:h-11 [&>button]:w-11"
+            className="top-4 translate-y-0 w-[95vw] max-h-[90svh] overflow-y-auto bg-background/80 backdrop-blur-xl text-foreground [&>button]:h-11 [&>button]:w-11"
           >
             <DialogTitle className="pr-12">Search products</DialogTitle>
             <SearchComp
@@ -138,7 +138,7 @@ export const NavMenuSmall = ({
           </DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="h-full w-[85vw] max-w-sm overflow-y-auto p-4 bg-background/90 backdrop-blur-xl text-foreground"
+            className="h-full w-[85vw] max-w-sm overflow-y-auto p-4 bg-background/80 backdrop-blur-xl text-foreground"
           >
             <DrawerTitle className="sr-only">Navigation</DrawerTitle>
             <DrawerClose asChild>

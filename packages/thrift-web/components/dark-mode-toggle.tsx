@@ -86,7 +86,7 @@ const DropDown = ({ setTheme }: { setTheme: (theme: string) => void }) => (
     </DropdownMenuTrigger>
     <DropdownMenuContent
       align="end"
-      className="bg-popover/90 backdrop-blur-xl text-popover-foreground"
+      className="bg-popover/80 backdrop-blur-xl text-popover-foreground"
     >
       <DropdownMenuItem onClick={() => setTheme('light')}>
         Light

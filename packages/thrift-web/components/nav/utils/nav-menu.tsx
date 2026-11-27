@@ -61,7 +61,7 @@ export function NavMenu({
   }, [pathname])
   return (
     <NavigationMenu
-      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 ${pathname === '/' && !user ? 'rounded-xl bg-transparent text-foreground shadow-sm before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-xl before:bg-background/85 before:backdrop-blur-xl' : ''}`}
+      className={`max-w-none flex flex-row items-center justify-between w-[95vw] mx-auto px-4 my-8 h-16 ${pathname === '/' && !user ? 'rounded-xl bg-transparent text-foreground shadow-sm before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-xl before:bg-background/75 before:backdrop-blur-xl' : ''}`}
     >
       <div className="justify-start flex items-center">
         <Link
@@ -75,7 +75,7 @@ export function NavMenu({
             <NavigationMenuTrigger className="bg-transparent hover:bg-accent/75 focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
               Welcome
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl bg-popover/90 backdrop-blur-xl text-popover-foreground">
+            <NavigationMenuContent className="rounded-xl bg-popover/80 backdrop-blur-xl text-popover-foreground">
               <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
@@ -114,7 +114,7 @@ export function NavMenu({
             <NavigationMenuTrigger className="bg-transparent hover:bg-accent/75 focus-visible:ring-2 focus-visible:ring-foreground rounded-md">
               Browse Categories
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="rounded-xl bg-popover/90 backdrop-blur-xl text-popover-foreground">
+            <NavigationMenuContent className="rounded-xl bg-popover/80 backdrop-blur-xl text-popover-foreground">
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                 {components.map((component) => (
                   <ListItem
@@ -170,7 +170,7 @@ export function NavMenu({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="rounded-xl bg-popover/90 backdrop-blur-xl text-popover-foreground">
+            <PopoverContent className="rounded-xl bg-popover/80 backdrop-blur-xl text-popover-foreground">
               <section className="flex flex-col space-y-2">
                 <Link
                   href="/create-vendor"

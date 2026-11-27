@@ -51,7 +51,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             }
           }}
         >
-          <span className="flex min-h-11 w-full items-center rounded-md border border-input bg-background/85 backdrop-blur-xl px-3 text-sm text-foreground shadow-sm focus-within:ring-2 focus-within:ring-foreground">
+          <span className="flex min-h-11 w-full items-center rounded-md border border-input bg-background/75 backdrop-blur-xl px-3 text-sm text-foreground shadow-sm focus-within:ring-2 focus-within:ring-foreground">
             <SearchBox
               onFocus={() => setShow(true)}
               placeholder="Search products"
@@ -72,7 +72,7 @@ const Search = forwardRef<HTMLDivElement, SearchProps>(
             />
           </span>
           <div
-            className={`px-4 pb-4 pt-16 border border-border z-20 rounded-md ${isSmallScreen ? 'relative mt-3 w-full' : 'absolute left-1/2 top-full mt-3 -translate-x-1/2 w-[min(50vw,42rem)]'} max-h-[65svh] min-h-28 bg-popover/90 backdrop-blur-xl text-popover-foreground overflow-y-auto ${show ? '' : ' hidden'}`}
+            className={`px-4 pb-4 pt-16 border border-border z-20 rounded-md ${isSmallScreen ? 'relative mt-3 w-full' : 'absolute left-1/2 top-full mt-3 -translate-x-1/2 w-[min(50vw,42rem)]'} max-h-[65svh] min-h-28 bg-popover/80 backdrop-blur-xl text-popover-foreground overflow-y-auto ${show ? '' : ' hidden'}`}
           >
             <CustomHits
               isSmallScreen={isSmallScreen}

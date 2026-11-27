@@ -29,7 +29,7 @@ export function CTA({
         href="/create-store"
         className={cn(
           base,
-          'border border-border bg-background/85 backdrop-blur-xl text-foreground hover:bg-accent/90 hover:text-accent-foreground',
+          'border border-border bg-background/75 backdrop-blur-xl text-foreground hover:bg-accent/90 hover:text-accent-foreground',
         )}
       >
         Start selling
