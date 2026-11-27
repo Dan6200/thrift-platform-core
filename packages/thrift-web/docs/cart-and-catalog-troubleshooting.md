@@ -33,3 +33,11 @@ Account requests capture that account's access token, and fail if the current se
 - `/subcategories/womens-fashion`
 
 Old category URLs for these subcategories redirect to the canonical routes. Category browsing no longer depends on Meilisearch availability.
+
+## Verified deployment (27 November 2026)
+
+API deployment `45945531324` and web deployment `45945845196` succeeded. GitHub API checks passed all 480 tests; the unit coverage check passed 171 tests. The complete local API debug suite also passed 480 tests after rebuilding/restarting with the empty-result schema fix (the first run exposed that bug: 479 passed, one failed).
+
+Production browser checks passed guest add/increase/decrease/remove and reload persistence; real sign-in returned to the cart, transferred the guest item, and issued successful POST 201, PUT 200 and DELETE 204 calls. Quantity remained two after reloading, and direct database inspection confirmed zero cart items after removal. Session cookie path and persistence were verified without exposing cookie contents. All five catalog destinations rendered products. A 390-pixel mobile check confirmed no category overflow and preserved the checkout return URL when redirecting guests to sign-in.
+
+Local `next build` failed downloading Google Fonts; the deployed OpenNext build compiled and typechecked successfully in GitHub. Local web runtime smoke attempts also intermittently failed with Node `fetch failed` against the live Workers. These failures were retained and assertions were not relaxed; browser verification checked the actual deployed behavior independently.
