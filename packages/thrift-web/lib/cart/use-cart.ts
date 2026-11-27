@@ -80,8 +80,9 @@ function loadAccountCart(userId: string, store: Store): Promise<Cart> {
 }
 
 export function useCart() {
-  const user = useAtomValue(userAtom),
-    store = useStore()
+  const account = useAtomValue(userAtom)
+  const user = account && 'id' in account ? account : null
+  const store = useStore()
   const local = normalizeGuestState(useAtomValue(guestCartAtom))
   // The signature also triggers transfer when storage hydrates after auth.
   const signature = local.items
@@ -102,8 +103,9 @@ export function useCart() {
 }
 
 export function useAddToCart() {
-  const user = useAtomValue(userAtom),
-    store = useStore(),
+  const account = useAtomValue(userAtom)
+  const user = account && 'id' in account ? account : null
+  const store = useStore(),
     client = useQueryClient()
   return useMutation({
     mutationFn: async (addition: CartAddition) => {
@@ -120,8 +122,9 @@ export function useAddToCart() {
 }
 
 export function useUpdateCartItem() {
-  const user = useAtomValue(userAtom),
-    store = useStore(),
+  const account = useAtomValue(userAtom)
+  const user = account && 'id' in account ? account : null
+  const store = useStore(),
     client = useQueryClient()
   return useMutation({
     mutationFn: async ({
@@ -146,8 +149,9 @@ export function useUpdateCartItem() {
 }
 
 export function useRemoveCartItem() {
-  const user = useAtomValue(userAtom),
-    store = useStore(),
+  const account = useAtomValue(userAtom)
+  const user = account && 'id' in account ? account : null
+  const store = useStore(),
     client = useQueryClient()
   return useMutation({
     mutationFn: async (itemId: number) => {
