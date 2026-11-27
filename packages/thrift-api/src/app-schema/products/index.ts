@@ -134,7 +134,7 @@ export const ProductGETResponseSchema = joi
 
 export const ProductGETAllResponseSchema = joi
   .object({
-    products: joi.array().items(ProductGETResponseSchema).allow(null),
+    products: joi.array().items(ProductGETResponseSchema.optional()).required(),
     total_count: joi.number().required(),
   })
   .required()
