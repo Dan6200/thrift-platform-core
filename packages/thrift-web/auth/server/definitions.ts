@@ -19,8 +19,8 @@ export const createSupabaseServerClient = async () => {
           return cookieStore.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, ...options }) =>
-            cookieStore.set({ name, value, ...options }),
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set({ name, value, options }),
           )
         },
       },
@@ -253,14 +253,18 @@ export async function updateSession(
       const url = request.nextUrl.clone()
       url.pathname = '/auth/login'
       url.searchParams.set('redirect', pathname) // Add redirect param
-      return NextResponse.redirect(url)
+      const response = NextResponse.redirect(url)
+      supabaseResponse.cookies
+        .getAll()
+        .forEach((cookie) => response.cookies.set(cookie))
+      return response
     }
     // Authenticated -> Allow access
-    return NextResponse.next()
+    return supabaseResponse
   }
 
   if (isPublicPath) {
-    return NextResponse.next()
+    return supabaseResponse
   }
 
   return supabaseResponse

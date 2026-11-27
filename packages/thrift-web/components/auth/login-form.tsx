@@ -26,7 +26,7 @@ import { useTransition } from 'react'
 import GoogleLoginButton from '../ui/google-login-button'
 import AppleLoginButton from '../ui/apple-login-button'
 import MetaLoginButton from '../ui/meta-login-button'
-import { isSameOrigin } from './utils'
+import { loginDestination } from '@/lib/login-destination'
 import { supabase } from '@/auth/client/config'
 import { useSetAtom } from 'jotai'
 import { userAtom } from '@/atoms'
@@ -68,12 +68,12 @@ export function LoginForm({
       } else {
         toast({ title: 'Login Successful', variant: 'default' })
         setUser((await supabase.auth.getUser()).data.user)
-        const referrer = document.referrer
-        if (isSameOrigin(referrer)) {
-          router.back()
-        } else {
-          router.push('/') // Navigate to the homepage
-        }
+        router.replace(
+          loginDestination(
+            new URLSearchParams(window.location.search).get('redirect'),
+          ),
+        )
+        router.refresh()
       }
     })
   }
@@ -85,6 +85,7 @@ export function LoginForm({
           <div className="p-6 md:p-8">
             <Form {...form}>
               <form
+                method="post"
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-6"
               >

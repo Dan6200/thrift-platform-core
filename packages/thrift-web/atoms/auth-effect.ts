@@ -9,20 +9,10 @@ type CleanupFn = () => void
 export const authEffectAtom = atom<null, AuthInitArg, CleanupFn>(
   null,
   (_get, set, _arg) => {
-    const setUser = async () => {
-      const { data: userData } = await supabase.auth.getUser()
-      set(userAtom, userData.user)
-    }
-    setUser()
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        setUser()
-      } else {
-        // Clear profile data on logout
-        set(userAtom, null)
-      }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      set(userAtom, session?.user ?? null)
     })
 
     return () => subscription.unsubscribe()
