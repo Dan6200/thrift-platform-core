@@ -13,7 +13,9 @@ export function ShoppingCart({
   onIncrease,
   onDecrease,
   onRemove,
+  busy = false,
 }: {
+  busy?: boolean
   items: CartItem[]
   total: number
   onIncrease: (item: CartItem) => void
@@ -32,6 +34,8 @@ export function ShoppingCart({
           items.map((item: CartItem) => (
             <Card
               key={item.item_id}
+              role="article"
+              aria-label={item.product_title}
               className="flex bg-transparent items-center w-full"
             >
               <CardContent className="rounded-md w-full border-b border-border p-4 flex flex-col sm:flex-row items-center justify-between h-44 sm:h-24">
@@ -56,6 +60,8 @@ export function ShoppingCart({
                   <div className="flex justify-between items-center">
                     <div className="flex h-fit mr-2 items-center border border-border bg-transparent w-28 justify-between p-0 rounded-md overflow-clip">
                       <Button
+                        aria-label="Decrease quantity"
+                        disabled={busy || item.quantity <= 1}
                         onClick={() => {
                           if (item.quantity > 1) onDecrease(item)
                         }}
@@ -64,8 +70,20 @@ export function ShoppingCart({
                       >
                         <Minus className="w-4" />
                       </Button>
-                      <p className="mx-auto p-1">{item.quantity}</p>
+                      <p
+                        role="status"
+                        aria-label="Quantity"
+                        className="mx-auto p-1"
+                      >
+                        {item.quantity}
+                      </p>
                       <Button
+                        aria-label="Increase quantity"
+                        disabled={
+                          busy ||
+                          (item.quantity_available != null &&
+                            item.quantity >= item.quantity_available)
+                        }
                         onClick={() => onIncrease(item)}
                         variant={'outline'}
                         className="p-2 border-l border-y-0 border-r-0 bg-transparent h-7 rounded-none m-0"
@@ -76,6 +94,8 @@ export function ShoppingCart({
                     <Button
                       variant="outline"
                       className="bg-transparent"
+                      aria-label="Remove item"
+                      disabled={busy}
                       onClick={() => onRemove(item)}
                     >
                       <Trash2 className="text-destructive" />

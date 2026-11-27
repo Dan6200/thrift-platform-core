@@ -2,8 +2,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import { useAtomValue } from 'jotai'
-import { userAtom } from '@/atoms'
 import { Product as ProductType, ProductVariant } from '@/types/products'
 import { Price } from './price'
 import { VariantSelector } from './variant-selector'
@@ -24,7 +22,6 @@ export function ProductDetails({
   selectedVariant,
   onOptionSelect,
 }: ProductDetailsProps) {
-  const user = useAtomValue(userAtom)
   const addToCart = useAddToCart()
   const { toast } = useToast()
   const router = useRouter()
@@ -33,14 +30,30 @@ export function ProductDetails({
   const handleAdd = (goToCheckout = false) => {
     if (!selectedVariant) return
 
-    if (!user) {
-      toast({ title: 'Please sign in to add items to your cart.' })
-      router.push(`/auth/login?redirect=/products/${product.product_id}`)
-      return
-    }
-
     addToCart.mutate(
-      { variant_id: selectedVariant.variant_id, quantity },
+      {
+        variant_id: selectedVariant.variant_id,
+        quantity,
+        preview: {
+          product_title: product.title,
+          price: Number(
+            selectedVariant.effective_price ?? selectedVariant.base_price,
+          ),
+          store_id: product.store_id,
+          sku: selectedVariant.sku,
+          quantity_available: selectedVariant.quantity_available,
+          image_url:
+            (
+              product.media?.find(
+                (media) =>
+                  media.variant_id === selectedVariant.variant_id &&
+                  media.is_display_image,
+              ) ??
+              product.media?.find((media) => media.is_display_image) ??
+              product.media?.[0]
+            )?.filepath ?? null,
+        },
+      },
       {
         onSuccess: () => {
           toast({ title: `${quantity} item(s) added to cart.` })
