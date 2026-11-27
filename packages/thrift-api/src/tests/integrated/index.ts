@@ -1,4 +1,5 @@
 //cspell:disable
+import storefrontTests from './storefront.js'
 import testProfile from './profiles/index.js'
 import testProfileWithoutSignIn from './profiles/no-signin.js'
 import testStoresWithNoAccess from './stores/no-access.js'
@@ -26,6 +27,7 @@ const customers = [Ebuka, Aisha, Mustapha] // is_customer is true
 const vendors = [Aliyu] // is_vendor is true
 
 export default function (): void {
+  describe('Public storefront transport and catalog', storefrontTests)
   /** User Account actions **/
 
   for (let user of users) {
