@@ -108,6 +108,8 @@ async function auditSearchLoading(page) {
       await page.emulateMedia({ reducedMotion: 'no-preference' })
     }
     await page
+      .getByRole('button', { name: 'Close search results' })
+      .locator('..')
       .getByRole('link', { name: /Data Recovery Software/ })
       .first()
       .waitFor()
