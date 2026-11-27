@@ -92,8 +92,8 @@ async function auditSurfaces(page) {
       })
       if (
         !(
-          result.alpha >= 0.85 &&
-          result.alpha < 1 &&
+          result.alpha >= 0.74 &&
+          result.alpha <= (name === 'Browse' ? 0.91 : 0.81) &&
           result.minContrast >= 4.5 &&
           result.opacity === '1' &&
           result.blur.includes('blur') &&

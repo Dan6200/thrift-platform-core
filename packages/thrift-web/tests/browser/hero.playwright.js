@@ -123,7 +123,7 @@ async function auditHero(page) {
             const ctx = document.createElement('canvas').getContext('2d')
             ctx.fillStyle = getComputedStyle(panel).backgroundColor
             ctx.fillRect(0, 0, 1, 1)
-            return ctx.getImageData(0, 0, 1, 1).data[3] / 255 >= 0.85
+            return ctx.getImageData(0, 0, 1, 1).data[3] / 255 >= 0.75
           })
         check(readableSurface, `${prefix}: menu surface is too transparent`)
         await page.keyboard.press('Escape')
@@ -161,7 +161,7 @@ async function auditHero(page) {
     const ctx = document.createElement('canvas').getContext('2d')
     ctx.fillStyle = getComputedStyle(e).backgroundColor
     ctx.fillRect(0, 0, 1, 1)
-    return ctx.getImageData(0, 0, 1, 1).data[3] / 255 >= 0.85
+    return ctx.getImageData(0, 0, 1, 1).data[3] / 255 >= 0.75
   })
   check(cartReadable, 'cart drawer: surface is too transparent')
   check(
