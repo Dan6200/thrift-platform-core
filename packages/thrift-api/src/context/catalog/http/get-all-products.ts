@@ -9,9 +9,12 @@ export const getAllProductsHandler = async (
   _res: Response,
   next: NextFunction,
 ) => {
-  const { storeId, limit, sort, offset } = req.validatedQueryParams!
+  const { storeId, limit, sort, offset, category, subcategory } =
+    req.validatedQueryParams!
   req.dbResult = await useCase({
     vendorId: req.userId,
+    category: category as string | undefined,
+    subcategory: subcategory as string | undefined,
     storeId: storeId as number | undefined,
     sort: sort as string | undefined,
     limit: limit as number | undefined,

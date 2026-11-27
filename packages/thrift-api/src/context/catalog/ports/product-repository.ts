@@ -38,6 +38,8 @@ export type CreateProductInput = {
 }
 
 export type GetAllProductsQuery = {
+  category?: string
+  subcategory?: string
   vendorId?: string
   storeId?: number
   sort?: string

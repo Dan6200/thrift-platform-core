@@ -118,21 +118,46 @@ export const knexProductRepository: ProductRepository = {
     return created as PersistedProduct
   },
 
-  async getAll({ vendorId, storeId, sort, limit, offset }) {
-    let whereClause = ''
+  async getAll({
+    vendorId,
+    storeId,
+    sort,
+    limit,
+    offset,
+    category,
+    subcategory,
+  }) {
+    const conditions: string[] = []
     const namedBindings: Record<string, unknown> = {}
-
-    if (vendorId && storeId) {
-      whereClause = 'WHERE p.vendor_id=:vendorId AND p.store_id=:storeId'
+    if (vendorId) {
+      conditions.push('p.vendor_id = :vendorId')
       namedBindings.vendorId = vendorId
-      namedBindings.storeId = storeId
-    } else if (vendorId) {
-      whereClause = 'WHERE p.vendor_id=:vendorId'
-      namedBindings.vendorId = vendorId
-    } else if (storeId) {
-      whereClause = 'WHERE p.store_id=:storeId'
+    }
+    if (storeId) {
+      conditions.push('p.store_id = :storeId')
       namedBindings.storeId = storeId
     }
+    const filters = [
+      ['category', 'c.category_name', category],
+      ['subcategory', 's.subcategory_name', subcategory],
+    ] as const
+    for (const [name, column, value] of filters) {
+      if (!value) continue
+      const slug = value
+        .toLowerCase()
+        .replace(/['’]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+      const normalizedColumn = `trim(both '-' from regexp_replace(lower(replace(replace(${column}, chr(39), ''), '’', '')), '[^a-z0-9]+', '-', 'g'))`
+      conditions.push(
+        `(${column} = :${name} OR ${normalizedColumn} = :${name}Slug)`,
+      )
+      namedBindings[name] = value
+      namedBindings[`${name}Slug`] = slug
+    }
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(' AND ')}`
+      : ''
 
     const dbQueryString = `
       WITH product_data AS (
@@ -207,7 +232,10 @@ export const knexProductRepository: ProductRepository = {
         ${offset ? `OFFSET ${offset}` : ''}
       )
       SELECT JSON_AGG(product_data) AS products,
-        (SELECT COUNT(*) FROM products) AS total_count
+        (SELECT COUNT(*) FROM products p
+          JOIN categories c USING (category_id)
+          JOIN subcategories s USING (subcategory_id)
+          ${whereClause}) AS total_count
       FROM product_data;
     `
 
@@ -218,7 +246,7 @@ export const knexProductRepository: ProductRepository = {
       ...row,
       products: Array.isArray(row.products)
         ? await Promise.all(row.products.map(withMediaFilepaths))
-        : row.products,
+        : [],
     }
   },
 
